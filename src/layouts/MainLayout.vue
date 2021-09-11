@@ -25,7 +25,7 @@
       bordered
       class="row justify-center items-baseline content-between"
     >
-      <div class="row">
+      <div class="row full-width">
         <q-expansion-item
           v-model="settingsOpen"
           icon="receipt"
@@ -56,6 +56,7 @@
           </div>
         </q-expansion-item>
         <q-expansion-item
+          v-if="dropboxAvailable"
           v-model="dropboxOpen"
           icon="people"
           class="full-width"
@@ -68,7 +69,7 @@
                    @click="onDropboxImport"/>
             <q-btn color="secondary"
                    :label="$t('settings.dropbox.export')"
-                   class="full-width q-mt-md"
+                   class="full-width q-mt-md dropbox-saver"
                    @click="onDropboxExport"/>
           </div>
         </q-expansion-item>
@@ -98,6 +99,7 @@ declare global {
     Dropbox: {
       choose(options: any): void;
       save(options: any): void;
+      isBrowserSupported(): boolean;
     };
   }
 }
@@ -107,6 +109,7 @@ function main() {
   const leftDrawerOpen = ref(false)
   const settingsOpen = ref(false)
   const dropboxOpen = ref(false)
+  const dropboxAvailable = ref(false)
   const $q = useQuasar()
 
   function progressCallback({totalRows, completedRows}: any): any {
@@ -174,11 +177,14 @@ function main() {
     $q.loading.show()
   }
 
+  dropboxAvailable.value = window.Dropbox.isBrowserSupported()
+
   return {
     leftDrawerOpen,
     settingsOpen,
     dropboxOpen,
     file,
+    dropboxAvailable,
 
     onDropboxImport,
     onDropboxExport,
