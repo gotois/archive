@@ -14,7 +14,7 @@
              autocomplete="on"
              :rules="[ val => val && val.length > 0 || $t('contract.hint')]"
     />
-    <q-input v-model="consumer" outlined :label="$t('consumer.hint')"
+    <q-input v-model="consumer" outlined :label="$t('consumer.type')"
              lazy-rules
              name="consumer"
              autocomplete="on"
@@ -139,7 +139,7 @@ function main() {
   }
 
   async function onSubmit() {
-    const images: Array<any> = await readFilesPromise(files.value ?? [])
+    const images: Array<string|any> = await readFilesPromise(files.value ?? [])
     db.transaction('rw', db.contracts, async () => {
       const newContract: ContractTable = {
         'agent_name': consumer.value,

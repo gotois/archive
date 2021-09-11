@@ -108,7 +108,7 @@ async function setContracts() {
       const formContracts: any = formatterContracts(data)
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
       contracts.value = formContracts
-      paginationCount.value = Math.max(count / limit.value, 1)
+      paginationCount.value = Math.ceil(count / limit.value)
     } else {
       paginationCount.value = 0
     }
@@ -120,7 +120,8 @@ async function setContracts() {
       const formContracts: any = formatterContracts(data)
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
       contracts.value = formContracts
-      paginationCount.value = Math.max(count / limit.value, 1)
+      console.log(count / limit.value)
+      paginationCount.value = Math.ceil(count / limit.value)
     } else {
       paginationCount.value = 0
     }

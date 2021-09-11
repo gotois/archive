@@ -16,7 +16,7 @@ export interface ContractTable {
   'instrument_description'?: string;
   'startTime'?: Date;
   'endTime'?: Date;
-  'images'?: Array<Blob>;
+  'images'?: Array<string>;
 }
 
 export interface FormatContract {
