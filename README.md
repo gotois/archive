@@ -1,5 +1,7 @@
 # Contracts App
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/f467de0f-4773-4f8a-ac3b-5d4aeca0ea83/deploy-status)](https://app.netlify.com/sites/my-archive/deploys)
+
 Ваша база договоров
 
 ## Install the dependencies
@@ -21,6 +23,3 @@ npm run lint
 ```bash
 quasar build
 ```
-
-### Customize the configuration
-See [Configuring quasar.conf.js](https://v2.quasar.dev/quasar-cli/quasar-conf-js).
