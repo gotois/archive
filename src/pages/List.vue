@@ -4,7 +4,7 @@
       <q-spinner-gears size="50px" color="primary"/>
     </q-inner-loading>
     <q-form
-      class="col-8 q-pa-md q-gutter-sm"
+      class="col-10 q-pa-md q-gutter-sm"
       @submit="onSearchText"
     >
       <q-input v-model="searchText"
@@ -21,7 +21,7 @@
     <q-virtual-scroll
       :items="contracts"
       separator
-      class="col-8"
+      class="col-12"
     >
       <template #default="{ item, index }">
         <q-card
@@ -58,7 +58,7 @@
       </template>
     </q-virtual-scroll>
     <template v-if="paginationCount >= 1">
-      <div class="col-8 q-pa-lg flex flex-center">
+      <div class="col-12 q-pa-lg flex flex-center">
         <q-pagination
           v-model="currentPage"
           :max="paginationCount"
@@ -68,7 +68,7 @@
       </div>
     </template>
     <template v-else>
-      <div class="col-8 q-pa-lg flex flex-center">
+      <div class="col-12 q-pa-lg flex flex-center">
         <q-banner class="bg-orange-9 text-white">
           {{$t('archive.empty')}}
         </q-banner>

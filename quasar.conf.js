@@ -1,8 +1,3 @@
-/*
- * This file runs in a Node context (it's NOT transpiled by Babel), so use only
- * the ES6 features that are supported by your Node version. https://node.green/
- */
-
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli/quasar-conf-js
 
@@ -56,8 +51,8 @@ module.exports = configure(function (ctx) {
 
       // rtl: true, // https://v2.quasar.dev/options/rtl-support
       // preloadChunks: true,
-      // showProgress: false,
-      // gzip: true,
+      showProgress: true,
+      gzip: true,
       // analyze: true,
 
       // Options below are automatically set depending on the env, set them if you want to override
@@ -106,7 +101,7 @@ module.exports = configure(function (ctx) {
 
     // https://v2.quasar.dev/quasar-cli/developing-ssr/configuring-ssr
     ssr: {
-      pwa: false,
+      pwa: true,
 
       // manualStoreHydration: true,
       // manualPostHydrationTrigger: true,

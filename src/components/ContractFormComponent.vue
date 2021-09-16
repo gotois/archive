@@ -127,8 +127,10 @@ function main() {
 
   function onReset() {
     const contractFormValue : any = contractForm.value
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unnecessary-type-assertion
-    contractFormValue!.resetValidation()
+    if (contractFormValue) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unnecessary-type-assertion
+      contractFormValue!.resetValidation()
+    }
     contractType.value = ''
     consumer.value = ''
     customer.value = ''

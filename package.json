@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "dev": "quasar dev",
-    "build": "quasar build",
+    "build": "quasar build -m pwa",
     "lint": "eslint --ext .js,.ts,.vue ./",
     "test": "echo \"No test specified\" && exit 0"
   },
@@ -30,7 +30,8 @@
     "eslint": "^7.14.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-vue": "^7.0.0",
-    "file-saver": "^2.0.5"
+    "file-saver": "^2.0.5",
+    "workbox-webpack-plugin": "^6.3.0"
   },
   "browserslist": [
     "last 10 Chrome versions",
