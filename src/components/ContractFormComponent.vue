@@ -33,7 +33,7 @@
       outlined
       autogrow
     />
-    <div class="row">
+    <div class="row q-pt-md">
       <q-input v-model="duration.from"
                class="col"
                outlined
@@ -61,7 +61,15 @@
           </q-icon>
         </template>
       </q-input>
-      <q-toggle v-model="dateNoLimit" disable title="WORK IN PROGRESS" class="q-mb-md"
+      <q-input v-if="!dateNoLimit"
+               class="col q-pl-md"
+               v-model="duration.to"
+               outlined
+               :label="$t('duration.to')"
+               mask="date"
+               :rules="['date']"
+      ></q-input>
+      <q-toggle v-model="dateNoLimit" class="q-mb-md"
                 :label="$t('duration.infinity')"/>
     </div>
     <q-file v-model="files"
@@ -74,7 +82,7 @@
         <q-icon name="add" @click.stop/>
       </template>
     </q-file>
-    <div>
+    <div style="text-align: right">
       <q-btn :label="$t('contractForm.submit')" type="submit" color="red-9"/>
     </div>
   </q-form>
@@ -100,7 +108,7 @@ function main() {
   const duration = ref({from: currentDate, to: currentDate})
   const files = ref(null)
   const contractForm = ref(null)
-  const dateNoLimit = ref(true)
+  const dateNoLimit = ref(false)
 
   function onSelectDate(value: string | { from: string, to: string }) {
     switch (typeof value) {
@@ -149,7 +157,7 @@ function main() {
         'instrument_name': contractType.value,
         'instrument_description': description.value,
         'startTime': new Date(duration.value.from),
-        'endTime': new Date(9999999999999), // todo использовать new Date(duration.value.to),
+        'endTime': new Date(dateNoLimit.value ? 9999999999999 : duration.value.to),
         'images': images
       }
       await db.contracts.add(newContract)
