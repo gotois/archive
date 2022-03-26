@@ -82,7 +82,7 @@
         <q-icon name="add" @click.stop/>
       </template>
     </q-file>
-    <div style="text-align: right">
+    <div class="text-right">
       <q-btn :label="$t('contractForm.submit')" type="submit" color="red-9"/>
     </div>
   </q-form>

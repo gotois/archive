@@ -10,8 +10,8 @@
           aria-label="Menu"
           @click="onToggleLeftDrawer"
         />
-        <q-toolbar-title>
-          {{ $t('header.title') }}
+        <q-toolbar-title class="text-black-9">
+          {{ $t('header.title') }}. {{ $t('navigation.version')}} {{version}}
         </q-toolbar-title>
         <q-tabs shrink stretch>
           <q-route-tab to="/" exact replace :label="$t('header.create')"/>
@@ -25,7 +25,7 @@
       bordered
       class="row justify-center items-baseline content-between"
     >
-      <div class="row full-width">
+      <div class="row">
         <q-expansion-item
           v-model="settingsOpen"
           icon="receipt"
@@ -74,9 +74,9 @@
           </div>
         </q-expansion-item>
       </div>
-      <div class="row q-pa-md q-gutter-sm text-orange-9">
-        <p>{{ $t('navigation.version')}} {{version}}</p>
+      <div class="row q-pa-md q-gutter-sm">
         <a
+          class="text-orange-9 text-caption text-center"
           href="https://baskovsky.ru/about/feedback/"
           target="_blank">{{ $t('navigation.feedback') }}</a>
       </div>

@@ -1,86 +1,94 @@
 <template>
   <q-page class="row items-stretch justify-center">
     <q-inner-loading :showing="loadingVisible">
-      <q-spinner-gears size="50px" color="primary"/>
+      <q-spinner-hourglass
+        color="primary"
+        size="6em"
+      />
     </q-inner-loading>
-    <q-form
-      v-if="paginationCount >= 1"
-      class="col-10 q-pa-md q-gutter-sm"
-      @submit="onSearchText"
-    >
-      <q-input v-model="searchText"
-               :label="$t('archive.search')"
-               input-class="text-left">
-        <template #append>
-          <q-icon
-            class="cursor-pointer"
-            name="search"
-            @click="onSearchText"/>
-        </template>
-      </q-input>
-    </q-form>
-    <q-virtual-scroll
-      v-if="contracts.length"
-      :items="contracts"
-      separator
-      class="col-12"
-    >
-      <template #default="{ item, index }">
-        <q-card
-          :key="index"
-          class="q-ma-lg "
-          flat
-          bordered>
-          <div class="row">
-            <q-img
-              v-for="(object, objectIndex) in item.object"
-              :key="objectIndex"
-              class="col"
-              :ratio="4/3"
-              :fit="'contain'"
-              :src="object.contentUrl"
-              style="max-height: 420px;"
-              @click="showFullImage(object.contentUrl)"
-              loading="lazy"
-              no-native-menu
-            />
-          </div>
-          <q-card-section>
-            <div class="text-overline text-orange-9">
-              {{ item.startTime.toLocaleDateString() }} - {{ item.endTime.toLocaleDateString() }}
-            </div>
-            <div class="row">
-              <div class="text-black">
-                {{ item.agent.name }}
-              </div>
-              <q-space/>
-              <div class="text-black">
-                {{ item.participant.name }}
-              </div>
+    <template v-if="!loadingVisible">
+      <q-form
+        v-if="paginationCount >= 1"
+        class="col-10 q-pa-md q-gutter-sm"
+        @submit="onSearchText"
+      >
+        <q-input v-model="searchText"
+                 :label="$t('archive.search')"
+                 input-class="text-left">
+          <template #append>
+            <q-icon
+              class="cursor-pointer"
+              name="search"
+              @click="onSearchText"/>
+          </template>
+        </q-input>
+      </q-form>
+      <q-virtual-scroll
+        v-if="contracts.length"
+        :items="contracts"
+        separator
+        class="col-12"
+      >
+        <template #default="{ item, index }">
+          <q-card
+            :key="index"
+            class="q-ma-lg "
+            flat
+            bordered>
+            <div>
+              <p class="text-h2 text-uppercase text-center text-weight-bold no-margin" style="font-size: large;">{{ item.instrument.name }}</p>
+              <p class="text-caption text-grey" v-if="item.instrument.description">{{ item.instrument.description }}</p>
             </div>
             <q-separator/>
-            <div class="text-h5 q-mt-sm q-mb-xs">{{ item.instrument.name }}</div>
-            <div class="text-caption text-grey">{{ item.instrument.description }}</div>
-          </q-card-section>
-        </q-card>
+            <div class="row">
+              <q-img
+                v-for="(object, objectIndex) in item.object"
+                :key="objectIndex"
+                class="col cursor-pointer"
+                :fit="'contain'"
+                :src="object.contentUrl"
+                style="min-height: 480px; max-height: 60vh;"
+                @click="showFullImage(object.contentUrl)"
+                loading="lazy"
+                decoding="async"
+                no-native-menu
+              />
+            </div>
+            <q-separator/>
+            <q-card-section>
+              <p class="text-overline text-orange-9">
+                {{ item.startTime.toLocaleDateString() }} - {{ item.endTime.toLocaleDateString() }}
+              </p>
+              <div class="row">
+                <p class="text-black">
+                  {{ item.agent.name }}
+                </p>
+                <q-space/>
+                <p class="text-black">
+                  {{ item.participant.name }}
+                </p>
+              </div>
+            </q-card-section>
+          </q-card>
+        </template>
+      </q-virtual-scroll>
+      <template v-if="paginationCount >= 1">
+        <div class="col-12 q-pa-lg flex flex-center">
+          <q-pagination
+            v-model="currentPage"
+            :max="paginationCount"
+            direction-links
+            @update:model-value="onPaginate"
+          />
+        </div>
       </template>
-    </q-virtual-scroll>
-    <template v-if="paginationCount >= 1">
-      <div class="col-12 q-pa-lg flex flex-center">
-        <q-pagination
-          v-model="currentPage"
-          :max="paginationCount"
-          direction-links
-          @update:model-value="onPaginate"
-        />
-      </div>
-    </template>
-    <template v-else>
-      <div class="col-12 q-pa-lg flex flex-center">
-        <q-banner class="bg-red-9 text-white" style="padding: 2em;">
-          {{ $t('archive.empty') }} 😢
-        </q-banner>
-      </div>
+      <template v-else>
+        <div class="col-12 q-pa-lg flex flex-center">
+          <q-banner class="bg-red-9 text-white q-ios-padding">
+            {{ $t('archive.empty') }} 😢
+          </q-banner>
+        </div>
+      </template>
     </template>
   </q-page>
 </template>
