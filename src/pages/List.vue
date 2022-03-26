@@ -4,6 +4,7 @@
       <q-spinner-gears size="50px" color="primary"/>
     </q-inner-loading>
     <q-form
+      v-if="paginationCount >= 1"
       class="col-10 q-pa-md q-gutter-sm"
       @submit="onSearchText"
     >
@@ -19,6 +20,7 @@
       </q-input>
     </q-form>
     <q-virtual-scroll
+      v-if="contracts.length"
       :items="contracts"
       separator
       class="col-12"
@@ -69,8 +71,8 @@
     </template>
     <template v-else>
       <div class="col-12 q-pa-lg flex flex-center">
-        <q-banner class="bg-orange-9 text-white">
-          {{$t('archive.empty')}}
+        <q-banner class="bg-red-9 text-white" style="padding: 2em;">
+          {{$t('archive.empty')}} 😢
         </q-banner>
       </div>
     </template>
@@ -105,7 +107,7 @@ async function setContracts() {
     const count: number = await db.contracts.where('instrument_name').startsWithAnyOfIgnoreCase([queryFilter]).count()
     if (count) {
       const data: Array<Contract | any> = await db.contracts.where('instrument_name').startsWithAnyOfIgnoreCase([queryFilter]).reverse().offset(offset).limit(limit.value).toArray()
-      const formContracts: any = formatterContracts(data)
+      const formContracts: any = formatterContracts(data as Contract[])
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
       contracts.value = formContracts
       paginationCount.value = Math.ceil(count / limit.value)
@@ -117,7 +119,7 @@ async function setContracts() {
     if (count) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       const data: Array<Contract | any> = await db.contracts.reverse().offset(offset).limit(limit.value).toArray()
-      const formContracts: any = formatterContracts(data)
+      const formContracts: any = formatterContracts(data as Contract[])
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
       contracts.value = formContracts
       console.log(count / limit.value)
@@ -168,6 +170,7 @@ function routerFunc() {
 }
 
 export default defineComponent({
+  // eslint-disable-next-line vue/multi-word-component-names
   name: 'List',
 
   async beforeRouteUpdate(to: any) {

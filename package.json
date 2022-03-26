@@ -12,12 +12,12 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
-    "@quasar/extras": "^1.0.0",
-    "core-js": "^3.6.5",
-    "dexie": "^3.0.3",
-    "quasar": "^2.0.0",
-    "vue-i18n": "^9.0.0",
-    "vuex": "^4.0.1"
+    "@quasar/extras": "^1.13.3",
+    "core-js": "^3.21.1",
+    "dexie": "^3.2.1",
+    "quasar": "^2.6.1",
+    "vue-i18n": "^9.1.9",
+    "vuex": "^4.0.2"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.17.0",
@@ -34,14 +34,14 @@
     "workbox-webpack-plugin": "^6.5.2"
   },
   "browserslist": [
-    "last 10 Chrome versions",
-    "last 10 Firefox versions",
-    "last 4 Edge versions",
-    "last 7 Safari versions",
+    "last 5 Chrome versions",
+    "last 5 Firefox versions",
+    "last 2 Edge versions",
+    "last 2 Safari versions",
     "last 8 Android versions",
     "last 8 ChromeAndroid versions",
     "last 8 FirefoxAndroid versions",
-    "last 10 iOS versions",
+    "last 5 iOS versions",
     "last 5 Opera versions"
   ],
   "engines": {

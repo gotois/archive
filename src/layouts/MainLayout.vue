@@ -123,8 +123,9 @@ function main() {
   }
 
   async function onImportDB() {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     await importInto(db, (file.value as any), {})
-    location.reload(true)
+    location.reload()
   }
 
   async function onExportDB() {
