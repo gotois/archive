@@ -35,8 +35,8 @@
             class="q-ma-lg "
             flat
             bordered>
-            <div>
-              <p class="text-h2 text-uppercase text-center text-weight-bold no-margin" style="font-size: large;">{{ item.instrument.name }}</p>
+            <div class="row justify-between q-pa-md">
+              <p class="text-h6 text-uppercase text-weight-bold no-margin">{{ item.instrument.name }}</p>
               <p class="text-caption text-grey" v-if="item.instrument.description">{{ item.instrument.description }}</p>
             </div>
             <q-separator/>
@@ -56,15 +56,15 @@
             </div>
             <q-separator/>
             <q-card-section>
-              <p class="text-overline text-orange-9">
+              <p class="text-overline text-orange-9 no-margin">
                 {{ item.startTime.toLocaleDateString() }} - {{ item.endTime.toLocaleDateString() }}
               </p>
               <div class="row">
-                <p class="text-black">
+                <p class="text-black text-h6 text-weight-light no-margin">
                   {{ item.agent.name }}
                 </p>
                 <q-space/>
-                <p class="text-black">
+                <p class="text-black no-margin">
                   {{ item.participant.name }}
                 </p>
               </div>
