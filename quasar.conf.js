@@ -134,12 +134,16 @@ module.exports = configure(function (ctx) {
       },
 
       manifest: {
-        name: 'Contracts App',
-        short_name: 'Contracts App',
+        name: 'Archive',
+        short_name: 'Договоры',
         description: 'Ваша база договоров',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',
+        "dir": "auto",
+        "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
+        "lang": "ru",
+        categories: ['productivity'],
         theme_color: '#027be3',
         icons: [
           {
