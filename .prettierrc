@@ -1,4 +1,16 @@
 {
   "singleQuote": true,
-  "semi": true
+  "semi": true,
+   "printWidth": 80,
+  "quoteProps": "consistent",
+  "rangeStart": 0,
+  "requirePragma": false,
+  "insertPragma": false,
+  "htmlWhitespaceSensitivity": "strict",
+  "useTabs": false,
+  "bracketSpacing": true,
+  "trailingComma": "all",
+  "proseWrap": "preserve",
+  "arrowParens": "always",
+  "endOfLine": "lf"
 }

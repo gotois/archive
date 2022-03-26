@@ -134,7 +134,7 @@ function main() {
   }
 
   function onReset() {
-    const contractFormValue : any = contractForm.value
+    const contractFormValue: any = contractForm.value
     if (contractFormValue) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unnecessary-type-assertion
       contractFormValue!.resetValidation()
@@ -149,7 +149,7 @@ function main() {
   }
 
   async function onSubmit() {
-    const images: Array<string|any> = await readFilesPromise(files.value ?? [])
+    const images: Array<string | any> = await readFilesPromise(files.value ?? [])
     db.transaction('rw', db.contracts, async () => {
       const newContract: ContractTable = {
         'agent_name': consumer.value,
@@ -166,7 +166,8 @@ function main() {
         type: 'positive',
         actions: [
           {
-            label: 'Закрыть', color: 'white'
+            label: 'Закрыть',
+            color: 'white',
           }
         ]
       })
