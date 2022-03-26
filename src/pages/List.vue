@@ -35,8 +35,14 @@
             <q-img
               v-for="(object, objectIndex) in item.object"
               :key="objectIndex"
-              class="col" style="min-height: 360px; height: 50vh;"
+              class="col"
+              :ratio="4/3"
+              :fit="'contain'"
               :src="object.contentUrl"
+              style="max-height: 420px;"
+              @click="showFullImage(object.contentUrl)"
+              loading="lazy"
+              no-native-menu
             />
           </div>
           <q-card-section>
@@ -72,7 +78,7 @@
     <template v-else>
       <div class="col-12 q-pa-lg flex flex-center">
         <q-banner class="bg-red-9 text-white" style="padding: 2em;">
-          {{$t('archive.empty')}} 😢
+          {{ $t('archive.empty') }} 😢
         </q-banner>
       </div>
     </template>
@@ -95,6 +101,11 @@ const searchText = ref('')
 const limit = ref(5)
 const currentPage = ref(1)
 const loadingVisible = ref(false)
+
+function showFullImage(base64String: string) {
+  const newWin = window.open("about:blank", "fullscreen", "popup=1");
+  newWin!.document.write('<img src="' + base64String + '">');
+}
 
 async function setContracts() {
   loadingVisible.value = true
@@ -190,6 +201,7 @@ export default defineComponent({
       currentPage,
       loadingVisible,
       paginationCount,
+      showFullImage,
       ...routerFunc(),
     }
   }

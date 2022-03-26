@@ -9,11 +9,12 @@ export default {
     empty: 'Архив пуст'
   },
   header: {
-    title: 'Ваша база договоров',
+    title: 'База договоров',
     create: 'Создание',
     archive: 'Архив',
   },
   navigation: {
+    version: 'Версия',
     feedback: 'Ваши замечания по проекту'
   },
   settings: {

@@ -75,6 +75,7 @@
         </q-expansion-item>
       </div>
       <div class="row q-pa-md q-gutter-sm text-orange-9">
+        <p>{{ $t('navigation.version')}} {{version}}</p>
         <a
           href="https://baskovsky.ru/about/feedback/"
           target="_blank">{{ $t('navigation.feedback') }}</a>
@@ -93,6 +94,7 @@ import {db} from 'components/ContractDatabase'
 import {saveAs} from 'file-saver'
 import {useQuasar} from 'quasar'
 import {readBlobPromise} from '../services/fileHelper'
+import {version} from '../../package.json'
 
 declare global {
   interface Window {
@@ -186,6 +188,7 @@ function main() {
     dropboxOpen,
     file,
     dropboxAvailable,
+    version,
 
     onDropboxImport,
     onDropboxExport,
