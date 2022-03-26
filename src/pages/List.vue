@@ -102,6 +102,9 @@ const closeIconStyle = `
   top: 2em;
   width: 2em;
   height: 2em;
+  background: white;
+  border-radius: 50%;
+  padding: 1em;
 `;
 const paginationCount = ref(0)
 const contracts = ref([])
@@ -113,7 +116,8 @@ const loadingVisible = ref(false)
 function showFullImage(base64String: string) {
   const newWin = window.open('about:blank', '_blank');
   // eslint-disable-next-line @typescript-eslint/restrict-template-expressions,@typescript-eslint/unbound-method
-  newWin!.document.write(`<a href="javascript: self.close()">
+  newWin!.document.write(`
+    <a href="javascript: self.close()">
         <img src="${closeIconBase64}" style="${closeIconStyle}">
     </a>
     <img src="${base64String}">
