@@ -119,7 +119,7 @@ function main() {
   const dropboxAvailable = ref(false)
   const $q = useQuasar()
 
-  function progressCallback({totalRows, completedRows}: any): void {
+  function progressCallback({totalRows, completedRows}: any): any {
     if (completedRows === totalRows) {
       $q.loading.hide()
     }
