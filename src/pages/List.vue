@@ -149,8 +149,8 @@ body {
   position: fixed;
   right: 2em;
   top: 2em;
-  width: 2em;
-  height: 2em;
+  width: 3em;
+  height: 3em;
   background: white;
   border-radius: 50%;
   padding: 1em;

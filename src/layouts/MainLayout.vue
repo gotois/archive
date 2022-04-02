@@ -69,6 +69,8 @@
                    @click="onDropboxImport"/>
             <q-btn color="secondary"
                    :label="$t('settings.dropbox.export')"
+                   target="_blank"
+                   href="#"
                    class="full-width q-mt-md dropbox-saver"
                    @click="onDropboxExport"/>
           </div>
@@ -107,6 +109,8 @@ declare global {
   }
 }
 
+const EXPORT_NAME = 'contract-export.json'
+
 function main() {
   const file = ref(null)
   const leftDrawerOpen = ref(false)
@@ -115,13 +119,13 @@ function main() {
   const dropboxAvailable = ref(false)
   const $q = useQuasar()
 
-  function progressCallback({totalRows, completedRows}: any): any {
+  function progressCallback({totalRows, completedRows}: any): void {
     if (completedRows === totalRows) {
       $q.loading.hide()
     }
   }
 
-  function onToggleLeftDrawer() {
+  function onToggleLeftDrawer(): void {
     leftDrawerOpen.value = !leftDrawerOpen.value
   }
 
@@ -145,13 +149,19 @@ function main() {
   async function onExportDB() {
     $q.loading.show()
     const blob = await exportDB(db, {prettyJson: false, progressCallback})
-    saveAs(blob, 'contract-export.json')
+    saveAs(blob, EXPORT_NAME)
   }
 
   function onDropboxImport() {
+    $q.loading.show()
     const options = {
       success(files: Array<{ link: string, name: string }>) {
         saveAs(files[0].link, files[0].name)
+        $q.loading.hide()
+        $q.notify({
+          message: 'Сохранено',
+          type: 'positive'
+        })
       },
       linkType: 'direct',
       multiselect: false,
@@ -162,12 +172,13 @@ function main() {
   }
 
   async function onDropboxExport() {
+    $q.loading.show()
     const blob = await exportDB(db, {prettyJson: false, progressCallback})
     const blobUrl = await readBlobPromise(blob)
     const options = {
       files: [
         {
-          'url': blobUrl, 'filename': 'contract-export.json'
+          'url': blobUrl, 'filename': EXPORT_NAME
         },
       ],
       success() {
@@ -179,6 +190,10 @@ function main() {
       },
       cancel() {
         $q.loading.hide()
+        $q.notify({
+          message: 'Отменено',
+          type: 'positive'
+        })
       },
       error(errorMessage: Error) {
         $q.loading.hide()
@@ -188,8 +203,8 @@ function main() {
         })
       }
     }
-    window.Dropbox.save(options)
     $q.loading.show()
+    window.Dropbox.save(options)
   }
 
   dropboxAvailable.value = window.Dropbox.isBrowserSupported()
