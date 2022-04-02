@@ -22,6 +22,7 @@ export function formatterContracts(contracts: Array<Contract>): Array<FormatCont
     'object': contract.images.map((image: string) => ({
       '@type': 'ImageObject',
       'contentUrl': image,
-    }))
+    })),
+    _currentSlide: 1,
   }))
 }

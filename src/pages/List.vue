@@ -32,7 +32,7 @@
         <template #default="{ item, index }">
           <q-card
             :key="index"
-            class="q-ma-lg "
+            class="q-ma-lg"
             flat
             bordered>
             <div class="row justify-between q-pa-md">
@@ -40,26 +40,53 @@
               <p class="text-caption text-grey" v-if="item.instrument.description">{{ item.instrument.description }}</p>
             </div>
             <q-separator/>
-            <div class="row">
-              <q-img
-                v-for="(object, objectIndex) in item.object"
-                :key="objectIndex"
-                class="col cursor-pointer"
-                :fit="'contain'"
-                :src="object.contentUrl"
-                style="min-height: 480px; max-height: 60vh;"
-                @click="showFullImage(object.contentUrl)"
-                loading="lazy"
-                decoding="async"
-                no-native-menu
-              />
-            </div>
+            <q-carousel
+                v-if="item.object.length"
+                v-model="item._currentSlide"
+                transition-prev="slide-right"
+                transition-next="slide-left"
+                control-color="primary"
+                animated
+                swipeable
+                navigation
+                infinite
+              >
+                <q-carousel-slide
+                  class="no-margin no-padding"
+                  v-for="(object, objectIndex) in item.object"
+                  :key="objectIndex"
+                  :name="objectIndex + 1"
+                >
+                  <q-scroll-area class="fit">
+                    <q-img
+                      class="col"
+                      :fit="'contain'"
+                      :src="object.contentUrl"
+                      loading="lazy"
+                      decoding="async"
+                      no-native-menu
+                    />
+                  </q-scroll-area>
+                </q-carousel-slide>
+                <template v-slot:control>
+                  <q-carousel-control
+                    position="top-right"
+                    :offset="[18, 18]"
+                  >
+                    <q-btn
+                      round color="white" text-color="primary"
+                      icon="fullscreen"
+                      @click="showFullImage(item)"
+                    />
+                  </q-carousel-control>
+                </template>
+              </q-carousel>
             <q-separator/>
             <q-card-section>
               <p class="text-overline text-orange-9 no-margin">
                 {{ item.startTime.toLocaleDateString() }} - {{ item.endTime.toLocaleDateString() }}
               </p>
-              <div class="row">
+              <div class="row items-center">
                 <p class="text-black text-h6 text-weight-light no-margin">
                   {{ item.agent.name }}
                 </p>
@@ -121,15 +148,18 @@ const limit = ref(5)
 const currentPage = ref(1)
 const loadingVisible = ref(false)
 
-function showFullImage(base64String: string) {
+function showFullImage(object: any) {
+  // eslint-disable-next-line
+  const image = object.object[object._currentSlide - 1]
   const newWin = window.open('about:blank', '_blank');
-  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions,@typescript-eslint/unbound-method
+  /* eslint-disable @typescript-eslint/restrict-template-expressions,@typescript-eslint/unbound-method,@typescript-eslint/restrict-template-expressions,@typescript-eslint/no-unsafe-member-access */
   newWin!.document.write(`
-    <a href="javascript: self.close()">
-        <img src="${closeIconBase64}" style="${closeIconStyle}">
-    </a>
-    <img src="${base64String}">
-  `);
+     <a href="javascript: self.close()">
+         <img src="${closeIconBase64}" style="${closeIconStyle}">
+     </a>
+     <img width="100%" src="${image.contentUrl}">
+   `);
+  /* eslint-enable */
 }
 
 async function setContracts() {
@@ -226,6 +256,8 @@ export default defineComponent({
       currentPage,
       loadingVisible,
       paginationCount,
+      currentSlide: ref(1),
+      fullscreen: ref(false),
       showFullImage,
       ...routerFunc(),
     }
