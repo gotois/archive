@@ -11,7 +11,7 @@
           @click="onToggleLeftDrawer"
         />
         <q-toolbar-title class="text-black-9">
-          {{ $t('header.title') }}. {{ $t('navigation.version')}} {{version}}
+          {{ $t('header.title') }}
         </q-toolbar-title>
         <q-tabs shrink stretch>
           <q-route-tab to="/" exact replace :label="$t('header.create')"/>
@@ -23,10 +23,17 @@
       v-model="leftDrawerOpen"
       show-if-above
       bordered
-      class="row justify-center items-baseline content-between"
+      class="row justify-center items-baseline"
     >
-      <div class="row">
+      <q-list bordered class="row self-start">
+        <div class="text-h6 q-pa-md">
+          {{ $t('navigation.title')}}
+          <q-badge outline align="middle" color="orange">
+            {{ $t('navigation.version')}} {{version}}
+          </q-badge>
+        </div>
         <q-expansion-item
+          group="backupgroup"
           v-model="settingsOpen"
           icon="receipt"
           class="full-width"
@@ -56,6 +63,7 @@
           </div>
         </q-expansion-item>
         <q-expansion-item
+          group="backupgroup"
           v-if="dropboxAvailable"
           v-model="dropboxOpen"
           icon="people"
@@ -71,12 +79,26 @@
                    :label="$t('settings.dropbox.export')"
                    target="_blank"
                    href="#"
-                   class="full-width q-mt-md dropbox-saver"
+                   class="full-width q-mt-md"
                    @click="onDropboxExport"/>
           </div>
         </q-expansion-item>
-      </div>
-      <div class="row q-pa-md q-gutter-sm">
+        <q-expansion-item
+          group="backupgroup"
+          class="full-width"
+          icon='priority_high'
+          :label="$t('settings.clean.title')"
+        >
+          <div class="col q-pa-md">
+            <q-btn :label="$t('settings.clean.submit')"
+                   color="red"
+                   class="full-width q-mt-md"
+                   @click="confirm = true"
+            />
+          </div>
+        </q-expansion-item>
+      </q-list>
+      <div class="row q-pa-md q-gutter-sm self-end">
         <a
           class="text-orange-9 text-caption text-center"
           href="https://baskovsky.ru/about/feedback/"
@@ -85,6 +107,20 @@
     </q-drawer>
     <q-page-container>
       <router-view/>
+       <q-dialog v-model="confirm" persistent transition-show="scale" transition-hide="scale">
+        <q-card class="bg-teal text-white" style="width: 300px">
+          <q-card-section class="">
+             <div class="text-h6">{{ $t('settings.clean.submit') }}</div>
+          </q-card-section>
+          <q-card-section class="q-pt-none">
+            {{ $t('settings.clean.label') }}
+          </q-card-section>
+          <q-card-actions align="right" class="bg-white text-teal">
+            <q-btn flat :label="$t('settings.clean.cancel')" color="primary" v-close-popup />
+            <q-btn flat :label="$t('settings.clean.ok')" color="red" @click="onClearDatabase" />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
     </q-page-container>
   </q-layout>
 </template>
@@ -146,6 +182,22 @@ function main() {
     }
   }
 
+  async function onClearDatabase() {
+    try {
+      $q.loading.show()
+      await db.destroy()
+      location.reload()
+    } catch (error: any) {
+      console.error(error)
+      $q.loading.hide()
+      $q.notify({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+        message: error.message,
+        type: 'negative'
+      })
+    }
+  }
+
   async function onExportDB() {
     $q.loading.show()
     const blob = await exportDB(db, {prettyJson: false, progressCallback})
@@ -171,8 +223,7 @@ function main() {
     window.Dropbox.choose(options)
   }
 
-  async function onDropboxExport() {
-    $q.loading.show()
+  async function prepareDropboxExport() {
     const blob = await exportDB(db, {prettyJson: false, progressCallback})
     const blobUrl = await readBlobPromise(blob)
     const options = {
@@ -203,8 +254,20 @@ function main() {
         })
       }
     }
-    $q.loading.show()
-    window.Dropbox.save(options)
+    return options;
+  }
+
+  function onDropboxExport() {
+    void prepareDropboxExport().then((options) => {
+      $q.loading.show()
+      window.Dropbox.save(options)
+    }).catch((errorMessage: Error) => {
+      $q.loading.hide()
+      $q.notify({
+        message: errorMessage.message,
+        type: 'negative'
+      })
+    })
   }
 
   dropboxAvailable.value = window.Dropbox.isBrowserSupported()
@@ -217,9 +280,12 @@ function main() {
     dropboxAvailable,
     version,
 
+    confirm: ref(false),
+
     onDropboxImport,
     onDropboxExport,
     onToggleLeftDrawer,
+    onClearDatabase,
     onImportDB,
     onExportDB
   }

@@ -5,6 +5,7 @@
     autocorrect="off"
     autocapitalize="off"
     autocomplete="off"
+    spellcheck="true"
     @submit="onSubmit"
     @reset="onReset"
     greedy
@@ -14,35 +15,52 @@
              name="contractType"
              autocomplete="on"
              :rules="[ val => val && val.length > 0 || $t('contract.hint')]"
-    />
+    >
+      <template #prepend>
+        <q-icon name="assignment" />
+      </template>
+    </q-input>
     <q-input v-model="consumer" outlined :label="$t('consumer.type')"
              lazy-rules
              name="consumer"
              autocomplete="on"
              :rules="[ val => val && val.length > 0 || $t('consumer.hint')]"
-    />
+    >
+      <template #prepend>
+        <q-icon name="face" />
+      </template>
+    </q-input>
     <q-input v-model="customer" outlined :label="$t('customer.type')"
              lazy-rules
              name="customer"
              autocomplete="on"
              :rules="[ val => val && val.length > 0 || $t('customer.hint')]"
-    />
+    >
+      <template #prepend>
+        <q-icon name="assignment_ind" />
+      </template>
+    </q-input>
     <q-input
       v-model="description"
       type="textarea"
+      class="no-padding"
       :label="$t('description.type')"
       outlined
       autogrow
-    />
-    <div class="row q-pt-md">
+    >
+      <template #prepend>
+        <q-icon name="sticky_note_2" />
+      </template>
+    </q-input>
+    <div class="row justify-center items-center">
       <q-input v-model="duration.from"
-               class="col"
+               class="col no-padding"
                outlined
                :label="$t('duration.from')"
                mask="date"
                :rules="['date']">
       </q-input>
-      <div class="q-pl-md">
+      <div>
         <q-icon size="md" name="event" class="cursor-pointer">
           <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
             <template v-if="dateNoLimit">
@@ -63,14 +81,14 @@
         </q-icon>
       </div>
       <q-input v-if="!dateNoLimit"
-               class="col q-pl-md"
+               class="col no-padding"
                v-model="duration.to"
                outlined
                :label="$t('duration.to')"
                mask="date"
                :rules="['date']"
       ></q-input>
-      <q-toggle v-model="dateNoLimit" class="q-mb-md"
+      <q-toggle v-model="dateNoLimit"
                 :label="$t('duration.infinity')"/>
     </div>
     <q-file v-model="files"
@@ -79,6 +97,9 @@
             counter
             accept="image/*, .pdf"
             :label="$t('files.type')">
+      <template #prepend>
+        <q-icon name="image" />
+      </template>
       <template #append>
         <q-icon name="add" @click.stop/>
       </template>

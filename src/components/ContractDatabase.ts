@@ -11,6 +11,10 @@ export class ContractDatabase extends Dexie {
     })
     this.contracts = this.table('contracts')
   }
+
+  public destroy() {
+    return this.contracts.clear()
+  }
 }
 
 export const db = new ContractDatabase()

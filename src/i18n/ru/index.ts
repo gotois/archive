@@ -15,7 +15,8 @@ export default {
   },
   navigation: {
     version: 'Версия',
-    feedback: 'Ваши замечания по проекту'
+    title: 'Настройки',
+    feedback: 'Ваши замечания по продукту'
   },
   settings: {
     native: {
@@ -28,6 +29,13 @@ export default {
       title: 'Настройки Dropbox',
       import: 'Импорт базы',
       export: 'Экспорт базы'
+    },
+    clean: {
+      title: 'Удаление',
+      label: 'Подтвердите удаление базы',
+      ok: 'Удалить',
+      cancel: 'Отмена',
+      submit: 'Удаление базы'
     }
   },
   contract: {
@@ -52,7 +60,7 @@ export default {
     infinity: 'Бессрочный'
   },
   files: {
-    type: 'Изображения документов'
+    type: 'Изображения документов или PDF'
   },
   contractForm: {
     submit: 'Сохранить'
