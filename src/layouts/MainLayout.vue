@@ -95,6 +95,7 @@ import {saveAs} from 'file-saver'
 import {useQuasar} from 'quasar'
 import {readBlobPromise} from '../services/fileHelper'
 import {version} from '../../package.json'
+import {BulkError} from 'dexie'
 
 declare global {
   interface Window {
@@ -125,9 +126,20 @@ function main() {
   }
 
   async function onImportDB() {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    await importInto(db, (file.value as any), {})
-    location.reload()
+    $q.loading.show()
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      await importInto(db, (file.value as any), {})
+      location.reload()
+    } catch (error: BulkError|any) {
+      console.error(error)
+      $q.loading.hide()
+      $q.notify({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+        message: error.message,
+        type: 'negative'
+      })
+    }
   }
 
   async function onExportDB() {
