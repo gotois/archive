@@ -136,10 +136,10 @@ module.exports = configure(function (ctx) {
       manifest: {
         name: 'Archive',
         short_name: 'Договоры',
-        description: 'Ваша база договоров',
+        description: 'Ваша офлайн база договоров',
         display: 'standalone',
         orientation: 'portrait',
-        background_color: '#ffffff',
+        background_color: '#027be3',
         dir: 'auto',
         iarc_rating_id: 'e84b072d-71b3-4d3e-86ae-31a8ce4e53b7',
         lang: 'ru',

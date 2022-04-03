@@ -88,7 +88,7 @@
                   >
                     <q-btn
                       round color="white" text-color="primary"
-                      icon="share"
+                      icon="ios_share"
                       @click="shareFullImage(item)"
                     />
                   </q-carousel-control>
@@ -257,7 +257,7 @@ function routerFunc() {
   })()
 
   return {
-    onPaginate(page: string) {
+    onPaginate(page: string): void {
       void router.push({
         path: 'archive',
         query: {
@@ -266,7 +266,7 @@ function routerFunc() {
         }
       })
     },
-    onSearchText() {
+    onSearchText(): void {
       void router.push({
         path: 'archive',
         query: {

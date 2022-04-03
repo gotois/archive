@@ -21,11 +21,10 @@
     </q-header>
     <q-drawer
       v-model="leftDrawerOpen"
-      show-if-above
       bordered
       class="row justify-center items-baseline"
     >
-      <q-list bordered class="row self-start">
+      <q-list class="row self-start">
         <div class="text-h6 q-pa-md">
           {{ $t('navigation.title')}}
           <q-badge outline align="middle" color="orange">
@@ -35,7 +34,7 @@
         <q-expansion-item
           group="backupgroup"
           v-model="settingsOpen"
-          icon="receipt"
+          icon="import_export"
           class="full-width"
           :label="$t('settings.native.title')"
         >
@@ -54,11 +53,13 @@
                 :label="$t('settings.native.submit')"
                 :disable="!file"
                 type="submit"
+                icon="file_upload"
                 color="primary"
                 class="full-width"/>
             </q-form>
             <q-btn
               color="secondary"
+              icon="file_download"
               :label="$t('settings.native.export')"
               class="full-width q-mt-md"
               @click="onExportDB"/>
@@ -67,13 +68,14 @@
         <q-expansion-item
           group="backupgroup"
           class="full-width"
-          icon='priority_high'
+          icon='warning'
           :label="$t('settings.clean.title')"
         >
           <div class="col q-pa-md">
             <q-btn
               :label="$t('settings.clean.submit')"
               color="red"
+              icon="delete_outline"
               class="full-width q-mt-md"
               @click="confirm = true"
             />
@@ -81,10 +83,7 @@
         </q-expansion-item>
       </q-list>
       <div class="row q-pa-md q-gutter-sm self-end">
-        <a
-          class="text-orange-9 text-caption text-center"
-          href="https://baskovsky.ru/about/feedback/"
-          target="_blank">{{ $t('navigation.feedback') }}</a>
+        <q-chip icon="link" class="cursor-pointer text-center" clickable @click="onOpenFeedback" :label="$t('navigation.feedback')"></q-chip>
       </div>
     </q-drawer>
     <q-page-container>
@@ -125,6 +124,10 @@ const confirm = ref(false)
 
 function onToggleLeftDrawer(): void {
   leftDrawerOpen.value = !leftDrawerOpen.value
+}
+
+function onOpenFeedback() {
+  location.href = 'https://baskovsky.ru/about/feedback/'
 }
 
 function main() {
@@ -181,6 +184,7 @@ function main() {
     file,
     confirm,
     version,
+    onOpenFeedback,
     onToggleLeftDrawer,
     onClearDatabase,
     onImportDB,

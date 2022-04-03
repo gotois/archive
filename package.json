@@ -2,7 +2,7 @@
   "name": "contracts",
   "version": "0.0.3",
   "description": "Договоры",
-  "productName": "Ваша база договоров",
+  "productName": "Ваша офлайн база договоров",
   "author": "qertis",
   "private": true,
   "scripts": {

@@ -112,7 +112,7 @@
       </template>
     </q-file>
     <div class="text-right">
-      <q-btn :label="$t('contractForm.submit')" type="submit" color="red-9"/>
+      <q-btn :label="$t('contractForm.submit')" icon-right="save" type="submit" color="red-9"/>
     </div>
   </q-form>
 </template>
