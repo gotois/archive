@@ -7,8 +7,8 @@
 </template>
 
 <script lang="ts">
-import ContractFormComponent from 'components/ContractFormComponent.vue'
 import {defineComponent} from 'vue'
+import ContractFormComponent from 'components/ContractFormComponent.vue'
 
 export default defineComponent({
   name: 'PageIndex',

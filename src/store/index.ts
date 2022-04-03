@@ -1,5 +1,5 @@
-import { store } from 'quasar/wrappers'
-import { InjectionKey } from 'vue'
+import {store} from 'quasar/wrappers'
+import {InjectionKey} from 'vue'
 import {
   createStore,
   Store as VuexStore,
@@ -40,7 +40,7 @@ export default store(function (/* { ssrContext } */) {
     strict: !!process.env.DEBUGGING
   })
 
-  return Store;
+  return Store
 })
 
 export function useStore() {

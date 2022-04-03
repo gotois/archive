@@ -3,7 +3,7 @@
 
 /* eslint-env node */
 /* eslint-disable @typescript-eslint/no-var-requires */
-const {configure} = require('quasar/wrappers');
+const {configure} = require('quasar/wrappers')
 
 module.exports = configure(function (ctx) {
   return {

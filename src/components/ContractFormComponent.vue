@@ -93,15 +93,17 @@
         mask="date"
         :rules="['date']"
       ></q-input>
-      <q-toggle v-model="dateNoLimit"
-                :label="$t('duration.infinity')"/>
+      <q-toggle
+        v-model="dateNoLimit"
+        :label="$t('duration.infinity')"/>
     </div>
-    <q-file v-model="files"
-            outlined
-            multiple
-            counter
-            accept="image/*, .pdf"
-            :label="$t('files.type')">
+    <q-file
+      v-model="files"
+      outlined
+      multiple
+      counter
+      accept="image/*, .pdf"
+      :label="$t('files.type')">
       <template #prepend>
         <q-icon name="image" />
       </template>
@@ -136,18 +138,18 @@ const contractForm = ref(null)
 const dateNoLimit = ref(false)
 
 function onReset() {
-  const contractFormValue: any = contractForm.value;
+  const contractFormValue: any = contractForm.value
   if (contractFormValue) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unnecessary-type-assertion
-    contractFormValue!.resetValidation();
+    contractFormValue!.resetValidation()
   }
-  contractType.value = '';
-  consumer.value = '';
-  customer.value = '';
-  description.value = '';
-  // duration.value = ''
-  files.value = null;
-  dateNoLimit.value = true;
+  contractType.value = ''
+  consumer.value = ''
+  customer.value = ''
+  description.value = ''
+  duration.value = {from: currentDate, to: currentDate}
+  files.value = null
+  dateNoLimit.value = false
 }
 
 function onSelectDate(value: string | { from: string, to: string }) {
@@ -156,8 +158,8 @@ function onSelectDate(value: string | { from: string, to: string }) {
       duration.value = {
         from: value,
         to: value,
-      };
-      break;
+      }
+      break
     }
     case 'object': {
       duration.value = {
@@ -165,12 +167,17 @@ function onSelectDate(value: string | { from: string, to: string }) {
         from: value.from,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
         to: value.to,
-      };
-      break;
+      }
+      break
     }
     default:
-      break;
+      break
   }
+}
+
+function isDateNotOk(value: any) {
+  // eslint-disable-next-line
+  return Number.isNaN(Date.parse(value))
 }
 
 function main() {
@@ -180,13 +187,12 @@ function main() {
     const startDate = new Date(duration.value.from)
     const endDate = new Date(dateNoLimit.value ? 9999999999999 : duration.value.to)
 
-    // eslint-disable-next-line
-    if (Number.isNaN(Date.parse(startDate as any)) || Number.isNaN(Date.parse(endDate as any))) {
+    if (isDateNotOk(startDate) || isDateNotOk(endDate)) {
       $q.notify({
         type: 'negative',
         message: 'Неверный тип даты'
       })
-      return;
+      return
     }
 
     const images: Array<string | any> = await readFilesPromise(files.value ?? [])

@@ -1,5 +1,5 @@
 <template>
-  <q-page class="row items-stretch justify-center">
+  <q-page class="row justify-center full-height">
     <q-inner-loading :showing="loadingVisible">
       <q-spinner-hourglass
         color="primary"
@@ -8,8 +8,7 @@
     </q-inner-loading>
     <template v-if="!loadingVisible">
       <q-form
-        v-if="paginationCount >= 1"
-        class="col-10 q-pa-md q-gutter-sm"
+        class="col-10 q-pa-md q-gutter-sm self-start"
         @submit="onSearchText"
       >
         <q-input
@@ -40,7 +39,7 @@
               <p class="text-h6 text-uppercase text-weight-bold no-margin">{{ item.instrument.name }}</p>
               <p class="text-caption text-grey" v-if="item.instrument.description">{{ item.instrument.description }}</p>
             </div>
-            <q-separator/>
+            <q-separator v-if="item.object.length"/>
             <q-carousel
                 v-if="item.object.length"
                 v-model="item._currentSlide"
@@ -49,7 +48,7 @@
                 control-color="primary"
                 animated
                 swipeable
-                navigation
+                :navigation="item.object.length > 1"
                 infinite
               >
                 <q-carousel-slide
@@ -61,7 +60,9 @@
                   <q-scroll-area class="fit">
                     <q-img
                       class="col"
-                      :fit="'contain'"
+                      fit="contain"
+                      :ratio="1"
+                      style="max-height: 400px;"
                       :src="object.contentUrl"
                       loading="lazy"
                       decoding="async"
@@ -69,7 +70,7 @@
                     />
                   </q-scroll-area>
                 </q-carousel-slide>
-                <template v-slot:control>
+                <template #control>
                   <q-carousel-control
                     position="top-right"
                     :offset="[18, 18]"
@@ -82,6 +83,7 @@
                   </q-carousel-control>
                   <q-carousel-control
                     position="top-left"
+                    v-if="nativeShareIsAvailable"
                     :offset="[18, 18]"
                   >
                     <q-btn
@@ -91,7 +93,7 @@
                     />
                   </q-carousel-control>
                 </template>
-              </q-carousel>
+            </q-carousel>
             <q-separator/>
             <q-card-section>
               <p class="text-overline text-orange-9 no-margin">
@@ -111,7 +113,7 @@
         </template>
       </q-virtual-scroll>
       <template v-if="paginationCount >= 1">
-        <div class="col-12 q-pa-lg flex flex-center">
+        <div class="col-12 q-pa-lg flex flex-center self-end">
           <q-pagination
             v-model="currentPage"
             :max="paginationCount"
@@ -156,19 +158,20 @@ body {
   border-radius: 50%;
   padding: 1em;
 }
-`;
+`
 const paginationCount = ref(0)
 const contracts = ref([])
 const searchText = ref('')
 const limit = ref(5)
 const currentPage = ref(1)
 const loadingVisible = ref(false)
+const nativeShareIsAvailable = ref(!!navigator.share)
 
 function showFullImage(object: any) {
   // eslint-disable-next-line
   const image = object.object[object._currentSlide - 1]
   const styleSheet = document.createElement('style')
-  styleSheet.innerHTML = styleRules;
+  styleSheet.innerHTML = styleRules
   const newWin = window.open('about:blank', '_blank')
   /* eslint-disable @typescript-eslint/restrict-template-expressions,@typescript-eslint/unbound-method,@typescript-eslint/restrict-template-expressions,@typescript-eslint/no-unsafe-member-access */
   newWin!.document.write(`
@@ -176,7 +179,7 @@ function showFullImage(object: any) {
          <img src="${closeIconBase64}" class="icon">
      </a>
      <img width="100%" src="${image.contentUrl}">
-   `);
+   `)
   newWin!.document.head.appendChild(styleSheet)
   /* eslint-enable */
 }
@@ -184,9 +187,9 @@ function showFullImage(object: any) {
 async function shareFullImage(object: any) {
   /* eslint-disable */
   const image = object.object[object._currentSlide - 1]
-  const mimeType = image.contentUrl.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
-  const extension = image.contentUrl.match(/[^:/]\w+(?=;|,)/)[0];
-  const fileName = object.instrument.name + '.' + extension;
+  const mimeType = image.contentUrl.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0]
+  const extension = image.contentUrl.match(/[^:/]\w+(?=;|,)/)[0]
+  const fileName = object.instrument.name + '.' + extension
   const res: any = await fetch(image.contentUrl)
   const blob: Blob = await res.blob()
   const file = new File([new Blob([blob])], fileName, { type: mimeType })
@@ -298,6 +301,7 @@ export default defineComponent({
       paginationCount,
       showFullImage,
       shareFullImage,
+      nativeShareIsAvailable,
       ...routerFunc(),
     }
   }

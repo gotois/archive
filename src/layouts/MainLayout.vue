@@ -50,16 +50,18 @@
                 :label="$t('settings.native.import')"
                 filled
               />
-              <q-btn :label="$t('settings.native.submit')"
-                     :disable="!file"
-                     type="submit"
-                     color="primary"
-                     class="full-width"/>
+              <q-btn
+                :label="$t('settings.native.submit')"
+                :disable="!file"
+                type="submit"
+                color="primary"
+                class="full-width"/>
             </q-form>
-            <q-btn color="secondary"
-                   :label="$t('settings.native.export')"
-                   class="full-width q-mt-md"
-                   @click="onExportDB"/>
+            <q-btn
+              color="secondary"
+              :label="$t('settings.native.export')"
+              class="full-width q-mt-md"
+              @click="onExportDB"/>
           </div>
         </q-expansion-item>
         <q-expansion-item
@@ -69,10 +71,11 @@
           :label="$t('settings.clean.title')"
         >
           <div class="col q-pa-md">
-            <q-btn :label="$t('settings.clean.submit')"
-                   color="red"
-                   class="full-width q-mt-md"
-                   @click="confirm = true"
+            <q-btn
+              :label="$t('settings.clean.submit')"
+              color="red"
+              class="full-width q-mt-md"
+              @click="confirm = true"
             />
           </div>
         </q-expansion-item>
@@ -86,10 +89,10 @@
     </q-drawer>
     <q-page-container>
       <router-view/>
-       <q-dialog v-model="confirm" persistent transition-show="scale" transition-hide="scale">
-        <q-card class="bg-teal text-white" style="width: 300px">
-          <q-card-section class="">
-             <div class="text-h6">{{ $t('settings.clean.submit') }}</div>
+      <q-dialog v-model="confirm" persistent transition-show="scale" transition-hide="scale">
+        <q-card class="bg-red text-white" style="width: 300px">
+          <q-card-section>
+            <div class="text-h6">{{ $t('settings.clean.submit') }}</div>
           </q-card-section>
           <q-card-section class="q-pt-none">
             {{ $t('settings.clean.label') }}
@@ -107,11 +110,11 @@
 <script lang="ts">
 import {defineComponent, ref} from 'vue'
 import {exportDB, importInto} from 'dexie-export-import'
-import {db} from 'components/ContractDatabase'
+import {BulkError} from 'dexie'
 import {saveAs} from 'file-saver'
 import {useQuasar} from 'quasar'
+import {db} from 'components/ContractDatabase'
 import {version} from '../../package.json'
-import {BulkError} from 'dexie'
 
 const EXPORT_NAME = 'contract-export.json'
 
@@ -178,7 +181,6 @@ function main() {
     file,
     confirm,
     version,
-
     onToggleLeftDrawer,
     onClearDatabase,
     onImportDB,
