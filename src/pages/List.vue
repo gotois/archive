@@ -12,9 +12,10 @@
         class="col-10 q-pa-md q-gutter-sm"
         @submit="onSearchText"
       >
-        <q-input v-model="searchText"
-                 :label="$t('archive.search')"
-                 input-class="text-left">
+        <q-input
+          v-model="searchText"
+          :label="$t('archive.search')"
+          input-class="text-left">
           <template #append>
             <q-icon
               class="cursor-pointer"
@@ -79,7 +80,7 @@
                       @click="showFullImage(item)"
                     />
                   </q-carousel-control>
-                   <q-carousel-control
+                  <q-carousel-control
                     position="top-left"
                     :offset="[18, 18]"
                   >
@@ -195,7 +196,7 @@ async function shareFullImage(object: any) {
   }
   /* eslint-enable */
   try {
-   await navigator.share(shareData)
+    await navigator.share(shareData)
   } catch (error) {
     console.log('Sharing failed', error)
   }

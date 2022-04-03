@@ -15,16 +15,3 @@ export function readFilesPromise(files: Array<File>) {
   }
   return Promise.all(promises)
 }
-
-export function readBlobPromise(blob: Blob) {
-  return new Promise(((resolve, reject) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(blob)
-    reader.onerror = function (error) {
-      reject(error)
-    }
-    reader.onloadend = function () {
-      resolve(reader.result)
-    }
-  }))
-}

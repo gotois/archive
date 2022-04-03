@@ -10,31 +10,34 @@
     @reset="onReset"
     greedy
   >
-    <q-input v-model="contractType" outlined :label="$t('contract.type')"
-             lazy-rules
-             name="contractType"
-             autocomplete="on"
-             :rules="[ val => val && val.length > 0 || $t('contract.hint')]"
+    <q-input
+      v-model="contractType" outlined :label="$t('contract.type')"
+      lazy-rules
+      name="contractType"
+      autocomplete="on"
+      :rules="[ val => val && val.length > 0 || $t('contract.hint')]"
     >
       <template #prepend>
         <q-icon name="assignment" />
       </template>
     </q-input>
-    <q-input v-model="consumer" outlined :label="$t('consumer.type')"
-             lazy-rules
-             name="consumer"
-             autocomplete="on"
-             :rules="[ val => val && val.length > 0 || $t('consumer.hint')]"
+    <q-input
+      v-model="consumer" outlined :label="$t('consumer.type')"
+      lazy-rules
+      name="consumer"
+      autocomplete="on"
+      :rules="[ val => val && val.length > 0 || $t('consumer.hint')]"
     >
       <template #prepend>
         <q-icon name="face" />
       </template>
     </q-input>
-    <q-input v-model="customer" outlined :label="$t('customer.type')"
-             lazy-rules
-             name="customer"
-             autocomplete="on"
-             :rules="[ val => val && val.length > 0 || $t('customer.hint')]"
+    <q-input
+      v-model="customer" outlined :label="$t('customer.type')"
+      lazy-rules
+      name="customer"
+      autocomplete="on"
+      :rules="[ val => val && val.length > 0 || $t('customer.hint')]"
     >
       <template #prepend>
         <q-icon name="assignment_ind" />
@@ -53,12 +56,13 @@
       </template>
     </q-input>
     <div class="row justify-center items-center">
-      <q-input v-model="duration.from"
-               class="col no-padding"
-               outlined
-               :label="$t('duration.from')"
-               mask="date"
-               :rules="['date']">
+      <q-input
+        v-model="duration.from"
+        class="col no-padding"
+        outlined
+        :label="$t('duration.from')"
+        mask="date"
+        :rules="['date']">
       </q-input>
       <div>
         <q-icon size="md" name="event" class="cursor-pointer">
@@ -80,13 +84,14 @@
           </q-popup-proxy>
         </q-icon>
       </div>
-      <q-input v-if="!dateNoLimit"
-               class="col no-padding"
-               v-model="duration.to"
-               outlined
-               :label="$t('duration.to')"
-               mask="date"
-               :rules="['date']"
+      <q-input
+        v-if="!dateNoLimit"
+        class="col no-padding"
+        v-model="duration.to"
+        outlined
+        :label="$t('duration.to')"
+        mask="date"
+        :rules="['date']"
       ></q-input>
       <q-toggle v-model="dateNoLimit"
                 :label="$t('duration.infinity')"/>
@@ -120,55 +125,56 @@ import {db} from 'components/ContractDatabase'
 import {ContractTable} from './models'
 import {readFilesPromise} from '../services/fileHelper'
 
+const currentDate = new Date().toJSON().substring(0, 10).replace(/-/g, '/')
+const contractType = ref('')
+const consumer = ref('')
+const customer = ref('')
+const description = ref('')
+const duration = ref({from: currentDate, to: currentDate})
+const files = ref(null)
+const contractForm = ref(null)
+const dateNoLimit = ref(false)
+
+function onReset() {
+  const contractFormValue: any = contractForm.value;
+  if (contractFormValue) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unnecessary-type-assertion
+    contractFormValue!.resetValidation();
+  }
+  contractType.value = '';
+  consumer.value = '';
+  customer.value = '';
+  description.value = '';
+  // duration.value = ''
+  files.value = null;
+  dateNoLimit.value = true;
+}
+
+function onSelectDate(value: string | { from: string, to: string }) {
+  switch (typeof value) {
+    case 'string': {
+      duration.value = {
+        from: value,
+        to: value,
+      };
+      break;
+    }
+    case 'object': {
+      duration.value = {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+        from: value.from,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+        to: value.to,
+      };
+      break;
+    }
+    default:
+      break;
+  }
+}
+
 function main() {
   const $q = useQuasar()
-  const currentDate = new Date().toJSON().substring(0, 10).replace(/-/g, '/')
-  const contractType = ref('')
-  const consumer = ref('')
-  const customer = ref('')
-  const description = ref('')
-  const duration = ref({from: currentDate, to: currentDate})
-  const files = ref(null)
-  const contractForm = ref(null)
-  const dateNoLimit = ref(false)
-
-  function onSelectDate(value: string | { from: string, to: string }) {
-    switch (typeof value) {
-      case 'string': {
-        duration.value = {
-          from: value,
-          to: value
-        }
-        break
-      }
-      case 'object': {
-        duration.value = {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
-          from: value.from,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
-          to: value.to
-        }
-        break
-      }
-      default:
-        break
-    }
-  }
-
-  function onReset() {
-    const contractFormValue: any = contractForm.value
-    if (contractFormValue) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unnecessary-type-assertion
-      contractFormValue!.resetValidation()
-    }
-    contractType.value = ''
-    consumer.value = ''
-    customer.value = ''
-    description.value = ''
-    // duration.value = ''
-    files.value = null
-    dateNoLimit.value = true
-  }
 
   async function onSubmit() {
     const startDate = new Date(duration.value.from)

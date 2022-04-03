@@ -64,27 +64,6 @@
         </q-expansion-item>
         <q-expansion-item
           group="backupgroup"
-          v-if="dropboxAvailable"
-          v-model="dropboxOpen"
-          icon="people"
-          class="full-width"
-          :label="$t('settings.dropbox.title')"
-        >
-          <div class="col q-pa-md">
-            <q-btn color="primary"
-                   :label="$t('settings.dropbox.import')"
-                   class="full-width"
-                   @click="onDropboxImport"/>
-            <q-btn color="secondary"
-                   :label="$t('settings.dropbox.export')"
-                   target="_blank"
-                   href="#"
-                   class="full-width q-mt-md"
-                   @click="onDropboxExport"/>
-          </div>
-        </q-expansion-item>
-        <q-expansion-item
-          group="backupgroup"
           class="full-width"
           icon='priority_high'
           :label="$t('settings.clean.title')"
@@ -131,38 +110,27 @@ import {exportDB, importInto} from 'dexie-export-import'
 import {db} from 'components/ContractDatabase'
 import {saveAs} from 'file-saver'
 import {useQuasar} from 'quasar'
-import {readBlobPromise} from '../services/fileHelper'
 import {version} from '../../package.json'
 import {BulkError} from 'dexie'
 
-declare global {
-  interface Window {
-    Dropbox: {
-      choose(options: any): void;
-      save(options: any): void;
-      isBrowserSupported(): boolean;
-    };
-  }
-}
-
 const EXPORT_NAME = 'contract-export.json'
 
+const file = ref(null)
+const leftDrawerOpen = ref(false)
+const settingsOpen = ref(false)
+const confirm = ref(false)
+
+function onToggleLeftDrawer(): void {
+  leftDrawerOpen.value = !leftDrawerOpen.value
+}
+
 function main() {
-  const file = ref(null)
-  const leftDrawerOpen = ref(false)
-  const settingsOpen = ref(false)
-  const dropboxOpen = ref(false)
-  const dropboxAvailable = ref(false)
   const $q = useQuasar()
 
   function progressCallback({totalRows, completedRows}: any): any {
     if (completedRows === totalRows) {
       $q.loading.hide()
     }
-  }
-
-  function onToggleLeftDrawer(): void {
-    leftDrawerOpen.value = !leftDrawerOpen.value
   }
 
   async function onImportDB() {
@@ -204,86 +172,13 @@ function main() {
     saveAs(blob, EXPORT_NAME)
   }
 
-  function onDropboxImport() {
-    $q.loading.show()
-    const options = {
-      success(files: Array<{ link: string, name: string }>) {
-        saveAs(files[0].link, files[0].name)
-        $q.loading.hide()
-        $q.notify({
-          message: 'Сохранено',
-          type: 'positive'
-        })
-      },
-      linkType: 'direct',
-      multiselect: false,
-      extensions: ['.json',],
-      folderselect: false,
-    }
-    window.Dropbox.choose(options)
-  }
-
-  async function prepareDropboxExport() {
-    const blob = await exportDB(db, {prettyJson: false, progressCallback})
-    const blobUrl = await readBlobPromise(blob)
-    const options = {
-      files: [
-        {
-          'url': blobUrl, 'filename': EXPORT_NAME
-        },
-      ],
-      success() {
-        $q.loading.hide()
-        $q.notify({
-          message: 'Сохранено',
-          type: 'positive'
-        })
-      },
-      cancel() {
-        $q.loading.hide()
-        $q.notify({
-          message: 'Отменено',
-          type: 'positive'
-        })
-      },
-      error(errorMessage: Error) {
-        $q.loading.hide()
-        $q.notify({
-          message: errorMessage.message,
-          type: 'negative'
-        })
-      }
-    }
-    return options;
-  }
-
-  function onDropboxExport() {
-    void prepareDropboxExport().then((options) => {
-      $q.loading.show()
-      window.Dropbox.save(options)
-    }).catch((errorMessage: Error) => {
-      $q.loading.hide()
-      $q.notify({
-        message: errorMessage.message,
-        type: 'negative'
-      })
-    })
-  }
-
-  dropboxAvailable.value = window.Dropbox.isBrowserSupported()
-
   return {
     leftDrawerOpen,
     settingsOpen,
-    dropboxOpen,
     file,
-    dropboxAvailable,
+    confirm,
     version,
 
-    confirm: ref(false),
-
-    onDropboxImport,
-    onDropboxExport,
     onToggleLeftDrawer,
     onClearDatabase,
     onImportDB,
@@ -293,8 +188,6 @@ function main() {
 
 export default defineComponent({
   name: 'MainLayout',
-
-  components: {},
 
   setup() {
     return {
