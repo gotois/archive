@@ -146,17 +146,23 @@ import {ContractTable} from './models'
 import {readFilesPromise} from '../services/fileHelper'
 import {contractTypes} from '../services/contractTypes'
 
-const currentDate = new Date().toJSON().substring(0, 10).replace(/-/g, '/')
+const now = new Date()
+const currentDate = formatDate(now)
+const afterYearDate = formatDate(new Date(now.setFullYear(now.getFullYear() + 1)))
 
 const contractType = ref('')
 const consumer = ref('')
 const customer = ref('')
 const description = ref('')
-const duration = ref({from: currentDate, to: currentDate})
+const duration = ref({from: currentDate, to: afterYearDate})
 const files = ref(null)
 const contractForm = ref(null)
 const dateNoLimit = ref(false)
 const contractOptions = ref(contractTypes)
+
+function formatDate(date: Date): string {
+  return date.toJSON().substring(0, 10).replace(/-/g, '/')
+}
 
 function filterOptions(val: string, update: any) {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
@@ -176,7 +182,7 @@ function onReset() {
   consumer.value = ''
   customer.value = ''
   description.value = ''
-  duration.value = {from: currentDate, to: currentDate}
+  duration.value = {from: currentDate, to: afterYearDate}
   files.value = null
   dateNoLimit.value = false
 }
