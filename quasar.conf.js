@@ -40,7 +40,7 @@ module.exports = configure(function (ctx) {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
-      vueRouterMode: 'hash', // available values: 'hash', 'history'
+      vueRouterMode: 'history', // available values: 'hash', 'history'
 
       // transpile: false,
 
@@ -79,7 +79,7 @@ module.exports = configure(function (ctx) {
       },
 
       // iconSet: 'material-icons', // Quasar icon set
-      // lang: 'en-US', // Quasar language pack
+      lang: 'ru', // Quasar language pack
 
       // For special cases outside of where the auto-import strategy can have an impact
       // (like functional components as one of the examples),
@@ -182,7 +182,7 @@ module.exports = configure(function (ctx) {
         appleTouchIcon167: 'icons/apple-icon-167x167.png',
         appleSafariPinnedTab: 'icons/safari-pinned-tab.svg',
         msapplicationTileImage: 'icons/ms-icon-144x144.png',
-        msapplicationTileColor: '#000000'
+        msapplicationTileColor: '#027be3'
       },
     },
   }
