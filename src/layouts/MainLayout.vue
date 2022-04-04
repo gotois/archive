@@ -68,7 +68,7 @@
         <q-expansion-item
           group="backupgroup"
           class="full-width"
-          icon='warning'
+          icon="warning"
           :label="$t('settings.clean.title')"
         >
           <div class="col q-pa-md">

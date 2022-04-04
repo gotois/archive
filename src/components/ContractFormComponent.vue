@@ -1,43 +1,59 @@
 <template>
   <q-form
+    @submit="onSubmit"
+    @reset="onReset"
     ref="contractForm"
     class="q-gutter-md"
     autocorrect="off"
     autocapitalize="off"
     autocomplete="off"
     spellcheck="true"
-    @submit="onSubmit"
-    @reset="onReset"
     greedy
   >
-    <q-input
-      v-model="contractType" outlined :label="$t('contract.type')"
-      lazy-rules
+    <q-select
+      v-model="contractType"
+      @filter="filterOptions"
+      :options="contractOptions"
+      :label="$t('contract.type')"
+      :hint="$t('contract.hint')"
+      :rules="[ val => val && val.length > 0 || $t('contract.rules')]"
+      new-value-mode="add-unique"
+      input-debounce="0"
       name="contractType"
       autocomplete="on"
-      :rules="[ val => val && val.length > 0 || $t('contract.hint')]"
+      use-input
+      lazy-rules
+      hide-selected
+      fill-input
+      outlined
     >
       <template #prepend>
         <q-icon name="assignment" />
       </template>
-    </q-input>
+    </q-select>
     <q-input
-      v-model="consumer" outlined :label="$t('consumer.type')"
-      lazy-rules
+      v-model="consumer"
+      :label="$t('consumer.type')"
+      :rules="[ val => val && val.length > 0 || $t('consumer.rules')]"
+      :hint="$t('consumer.hint')"
       name="consumer"
       autocomplete="on"
-      :rules="[ val => val && val.length > 0 || $t('consumer.hint')]"
+      lazy-rules
+      outlined
     >
       <template #prepend>
         <q-icon name="face" />
       </template>
     </q-input>
     <q-input
-      v-model="customer" outlined :label="$t('customer.type')"
-      lazy-rules
-      name="customer"
+      v-model="customer"
+      :label="$t('customer.type')"
+      :hint="$t('customer.hint')"
+      :rules="[ val => val && val.length > 0 || $t('customer.rules')]"
       autocomplete="on"
-      :rules="[ val => val && val.length > 0 || $t('customer.hint')]"
+      name="customer"
+      outlined
+      lazy-rules
     >
       <template #prepend>
         <q-icon name="assignment_ind" />
@@ -45,9 +61,9 @@
     </q-input>
     <q-input
       v-model="description"
+      :label="$t('description.type')"
       type="textarea"
       class="no-padding"
-      :label="$t('description.type')"
       outlined
       autogrow
     >
@@ -58,11 +74,11 @@
     <div class="row justify-center items-center">
       <q-input
         v-model="duration.from"
-        class="col no-padding"
-        outlined
+        :rules="['date']"
         :label="$t('duration.from')"
+        class="col no-padding"
         mask="date"
-        :rules="['date']">
+        outlined>
       </q-input>
       <div>
         <q-icon size="md" name="event" class="cursor-pointer">
@@ -86,12 +102,12 @@
       </div>
       <q-input
         v-if="!dateNoLimit"
-        class="col no-padding"
         v-model="duration.to"
-        outlined
         :label="$t('duration.to')"
-        mask="date"
         :rules="['date']"
+        class="col no-padding"
+        mask="date"
+        outlined
       ></q-input>
       <q-toggle
         v-model="dateNoLimit"
@@ -99,11 +115,13 @@
     </div>
     <q-file
       v-model="files"
+      :label="$t('files.type')"
+      accept="image/*, .pdf"
+      hint="PDF, PNG, JPG, etc"
       outlined
       multiple
       counter
-      accept="image/*, .pdf"
-      :label="$t('files.type')">
+    >
       <template #prepend>
         <q-icon name="image" />
       </template>
@@ -126,8 +144,10 @@ import {
 import {db} from 'components/ContractDatabase'
 import {ContractTable} from './models'
 import {readFilesPromise} from '../services/fileHelper'
+import {contractTypes} from '../services/contractTypes'
 
 const currentDate = new Date().toJSON().substring(0, 10).replace(/-/g, '/')
+
 const contractType = ref('')
 const consumer = ref('')
 const customer = ref('')
@@ -136,6 +156,15 @@ const duration = ref({from: currentDate, to: currentDate})
 const files = ref(null)
 const contractForm = ref(null)
 const dateNoLimit = ref(false)
+const contractOptions = ref(contractTypes)
+
+function filterOptions(val: string, update: any) {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  update(() => {
+    const needle = val.toLowerCase()
+    contractOptions.value = contractTypes.filter(v => v.toLowerCase().indexOf(needle) > -1)
+  })
+}
 
 function onReset() {
   const contractFormValue: any = contractForm.value
@@ -236,6 +265,8 @@ function main() {
     files,
     dateNoLimit,
     contractForm,
+    contractOptions,
+    filterOptions,
     onSubmit,
     onReset,
     onSelectDate,
