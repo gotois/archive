@@ -187,7 +187,10 @@ function onReset() {
   dateNoLimit.value = false
 }
 
-function onSelectDate(value: string | { from: string, to: string }) {
+function onSelectDate(value: string | { from: string, to: string } | null) {
+  if (value === null) {
+    return
+  }
   switch (typeof value) {
     case 'string': {
       duration.value = {
