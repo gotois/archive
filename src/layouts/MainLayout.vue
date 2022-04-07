@@ -32,8 +32,8 @@
           </q-badge>
         </div>
         <q-expansion-item
-          group="backupgroup"
           v-model="settingsOpen"
+          group="backupgroup"
           icon="import_export"
           class="full-width"
           :label="$t('settings.native.title')"
@@ -83,7 +83,7 @@
         </q-expansion-item>
       </q-list>
       <div class="row q-pa-md q-gutter-sm self-end">
-        <q-chip icon="link" class="cursor-pointer text-center" clickable @click="onOpenFeedback" :label="$t('navigation.feedback')"></q-chip>
+        <q-chip icon="link" class="cursor-pointer text-center" clickable :label="$t('navigation.feedback')" @click="onOpenFeedback"></q-chip>
       </div>
     </q-drawer>
     <q-page-container>
@@ -97,7 +97,7 @@
             {{ $t('settings.clean.label') }}
           </q-card-section>
           <q-card-actions align="right" class="bg-white text-teal">
-            <q-btn flat :label="$t('settings.clean.cancel')" color="primary" v-close-popup />
+            <q-btn v-close-popup flat :label="$t('settings.clean.cancel')" color="primary" />
             <q-btn flat :label="$t('settings.clean.ok')" color="red" @click="onClearDatabase" />
           </q-card-actions>
         </q-card>
@@ -111,7 +111,7 @@ import {defineComponent, ref} from 'vue'
 import {exportDB, importInto} from 'dexie-export-import'
 import {BulkError} from 'dexie'
 import {saveAs} from 'file-saver'
-import {useQuasar} from 'quasar'
+import {QVueGlobals, useQuasar} from 'quasar'
 import {db} from 'components/ContractDatabase'
 import {version} from '../../package.json'
 
@@ -122,6 +122,8 @@ const leftDrawerOpen = ref(false)
 const settingsOpen = ref(false)
 const confirm = ref(false)
 
+let $q: QVueGlobals
+
 function onToggleLeftDrawer(): void {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
@@ -130,53 +132,54 @@ function onOpenFeedback() {
   location.href = 'https://baskovsky.ru/about/feedback/'
 }
 
+function progressCallback({ totalRows, completedRows }: any): any {
+  if (completedRows === totalRows) {
+    $q.loading.hide()
+  }
+}
+
+async function onImportDB() {
+  $q.loading.show()
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    await importInto(db, (file.value as any), {})
+    location.reload()
+  } catch (error: BulkError | any) {
+    console.error(error)
+    $q.loading.hide()
+    $q.notify({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+      message: error.message,
+      type: 'negative',
+    })
+  }
+}
+
+async function onClearDatabase() {
+  try {
+    $q.loading.show()
+    await db.destroy()
+    location.reload()
+  } catch (error: any) {
+    console.error(error)
+    $q.loading.hide()
+    $q.notify({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+      message: error.message,
+      type: 'negative',
+    })
+  }
+}
+
+async function onExportDB() {
+  $q.loading.show()
+  const blob = await exportDB(db, { prettyJson: false, progressCallback })
+
+  return saveAs(blob, EXPORT_NAME)
+}
+
 function main() {
-  const $q = useQuasar()
-
-  function progressCallback({totalRows, completedRows}: any): any {
-    if (completedRows === totalRows) {
-      $q.loading.hide()
-    }
-  }
-
-  async function onImportDB() {
-    $q.loading.show()
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      await importInto(db, (file.value as any), {})
-      location.reload()
-    } catch (error: BulkError|any) {
-      console.error(error)
-      $q.loading.hide()
-      $q.notify({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
-        message: error.message,
-        type: 'negative'
-      })
-    }
-  }
-
-  async function onClearDatabase() {
-    try {
-      $q.loading.show()
-      await db.destroy()
-      location.reload()
-    } catch (error: any) {
-      console.error(error)
-      $q.loading.hide()
-      $q.notify({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
-        message: error.message,
-        type: 'negative'
-      })
-    }
-  }
-
-  async function onExportDB() {
-    $q.loading.show()
-    const blob = await exportDB(db, {prettyJson: false, progressCallback})
-    saveAs(blob, EXPORT_NAME)
-  }
+  $q = useQuasar()
 
   return {
     leftDrawerOpen,

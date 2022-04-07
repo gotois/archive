@@ -1,7 +1,5 @@
 <template>
   <q-form
-    @submit="onSubmit"
-    @reset="onReset"
     ref="contractForm"
     class="q-gutter-md"
     autocorrect="off"
@@ -9,10 +7,11 @@
     autocomplete="off"
     spellcheck="true"
     greedy
+    @submit="onSubmit"
+    @reset="onReset"
   >
     <q-select
       v-model="contractType"
-      @filter="filterOptions"
       :options="contractOptions"
       :label="$t('contract.type')"
       :hint="$t('contract.hint')"
@@ -23,6 +22,7 @@
       autocomplete="on"
       use-input
       lazy-rules
+      @filter="filterOptions"
       hide-selected
       fill-input
       outlined
@@ -84,14 +84,14 @@
         <q-icon size="md" name="event" class="cursor-pointer">
           <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
             <template v-if="dateNoLimit">
-              <q-date v-model="duration.from" first-day-of-week="1" @update:model-value="onSelectDate">
+              <q-date v-model="duration.from" default-view="Months" first-day-of-week="1" @update:model-value="onSelectDate">
                 <div class="row items-center justify-end">
                   <q-btn v-close-popup :label="$t('duration.close')" color="primary" flat />
                 </div>
               </q-date>
             </template>
             <template v-else>
-              <q-date v-model="duration" range first-day-of-week="1" @update:model-value="onSelectDate">
+              <q-date v-model="duration" default-view="Months" range first-day-of-week="1" @update:model-value="onSelectDate">
                 <div class="row items-center justify-end">
                   <q-btn v-close-popup :label="$t('duration.close')" color="primary" flat />
                 </div>
@@ -136,7 +136,7 @@
 </template>
 
 <script lang="ts">
-import {useQuasar} from 'quasar'
+import {QVueGlobals, useQuasar} from 'quasar'
 import {
   defineComponent,
   ref,
@@ -149,6 +149,7 @@ import {contractTypes} from '../services/contractTypes'
 const now = new Date()
 const currentDate = formatDate(now)
 const afterYearDate = formatDate(new Date(now.setFullYear(now.getFullYear() + 1)))
+let $q: QVueGlobals
 
 const contractType = ref('')
 const consumer = ref('')
@@ -189,6 +190,11 @@ function onReset() {
 
 function onSelectDate(value: string | { from: string, to: string } | null) {
   if (value === null) {
+    $q.notify({
+      type: 'warning',
+      message: 'Начало даты не может быть позже сегодняшней',
+    })
+    duration.value = {from: currentDate, to: afterYearDate}
     return
   }
   switch (typeof value) {
@@ -209,6 +215,10 @@ function onSelectDate(value: string | { from: string, to: string } | null) {
       break
     }
     default:
+      $q.notify({
+        type: 'warning',
+        message: 'Неизвестный тип даты',
+      })
       break
   }
 }
@@ -218,52 +228,52 @@ function isDateNotOk(value: any) {
   return Number.isNaN(Date.parse(value))
 }
 
-function main() {
-  const $q = useQuasar()
+async function onSubmit() {
+  const startDate = new Date(duration.value.from)
+  const endDate = new Date(dateNoLimit.value ? 9999999999999 : duration.value.to)
 
-  async function onSubmit() {
-    const startDate = new Date(duration.value.from)
-    const endDate = new Date(dateNoLimit.value ? 9999999999999 : duration.value.to)
-
-    if (isDateNotOk(startDate) || isDateNotOk(endDate)) {
-      $q.notify({
-        type: 'negative',
-        message: 'Неверный тип даты'
-      })
-      return
-    }
-
-    const images: Array<string | any> = await readFilesPromise(files.value ?? [])
-    db.transaction('rw', db.contracts, async () => {
-      const newContract: ContractTable = {
-        'agent_name': consumer.value,
-        'participant_name': customer.value,
-        'instrument_name': contractType.value,
-        'instrument_description': description.value,
-        'startTime':startDate ,
-        'endTime': endDate,
-        'images': images
-      }
-      await db.contracts.add(newContract)
-      $q.notify({
-        message: 'Запись добавлена',
-        type: 'positive',
-        actions: [
-          {
-            label: 'Закрыть',
-            color: 'white',
-          }
-        ]
-      })
-      onReset()
-    }).catch((error: Error) => {
-      console.error(error)
-      $q.notify({
-        type: 'negative',
-        message: error.message
-      })
+  if (isDateNotOk(startDate) || isDateNotOk(endDate)) {
+    $q.notify({
+      type: 'negative',
+      message: 'Неверный тип даты',
     })
+    return
   }
+
+  const images: Array<string | any> = await readFilesPromise(files.value ?? [])
+  db.transaction('rw', db.contracts, async () => {
+    const newContract: ContractTable = {
+      'agent_name': consumer.value,
+      'participant_name': customer.value,
+      'instrument_name': contractType.value,
+      'instrument_description': description.value,
+      'startTime': startDate,
+      'endTime': endDate,
+      'images': images,
+    }
+    await db.contracts.add(newContract)
+    $q.notify({
+      message: 'Запись добавлена',
+      type: 'positive',
+      actions: [
+        {
+          label: 'Закрыть',
+          color: 'white',
+        },
+      ],
+    })
+    onReset()
+  }).catch((error: Error) => {
+    console.error(error)
+    $q.notify({
+      type: 'negative',
+      message: error.message,
+    })
+  })
+}
+
+function main() {
+  $q = useQuasar()
 
   return {
     contractType,

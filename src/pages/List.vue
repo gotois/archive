@@ -37,7 +37,7 @@
             bordered>
             <div class="row justify-between q-pa-md">
               <p class="text-h6 text-uppercase text-weight-bold no-margin">{{ item.instrument.name }}</p>
-              <p class="text-caption text-grey" v-if="item.instrument.description">{{ item.instrument.description }}</p>
+              <p v-if="item.instrument.description" class="text-caption text-grey">{{ item.instrument.description }}</p>
             </div>
             <q-separator v-if="item.object.length"/>
             <q-carousel
@@ -52,9 +52,9 @@
                 infinite
               >
                 <q-carousel-slide
-                  class="no-margin no-padding"
                   v-for="(object, objectIndex) in item.object"
                   :key="objectIndex"
+                  class="no-margin no-padding"
                   :name="objectIndex + 1"
                 >
                   <q-scroll-area class="fit">
@@ -82,8 +82,8 @@
                     />
                   </q-carousel-control>
                   <q-carousel-control
-                    position="top-left"
                     v-if="nativeShareIsAvailable"
+                    position="top-left"
                     :offset="[18, 18]"
                   >
                     <q-btn
