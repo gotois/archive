@@ -62,7 +62,7 @@
                       class="col"
                       fit="contain"
                       :ratio="1"
-                      style="max-height: 400px;"
+                      style="max-height: 400px"
                       :src="object.contentUrl"
                       loading="lazy"
                       decoding="async"
@@ -159,7 +159,7 @@ body {
   height: 2.5vh;
   background: white;
   border-radius: 50%;
-  padding: 18px;
+  padding: 24px;
   outline: 0;
   box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 5px 8px rgba(0, 0, 0, 0.14), 0 1px 14px rgba(0, 0, 0, 0.12);
 }

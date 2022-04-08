@@ -65,4 +65,4 @@ export default {
   contractForm: {
     submit: 'Сохранить'
   }
-};
+}
