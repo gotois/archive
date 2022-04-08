@@ -152,11 +152,15 @@ body {
   position: fixed;
   right: 2em;
   top: 2em;
-  width: 3em;
-  height: 3em;
+  min-width: 1.5em;
+  min-height: 1.5em;
+  width: 2.5vh;
+  height: 2.5vh;
   background: white;
   border-radius: 50%;
-  padding: 1em;
+  padding: 0.7em;
+  outline: 0;
+  box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 5px 8px rgba(0, 0, 0, 0.14), 0 1px 14px rgba(0, 0, 0, 0.12);
 }
 `
 const paginationCount = ref(0)
@@ -201,7 +205,7 @@ async function shareFullImage(object: any) {
   try {
     await navigator.share(shareData)
   } catch (error) {
-    console.log('Sharing failed', error)
+    console.warn('Sharing failed', error)
   }
 }
 
@@ -299,9 +303,9 @@ export default defineComponent({
       currentPage,
       loadingVisible,
       paginationCount,
+      nativeShareIsAvailable,
       showFullImage,
       shareFullImage,
-      nativeShareIsAvailable,
       ...routerFunc(),
     }
   }
