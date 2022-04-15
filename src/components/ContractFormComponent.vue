@@ -295,9 +295,7 @@ function main() {
 export default defineComponent({
   name: 'ContractFormComponent',
   setup() {
-    return {
-      ...main()
-    }
+    return main()
   },
 })
 </script>

@@ -134,6 +134,7 @@
 </template>
 
 <script lang="ts">
+import {QVueGlobals, useQuasar} from 'quasar'
 import {useRouter} from 'vue-router'
 import {
   defineComponent,
@@ -164,6 +165,9 @@ body {
   box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 5px 8px rgba(0, 0, 0, 0.14), 0 1px 14px rgba(0, 0, 0, 0.12);
 }
 `
+
+let $q: QVueGlobals
+
 const paginationCount = ref(0)
 const contracts = ref([])
 const searchText = ref('')
@@ -205,7 +209,7 @@ async function shareFullImage(object: any) {
   /* eslint-enable */
   try {
     await navigator.share(shareData)
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Sharing failed', error)
   }
 }
@@ -236,7 +240,6 @@ async function setContracts() {
       const formContracts: any = formatterContracts(data as Contract[])
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
       contracts.value = formContracts
-      console.log(count / limit.value)
       paginationCount.value = Math.ceil(count / limit.value)
     } else {
       paginationCount.value = 0
@@ -258,7 +261,19 @@ function routerFunc() {
   })
 
   void (async (): Promise<void> => {
-    await setContracts()
+    try {
+      await setContracts()
+    } catch (e: any) {
+      console.error(e)
+      $q.notify({
+        type: 'negative',
+        message: 'Связь с базой данных не установлена',
+        timeout: 1000 * 1000,
+        actions: [
+          { label: 'Закрыть', color: 'white', handler: () => { /* ... */ } }
+        ]
+      })
+    }
   })()
 
   return {
@@ -283,6 +298,22 @@ function routerFunc() {
   }
 }
 
+function main() {
+  $q = useQuasar()
+
+  return {
+      contracts,
+      searchText,
+      currentPage,
+      loadingVisible,
+      paginationCount,
+      nativeShareIsAvailable,
+      showFullImage,
+      shareFullImage,
+      ...routerFunc(),
+    }
+}
+
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
   name: 'List',
@@ -298,17 +329,7 @@ export default defineComponent({
   },
 
   setup() {
-    return {
-      contracts,
-      searchText,
-      currentPage,
-      loadingVisible,
-      paginationCount,
-      nativeShareIsAvailable,
-      showFullImage,
-      shareFullImage,
-      ...routerFunc(),
-    }
+    return main()
   }
 })
 </script>

@@ -199,9 +199,7 @@ export default defineComponent({
   name: 'MainLayout',
 
   setup() {
-    return {
-      ...main()
-    }
+    return main()
   }
 })
 </script>
