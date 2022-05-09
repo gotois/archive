@@ -22,10 +22,10 @@
       autocomplete="on"
       use-input
       lazy-rules
-      @filter="filterOptions"
       hide-selected
       fill-input
       outlined
+      @filter="filterOptions"
     >
       <template #prepend>
         <q-icon name="assignment" />
