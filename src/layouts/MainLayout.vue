@@ -45,7 +45,7 @@
             >
               <q-file
                 v-model="file"
-                accept=".json"
+                accept=".json,.zip"
                 :label="$t('settings.native.import')"
                 filled
               />
@@ -114,8 +114,9 @@ import {saveAs} from 'file-saver'
 import {QVueGlobals, useQuasar} from 'quasar'
 import {db} from 'components/ContractDatabase'
 import {version} from '../../package.json'
+import JSZip from 'jszip'
 
-const EXPORT_NAME = 'contract-export.json'
+const EXPORT_NAME = 'contract-export'
 
 const file = ref(null)
 const leftDrawerOpen = ref(false)
@@ -138,11 +139,28 @@ function progressCallback({ totalRows, completedRows }: any): any {
   }
 }
 
+async function getContent(value: File): Promise<Blob> {
+  const zip = new JSZip()
+  switch (value.type) {
+    case 'application/zip':
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access,no-case-declarations
+      const all = await zip.loadAsync(value, {})
+      // eslint-disable-next-line no-case-declarations
+      const file = all.file(EXPORT_NAME + '.json')
+      if (!file) {
+        throw new Error('File not found')
+      }
+      return await file.async('blob')
+    default:
+      return value
+  }
+}
+
 async function onImportDB() {
   $q.loading.show()
   try {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    await importInto(db, (file.value as any), {})
+    const content = await getContent(file.value as unknown as File)
+    await importInto(db, content, {})
     location.reload()
   } catch (error: BulkError | any) {
     console.error(error)
@@ -174,8 +192,16 @@ async function onClearDatabase() {
 async function onExportDB() {
   $q.loading.show()
   const blob = await exportDB(db, { prettyJson: false, progressCallback })
-
-  return saveAs(blob, EXPORT_NAME)
+  const zip = new JSZip()
+  zip.file(EXPORT_NAME + '.json', blob)
+  const content = await zip.generateAsync({
+    type: 'blob',
+    compression: 'DEFLATE',
+    compressionOptions: {
+      level: 9
+    }
+  })
+  return saveAs(content, EXPORT_NAME + '.zip')
 }
 
 function main() {
@@ -197,7 +223,6 @@ function main() {
 
 export default defineComponent({
   name: 'MainLayout',
-
   setup() {
     return main()
   }

@@ -12,11 +12,9 @@ import ContractFormComponent from 'components/ContractFormComponent.vue'
 
 export default defineComponent({
   name: 'PageIndex',
-
   components: {
     ContractFormComponent
   },
-
   setup() {
     return {
     }
