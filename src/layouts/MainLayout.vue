@@ -130,7 +130,7 @@ function onToggleLeftDrawer(): void {
 }
 
 function onOpenFeedback() {
-  location.href = 'https://baskovsky.ru/about/feedback/'
+  location.href = 'https://baskovsky.ru/feedback/'
 }
 
 function progressCallback({ totalRows, completedRows }: any): any {
@@ -194,11 +194,12 @@ async function onExportDB() {
   const blob = await exportDB(db, { prettyJson: false, progressCallback })
   const zip = new JSZip()
   zip.file(EXPORT_NAME + '.json', blob)
+  $q.loading.show()
   const content = await zip.generateAsync({
     type: 'blob',
     compression: 'DEFLATE',
     compressionOptions: {
-      level: 9
+      level: 5
     }
   })
   return saveAs(content, EXPORT_NAME + '.zip')
