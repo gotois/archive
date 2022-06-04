@@ -1,10 +1,10 @@
 {
   "name": "contracts",
   "version": "0.0.4",
-  "description": "Договоры",
+  "description": "Мои договоры",
   "productName": "Ваша офлайн база договоров",
   "author": "qertis",
-  "private": true,
+  "private": false,
   "scripts": {
     "dev": "quasar dev",
     "build": "quasar build -m pwa",

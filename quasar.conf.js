@@ -134,8 +134,8 @@ module.exports = configure(function (ctx) {
       },
 
       manifest: {
-        name: 'Archive',
-        short_name: 'Договоры',
+        name: 'archive',
+        short_name: 'Мои договоры',
         description: 'Ваша офлайн база договоров',
         display: 'standalone',
         orientation: 'portrait',
