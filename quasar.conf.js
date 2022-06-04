@@ -91,7 +91,8 @@ module.exports = configure(function (ctx) {
       // Quasar plugins
       plugins: [
         'Notify',
-        'Loading'
+        'Loading',
+        'Dialog',
       ],
     },
 
@@ -134,7 +135,7 @@ module.exports = configure(function (ctx) {
       },
 
       manifest: {
-        name: 'archive',
+        name: 'contracts',
         short_name: 'Мои договоры',
         description: 'Ваша офлайн база договоров',
         display: 'standalone',

@@ -190,16 +190,29 @@ async function onClearDatabase() {
 }
 
 async function onExportDB() {
-  $q.loading.show()
+  const dialog = $q.dialog({
+    message: 'Создание... 0%',
+    progress: true,
+    persistent: true,
+    ok: false,
+  })
   const blob = await exportDB(db, { prettyJson: false, progressCallback })
   const zip = new JSZip()
   zip.file(EXPORT_NAME + '.json', blob)
-  $q.loading.show()
   const content = await zip.generateAsync({
     type: 'blob',
     compression: 'DEFLATE',
     compressionOptions: {
-      level: 5
+      level: 1
+    },
+    platform: 'UNIX',
+  }, metadata => {
+    const percentage = metadata.percent
+    dialog.update({
+      message: `Создание... ${percentage}%`
+    })
+    if (percentage === 100 && metadata.currentFile !== null) {
+      dialog.hide()
     }
   })
   return saveAs(content, EXPORT_NAME + '.zip')
