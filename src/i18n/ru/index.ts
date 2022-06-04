@@ -9,7 +9,7 @@ export default {
     empty: 'Архив пуст'
   },
   header: {
-    title: 'База договоров',
+    title: 'Мои договоры',
     create: 'Создание',
     archive: 'Архив',
   },
