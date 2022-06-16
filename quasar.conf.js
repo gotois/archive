@@ -137,7 +137,7 @@ module.exports = configure(function (ctx) {
       manifest: {
         name: 'contracts',
         short_name: 'Мои договоры',
-        description: 'Ваша офлайн база договоров',
+        description: 'Ваша база договоров',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#027be3',

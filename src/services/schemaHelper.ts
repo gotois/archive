@@ -19,7 +19,7 @@ export function formatterContracts(contracts: Array<Contract>): Array<FormatCont
     },
     'startTime': contract.startTime,
     'endTime': contract.endTime,
-    'object': contract.images.map((image: string) => ({
+    'object': contract.images.map((image) => ({
       '@type': 'ImageObject',
       'contentUrl': image,
     })),

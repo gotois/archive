@@ -1,6 +1,6 @@
 /* eslint-env node */
 
-module.exports = api => {
+module.exports = (api) => {
   return {
     presets: [
       [

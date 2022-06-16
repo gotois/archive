@@ -149,6 +149,7 @@ import {contractTypes} from '../services/contractTypes'
 const now = new Date()
 const currentDate = formatDate(now)
 const afterYearDate = formatDate(new Date(now.setFullYear(now.getFullYear() + 1)))
+
 let $q: QVueGlobals
 
 const contractType = ref('')
@@ -156,8 +157,8 @@ const consumer = ref('')
 const customer = ref('')
 const description = ref('')
 const duration = ref({from: currentDate, to: afterYearDate})
-const files = ref(null)
-const contractForm = ref(null)
+const files = ref([])
+const contractForm = ref()
 const dateNoLimit = ref(false)
 const contractOptions = ref(contractTypes)
 
@@ -165,8 +166,7 @@ function formatDate(date: Date): string {
   return date.toJSON().substring(0, 10).replace(/-/g, '/')
 }
 
-function filterOptions(val: string, update: any) {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+function filterOptions(val: string, update: (callback: () => void) => void) {
   update(() => {
     const needle = val.toLowerCase()
     contractOptions.value = contractTypes.filter(v => v.toLowerCase().indexOf(needle) > -1)
@@ -174,17 +174,16 @@ function filterOptions(val: string, update: any) {
 }
 
 function onReset() {
-  const contractFormValue: any = contractForm.value
-  if (contractFormValue) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unnecessary-type-assertion
-    contractFormValue!.resetValidation()
-  }
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const contractFormValue = contractForm.value
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unnecessary-type-assertion
+  contractFormValue!.resetValidation()
   contractType.value = ''
   consumer.value = ''
   customer.value = ''
   description.value = ''
   duration.value = {from: currentDate, to: afterYearDate}
-  files.value = null
+  files.value = []
   dateNoLimit.value = false
 }
 
@@ -207,10 +206,8 @@ function onSelectDate(value: string | { from: string, to: string } | null) {
     }
     case 'object': {
       duration.value = {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
-        from: value.from,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
-        to: value.to,
+        from: value?.from,
+        to: value?.to,
       }
       break
     }
@@ -224,8 +221,7 @@ function onSelectDate(value: string | { from: string, to: string } | null) {
 }
 
 function isDateNotOk(value: any) {
-  // eslint-disable-next-line
-  return Number.isNaN(Date.parse(value))
+  return Number.isNaN(Date.parse(value as string))
 }
 
 async function onSubmit() {
@@ -240,7 +236,7 @@ async function onSubmit() {
     return
   }
 
-  const images: Array<string | any> = await readFilesPromise(files.value ?? [])
+  const images = await readFilesPromise(files.value as Array<File>) as Array<string>
   db.transaction('rw', db.contracts, async () => {
     const newContract: ContractTable = {
       'agent_name': consumer.value,

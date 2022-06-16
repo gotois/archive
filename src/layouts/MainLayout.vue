@@ -118,7 +118,7 @@ import JSZip from 'jszip'
 
 const EXPORT_NAME = 'contract-export'
 
-const file = ref(null)
+const file = ref()
 const leftDrawerOpen = ref(false)
 const settingsOpen = ref(false)
 const confirm = ref(false)
@@ -133,7 +133,7 @@ function onOpenFeedback() {
   location.href = 'https://baskovsky.ru/feedback/'
 }
 
-function progressCallback({ totalRows, completedRows }: any): any {
+function progressCallback({ totalRows, completedRows }: any) {
   if (completedRows === totalRows) {
     $q.loading.hide()
   }
@@ -142,17 +142,17 @@ function progressCallback({ totalRows, completedRows }: any): any {
 async function getContent(value: File): Promise<Blob> {
   const zip = new JSZip()
   switch (value.type) {
-    case 'application/zip':
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access,no-case-declarations
+    case 'application/zip': {
       const all = await zip.loadAsync(value, {})
-      // eslint-disable-next-line no-case-declarations
       const file = all.file(EXPORT_NAME + '.json')
       if (!file) {
         throw new Error('File not found')
       }
       return await file.async('blob')
-    default:
+    }
+    default: {
       return value
+    }
   }
 }
 
@@ -162,12 +162,12 @@ async function onImportDB() {
     const content = await getContent(file.value as unknown as File)
     await importInto(db, content, {})
     location.reload()
-  } catch (error: BulkError | any) {
+  } catch (error) {
+    const msg = (error as BulkError).message
     console.error(error)
     $q.loading.hide()
     $q.notify({
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
-      message: error.message,
+      message: msg,
       type: 'negative',
     })
   }
@@ -178,12 +178,12 @@ async function onClearDatabase() {
     $q.loading.show()
     await db.destroy()
     location.reload()
-  } catch (error: any) {
+  } catch (error) {
+    const msg = (error as BulkError).message
     console.error(error)
     $q.loading.hide()
     $q.notify({
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
-      message: error.message,
+      message: msg,
       type: 'negative',
     })
   }

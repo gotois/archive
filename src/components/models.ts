@@ -38,4 +38,5 @@ export interface FormatContract {
   startTime: Date;
   endTime: Date;
   object: Array<{ '@type': string, contentUrl: string }>;
+  _currentSlide?: number;
 }
