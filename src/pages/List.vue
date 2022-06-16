@@ -225,7 +225,7 @@ async function setContracts() {
   if (queryFilter.length > 0) {
     const count: number = await db.contracts.where('instrument_name').startsWithAnyOfIgnoreCase([queryFilter]).count()
     if (count) {
-      const data = await db.contracts.where('instrument_name').startsWithAnyOfIgnoreCase([queryFilter]).reverse().offset(offset).limit(limit.value).toArray() as Array<Contract>
+      const data = await db.contracts.where('instrument_name').startsWithAnyOfIgnoreCase([queryFilter]).reverse().offset(offset).limit(limit.value).toArray() as Contract[]
       contracts.value = formatterContracts(data)
       paginationCount.value = Math.ceil(count / limit.value)
     } else {
@@ -234,7 +234,7 @@ async function setContracts() {
   } else {
     const count: number = await db.contracts.count()
     if (count) {
-      const data = await db.contracts.reverse().offset(offset).limit(limit.value).toArray() as Array<Contract>
+      const data = await db.contracts.reverse().offset(offset).limit(limit.value).toArray() as Contract[]
       contracts.value = formatterContracts(data)
       paginationCount.value = Math.ceil(count / limit.value)
     } else {
@@ -244,7 +244,7 @@ async function setContracts() {
   loadingVisible.value = false
 }
 
-function setValues({page, filter}: any) {
+function setValues({page, filter}: {page: string|string[], filter: string|string[]}) {
   currentPage.value = Number(page ?? 1)
   searchText.value = String(filter ?? '')
 }

@@ -1,4 +1,4 @@
-export function readFilesPromise(files: Array<File>) {
+export function readFilesPromise(files: File[]) {
   const promises = []
   for (const file of files) {
     const promise = new Promise(((resolve, reject) => {

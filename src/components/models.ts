@@ -5,7 +5,7 @@ export interface Contract {
   instrument_description: string;
   startTime: Date;
   endTime: Date;
-  images: Array<string>;
+  images: string[];
 }
 
 export interface ContractTable {
@@ -16,7 +16,7 @@ export interface ContractTable {
   instrument_description?: string;
   startTime?: Date;
   endTime?: Date;
-  images?: Array<string>;
+  images?: string[];
 }
 
 export interface FormatContract {
@@ -37,6 +37,6 @@ export interface FormatContract {
   };
   startTime: Date;
   endTime: Date;
-  object: Array<{ '@type': string, contentUrl: string }>;
+  object: { '@type': string, contentUrl: string }[];
   _currentSlide?: number;
 }

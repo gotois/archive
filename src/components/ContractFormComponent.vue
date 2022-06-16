@@ -177,7 +177,7 @@ function onReset() {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const contractFormValue = contractForm.value
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unnecessary-type-assertion
-  contractFormValue!.resetValidation()
+  contractFormValue?.resetValidation()
   contractType.value = ''
   consumer.value = ''
   customer.value = ''
@@ -220,8 +220,8 @@ function onSelectDate(value: string | { from: string, to: string } | null) {
   }
 }
 
-function isDateNotOk(value: any) {
-  return Number.isNaN(Date.parse(value as string))
+function isDateNotOk(value: Date) {
+  return Number.isNaN(Date.parse(String(value)))
 }
 
 async function onSubmit() {
@@ -236,7 +236,7 @@ async function onSubmit() {
     return
   }
 
-  const images = await readFilesPromise(files.value as Array<File>) as Array<string>
+  const images = await readFilesPromise(files.value as File[]) as string[]
   db.transaction('rw', db.contracts, async () => {
     const newContract: ContractTable = {
       'agent_name': consumer.value,

@@ -133,10 +133,12 @@ function onOpenFeedback() {
   location.href = 'https://baskovsky.ru/feedback/'
 }
 
-function progressCallback({ totalRows, completedRows }: any) {
+function progressCallback({ totalRows, completedRows }: { totalRows: number, completedRows: number }): boolean {
   if (completedRows === totalRows) {
     $q.loading.hide()
+    return true
   }
+  return false
 }
 
 async function getContent(value: File): Promise<Blob> {

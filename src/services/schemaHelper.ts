@@ -1,6 +1,6 @@
 import {Contract, FormatContract} from 'components/models'
 
-export function formatterContracts(contracts: Array<Contract>): Array<FormatContract> {
+export function formatterContracts(contracts: Contract[]): FormatContract[] {
   return contracts.map((contract: Contract) => ({
     '@context': 'https://schema.org',
     '@type': 'OrganizeAction',
