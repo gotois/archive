@@ -34,9 +34,10 @@
             :key="index"
             class="q-ma-lg"
             flat
+            square
             bordered>
             <div class="row justify-between q-pa-md">
-              <p class="text-h6 text-uppercase text-weight-bold no-margin">{{ item.instrument.name }}</p>
+              <p class="text-h6 text-uppercase text-weight-bold no-margin" :style="checkItemEndTime(item)">{{ item.instrument.name }}</p>
               <p v-if="item.instrument.description" class="text-caption text-grey">{{ item.instrument.description }}</p>
             </div>
             <q-separator v-if="item.object.length"/>
@@ -294,6 +295,13 @@ function routerFunc() {
   }
 }
 
+function checkItemEndTime(item: Contract) {
+  if (item.endTime < new Date()) {
+    return { 'text-decoration': 'line-through' }
+  }
+  return {}
+}
+
 function main() {
   $q = useQuasar()
 
@@ -306,6 +314,7 @@ function main() {
       nativeShareIsAvailable,
       showFullImage,
       shareFullImage,
+      checkItemEndTime,
       ...routerFunc(),
     }
 }
