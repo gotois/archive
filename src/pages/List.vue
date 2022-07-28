@@ -234,7 +234,7 @@ async function setContracts() {
   } else {
     const count: number = await db.contracts.count()
     if (count) {
-      const data = await db.contracts.reverse().offset(offset).limit(limit.value).toArray() as Contract[]
+      const data = await db.contracts.orderBy('startTime').reverse().offset(offset).limit(limit.value).toArray() as Contract[]
       contracts.value = formatterContracts(data)
       paginationCount.value = Math.ceil(count / limit.value)
     } else {
