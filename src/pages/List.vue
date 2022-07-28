@@ -223,16 +223,28 @@ async function setContracts() {
   const offset = (currentPage.value - 1) * limit.value
   const queryFilter = searchText.value
 
-  if (queryFilter.length > 0) {
-    const count: number = await db.contracts.where('instrument_name').startsWithAnyOfIgnoreCase([queryFilter]).count()
+  if (queryFilter.length > 0) { // searching
+    const searchTerms = queryFilter.split(' ')
+    const count: number = await db.contracts.where('instrument_name')
+      .startsWithAnyOfIgnoreCase(searchTerms)
+      .or('instrument_name')
+      .anyOfIgnoreCase(searchTerms)
+      .count()
     if (count) {
-      const data = await db.contracts.where('instrument_name').startsWithAnyOfIgnoreCase([queryFilter]).reverse().offset(offset).limit(limit.value).toArray() as Contract[]
+      const data = await db.contracts.where('instrument_name')
+        .startsWithAnyOfIgnoreCase(searchTerms)
+        .or('instrument_name')
+        .anyOfIgnoreCase(searchTerms)
+        .reverse()
+        .offset(offset)
+        .limit(limit.value)
+        .toArray() as Contract[]
       contracts.value = formatterContracts(data)
       paginationCount.value = Math.ceil(count / limit.value)
     } else {
       paginationCount.value = 0
     }
-  } else {
+  } else { // all
     const count: number = await db.contracts.count()
     if (count) {
       const data = await db.contracts.orderBy('startTime').reverse().offset(offset).limit(limit.value).toArray() as Contract[]
