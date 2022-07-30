@@ -144,6 +144,7 @@ import {
 import {db} from 'components/ContractDatabase'
 import {ContractTable} from './models'
 import {readFilesPromise} from '../services/fileHelper'
+import {isDateNotOk} from '../services/dateHelper'
 import {contractTypes} from '../services/contractTypes'
 
 const now = new Date()
@@ -218,10 +219,6 @@ function onSelectDate(value: string | { from: string, to: string } | null) {
       })
       break
   }
-}
-
-function isDateNotOk(value: Date) {
-  return Number.isNaN(Date.parse(String(value)))
 }
 
 async function onSubmit() {
