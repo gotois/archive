@@ -38,32 +38,7 @@
           class="full-width"
           :label="$t('settings.native.title')"
         >
-          <div class="col q-pa-md">
-            <q-form
-              class="full-width"
-              @submit="onImportDB"
-            >
-              <q-file
-                v-model="file"
-                accept=".json,.zip"
-                :label="$t('settings.native.import')"
-                filled
-              />
-              <q-btn
-                :label="$t('settings.native.submit')"
-                :disable="!file"
-                type="submit"
-                icon="file_upload"
-                color="primary"
-                class="full-width"/>
-            </q-form>
-            <q-btn
-              color="secondary"
-              icon="file_download"
-              :label="$t('settings.native.export')"
-              class="full-width q-mt-md"
-              @click="onExportDB"/>
-          </div>
+          <database-component class="col q-pa-md"></database-component>
         </q-expansion-item>
         <q-expansion-item
           group="backupgroup"
@@ -108,17 +83,12 @@
 
 <script lang="ts">
 import {defineComponent, ref} from 'vue'
-import {exportDB, importInto} from 'dexie-export-import'
 import {BulkError} from 'dexie'
-import {saveAs} from 'file-saver'
 import {QVueGlobals, useQuasar} from 'quasar'
 import {db} from 'components/ContractDatabase'
 import {version} from '../../package.json'
-import JSZip from 'jszip'
+import DatabaseComponent from 'components/DatabaseComponent.vue'
 
-const EXPORT_NAME = 'contract-export'
-
-const file = ref()
 const leftDrawerOpen = ref(false)
 const settingsOpen = ref(false)
 const confirm = ref(false)
@@ -131,48 +101,6 @@ function onToggleLeftDrawer(): void {
 
 function onOpenFeedback() {
   location.href = 'https://baskovsky.ru/feedback/'
-}
-
-function progressCallback({ totalRows, completedRows }: { totalRows: number, completedRows: number }): boolean {
-  if (completedRows === totalRows) {
-    $q.loading.hide()
-    return true
-  }
-  return false
-}
-
-async function getContent(value: File): Promise<Blob> {
-  const zip = new JSZip()
-  switch (value.type) {
-    case 'application/zip': {
-      const all = await zip.loadAsync(value, {})
-      const file = all.file(EXPORT_NAME + '.json')
-      if (!file) {
-        throw new Error('File not found')
-      }
-      return await file.async('blob')
-    }
-    default: {
-      return value
-    }
-  }
-}
-
-async function onImportDB() {
-  $q.loading.show()
-  try {
-    const content = await getContent(file.value as unknown as File)
-    await importInto(db, content, {})
-    location.reload()
-  } catch (error) {
-    const msg = (error as BulkError).message
-    console.error(error)
-    $q.loading.hide()
-    $q.notify({
-      message: msg,
-      type: 'negative',
-    })
-  }
 }
 
 async function onClearDatabase() {
@@ -191,56 +119,27 @@ async function onClearDatabase() {
   }
 }
 
-async function onExportDB() {
-  const dialog = $q.dialog({
-    message: 'Создание... 0%',
-    progress: true,
-    persistent: true,
-    ok: false,
-  })
-  const blob = await exportDB(db, { prettyJson: false, progressCallback })
-  const zip = new JSZip()
-  zip.file(EXPORT_NAME + '.json', blob)
-  const content = await zip.generateAsync({
-    type: 'blob',
-    compression: 'DEFLATE',
-    compressionOptions: {
-      level: 1
-    },
-    platform: 'UNIX',
-  }, metadata => {
-    const percentage = metadata.percent
-    dialog.update({
-      message: `Создание... ${percentage}%`
-    })
-    if (percentage === 100 && metadata.currentFile !== null) {
-      dialog.hide()
-    }
-  })
-  return saveAs(content, EXPORT_NAME + '.zip')
-}
-
 function main() {
   $q = useQuasar()
 
   return {
     leftDrawerOpen,
     settingsOpen,
-    file,
     confirm,
     version,
     onOpenFeedback,
     onToggleLeftDrawer,
     onClearDatabase,
-    onImportDB,
-    onExportDB
   }
 }
 
 export default defineComponent({
   name: 'MainLayout',
+  components: {
+    DatabaseComponent,
+  },
   setup() {
     return main()
-  }
+  },
 })
 </script>

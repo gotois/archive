@@ -235,7 +235,7 @@ async function getShareData(object: FormatContract) {
       const res = await fetch(image.contentUrl)
       const blob: Blob = await res.blob()
       const fileName = object.instrument.name + '.' + extension
-      const file = new File([new Blob([blob])], fileName, { type: mimeType })
+      const file = new File([blob], fileName, { type: mimeType })
       files.push(file)
       continue
     }
@@ -250,9 +250,9 @@ async function getShareData(object: FormatContract) {
   }
 
   if (docLength > 0) {
-    const output = doc.output('blob')
+    const blob = doc.output('blob')
     doc.close()
-    const file = new File([output], object.instrument.name + '.pdf')
+    const file = new File([blob], object.instrument.name + '.pdf')
     files.push(file)
   }
 
@@ -405,6 +405,6 @@ export default defineComponent({
   },
   setup() {
     return main()
-  }
+  },
 })
 </script>
