@@ -8,7 +8,7 @@
     </q-inner-loading>
     <template v-if="!loadingVisible">
       <q-form
-        class="col-10 q-pa-md q-gutter-sm self-start"
+        class="col q-pa-md q-gutter-sm self-start"
         @submit="onSearchText"
       >
         <q-input
@@ -124,9 +124,9 @@
         </div>
       </template>
       <template v-else>
-        <div class="col-12 q-pa-lg flex flex-center">
-          <q-banner class="bg-red-9 text-white q-ios-padding">
-            {{ $t('archive.empty') }} 😢
+        <div class="col-12 q-pa-lg flex flex-center self-start">
+          <q-banner class="text-center bg-red-9 text-white">
+            {{ isSearch ? $t('archive.searchEmpty') : $t('archive.empty') }}
           </q-banner>
         </div>
       </template>
@@ -249,9 +249,10 @@ function setValues({page, filter}: {page: string|string[], filter: string|string
 
 function routerFunc() {
   const router = useRouter()
+  const {page, filter} = router.currentRoute.value.query
   setValues({
-    page: router.currentRoute.value.query.page,
-    filter: router.currentRoute.value.query.filter
+    page,
+    filter,
   })
 
   void (async (): Promise<void> => {
@@ -272,13 +273,23 @@ function routerFunc() {
 
   return {
     onPaginate(page: string): void {
-      void router.push({
-        path: 'archive',
-        query: {
-          filter: searchText.value,
-          page: Number(page),
-        }
-      })
+      const filter = searchText.value
+      if (filter.length) {
+        void router.push({
+          path: 'archive',
+          query: {
+            page: Number(page),
+            filter,
+          }
+        })
+      } else {
+        void router.push({
+          path: 'archive',
+          query: {
+            page: Number(page),
+          }
+        })
+      }
     },
     onSearchText(): void {
       void router.push({
@@ -336,6 +347,11 @@ export default defineComponent({
   },
   setup() {
     return main()
+  },
+  computed: {
+    isSearch() {
+      return Boolean(location.search.length)
+    }
   },
 })
 </script>
