@@ -2,7 +2,7 @@
   "name": "contracts",
   "version": "0.0.5",
   "description": "Мои договоры",
-  "productName": "Ваша офлайн база договоров",
+  "productName": "Офлайн база договоров",
   "author": "qertis",
   "private": false,
   "scripts": {
@@ -12,28 +12,28 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
-    "@quasar/extras": "^1.14.0",
-    "core-js": "^3.23.1",
+    "@quasar/extras": "^1.15.1",
+    "core-js": "^3.24.1",
     "dexie": "^3.2.2",
     "jspdf": "^2.5.1",
-    "jszip": "^3.10.0",
-    "quasar": "^2.7.1",
-    "vue-i18n": "^9.1.10",
+    "jszip": "^3.10.1",
+    "quasar": "^2.7.7",
+    "vue-i18n": "^9.2.2",
     "vuex": "^4.0.2"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.18.2",
+    "@babel/eslint-parser": "^7.18.9",
     "@quasar/app": "^3.3.3",
     "@types/file-saver": "^2.0.5",
-    "@types/node": "^17.0.39",
-    "@typescript-eslint/eslint-plugin": "^5.28.0",
-    "@typescript-eslint/parser": "^5.28.0",
+    "@types/node": "^17.0.45",
+    "@typescript-eslint/eslint-plugin": "^5.32.0",
+    "@typescript-eslint/parser": "^5.32.0",
     "dexie-export-import": "^1.0.3",
-    "eslint": "^8.17.0",
+    "eslint": "^8.21.0",
     "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-vue": "^9.1.1",
+    "eslint-plugin-vue": "^9.3.0",
     "file-saver": "^2.0.5",
-    "workbox-webpack-plugin": "^6.5.3"
+    "workbox-webpack-plugin": "^6.5.4"
   },
   "browserslist": [
     "last 5 Chrome versions",
@@ -47,7 +47,7 @@
     "last 5 Opera versions"
   ],
   "engines": {
-    "node": ">= 14.x",
-    "npm": ">= 6.x"
+    "node": ">= 16.x",
+    "npm": ">= 7.x"
   }
 }
