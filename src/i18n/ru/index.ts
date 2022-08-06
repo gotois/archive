@@ -63,6 +63,6 @@ export default {
     type: 'Приложенные файлы'
   },
   contractForm: {
-    submit: 'Сохранить'
+    submit: 'Добавить'
   }
 }
