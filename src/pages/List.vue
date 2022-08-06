@@ -145,7 +145,7 @@ import {db} from 'components/ContractDatabase'
 import {Contract, FormatContract} from 'components/models'
 import {formatterContracts} from '../services/schemaHelper'
 import {isDateNotOk, formatterDate} from '../services/dateHelper'
-import {jsPDF} from 'jspdf'
+import {createPDF} from '../services/pdfHelper'
 
 const closeIconBase64 = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjwhRE9DVFlQRSBzdmcgIFBVQkxJQyAnLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4nICAnaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkJz48c3ZnIGhlaWdodD0iNTEycHgiIGlkPSJMYXllcl8xIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCA1MTIgNTEyOyIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgd2lkdGg9IjUxMnB4IiB4bWw6c3BhY2U9InByZXNlcnZlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj48cGF0aCBkPSJNNDQzLjYsMzg3LjFMMzEyLjQsMjU1LjRsMTMxLjUtMTMwYzUuNC01LjQsNS40LTE0LjIsMC0xOS42bC0zNy40LTM3LjZjLTIuNi0yLjYtNi4xLTQtOS44LTRjLTMuNywwLTcuMiwxLjUtOS44LDQgIEwyNTYsMTk3LjhMMTI0LjksNjguM2MtMi42LTIuNi02LjEtNC05LjgtNGMtMy43LDAtNy4yLDEuNS05LjgsNEw2OCwxMDUuOWMtNS40LDUuNC01LjQsMTQuMiwwLDE5LjZsMTMxLjUsMTMwTDY4LjQsMzg3LjEgIGMtMi42LDIuNi00LjEsNi4xLTQuMSw5LjhjMCwzLjcsMS40LDcuMiw0LjEsOS44bDM3LjQsMzcuNmMyLjcsMi43LDYuMiw0LjEsOS44LDQuMWMzLjUsMCw3LjEtMS4zLDkuOC00LjFMMjU2LDMxMy4xbDEzMC43LDEzMS4xICBjMi43LDIuNyw2LjIsNC4xLDkuOCw0LjFjMy41LDAsNy4xLTEuMyw5LjgtNC4xbDM3LjQtMzcuNmMyLjYtMi42LDQuMS02LjEsNC4xLTkuOEM0NDcuNywzOTMuMiw0NDYuMiwzODkuNyw0NDMuNiwzODcuMXoiLz48L3N2Zz4=';
 const styleRules = `
@@ -193,77 +193,8 @@ function showFullImage(object: FormatContract) {
   newWin.document.head.appendChild(styleSheet)
 }
 
-async function resizeImageA4(dataUrl: string) {
-  const MAX_WIDTH = 794
-  const MAX_HEIGHT = 1123
-
-  const img = new Image()
-  img.src = dataUrl
-  await img.decode()
-  let {width, height} = img
-
-  // resizing logic
-  if (width > height) {
-    if (width > MAX_WIDTH) {
-      height *= MAX_WIDTH / width
-      width = MAX_WIDTH
-    }
-  } else if (height > MAX_HEIGHT) {
-    width *= MAX_HEIGHT / height
-    height = MAX_HEIGHT
-  }
-
-  return [width, height];
-}
-
-async function getShareData(object: FormatContract) {
-  const doc = new jsPDF({
-      orientation: 'portrait',
-      unit: 'px',
-      format: 'a4',
-      hotfixes: ['px_scaling']
-    })
-  const files = []
-  let docLength = 0
-
-  for (const image of object.object) {
-    const dataUrl = image.contentUrl
-    const [mimeType] = dataUrl.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)
-
-    if (mimeType === 'application/pdf') {
-      const [extension] = dataUrl.match(/[^:/]\w+(?=;|,)/)
-      const res = await fetch(image.contentUrl)
-      const blob: Blob = await res.blob()
-      const fileName = object.instrument.name + '.' + extension
-      const file = new File([blob], fileName, { type: mimeType })
-      files.push(file)
-      continue
-    }
-
-    const format = mimeType.replace('image/', '').toUpperCase()
-    const [width, height] = await resizeImageA4(dataUrl)
-    if (docLength != 0) {
-      doc.addPage()
-    }
-    doc.addImage(dataUrl, format, 0, 0, width, height)
-    docLength++
-  }
-
-  if (docLength > 0) {
-    const blob = doc.output('blob')
-    doc.close()
-    const file = new File([blob], object.instrument.name + '.pdf')
-    files.push(file)
-  }
-
-  return {
-    title: object.instrument.name,
-    files
-  }
-}
-
 async function shareFullImage(object: FormatContract) {
-  const shareData = await getShareData(object)
+  const shareData = await createPDF(object)
   try {
     await navigator.share(shareData)
   } catch (error) {
