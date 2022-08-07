@@ -1,4 +1,5 @@
 import {store} from 'quasar/wrappers'
+import {LocalStorage} from 'quasar'
 import {InjectionKey} from 'vue'
 import {
   createStore,
@@ -16,8 +17,7 @@ import {
  */
 
 export interface StateInterface {
-  // Declared as unknown to avoid linting issue. Best to strongly type as per the line above.
-  example: unknown
+  tutorialCompleted: boolean
 }
 
 // provide typings for `this.$store`
@@ -33,6 +33,21 @@ export const storeKey: InjectionKey<VuexStore<StateInterface>> = Symbol('vuex-ke
 export default store(function (/* { ssrContext } */) {
   const Store = createStore<StateInterface>({
     modules: {
+    },
+
+    state: {
+      tutorialCompleted: LocalStorage.getItem('tutorialCompleted') ?? false,
+    },
+    mutations: {
+      tutorialComplete(state) {
+        state.tutorialCompleted = true
+      },
+    },
+    actions: {
+      tutorialComplete(context) {
+        context.commit('tutorialComplete')
+        LocalStorage.set('tutorialCompleted', true)
+      },
     },
 
     // enable strict mode (adds overhead!)

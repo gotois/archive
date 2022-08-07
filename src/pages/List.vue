@@ -318,7 +318,7 @@ function routerFunc() {
           query: {
             page: Number(page),
             filter,
-          }
+          },
         })
       } else {
         void router.push({

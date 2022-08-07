@@ -42,7 +42,8 @@
 
       <template #navigation>
         <q-stepper-navigation>
-          <q-btn color="primary" :label="step === 4 ? 'Закончить' : 'Далее'" @click="$refs.stepper.next()" />
+          <q-btn v-if="step !== 4" color="primary" label="Далее" @click="$refs.stepper.next()" />
+          <q-btn v-else color="primary" label="Закончить" @click="finish()" />
           <q-btn v-if="step > 1" flat color="primary" label="Назад" class="q-ml-sm" @click="$refs.stepper.previous()" />
         </q-stepper-navigation>
       </template>
@@ -52,19 +53,46 @@
 <script lang="ts">
 import {defineComponent, ref} from 'vue'
 import {useMeta} from 'quasar'
+import {StateInterface, useStore} from '../store'
+import {
+  Store as VuexStore,
+} from 'vuex'
+import {Router, useRouter} from 'vue-router'
+
+let store: VuexStore<StateInterface>
+let router: Router
+const step = ref(1)
 
 const metaData = {
   title: 'Обучение',
+}
+
+function finish() {
+  void store.dispatch('tutorialComplete')
+  void router.push({
+    path: 'archive',
+    query: {
+      page: Number(1),
+    },
+  })
+}
+
+function main() {
+  store = useStore()
+  router = useRouter()
+  useMeta(metaData)
+
+  return {
+    step,
+    finish,
+  }
 }
 
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
   name: 'Tutorial',
   setup () {
-    useMeta(metaData)
-    return {
-      step: ref(1)
-    }
+    return main()
   },
 })
 </script>
