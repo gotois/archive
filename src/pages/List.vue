@@ -153,7 +153,7 @@
         </template>
       </template>
     </template>
-    <q-page-sticky position="bottom-right" :offset="[18, 18]">
+    <q-page-sticky position="bottom-right" :offset="[20, 20]">
       <q-fab
         glossy
         icon="add"
