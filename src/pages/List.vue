@@ -157,7 +157,7 @@
 </template>
 
 <script lang="ts">
-import {QVueGlobals, useQuasar} from 'quasar'
+import {QVueGlobals, useMeta, useQuasar} from 'quasar'
 import {useRouter} from 'vue-router'
 import {
   defineComponent,
@@ -191,6 +191,10 @@ body {
   box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 5px 8px rgba(0, 0, 0, 0.14), 0 1px 14px rgba(0, 0, 0, 0.12);
 }
 `
+
+const metaData = {
+  title: 'Архив',
+}
 
 let $q: QVueGlobals
 
@@ -369,6 +373,7 @@ export default defineComponent({
     await setContracts()
   },
   setup() {
+    useMeta(metaData)
     return main()
   },
   computed: {

@@ -8,16 +8,20 @@
 
 <script lang="ts">
 import {defineComponent} from 'vue'
+import {useMeta} from 'quasar'
 import ContractFormComponent from 'components/ContractFormComponent.vue'
+
+const metaData = {
+  title: 'Создание договора',
+}
 
 export default defineComponent({
   name: 'PageIndex',
   components: {
-    ContractFormComponent
+    ContractFormComponent,
   },
   setup() {
-    return {
-    }
+    useMeta(metaData)
   },
 })
 </script>

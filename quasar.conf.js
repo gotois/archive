@@ -93,6 +93,7 @@ module.exports = configure(function (ctx) {
         'Notify',
         'Loading',
         'Dialog',
+        'Meta',
       ],
     },
 
