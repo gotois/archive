@@ -8,6 +8,7 @@
     </q-inner-loading>
     <template v-if="!loadingVisible">
       <q-form
+        v-if="isSearch || contracts.length"
         class="col q-pa-md q-gutter-sm self-start"
         @submit="onSearchText"
       >
@@ -124,11 +125,32 @@
         </div>
       </template>
       <template v-else>
-        <div class="col-12 q-pa-lg flex flex-center self-start">
-          <q-banner class="text-center bg-red-9 text-white">
-            {{ isSearch ? $t('archive.searchEmpty') : $t('archive.empty') }}
+        <div v-if="isSearch" class="col-12 q-pa-lg flex flex-center self-start">
+          <q-banner inline-actions class="text-center text-black">
+            <template #avatar>
+              <q-icon name="explore" color="secondary" />
+            </template>
+            <template #default>
+              {{ $t('archive.searchEmpty') }}
+            </template>
+            <template #action>
+              <q-btn flat color="primary" label="Очистить" to="/archive" />
+            </template>
           </q-banner>
         </div>
+        <template v-else>
+          <q-banner inline-actions class="flex self-center text-black">
+            <template #avatar>
+              <q-icon name="add_task" color="secondary" />
+            </template>
+            <template #default>
+              {{ archiveEmptyText }}
+            </template>
+            <template #action>
+              <q-btn flat color="primary" label="Добавить" to="/" />
+            </template>
+          </q-banner>
+        </template>
       </template>
     </template>
   </q-page>
@@ -146,6 +168,7 @@ import {Contract, FormatContract} from 'components/models'
 import {formatterContracts} from '../services/schemaHelper'
 import {isDateNotOk, formatterDate} from '../services/dateHelper'
 import {createPDF} from '../services/pdfHelper'
+import {contractTypes} from '../services/contractTypes'
 
 const closeIconBase64 = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/PjwhRE9DVFlQRSBzdmcgIFBVQkxJQyAnLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4nICAnaHR0cDovL3d3dy53My5vcmcvR3JhcGhpY3MvU1ZHLzEuMS9EVEQvc3ZnMTEuZHRkJz48c3ZnIGhlaWdodD0iNTEycHgiIGlkPSJMYXllcl8xIiBzdHlsZT0iZW5hYmxlLWJhY2tncm91bmQ6bmV3IDAgMCA1MTIgNTEyOyIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiIgd2lkdGg9IjUxMnB4IiB4bWw6c3BhY2U9InByZXNlcnZlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj48cGF0aCBkPSJNNDQzLjYsMzg3LjFMMzEyLjQsMjU1LjRsMTMxLjUtMTMwYzUuNC01LjQsNS40LTE0LjIsMC0xOS42bC0zNy40LTM3LjZjLTIuNi0yLjYtNi4xLTQtOS44LTRjLTMuNywwLTcuMiwxLjUtOS44LDQgIEwyNTYsMTk3LjhMMTI0LjksNjguM2MtMi42LTIuNi02LjEtNC05LjgtNGMtMy43LDAtNy4yLDEuNS05LjgsNEw2OCwxMDUuOWMtNS40LDUuNC01LjQsMTQuMiwwLDE5LjZsMTMxLjUsMTMwTDY4LjQsMzg3LjEgIGMtMi42LDIuNi00LjEsNi4xLTQuMSw5LjhjMCwzLjcsMS40LDcuMiw0LjEsOS44bDM3LjQsMzcuNmMyLjcsMi43LDYuMiw0LjEsOS44LDQuMWMzLjUsMCw3LjEtMS4zLDkuOC00LjFMMjU2LDMxMy4xbDEzMC43LDEzMS4xICBjMi43LDIuNyw2LjIsNC4xLDkuOCw0LjFjMy41LDAsNy4xLTEuMyw5LjgtNC4xbDM3LjQtMzcuNmMyLjYtMi42LDQuMS02LjEsNC4xLTkuOEM0NDcuNywzOTMuMiw0NDYuMiwzODkuNyw0NDMuNiwzODcuMXoiLz48L3N2Zz4=';
 const styleRules = `
@@ -350,8 +373,12 @@ export default defineComponent({
   },
   computed: {
     isSearch() {
-      return Boolean(location.search.length)
-    }
+      return Boolean(this.$router.currentRoute.value.query.filter)
+    },
+    archiveEmptyText() {
+      const randomContractType = Math.round(Math.random() * contractTypes.length - 1)
+      return this.$t('archive.empty') + '. Например: ' + contractTypes[randomContractType].toLowerCase() + '.'
+    },
   },
 })
 </script>
