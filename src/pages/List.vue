@@ -1,5 +1,5 @@
 <template>
-  <q-page class="row justify-center full-height">
+  <q-page padding class="row justify-center full-height">
     <q-inner-loading :showing="loadingVisible">
       <q-spinner-hourglass
         color="primary"
@@ -9,7 +9,7 @@
     <template v-if="!loadingVisible">
       <q-form
         v-if="isSearch || contracts.length"
-        class="col q-pa-md q-gutter-sm self-start"
+        class="col-12 q-pa-md self-start"
         @submit="onSearchText"
       >
         <q-input
@@ -153,6 +153,17 @@
         </template>
       </template>
     </template>
+    <q-page-sticky position="bottom-right" :offset="[18, 18]">
+      <q-fab
+        glossy
+        icon="add"
+        direction="up"
+        vertical-actions-align="right"
+        color="accent"
+      >
+        <q-fab-action push square color="primary" label="Создать документ" to="/" />
+      </q-fab>
+    </q-page-sticky>
   </q-page>
 </template>
 
@@ -319,6 +330,9 @@ function routerFunc() {
       }
     },
     onSearchText(): void {
+      if (!searchText.value.length) {
+        return
+      }
       void router.push({
         path: 'archive',
         query: {

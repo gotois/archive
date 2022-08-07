@@ -1,7 +1,7 @@
 <template>
   <q-page class="row content-center items-stretch justify-center">
     <contract-form-component
-      class="col-xs-11 q-pa-md"
+      class="col-xs-11"
     ></contract-form-component>
   </q-page>
 </template>
