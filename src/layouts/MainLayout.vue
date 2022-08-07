@@ -14,7 +14,7 @@
           {{ $t('header.title') }}
         </q-toolbar-title>
         <q-tabs shrink stretch>
-          <q-route-tab to="/" exact replace :label="$t('header.create')"/>
+          <q-route-tab to="/create" exact replace :label="$t('header.create')"/>
           <q-route-tab to="/archive" exact replace :label="$t('header.archive')"/>
         </q-tabs>
       </q-toolbar>

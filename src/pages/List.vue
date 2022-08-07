@@ -147,7 +147,7 @@
               {{ archiveEmptyText }}
             </template>
             <template #action>
-              <q-btn flat color="primary" label="Добавить" to="/" />
+              <q-btn flat color="primary" label="Добавить" to="/create" />
             </template>
           </q-banner>
         </template>
@@ -161,7 +161,7 @@
         vertical-actions-align="right"
         color="accent"
       >
-        <q-fab-action push square color="primary" label="Создать документ" to="/" />
+        <q-fab-action push square color="primary" label="Создать документ" to="/create" />
       </q-fab>
     </q-page-sticky>
   </q-page>
@@ -395,7 +395,7 @@ export default defineComponent({
       return Boolean(this.$router.currentRoute.value.query.filter)
     },
     archiveEmptyText() {
-      const randomContractType = Math.round(Math.random() * contractTypes.length - 1)
+      const randomContractType = Math.floor(Math.random() * (contractTypes.length - 1))
       return this.$t('archive.empty') + '. Например: ' + contractTypes[randomContractType].toLowerCase() + '.'
     },
   },
