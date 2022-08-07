@@ -94,6 +94,7 @@ module.exports = configure(function (ctx) {
         'Loading',
         'Dialog',
         'Meta',
+        'LocalStorage',
       ],
     },
 
