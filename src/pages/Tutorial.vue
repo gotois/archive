@@ -3,8 +3,8 @@
       ref="stepper"
       v-model="step"
       color="primary"
-      header-nav
       flat
+      vertical
       animated
     >
       <q-step
@@ -14,15 +14,20 @@
         :done="step > 1"
       >
         Разработчик не осуществляет сбор ваших персональных данных.
+        <q-stepper-navigation>
+          <q-btn color="primary" label="Принять" @click="$refs.stepper.next()" />
+        </q-stepper-navigation>
       </q-step>
       <q-step
         :name="2"
         title="Пользовательское соглашение"
-        caption="Optional"
         icon="create_new_folder"
         :done="step > 2"
       >
         Приложение распространяется "как есть". Разработчик не гарантирует сохранность ваших документов. Разработчик вправе внести изменения конфликтующие с вашими сохраненными документами.
+        <q-stepper-navigation>
+          <q-btn color="primary" label="Принять" @click="$refs.stepper.next()" />
+        </q-stepper-navigation>
       </q-step>
       <q-step
         :name="3"
@@ -31,6 +36,9 @@
         :done="step > 3"
       >
         Приложение использует внутреннее хранилище браузера IndexDB. Это надежное хранилище, доступ к которому имеете только вы с текущего устройства.
+        <q-stepper-navigation>
+          <q-btn color="primary" label="Принять" @click="$refs.stepper.next()" />
+        </q-stepper-navigation>
       </q-step>
       <q-step
         :name="4"
@@ -38,15 +46,10 @@
         icon="add_comment"
       >
         УСТАНОВИТЕ ИМЯ
-      </q-step>
-
-      <template #navigation>
         <q-stepper-navigation>
-          <q-btn v-if="step !== 4" color="primary" label="Далее" @click="$refs.stepper.next()" />
-          <q-btn v-else color="primary" label="Закончить" @click="finish()" />
-          <q-btn v-if="step > 1" flat color="primary" label="Назад" class="q-ml-sm" @click="$refs.stepper.previous()" />
+          <q-btn color="primary" label="Закончить" @click="finish()" />
         </q-stepper-navigation>
-      </template>
+      </q-step>
     </q-stepper>
 </template>
 
