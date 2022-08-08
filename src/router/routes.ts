@@ -17,7 +17,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/tutorial',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('layouts/EmptyLayout.vue'),
     children: [{path: '', component: () => import('pages/Tutorial.vue')}],
   },
   // Always leave this as last one,
