@@ -83,24 +83,17 @@
 
 <script lang="ts">
 import {defineComponent, ref} from 'vue'
-import {Router, useRouter} from 'vue-router'
-import {
-  Store as VuexStore,
-} from 'vuex'
 import {BulkError} from 'dexie'
 import {QVueGlobals, useQuasar} from 'quasar'
 import {db} from 'components/ContractDatabase'
 import {version} from '../../package.json'
 import DatabaseComponent from 'components/DatabaseComponent.vue'
-import {StateInterface, useStore} from '../store'
 
 const leftDrawerOpen = ref(false)
 const settingsOpen = ref(false)
 const confirm = ref(false)
 
 let $q: QVueGlobals
-let store: VuexStore<StateInterface>
-let router: Router
 
 function onToggleLeftDrawer(): void {
   leftDrawerOpen.value = !leftDrawerOpen.value
@@ -128,14 +121,6 @@ async function onClearDatabase() {
 
 function main() {
   $q = useQuasar()
-  router = useRouter()
-  store = useStore()
-
-  if (!store.state.tutorialCompleted) {
-    void router.push({
-      path: 'tutorial',
-    })
-  }
 
   return {
     leftDrawerOpen,

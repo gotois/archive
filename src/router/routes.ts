@@ -8,8 +8,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/archive',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [{path: '', component: () => import('pages/List.vue')}],
+    redirect: '/',
   },
   {
     path: '/create',

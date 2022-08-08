@@ -168,12 +168,9 @@
 </template>
 
 <script lang="ts">
-import {QVueGlobals, useMeta, useQuasar} from 'quasar'
+import {defineComponent, ref} from 'vue'
 import {useRouter} from 'vue-router'
-import {
-  defineComponent,
-  ref,
-} from 'vue'
+import {QVueGlobals, useMeta, useQuasar} from 'quasar'
 import {db} from 'components/ContractDatabase'
 import {Contract, FormatContract} from 'components/models'
 import {formatterContracts} from '../services/schemaHelper'

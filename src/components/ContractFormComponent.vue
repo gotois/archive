@@ -32,20 +32,6 @@
       </template>
     </q-select>
     <q-input
-      v-model="consumer"
-      :label="$t('consumer.type')"
-      :rules="[ val => val && val.length > 0 || $t('consumer.rules')]"
-      :hint="$t('consumer.hint')"
-      name="consumer"
-      autocomplete="on"
-      lazy-rules
-      outlined
-    >
-      <template #prepend>
-        <q-icon name="face" />
-      </template>
-    </q-input>
-    <q-input
       v-model="customer"
       :label="$t('customer.type')"
       :hint="$t('customer.hint')"
@@ -136,15 +122,14 @@
 </template>
 
 <script lang="ts">
+import {defineComponent, ref} from 'vue'
+import {Store as VuexStore} from 'vuex'
 import {QVueGlobals, useQuasar} from 'quasar'
-import {
-  defineComponent,
-  ref,
-} from 'vue'
 import {db} from 'components/ContractDatabase'
+import {StateInterface, useStore} from '../store'
 import {ContractTable} from './models'
 import {readFilesPromise} from '../services/fileHelper'
-import {isDateNotOk} from '../services/dateHelper'
+import {isDateNotOk, formatDate} from '../services/dateHelper'
 import {contractTypes} from '../services/contractTypes'
 
 const now = new Date()
@@ -152,9 +137,9 @@ const currentDate = formatDate(now)
 const afterYearDate = formatDate(new Date(now.setFullYear(now.getFullYear() + 1)))
 
 let $q: QVueGlobals
+let store: VuexStore<StateInterface>
 
 const contractType = ref('')
-const consumer = ref('')
 const customer = ref('')
 const description = ref('')
 const duration = ref({from: currentDate, to: afterYearDate})
@@ -162,10 +147,6 @@ const files = ref([])
 const contractForm = ref()
 const dateNoLimit = ref(false)
 const contractOptions = ref(contractTypes)
-
-function formatDate(date: Date): string {
-  return date.toJSON().substring(0, 10).replace(/-/g, '/')
-}
 
 function filterOptions(val: string, update: (callback: () => void) => void) {
   update(() => {
@@ -177,10 +158,9 @@ function filterOptions(val: string, update: (callback: () => void) => void) {
 function onReset() {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const contractFormValue = contractForm.value
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unnecessary-type-assertion
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
   contractFormValue?.resetValidation()
   contractType.value = ''
-  consumer.value = ''
   customer.value = ''
   description.value = ''
   duration.value = {from: currentDate, to: afterYearDate}
@@ -223,6 +203,7 @@ function onSelectDate(value: string | { from: string, to: string } | null) {
 
 async function onSubmit() {
   const startDate = new Date(duration.value.from)
+  // todo не использовать 9999999999999, вместо этого использовать Infinite для сохранения
   const endDate = new Date(dateNoLimit.value ? 9999999999999 : duration.value.to)
 
   if (isDateNotOk(startDate) || isDateNotOk(endDate)) {
@@ -236,7 +217,7 @@ async function onSubmit() {
   const images = await readFilesPromise(files.value as File[]) as string[]
   db.transaction('rw', db.contracts, async () => {
     const newContract: ContractTable = {
-      'agent_name': consumer.value,
+      'agent_name': store.state.consumer,
       'participant_name': customer.value,
       'instrument_name': contractType.value,
       'instrument_description': description.value,
@@ -246,7 +227,7 @@ async function onSubmit() {
     }
     await db.contracts.add(newContract)
     $q.notify({
-      message: 'Запись добавлена',
+      message: `Запись ${newContract.instrument_name} добавлена`,
       type: 'positive',
       actions: [
         {
@@ -267,10 +248,10 @@ async function onSubmit() {
 
 function main() {
   $q = useQuasar()
+  store = useStore()
 
   return {
     contractType,
-    consumer,
     customer,
     description,
     duration,

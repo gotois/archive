@@ -17,7 +17,8 @@ import {
  */
 
 export interface StateInterface {
-  tutorialCompleted: boolean
+  tutorialCompleted: boolean,
+  consumer: string,
 }
 
 // provide typings for `this.$store`
@@ -37,16 +38,24 @@ export default store(function (/* { ssrContext } */) {
 
     state: {
       tutorialCompleted: LocalStorage.getItem('tutorialCompleted') ?? false,
+      consumer: LocalStorage.getItem('consumer') ?? '',
     },
     mutations: {
       tutorialComplete(state) {
         state.tutorialCompleted = true
+      },
+      consumerName(state, name: string) {
+        state.consumer = name
       },
     },
     actions: {
       tutorialComplete(context) {
         context.commit('tutorialComplete')
         LocalStorage.set('tutorialCompleted', true)
+      },
+      consumerName(context, value: string) {
+        context.commit('consumerName', value)
+        LocalStorage.set('consumer', value)
       },
     },
 

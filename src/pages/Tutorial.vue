@@ -45,7 +45,19 @@
         title="Установка имени"
         icon="add_comment"
       >
-        УСТАНОВИТЕ ИМЯ
+        <q-input
+          v-model="consumer"
+          :label="$t('consumer.type')"
+          :rules="[ val => val && val.length > 0 || $t('consumer.rules')]"
+          :hint="$t('consumer.hint')"
+          name="consumer"
+          autocomplete="on"
+          outlined
+        >
+          <template #prepend>
+            <q-icon name="face" />
+          </template>
+        </q-input>
         <q-stepper-navigation>
           <q-btn color="primary" label="Закончить" @click="finish()" />
         </q-stepper-navigation>
@@ -55,16 +67,16 @@
 
 <script lang="ts">
 import {defineComponent, ref} from 'vue'
+import {Store as VuexStore} from 'vuex'
 import {useMeta} from 'quasar'
 import {StateInterface, useStore} from '../store'
-import {
-  Store as VuexStore,
-} from 'vuex'
 import {Router, useRouter} from 'vue-router'
 
 let store: VuexStore<StateInterface>
 let router: Router
+
 const step = ref(1)
+const consumer = ref('')
 
 const metaData = {
   title: 'Обучение',
@@ -72,6 +84,7 @@ const metaData = {
 
 function finish() {
   void store.dispatch('tutorialComplete')
+  void store.dispatch('consumerName', consumer.value)
   void router.push({
     path: 'archive',
     query: {
@@ -87,6 +100,7 @@ function main() {
 
   return {
     step,
+    consumer,
     finish,
   }
 }

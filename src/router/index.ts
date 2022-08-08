@@ -17,7 +17,7 @@ import routes from './routes'
  * with the Router instance.
  */
 
-export default route<StateInterface>(function (/* { store, ssrContext } */) {
+export default route<StateInterface>(function ({ store/* , ssrContext */ }) {
   const createHistory = process.env.SERVER
     ? createMemoryHistory
     : (process.env.VUE_ROUTER_MODE === 'history' ? createWebHistory : createWebHashHistory)
@@ -33,6 +33,20 @@ export default route<StateInterface>(function (/* { store, ssrContext } */) {
       process.env.MODE === 'ssr' ? void 0 : process.env.VUE_ROUTER_BASE
     ),
   })
+  Router.beforeEach(( to /*, from */ ) => {
+    switch (to.path) {
+      case '/tutorial': {
+        return true
+      }
+      default: {
+        if (!store.state.tutorialCompleted) {
+          return '/tutorial'
+        }
+      }
+    }
+  // explicitly return false to cancel the navigation
+  // return false
+})
 
   return Router
 })
