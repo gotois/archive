@@ -45,22 +45,32 @@
         title="Установка имени"
         icon="add_comment"
       >
-        <q-input
-          v-model="consumer"
-          :label="$t('consumer.type')"
-          :rules="[ val => val && val.length > 0 || $t('consumer.rules')]"
-          :hint="$t('consumer.hint')"
-          name="consumer"
-          autocomplete="on"
-          outlined
+        <q-form
+          ref="nameForm"
+          class="q-gutter-md"
+          autocorrect="off"
+          autocapitalize="off"
+          autocomplete="off"
+          greedy
+          @submit="onFinish"
         >
-          <template #prepend>
-            <q-icon name="face" />
-          </template>
-        </q-input>
-        <q-stepper-navigation>
-          <q-btn color="primary" label="Закончить" @click="onFinish" />
-        </q-stepper-navigation>
+          <q-input
+            v-model="consumer"
+            :label="$t('consumer.type')"
+            :rules="[ val => val && val.length > 0 || $t('consumer.rules')]"
+            :hint="$t('consumer.hint')"
+            name="consumer"
+            autocomplete="on"
+            outlined
+          >
+            <template #prepend>
+              <q-icon name="face" />
+            </template>
+          </q-input>
+          <q-stepper-navigation>
+            <q-btn color="primary" type="submit" label="Закончить"/>
+          </q-stepper-navigation>
+        </q-form>
       </q-step>
     </q-stepper>
 </template>
