@@ -59,7 +59,7 @@
           </template>
         </q-input>
         <q-stepper-navigation>
-          <q-btn color="primary" label="Закончить" @click="finish()" />
+          <q-btn color="primary" label="Закончить" @click="onFinish" />
         </q-stepper-navigation>
       </q-step>
     </q-stepper>
@@ -82,7 +82,7 @@ const metaData = {
   title: 'Обучение',
 }
 
-function finish() {
+function onFinish() {
   void store.dispatch('tutorialComplete')
   void store.dispatch('consumerName', consumer.value)
   void router.push({
@@ -101,7 +101,7 @@ function main() {
   return {
     step,
     consumer,
-    finish,
+    onFinish,
   }
 }
 

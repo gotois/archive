@@ -50,12 +50,12 @@ export default store(function (/* { ssrContext } */) {
     },
     actions: {
       tutorialComplete(context) {
-        context.commit('tutorialComplete')
         LocalStorage.set('tutorialCompleted', true)
+        context.commit('tutorialComplete')
       },
       consumerName(context, value: string) {
-        context.commit('consumerName', value)
         LocalStorage.set('consumer', value)
+        context.commit('consumerName', value)
       },
     },
 
