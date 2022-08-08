@@ -13,7 +13,7 @@
         icon="settings"
         :done="step > 1"
       >
-        Разработчик не осуществляет сбор ваших персональных данных.
+        {{ $t('tutorial.agreement') }}
         <q-stepper-navigation>
           <q-btn color="primary" label="Принять" @click="$refs.stepper.next()" />
         </q-stepper-navigation>
@@ -24,7 +24,7 @@
         icon="create_new_folder"
         :done="step > 2"
       >
-        Приложение распространяется "как есть". Разработчик не гарантирует сохранность ваших документов. Разработчик вправе внести изменения конфликтующие с вашими сохраненными документами.
+        {{ $t('tutorial.license') }}
         <q-stepper-navigation>
           <q-btn color="primary" label="Принять" @click="$refs.stepper.next()" />
         </q-stepper-navigation>
@@ -35,7 +35,7 @@
         icon="assignment"
         :done="step > 3"
       >
-        Приложение использует внутреннее хранилище браузера IndexDB. Это надежное хранилище, доступ к которому имеете только вы с текущего устройства.
+        {{ $t('tutorial.features') }}
         <q-stepper-navigation>
           <q-btn color="primary" label="Принять" @click="$refs.stepper.next()" />
         </q-stepper-navigation>
