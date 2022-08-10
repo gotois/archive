@@ -300,8 +300,12 @@ function routerFunc() {
         message: 'Связь с базой данных не установлена',
         timeout: 1000 * 1000,
         actions: [
-          { label: 'Закрыть', color: 'white', handler: () => { /* ... */ } }
-        ]
+          {
+            label: 'Закрыть',
+            color: 'white',
+            handler: () => { /* ... */ },
+          },
+        ],
       })
     }
   })()
@@ -343,7 +347,9 @@ function routerFunc() {
 
 function checkItemEndTime(item: Contract) {
   if (item.endTime < new Date()) {
-    return { 'text-decoration': 'line-through' }
+    return {
+      'text-decoration': 'line-through',
+    }
   }
   return {}
 }

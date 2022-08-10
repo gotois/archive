@@ -51,6 +51,6 @@ export async function createPDF(object: FormatContract) {
 
   return {
     title: object.instrument.name,
-    files
+    files,
   }
 }

@@ -91,20 +91,23 @@ async function onExportDB() {
     persistent: true,
     ok: false,
   })
-  const blob = await exportDB(db, { prettyJson: false, progressCallback })
+  const blob = await exportDB(db, {
+    prettyJson: false,
+    progressCallback,
+  })
   const zip = new JSZip()
   zip.file(EXPORT_NAME + '.json', blob)
   const content = await zip.generateAsync({
     type: 'blob',
     compression: 'DEFLATE',
     compressionOptions: {
-      level: 1
+      level: 1,
     },
     platform: 'UNIX',
   }, metadata => {
     const percentage = metadata.percent
     dialog.update({
-      message: `Создание... ${percentage}%`
+      message: `Создание... ${percentage}%`,
     })
     if (percentage === 100 && metadata.currentFile !== null) {
       dialog.hide()

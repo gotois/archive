@@ -6,6 +6,7 @@ import {
   Store as VuexStore,
   useStore as vuexUseStore,
 } from 'vuex'
+import Profile from './profile'
 
 /*
  * If not building with SSR mode, you can
@@ -17,45 +18,36 @@ import {
  */
 
 export interface StateInterface {
-  tutorialCompleted: boolean,
-  consumer: string,
+  tutorialCompleted: boolean;
 }
 
 // provide typings for `this.$store`
 declare module '@vue/runtime-core' {
   interface ComponentCustomProperties {
-    $store: VuexStore<StateInterface>
+    $store: VuexStore<StateInterface>,
   }
 }
 
 // provide typings for `useStore` helper
 export const storeKey: InjectionKey<VuexStore<StateInterface>> = Symbol('vuex-key')
 
-export default store(function (/* { ssrContext } */) {
+export default store(function () {
   const Store = createStore<StateInterface>({
     modules: {
+      Profile,
     },
-
     state: {
       tutorialCompleted: LocalStorage.getItem('tutorialCompleted') ?? false,
-      consumer: LocalStorage.getItem('consumer') ?? '',
     },
     mutations: {
       tutorialComplete(state) {
         state.tutorialCompleted = true
-      },
-      consumerName(state, name: string) {
-        state.consumer = name
       },
     },
     actions: {
       tutorialComplete(context) {
         LocalStorage.set('tutorialCompleted', true)
         context.commit('tutorialComplete')
-      },
-      consumerName(context, value: string) {
-        LocalStorage.set('consumer', value)
-        context.commit('consumerName', value)
       },
     },
 

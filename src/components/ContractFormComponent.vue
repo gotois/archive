@@ -45,18 +45,6 @@
         <q-icon name="assignment_ind" />
       </template>
     </q-input>
-    <q-input
-      v-model="description"
-      :label="$t('description.type')"
-      type="textarea"
-      class="no-padding"
-      outlined
-      autogrow
-    >
-      <template #prepend>
-        <q-icon name="sticky_note_2" />
-      </template>
-    </q-input>
     <div class="row justify-center items-center">
       <q-input
         v-model="duration.from"
@@ -115,6 +103,18 @@
         <q-icon name="add" @click.stop/>
       </template>
     </q-file>
+    <q-input
+      v-model="description"
+      :label="$t('description.type')"
+      type="textarea"
+      class="no-padding"
+      outlined
+      autogrow
+    >
+      <template #prepend>
+        <q-icon name="sticky_note_2" />
+      </template>
+    </q-input>
     <div class="text-right">
       <q-btn :label="$t('contractForm.submit')" icon-right="save" type="submit" color="red-9"/>
     </div>
@@ -217,7 +217,8 @@ async function onSubmit() {
   const images = await readFilesPromise(files.value as File[]) as string[]
   db.transaction('rw', db.contracts, async () => {
     const newContract: ContractTable = {
-      'agent_name': store.state.consumer,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+      'agent_name': store.getters.consumer,
       'participant_name': customer.value,
       'instrument_name': contractType.value,
       'instrument_description': description.value,
