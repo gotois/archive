@@ -13,6 +13,7 @@
         <q-toolbar-title class="text-black-9 text-center">
           {{ $t('header.title') }}
         </q-toolbar-title>
+        <q-btn flat round dense class="cursor-pointer" name="search" icon="search" @click="showSearch = true"/>
       </q-toolbar>
       <q-tabs shrink stretch>
           <q-route-tab to="/create" exact replace :label="$t('header.create')"/>
@@ -78,6 +79,20 @@
           </q-card-actions>
         </q-card>
       </q-dialog>
+      <q-dialog v-model="showSearch" persistent>
+        <q-card style="min-width: 350px">
+          <q-card-section>
+            <div class="text-h6">{{ $t('archive.search') }}</div>
+          </q-card-section>
+          <q-card-section class="q-pt-none">
+            <q-input v-model="searchText" dense autofocus :placeholder="'Название договора'" @keyup.enter="onSearchText" />
+          </q-card-section>
+          <q-card-actions align="right" class="text-primary">
+            <q-btn v-close-popup flat label="Отмена" />
+            <q-btn v-close-popup flat label="Найти" @click="onSearchText" />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
     </q-page-container>
   </q-layout>
 </template>
@@ -86,6 +101,7 @@
 import {defineComponent, ref} from 'vue'
 import {BulkError} from 'dexie'
 import {QVueGlobals, useQuasar} from 'quasar'
+import {Router, useRouter} from 'vue-router'
 import {db} from 'components/ContractDatabase'
 import {version} from '../../package.json'
 import DatabaseComponent from 'components/DatabaseComponent.vue'
@@ -93,8 +109,11 @@ import DatabaseComponent from 'components/DatabaseComponent.vue'
 const leftDrawerOpen = ref(false)
 const settingsOpen = ref(false)
 const confirm = ref(false)
+const searchText = ref('')
+const showSearch = ref(false)
 
 let $q: QVueGlobals
+let router: Router
 
 function onToggleLeftDrawer(): void {
   leftDrawerOpen.value = !leftDrawerOpen.value
@@ -102,6 +121,21 @@ function onToggleLeftDrawer(): void {
 
 function onOpenFeedback() {
   location.href = 'https://baskovsky.ru/feedback/'
+}
+
+function onSearchText(): void {
+  if (!searchText.value.length) {
+    return
+  }
+  void router.push({
+    path: 'archive',
+    query: {
+      filter: searchText.value,
+      page: 1,
+    },
+  })
+  showSearch.value = false
+  searchText.value = ''
 }
 
 async function onClearDatabase() {
@@ -122,12 +156,16 @@ async function onClearDatabase() {
 
 function main() {
   $q = useQuasar()
+  router = useRouter()
 
   return {
     leftDrawerOpen,
     settingsOpen,
     confirm,
     version,
+    searchText,
+    showSearch,
+    onSearchText,
     onOpenFeedback,
     onToggleLeftDrawer,
     onClearDatabase,

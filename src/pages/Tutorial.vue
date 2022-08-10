@@ -45,6 +45,9 @@
         title="Установка имени"
         icon="add_comment"
       >
+        <h2>Зачем мне заполнять свои данные?</h2>
+        <p>Мы предлагаем вам ввести все ваши данные один раз, чтобы не вводить их постоянно для каждого документа.</p>
+        <p>Введенные данные хранятся только на вашем устройстве и не попадают никуда больше.</p>
         <q-form
           ref="nameForm"
           class="q-gutter-md"
@@ -64,11 +67,11 @@
             outlined
           >
             <template #prepend>
-              <q-icon name="face" />
+              <q-icon name="face"/>
             </template>
           </q-input>
           <q-stepper-navigation>
-            <q-btn color="primary" type="submit" label="Закончить"/>
+            <q-btn color="secondary" type="submit" label="Закончить"/>
           </q-stepper-navigation>
         </q-form>
       </q-step>

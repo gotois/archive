@@ -36,7 +36,7 @@ export default route<StateInterface>(function ({store/* , ssrContext */}) {
       process.env.MODE === 'ssr' ? void 0 : process.env.VUE_ROUTER_BASE
     ),
   })
-  Router.beforeEach((to /*, from */) => {
+  Router.beforeEach((to) => {
     switch (to.path) {
       case '/tutorial': {
         return true
@@ -45,6 +45,7 @@ export default route<StateInterface>(function ({store/* , ssrContext */}) {
         if (!store.state.tutorialCompleted) {
           return '/tutorial'
         }
+        break
       }
     }
   // explicitly return false to cancel the navigation

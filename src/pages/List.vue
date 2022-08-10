@@ -7,23 +7,6 @@
       />
     </q-inner-loading>
     <template v-if="!loadingVisible">
-      <q-form
-        v-if="isSearch || contracts.length"
-        class="col-12 q-pa-md self-start"
-        @submit="onSearchText"
-      >
-        <q-input
-          v-model="searchText"
-          :label="$t('archive.search')"
-          input-class="text-left">
-          <template #append>
-            <q-icon
-              class="cursor-pointer"
-              name="search"
-              @click="onSearchText"/>
-          </template>
-        </q-input>
-      </q-form>
       <q-virtual-scroll
         v-if="contracts.length"
         :items="contracts"
@@ -304,19 +287,6 @@ function onPaginate(page: string): void {
   }
 }
 
-function onSearchText(): void {
-  if (!searchText.value.length) {
-    return
-  }
-  void router.push({
-    path: 'archive',
-    query: {
-      filter: searchText.value,
-      page: 1,
-    },
-  })
-}
-
 function routerFunc() {
   const {page, filter} = router.currentRoute.value.query
   setValues({
@@ -346,7 +316,6 @@ function routerFunc() {
 
   return {
     onPaginate,
-    onSearchText,
   }
 }
 
