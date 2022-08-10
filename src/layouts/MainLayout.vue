@@ -17,13 +17,14 @@
       </q-toolbar>
       <q-tabs shrink stretch>
           <q-route-tab to="/create" exact replace :label="$t('header.create')"/>
-          <q-route-tab to="/archive" exact replace :label="$t('header.archive')"/>
+          <q-route-tab to="/" exact replace :label="$t('header.archive')"/>
         </q-tabs>
     </q-header>
     <q-drawer
       v-model="leftDrawerOpen"
       show-if-above
       bordered
+      class="flex"
       side="left"
     >
       <q-list class="row self-start">
@@ -59,6 +60,7 @@
           </div>
         </q-expansion-item>
       </q-list>
+      <q-space class="row"/>
       <div class="row q-pa-md q-gutter-sm self-end">
         <q-chip icon="link" class="cursor-pointer text-center" clickable :label="$t('navigation.feedback')" @click="onOpenFeedback"></q-chip>
       </div>
