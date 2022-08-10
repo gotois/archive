@@ -80,7 +80,7 @@
                     <q-btn
                       round color="white" text-color="primary"
                       icon="fullscreen"
-                      @click="showFullImage(item)"
+                      @click="onShowFullImage(item)"
                     />
                   </q-carousel-control>
                   <q-carousel-control
@@ -91,7 +91,7 @@
                     <q-btn
                       round color="white" text-color="primary"
                       icon="ios_share"
-                      @click="shareFullImage(item)"
+                      @click="onShareFullImage(item)"
                     />
                   </q-carousel-control>
                 </template>
@@ -169,7 +169,7 @@
 
 <script lang="ts">
 import {defineComponent, ref} from 'vue'
-import {useRouter} from 'vue-router'
+import {Router, useRouter} from 'vue-router'
 import {QVueGlobals, useMeta, useQuasar} from 'quasar'
 import {db} from 'components/ContractDatabase'
 import {Contract, FormatContract} from 'components/models'
@@ -205,6 +205,7 @@ const metaData = {
 }
 
 let $q: QVueGlobals
+let router: Router
 
 const paginationCount = ref(0)
 const contracts = ref([])
@@ -214,7 +215,7 @@ const currentPage = ref(1)
 const loadingVisible = ref(false)
 const nativeShareIsAvailable = ref(!!navigator.share)
 
-function showFullImage(object: FormatContract) {
+function onShowFullImage(object: FormatContract) {
   const image = object.object[object._currentSlide - 1]
   const styleSheet = document.createElement('style')
   styleSheet.innerHTML = styleRules
@@ -228,7 +229,7 @@ function showFullImage(object: FormatContract) {
   newWin.document.head.appendChild(styleSheet)
 }
 
-async function shareFullImage(object: FormatContract) {
+async function onShareFullImage(object: FormatContract) {
   const shareData = await createPDF(object)
   try {
     await navigator.share(shareData)
@@ -282,8 +283,41 @@ function setValues({page, filter}: {page: string|string[], filter: string|string
   searchText.value = String(filter ?? '')
 }
 
+function onPaginate(page: string): void {
+  const filter = searchText.value
+
+  if (filter.length) {
+    void router.push({
+      path: 'archive',
+      query: {
+        page: Number(page),
+        filter,
+      },
+    })
+  } else {
+    void router.push({
+      path: 'archive',
+      query: {
+        page: Number(page),
+      },
+    })
+  }
+}
+
+function onSearchText(): void {
+  if (!searchText.value.length) {
+    return
+  }
+  void router.push({
+    path: 'archive',
+    query: {
+      filter: searchText.value,
+      page: 1,
+    },
+  })
+}
+
 function routerFunc() {
-  const router = useRouter()
   const {page, filter} = router.currentRoute.value.query
   setValues({
     page,
@@ -311,37 +345,8 @@ function routerFunc() {
   })()
 
   return {
-    onPaginate(page: string): void {
-      const filter = searchText.value
-      if (filter.length) {
-        void router.push({
-          path: 'archive',
-          query: {
-            page: Number(page),
-            filter,
-          },
-        })
-      } else {
-        void router.push({
-          path: 'archive',
-          query: {
-            page: Number(page),
-          }
-        })
-      }
-    },
-    onSearchText(): void {
-      if (!searchText.value.length) {
-        return
-      }
-      void router.push({
-        path: 'archive',
-        query: {
-          filter: searchText.value,
-          page: 1,
-        }
-      })
-    }
+    onPaginate,
+    onSearchText,
   }
 }
 
@@ -363,6 +368,7 @@ function showDate(item: Contract) {
 
 function main() {
   $q = useQuasar()
+  router = useRouter()
 
   return {
       contracts,
@@ -372,8 +378,8 @@ function main() {
       paginationCount,
       nativeShareIsAvailable,
       showDate,
-      showFullImage,
-      shareFullImage,
+      onShowFullImage,
+      onShareFullImage,
       checkItemEndTime,
       ...routerFunc(),
     }
@@ -385,7 +391,7 @@ export default defineComponent({
   async beforeRouteUpdate(to) {
     setValues({
       page: to.query.page,
-      filter: to.query.filter
+      filter: to.query.filter,
     })
     await setContracts()
   },

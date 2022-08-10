@@ -7,7 +7,7 @@ export async function createPDF(object: FormatContract) {
     orientation: 'portrait',
     unit: 'px',
     format: 'a4',
-    hotfixes: ['px_scaling']
+    hotfixes: ['px_scaling'],
   })
   doc.setProperties({
     title: object.instrument.name,

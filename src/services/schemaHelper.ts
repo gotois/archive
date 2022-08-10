@@ -6,16 +6,16 @@ export function formatterContracts(contracts: Contract[]): FormatContract[] {
     '@type': 'OrganizeAction',
     'agent': {
       '@type': 'Person',
-      'name': contract.agent_name
+      'name': contract.agent_name,
     },
     'participant': {
       '@type': 'Person',
-      'name': contract.participant_name
+      'name': contract.participant_name,
     },
     instrument: {
       '@type': 'Thing',
       'name': contract.instrument_name,
-      'description': contract.instrument_description
+      'description': contract.instrument_description,
     },
     'startTime': contract.startTime,
     'endTime': contract.endTime,

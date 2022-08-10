@@ -3,10 +3,10 @@ export function readFilesPromise(files: File[]) {
   for (const file of files) {
     const promise = new Promise(((resolve, reject) => {
       const reader = new FileReader()
-      reader.onerror = function (error) {
+      reader.onerror = (error) => {
         reject(error)
       }
-      reader.onloadend = function () {
+      reader.onloadend = () => {
         resolve(reader.result)
       }
       reader.readAsDataURL(file)

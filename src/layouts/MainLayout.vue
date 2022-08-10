@@ -1,6 +1,6 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+  <q-layout view="hHr LpR lfr">
+    <q-header reveal bordered class="bg-white text-primary" height-hint="98">
       <q-toolbar>
         <q-btn
           flat
@@ -10,19 +10,20 @@
           aria-label="Menu"
           @click="onToggleLeftDrawer"
         />
-        <q-toolbar-title class="text-black-9">
+        <q-toolbar-title class="text-black-9 text-center">
           {{ $t('header.title') }}
         </q-toolbar-title>
-        <q-tabs shrink stretch>
+      </q-toolbar>
+      <q-tabs shrink stretch>
           <q-route-tab to="/create" exact replace :label="$t('header.create')"/>
           <q-route-tab to="/archive" exact replace :label="$t('header.archive')"/>
         </q-tabs>
-      </q-toolbar>
     </q-header>
     <q-drawer
       v-model="leftDrawerOpen"
+      show-if-above
       bordered
-      class="row justify-center items-baseline"
+      side="left"
     >
       <q-list class="row self-start">
         <div class="text-h6 q-pa-md">
