@@ -1,26 +1,28 @@
 <template>
-  <q-page padding class="row justify-center full-height">
+  <q-page padding class="col justify-center full-height">
     <q-inner-loading :showing="loadingVisible">
       <q-spinner-hourglass
         color="info"
         size="6em"
       />
     </q-inner-loading>
-    <div class="text-center full-width">
-      <q-chip
-        v-for="([name, value], objectKey) in archiveNames"
-        v-show="!loadingVisible"
-        :key="objectKey"
-        dense
-        square
-        outline
-        clickable
-        @click="onSelectArchiveName(name)"
-      >
-        <q-avatar v-if="value > 1" color="secondary" text-color="white">{{ value }}</q-avatar>
-        <div class="ellipsis">{{ name }}</div>
-        <q-tooltip>{{ name }}</q-tooltip>
-      </q-chip>
+    <div class="wrap">
+      <div class="text-center full-width">
+        <q-chip
+          v-for="([name, value], objectKey) in archiveNames"
+          v-show="!loadingVisible"
+          :key="objectKey"
+          dense
+          square
+          outline
+          clickable
+          @click="onSelectArchiveName(name)"
+        >
+          <q-avatar v-if="value > 1" color="secondary" text-color="white">{{ value }}</q-avatar>
+          <div class="ellipsis">{{ name }}</div>
+          <q-tooltip>{{ name }}</q-tooltip>
+        </q-chip>
+      </div>
       <q-skeleton v-show="loadingVisible" type="QChip" animation="blink" width="100%" />
     </div>
     <q-virtual-scroll
@@ -109,10 +111,8 @@
           </q-card-section>
         </q-card>
       </template>
-    </q-virtual-scroll>
-    <template v-if="!loadingVisible">
-      <template v-if="paginationCount >= 1">
-        <div class="col-12 q-pa-lg flex flex-center self-end">
+      <template #after>
+        <div v-if="paginationCount > 0" class="col-12 q-pa-lg flex flex-center self-end">
           <q-pagination
             v-model="currentPage"
             :max="paginationCount"
@@ -121,7 +121,9 @@
           />
         </div>
       </template>
-      <template v-else>
+    </q-virtual-scroll>
+    <template v-if="!loadingVisible">
+      <template v-if="paginationCount < 1">
         <div v-if="isSearch" class="col-12 q-pa-lg flex flex-center self-start">
           <q-banner inline-actions class="text-center text-black">
             <template #avatar>
@@ -136,7 +138,7 @@
           </q-banner>
         </div>
         <template v-else>
-          <q-banner inline-actions class="flex self-center text-black">
+          <q-banner inline-actions class="col-12 q-pa-lg flex flex-center self-center text-black">
             <template #avatar>
               <q-icon name="add_task" color="secondary" />
             </template>
