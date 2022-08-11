@@ -1,14 +1,11 @@
 [
   {
-    "relation": [
-      "delegate_permission/common.handle_all_urls"
-    ],
+    "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
       "package_name": "ru.baskovsky.archive",
-      "sha256_cert_fingerprints": [
-        "E2:67:06:41:A0:31:BD:7A:C7:0A:FD:F3:99:31:18:76:3F:BC:57:B9:10:F3:B1:91:93:38:1C:1E:7B:C3:F0:C2"
-      ]
+      "sha256_cert_fingerprints":
+        ["DE:A9:60:9A:23:1A:47:79:67:6C:A7:F8:02:EB:FE:FD:E2:86:0F:7C:2F:13:B2:D1:8A:B7:FF:01:E8:3B:FB:11"]
     }
   }
 ]
