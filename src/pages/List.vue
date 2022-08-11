@@ -2,101 +2,115 @@
   <q-page padding class="row justify-center full-height">
     <q-inner-loading :showing="loadingVisible">
       <q-spinner-hourglass
-        color="primary"
+        color="info"
         size="6em"
       />
     </q-inner-loading>
-    <template v-if="!loadingVisible">
-      <q-virtual-scroll
-        v-if="contracts.length"
-        :items="contracts"
-        separator
-        class="col-12"
+    <div class="text-center full-width">
+      <q-chip
+        v-for="([name, value], objectKey) in archiveNames"
+        v-show="!loadingVisible"
+        :key="objectKey"
+        dense
+        square
+        outline
+        clickable
+        @click="onSelectArchiveName(name)"
       >
-        <template #default="{ item, index }">
-          <q-card
-            :key="index"
-            class="q-ma-lg"
-            flat
-            square
-            bordered>
-            <div class="row justify-between q-pa-md">
-              <p class="text-h6 text-uppercase text-weight-bold no-margin" :style="checkItemEndTime(item)">{{ item.instrument.name }}</p>
-              <p v-if="item.instrument.description" class="text-caption text-grey">{{ item.instrument.description }}</p>
-            </div>
-            <q-separator v-if="item.object.length"/>
-            <q-carousel
-                v-if="item.object.length"
-                v-model="item._currentSlide"
-                transition-prev="slide-right"
-                transition-next="slide-left"
-                control-color="primary"
-                animated
-                swipeable
-                :navigation="item.object.length > 1"
-                infinite
+        <q-avatar v-if="value > 1" color="secondary" text-color="white">{{ value }}</q-avatar>
+        <div class="ellipsis">{{ name }}</div>
+        <q-tooltip>{{ name }}</q-tooltip>
+      </q-chip>
+      <q-skeleton v-show="loadingVisible" type="QChip" animation="blink" width="100%" />
+    </div>
+    <q-virtual-scroll
+      v-if="contracts.length"
+      :items="contracts"
+      separator
+      class="col-12"
+    >
+      <template #default="{ item, index }">
+        <q-card
+          :key="index"
+          class="q-ma-lg"
+          flat
+          square
+          bordered>
+          <div class="row justify-between q-pa-md">
+            <p class="text-h6 text-uppercase text-weight-bold no-margin" :style="checkItemEndTime(item)">{{ item.instrument.name }}</p>
+            <p v-if="item.instrument.description" class="text-caption text-grey">{{ item.instrument.description }}</p>
+          </div>
+          <q-separator v-if="item.object.length"/>
+          <q-carousel
+              v-if="item.object.length"
+              v-model="item._currentSlide"
+              transition-prev="slide-right"
+              transition-next="slide-left"
+              control-color="primary"
+              animated
+              swipeable
+              :navigation="item.object.length > 1"
+              infinite
+            >
+              <q-carousel-slide
+                v-for="(object, objectIndex) in item.object"
+                :key="objectIndex"
+                class="no-margin no-padding"
+                :name="objectIndex + 1"
               >
-                <q-carousel-slide
-                  v-for="(object, objectIndex) in item.object"
-                  :key="objectIndex"
-                  class="no-margin no-padding"
-                  :name="objectIndex + 1"
+                <q-scroll-area class="fit">
+                  <q-img
+                    class="col"
+                    fit="contain"
+                    :ratio="1"
+                    style="max-height: 400px"
+                    :src="object.contentUrl"
+                    loading="lazy"
+                    decoding="async"
+                    no-native-menu
+                  />
+                </q-scroll-area>
+              </q-carousel-slide>
+              <template #control>
+                <q-carousel-control
+                  position="top-right"
+                  :offset="[18, 18]"
                 >
-                  <q-scroll-area class="fit">
-                    <q-img
-                      class="col"
-                      fit="contain"
-                      :ratio="1"
-                      style="max-height: 400px"
-                      :src="object.contentUrl"
-                      loading="lazy"
-                      decoding="async"
-                      no-native-menu
-                    />
-                  </q-scroll-area>
-                </q-carousel-slide>
-                <template #control>
-                  <q-carousel-control
-                    position="top-right"
-                    :offset="[18, 18]"
-                  >
-                    <q-btn
-                      round color="white" text-color="primary"
-                      icon="fullscreen"
-                      @click="onShowFullImage(item)"
-                    />
-                  </q-carousel-control>
-                  <q-carousel-control
-                    v-if="nativeShareIsAvailable"
-                    position="top-left"
-                    :offset="[18, 18]"
-                  >
-                    <q-btn
-                      round color="white" text-color="primary"
-                      icon="ios_share"
-                      @click="onShareFullImage(item)"
-                    />
-                  </q-carousel-control>
-                </template>
-            </q-carousel>
-            <q-separator/>
-            <q-card-section>
-              <p class="text-overline text-orange-9 no-margin">
-                {{ showDate(item) }}
+                  <q-btn
+                    round color="white" text-color="primary"
+                    icon="fullscreen"
+                    @click="onShowFullImage(item)"
+                  />
+                </q-carousel-control>
+                <q-carousel-control
+                  v-if="nativeShareIsAvailable"
+                  position="top-left"
+                  :offset="[18, 18]"
+                >
+                  <q-btn
+                    round color="white" text-color="primary"
+                    icon="ios_share"
+                    @click="onShareFullImage(item)"
+                  />
+                </q-carousel-control>
+              </template>
+          </q-carousel>
+          <q-separator/>
+          <q-card-section>
+            <p class="text-overline text-orange-9 no-margin">
+              {{ showDate(item) }}
+            </p>
+            <q-space/>
+            <div class="row items-center">
+              <p class="text-black text-weight-light no-margin">
+                {{ item.participant.name }}
               </p>
-              <div class="row items-center">
-                <p class="text-black text-h6 text-weight-light no-margin">
-                  {{ item.agent.name }}
-                </p>
-                <q-space/>
-                <p class="text-black no-margin">
-                  {{ item.participant.name }}
-                </p>
-              </div>
-            </q-card-section>
-          </q-card>
-        </template>
-      </q-virtual-scroll>
+            </div>
+          </q-card-section>
+        </q-card>
+      </template>
+    </q-virtual-scroll>
+    <template v-if="!loadingVisible">
       <template v-if="paginationCount >= 1">
         <div class="col-12 q-pa-lg flex flex-center self-end">
           <q-pagination
@@ -130,7 +144,7 @@
               {{ archiveEmptyText }}
             </template>
             <template #action>
-              <q-btn flat color="primary" label="Добавить" to="/create" />
+              <q-btn flat color="accent" label="Добавить" to="/create"/>
             </template>
           </q-banner>
         </template>
@@ -196,6 +210,7 @@ const searchText = ref('')
 const limit = ref(5)
 const currentPage = ref(1)
 const loadingVisible = ref(false)
+const archiveNames = ref([])
 const nativeShareIsAvailable = ref(!!navigator.share)
 
 function onShowFullImage(object: FormatContract) {
@@ -287,6 +302,16 @@ function onPaginate(page: string): void {
   }
 }
 
+function onSelectArchiveName(name: string) {
+  void router.push({
+    path: 'archive',
+    query: {
+      filter: name,
+      page: 1,
+    },
+  })
+}
+
 function routerFunc() {
   const {page, filter} = router.currentRoute.value.query
   setValues({
@@ -339,19 +364,26 @@ function main() {
   $q = useQuasar()
   router = useRouter()
 
+  void (async () => {
+    const map = await db.getContractNames()
+    archiveNames.value = Array.from(map)
+  })()
+
   return {
-      contracts,
-      searchText,
-      currentPage,
-      loadingVisible,
-      paginationCount,
-      nativeShareIsAvailable,
-      showDate,
-      onShowFullImage,
-      onShareFullImage,
-      checkItemEndTime,
-      ...routerFunc(),
-    }
+    contracts,
+    searchText,
+    currentPage,
+    loadingVisible,
+    paginationCount,
+    nativeShareIsAvailable,
+    archiveNames,
+    showDate,
+    onShowFullImage,
+    onShareFullImage,
+    checkItemEndTime,
+    onSelectArchiveName,
+    ...routerFunc(),
+  }
 }
 
 export default defineComponent({

@@ -116,7 +116,7 @@
       </template>
     </q-input>
     <div class="text-right">
-      <q-btn :label="$t('contractForm.submit')" icon-right="save" type="submit" color="red-9"/>
+      <q-btn :label="$t('contractForm.submit')" icon-right="save" type="submit" color="accent"/>
     </div>
   </q-form>
 </template>

@@ -15,7 +15,7 @@ export default {
     archive: 'Архив',
   },
   navigation: {
-    version: 'Версия',
+    version: 'v.',
     title: 'Настройки',
     feedback: 'Ваши замечания по продукту',
   },

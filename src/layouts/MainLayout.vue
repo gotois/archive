@@ -12,6 +12,9 @@
         />
         <q-toolbar-title class="text-black-9 text-center">
           {{ $t('header.title') }}
+          <q-badge outline align="top" color="orange">
+            {{ $t('navigation.version')}} {{ version }}
+          </q-badge>
         </q-toolbar-title>
         <q-btn flat round dense class="cursor-pointer" name="search" icon="search" @click="showSearch = true"/>
       </q-toolbar>
@@ -30,9 +33,6 @@
       <q-list class="row self-start">
         <div class="text-h6 q-pa-md">
           {{ $t('navigation.title')}}
-          <q-badge outline align="middle" color="orange">
-            {{ $t('navigation.version')}} {{version}}
-          </q-badge>
         </div>
         <q-expansion-item
           v-model="settingsOpen"
@@ -60,9 +60,8 @@
           </div>
         </q-expansion-item>
       </q-list>
-      <q-space class="row"/>
-      <div class="row q-pa-md q-gutter-sm self-end">
-        <q-chip icon="link" class="cursor-pointer text-center" clickable :label="$t('navigation.feedback')" @click="onOpenFeedback"></q-chip>
+      <div class="row full-width self-end flex-center q-pa-md">
+        <q-chip icon="link" class="cursor-pointer" clickable :label="$t('navigation.feedback')" @click="onOpenFeedback"></q-chip>
       </div>
     </q-drawer>
     <q-page-container>
@@ -91,7 +90,7 @@
           </q-card-section>
           <q-card-actions align="right" class="text-primary">
             <q-btn v-close-popup flat label="Отмена" />
-            <q-btn v-close-popup flat label="Найти" @click="onSearchText" />
+            <q-btn v-close-popup color="accent" label="Найти" @click="onSearchText" />
           </q-card-actions>
         </q-card>
       </q-dialog>

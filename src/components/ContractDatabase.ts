@@ -12,6 +12,15 @@ export class ContractDatabase extends Dexie {
     this.contracts = this.table('contracts')
   }
 
+  public async getContractNames() {
+    const map = new Map()
+    await db.contracts.each((value) => {
+      const count = Number(map.get(value.instrument_name)) || 0
+      map.set(value.instrument_name, count + 1)
+    })
+    return map
+  }
+
   public destroy() {
     return this.contracts.clear()
   }
