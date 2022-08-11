@@ -185,7 +185,7 @@ module.exports = configure(function (ctx) {
         appleTouchIcon167: 'icons/apple-icon-167x167.png',
         appleSafariPinnedTab: 'icons/safari-pinned-tab.svg',
         msapplicationTileImage: 'icons/ms-icon-144x144.png',
-        msapplicationTileColor: '#027be3'
+        msapplicationTileColor: '#027be3',
       },
     },
   }
