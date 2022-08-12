@@ -7,6 +7,7 @@ import {
   useStore as vuexUseStore,
 } from 'vuex'
 import Profile from './profile'
+import Contract from './contract'
 
 /*
  * If not building with SSR mode, you can
@@ -35,6 +36,7 @@ export default store(function () {
   const Store = createStore<StateInterface>({
     modules: {
       Profile,
+      Contract,
     },
     state: {
       tutorialCompleted: LocalStorage.getItem('tutorialCompleted') ?? false,
