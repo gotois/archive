@@ -58,10 +58,10 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, ref, watch} from 'vue'
-import {Router, useRouter} from 'vue-router'
+import {defineComponent, ref} from 'vue'
+import {Router, useRouter, LocationQuery} from 'vue-router'
 import {Store as VuexStore} from 'vuex'
-import {QVueGlobals, useMeta, useQuasar} from 'quasar'
+import {useMeta} from 'quasar'
 import {StateInterface, useStore} from '../store'
 import {contractTypes} from '../services/contractTypes'
 import ArchiveListComponent from 'components/ArchiveListComponent.vue'
@@ -70,39 +70,13 @@ const metaData = {
   title: 'Архив',
 }
 
-let $q: QVueGlobals
 let router: Router
 let store: VuexStore<StateInterface>
 
-const searchText = ref('INITIAL')
+const searchText = ref('')
 const limit = ref(5)
 const currentPage = ref(1)
 const loadingVisible = ref(true)
-
-async function setContracts() {
-  const offset = (currentPage.value - 1) * limit.value
-  const query = searchText.value
-
-  switch (router.currentRoute.value.name) {
-    case 'search': {
-      await store.dispatch('searchFromContracts', {query, offset, limit: limit.value})
-      break
-    }
-    case 'filter': {
-      await store.dispatch('filterFromContracts', {query})
-      break
-    }
-    default: {
-      await store.dispatch('loadAllContracts', {offset, limit: limit.value})
-      break
-    }
-  }
-}
-
-function setValues({page, filter}: {page: number|string|string[], filter: string|string[]}) {
-  currentPage.value = Number(page ?? 1)
-  searchText.value = String(filter ?? '')
-}
 
 async function onPaginate(page: number) {
   const filter = searchText.value
@@ -125,16 +99,33 @@ async function onPaginate(page: number) {
   }
 }
 
+async function updateContracts({ page, filter }: LocationQuery|{page: number, filter: string}) {
+  const offset = (currentPage.value - 1) * limit.value
+  const query = String(filter ?? '')
+
+  switch (router.currentRoute.value.name) {
+    case 'search': {
+      await store.dispatch('searchFromContracts', {query, offset, limit: limit.value})
+      break
+    }
+    case 'filter': {
+      await store.dispatch('filterFromContracts', {query})
+      break
+    }
+    default: {
+      await store.dispatch('loadAllContracts', {offset, limit: limit.value})
+      break
+    }
+  }
+  currentPage.value = Number(page ?? 1)
+}
+
 function main() {
-  $q = useQuasar()
   store = useStore()
   router = useRouter()
 
-  const {page, filter} = router.currentRoute.value.query
-  setValues({
-    page,
-    filter,
-  })
+  router.afterEach((to) => (updateContracts(to.query)))
+  void (updateContracts)(router.currentRoute.value.query)
 
   return {
     searchText,
@@ -150,40 +141,8 @@ export default defineComponent({
   components: {
     ArchiveListComponent,
   },
-  beforeRouteUpdate(to) {
-    setValues({
-      page: to.query.page,
-      filter: to.query.filter,
-    })
-  },
   setup() {
     useMeta(metaData)
-
-    watch(() => searchText.value, (async (newVal, oldValue) => {
-      if (newVal === oldValue) {
-        return
-      }
-      loadingVisible.value = true
-      try {
-        await setContracts()
-      } catch (e) {
-        console.error(e)
-        $q.notify({
-          type: 'negative',
-          message: 'Связь с базой данных не установлена',
-          timeout: 1000 * 1000,
-          actions: [
-            {
-              label: 'Закрыть',
-              color: 'white',
-              handler: () => { /* ... */ },
-            },
-          ],
-        })
-      } finally {
-        loadingVisible.value = false
-      }
-    }))
 
     return main()
   },
