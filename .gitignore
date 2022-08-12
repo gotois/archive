@@ -33,3 +33,11 @@ yarn-error.log*
 *.sln
 .vscode
 contracts.iml
+
+# APK
+*.aab
+*.apk
+*.apk.*
+
+# Android Studio
+local.properties

@@ -22,3 +22,12 @@ npm run lint
 ```bash
 npm run build
 ```
+
+### Build TWA
+Set twa-manifest.json signingKey:
+```
+  "signingKey": {
+    "path": "PATH_FOR_KEYSTORE",
+    "alias": "ALIAS_NAME"
+  },
+```
