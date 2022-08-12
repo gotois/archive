@@ -23,37 +23,53 @@ const Contract: Module<ContractState, StateInterface> = {
     },
   },
   actions: {
-    async searchFromContracts(context, { queryFilter, offset, limit }: { queryFilter: string, offset: number, limit: number }) {
-      const searchTerms = queryFilter.split(' ')
+    async filterFromContracts(context, {query}: {query: string}) {
+      const contracts = await db.contracts.where('instrument_name')
+        .equals(query)
+        .reverse()
+        .toArray() as Contract[]
+      context.commit('setContractsCount', contracts.length)
+      context.commit('setContracts', contracts)
+    },
+    async searchFromContracts(context, { query, offset, limit }: { query: string, offset: number, limit: number }) {
+      if (query.length <= 0) {
+        context.commit('setContracts', [])
+        return
+      }
+      const searchTerms = query.split(' ')
       const count = await db.contracts.where('instrument_name')
         .startsWithAnyOfIgnoreCase(searchTerms)
         .or('instrument_name')
         .anyOfIgnoreCase(searchTerms)
         .count()
       context.commit('setContractsCount', count)
-      if (count) {
-        const contracts = await db.contracts.where('instrument_name')
-          .startsWithAnyOfIgnoreCase(searchTerms)
-          .or('instrument_name')
-          .anyOfIgnoreCase(searchTerms)
-          .reverse()
-          .offset(offset)
-          .limit(limit)
-          .toArray()
-        context.commit('setContracts', contracts as Contract[])
+      if (!count) {
+        context.commit('setContracts', [])
+        return
       }
+      const contracts = await db.contracts.where('instrument_name')
+        .startsWithAnyOfIgnoreCase(searchTerms)
+        .or('instrument_name')
+        .anyOfIgnoreCase(searchTerms)
+        .reverse()
+        .offset(offset)
+        .limit(limit)
+        .toArray() as Contract[]
+      context.commit('setContracts', contracts)
     },
     async loadAllContracts(context, {offset,limit}: {offset: number, limit: number}) {
       const count: number = await db.contracts.count()
       context.commit('setContractsCount', count)
-      if (count) {
-        const contracts = await db.contracts.orderBy('startTime')
-          .reverse()
-          .offset(offset)
-          .limit(limit)
-          .toArray()
-        context.commit('setContracts', contracts as Contract[])
+      if (!count) {
+        context.commit('setContracts', [])
+        return
       }
+      const contracts = await db.contracts.orderBy('startTime')
+        .reverse()
+        .offset(offset)
+        .limit(limit)
+        .toArray() as Contract[]
+      context.commit('setContracts', contracts)
     },
   },
   getters: {

@@ -58,7 +58,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, ref} from 'vue'
+import {defineComponent, ref, watch} from 'vue'
 import {Router, useRouter} from 'vue-router'
 import {Store as VuexStore} from 'vuex'
 import {QVueGlobals, useMeta, useQuasar} from 'quasar'
@@ -74,41 +74,50 @@ let $q: QVueGlobals
 let router: Router
 let store: VuexStore<StateInterface>
 
-const searchText = ref('')
+const searchText = ref('INITIAL')
 const limit = ref(5)
 const currentPage = ref(1)
-const loadingVisible = ref(false)
+const loadingVisible = ref(true)
 
 async function setContracts() {
   const offset = (currentPage.value - 1) * limit.value
-  const queryFilter = searchText.value
+  const query = searchText.value
 
-  if (queryFilter.length > 0) { // searching
-    await store.dispatch('searchFromContracts', {queryFilter: queryFilter, offset, limit: limit.value})
-  } else { // all
-    await store.dispatch('loadAllContracts', {offset, limit: limit.value})
+  switch (router.currentRoute.value.name) {
+    case 'search': {
+      await store.dispatch('searchFromContracts', {query, offset, limit: limit.value})
+      break
+    }
+    case 'filter': {
+      await store.dispatch('filterFromContracts', {query})
+      break
+    }
+    default: {
+      await store.dispatch('loadAllContracts', {offset, limit: limit.value})
+      break
+    }
   }
 }
 
-function setValues({page, filter}: {page: string|string[], filter: string|string[]}) {
+function setValues({page, filter}: {page: number|string|string[], filter: string|string[]}) {
   currentPage.value = Number(page ?? 1)
   searchText.value = String(filter ?? '')
 }
 
-function onPaginate(page: number): void {
+async function onPaginate(page: number) {
   const filter = searchText.value
 
   if (filter.length) {
-    void router.push({
-      path: 'archive',
+    await router.push({
+      name: 'filter',
       query: {
         page: Number(page),
         filter,
       },
     })
   } else {
-    void router.push({
-      path: 'archive',
+    await router.push({
+      name: 'archive',
       query: {
         page: Number(page),
       },
@@ -116,51 +125,22 @@ function onPaginate(page: number): void {
   }
 }
 
-function routerFunc() {
+function main() {
+  $q = useQuasar()
+  store = useStore()
+  router = useRouter()
+
   const {page, filter} = router.currentRoute.value.query
   setValues({
     page,
     filter,
   })
-  loadingVisible.value = true
-
-  void (async (): Promise<void> => {
-    try {
-      await setContracts()
-    } catch (e) {
-      console.error(e)
-      $q.notify({
-        type: 'negative',
-        message: 'Связь с базой данных не установлена',
-        timeout: 1000 * 1000,
-        actions: [
-          {
-            label: 'Закрыть',
-            color: 'white',
-            handler: () => { /* ... */ },
-          },
-        ],
-      })
-    } finally {
-      loadingVisible.value = false
-    }
-  })()
-
-  return {
-    onPaginate,
-  }
-}
-
-function main() {
-  $q = useQuasar()
-  router = useRouter()
-  store = useStore()
 
   return {
     searchText,
     currentPage,
     loadingVisible,
-    ...routerFunc(),
+    onPaginate,
   }
 }
 
@@ -170,20 +150,46 @@ export default defineComponent({
   components: {
     ArchiveListComponent,
   },
-  async beforeRouteUpdate(to) {
+  beforeRouteUpdate(to) {
     setValues({
       page: to.query.page,
       filter: to.query.filter,
     })
-    await setContracts()
   },
   setup() {
     useMeta(metaData)
+
+    watch(() => searchText.value, (async (newVal, oldValue) => {
+      if (newVal === oldValue) {
+        return
+      }
+      loadingVisible.value = true
+      try {
+        await setContracts()
+      } catch (e) {
+        console.error(e)
+        $q.notify({
+          type: 'negative',
+          message: 'Связь с базой данных не установлена',
+          timeout: 1000 * 1000,
+          actions: [
+            {
+              label: 'Закрыть',
+              color: 'white',
+              handler: () => { /* ... */ },
+            },
+          ],
+        })
+      } finally {
+        loadingVisible.value = false
+      }
+    }))
+
     return main()
   },
   computed: {
     isSearch() {
-      return Boolean(this.$router.currentRoute.value.query.filter)
+      return Boolean(router.currentRoute.value.query.filter)
     },
     archiveEmptyText() {
       const randomContractType = Math.floor(Math.random() * (contractTypes.length - 1))

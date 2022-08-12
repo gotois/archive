@@ -27,9 +27,9 @@
         ></q-btn>
       </q-toolbar>
       <q-tabs shrink stretch>
-          <q-route-tab to="/create" exact replace :label="$t('header.create')"/>
-          <q-route-tab to="/" exact replace :label="$t('header.archive')"/>
-        </q-tabs>
+        <q-route-tab to="/create" exact replace :label="$t('header.create')"/>
+        <q-route-tab :to="{ name: 'archive' }" exact replace :label="$t('header.archive')"/>
+      </q-tabs>
     </q-header>
     <q-drawer
       v-model="leftDrawerOpen"
@@ -156,12 +156,12 @@ function onOpenFeedback() {
   location.href = 'https://baskovsky.ru/feedback/'
 }
 
-function onSearchText(): void {
+async function onSearchText() {
   if (!searchText.value.length) {
     return
   }
-  void router.push({
-    path: 'archive',
+  await router.push({
+    name: 'search',
     query: {
       filter: searchText.value,
       page: 1,
@@ -187,12 +187,11 @@ async function onClearDatabase() {
   }
 }
 
-function onSelectArchiveName(name: string) {
-  void router.push({
-    path: 'archive',
+async function onSelectArchiveName(name: string) {
+  await router.push({
+    name: 'filter',
     query: {
       filter: name,
-      page: 1,
     },
   })
 }

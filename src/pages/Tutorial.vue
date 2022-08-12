@@ -95,11 +95,11 @@ const metaData = {
   title: 'Обучение',
 }
 
-function onFinish() {
+async function onFinish() {
   void store.dispatch('tutorialComplete')
   void store.dispatch('consumerName', consumer.value)
-  void router.push({
-    path: 'archive',
+  await router.push({
+    name: 'archive',
     query: {
       page: Number(1),
     },
