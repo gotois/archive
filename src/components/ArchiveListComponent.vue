@@ -90,7 +90,10 @@
         <q-pagination
           v-model="currentPage"
           :max="paginationCount"
+          :max-pages="5"
           direction-links
+          boundary-numbers
+          color="secondary"
           @update:model-value="$emit('onPaginate', currentPage)"
         />
       </div>
