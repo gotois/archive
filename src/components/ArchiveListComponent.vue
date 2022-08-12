@@ -1,6 +1,6 @@
 <template>
   <q-virtual-scroll
-    :items="slides"
+    :items="items"
     separator
     class="col-12"
   >
@@ -59,7 +59,7 @@
               />
             </q-carousel-control>
             <q-carousel-control
-              v-if="nativeShareIsAvailable"
+              v-if="nativeShareAvailable"
               position="top-left"
               :offset="[18, 18]"
             >
@@ -74,7 +74,7 @@
         <q-separator/>
         <q-card-section>
           <p class="text-overline text-orange-9 no-margin">
-            {{ showDate(item) }}
+            {{ prettyDate(item) }}
           </p>
           <q-space/>
           <div class="row items-center">
@@ -108,10 +108,9 @@ import {showImageInPopup} from '../services/popup'
 import {isDateNotOk, formatterDate} from '../services/dateHelper'
 import {createPDF} from '../services/pdfHelper'
 
-const nativeShareIsAvailable = ref(!!navigator.share)
-const slides = ref([])
+const items = ref([])
 
-function showDate(item: Contract) {
+function prettyDate(item: Contract) {
   if (isDateNotOk(item.startTime) || isDateNotOk(item.endTime)) {
     return ''
   }
@@ -162,16 +161,16 @@ export default defineComponent({
     },
   },
   emits: ['onPaginate'],
-  setup(props /*, { emit } */) {
+  setup(props) {
     watch(() => props.contracts, (newVal => {
-      slides.value = newVal
+      items.value = newVal
     }))
 
     return {
-      nativeShareIsAvailable,
-      slides,
+      nativeShareAvailable: !!navigator.share,
+      items,
       currentPage: props.page,
-      showDate,
+      prettyDate,
       onShareFullImage,
       checkItemEndTime,
       onShowFullImage,
