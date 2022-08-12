@@ -10,7 +10,7 @@ export default {
     searchEmpty: 'Ничего не найдено',
   },
   header: {
-    title: 'Мои договоры',
+    title: 'Мои договоры',
     create: 'Создание',
     archive: 'Архив',
   },

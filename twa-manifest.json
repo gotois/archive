@@ -1,0 +1,45 @@
+{
+  "packageId": "ru.baskovsky.archive.twa",
+  "host": "archive.baskovsky.ru",
+  "name": "contracts",
+  "launcherName": "Мои договоры",
+  "display": "fullscreen",
+  "themeColor": "#027BE3",
+  "navigationColor": "#000000",
+  "navigationColorDark": "#000000",
+  "navigationDividerColor": "#000000",
+  "navigationDividerColorDark": "#000000",
+  "backgroundColor": "#027BE3",
+  "enableNotifications": true,
+  "startUrl": "/",
+  "iconUrl": "https://archive.baskovsky.ru/icons/icon-512x512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./android.keystore",
+    "alias": "android"
+  },
+  "appVersionName": "2",
+  "appVersionCode": 2,
+  "shortcuts": [],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://archive.baskovsky.ru/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://archive.baskovsky.ru/",
+  "minSdkVersion": 19,
+  "orientation": "any",
+  "fingerprints": [
+    {
+      "value": "DE:A9:60:9A:23:1A:47:79:67:6C:A7:F8:02:EB:FE:FD:E2:86:0F:7C:2F:13:B2:D1:8A:B7:FF:01:E8:3B:FB:11"
+    }
+  ],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "appVersion": "2"
+}

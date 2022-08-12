@@ -1,4 +1,4 @@
-# ДоговорА
+# Мои договоры
 > Ваша офлайн база договоров
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/f467de0f-4773-4f8a-ac3b-5d4aeca0ea83/deploy-status)](https://app.netlify.com/sites/my-archive/deploys)
@@ -30,4 +30,13 @@ Set twa-manifest.json signingKey:
     "path": "PATH_FOR_KEYSTORE",
     "alias": "ALIAS_NAME"
   },
+```
+
+```bash
+bubblewrap build
+```
+
+### Run TWA
+```bash
+bubblewrap install
 ```

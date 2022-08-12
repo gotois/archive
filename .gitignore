@@ -38,6 +38,10 @@ contracts.iml
 *.aab
 *.apk
 *.apk.*
+app/build
 
 # Android Studio
 local.properties
+manifest-checksum.txt
+android.keystore
+.gradle/
