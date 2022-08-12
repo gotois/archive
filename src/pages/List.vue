@@ -6,25 +6,6 @@
         size="6em"
       />
     </q-inner-loading>
-    <div class="wrap">
-      <div class="text-center full-width">
-        <q-chip
-          v-for="([name, value], objectKey) in archiveNames"
-          v-show="!loadingVisible"
-          :key="objectKey"
-          dense
-          square
-          outline
-          clickable
-          @click="onSelectArchiveName(name)"
-        >
-          <q-avatar v-if="value > 1" color="secondary" text-color="white">{{ value }}</q-avatar>
-          <div class="ellipsis">{{ name }}</div>
-          <q-tooltip>{{ name }}</q-tooltip>
-        </q-chip>
-      </div>
-      <q-skeleton v-show="loadingVisible" type="QChip" animation="blink" width="100%" />
-    </div>
     <q-virtual-scroll
       v-if="contracts.length"
       :items="contracts"
@@ -212,7 +193,6 @@ const searchText = ref('')
 const limit = ref(5)
 const currentPage = ref(1)
 const loadingVisible = ref(false)
-const archiveNames = ref([])
 const nativeShareIsAvailable = ref(!!navigator.share)
 
 function onShowFullImage(object: FormatContract) {
@@ -304,16 +284,6 @@ function onPaginate(page: string): void {
   }
 }
 
-function onSelectArchiveName(name: string) {
-  void router.push({
-    path: 'archive',
-    query: {
-      filter: name,
-      page: 1,
-    },
-  })
-}
-
 function routerFunc() {
   const {page, filter} = router.currentRoute.value.query
   setValues({
@@ -366,11 +336,6 @@ function main() {
   $q = useQuasar()
   router = useRouter()
 
-  void (async () => {
-    const map = await db.getContractNames()
-    archiveNames.value = Array.from(map)
-  })()
-
   return {
     contracts,
     searchText,
@@ -378,12 +343,10 @@ function main() {
     loadingVisible,
     paginationCount,
     nativeShareIsAvailable,
-    archiveNames,
     showDate,
     onShowFullImage,
     onShareFullImage,
     checkItemEndTime,
-    onSelectArchiveName,
     ...routerFunc(),
   }
 }

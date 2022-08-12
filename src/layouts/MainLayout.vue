@@ -1,22 +1,30 @@
 <template>
-  <q-layout view="hHr LpR lfr">
-    <q-header reveal bordered class="bg-white text-primary" height-hint="98">
+  <q-layout view="lhh LpR lfr">
+    <q-header bordered class="bg-white text-primary" height-hint="98">
       <q-toolbar>
+        <q-btn
+          flat
+          dense
+          round
+          icon="settings"
+          aria-label="Settings"
+          @click="onToggleLeftDrawer"
+        />
+        <q-toolbar-title class="text-black-9 text-center">
+          {{ $t('header.title') }}
+          <q-badge outline align="top" color="orange">
+            {{ $t('navigation.version')}}{{ version }}
+          </q-badge>
+        </q-toolbar-title>
+        <q-btn flat round dense class="cursor-pointer" name="search" icon="search" @click="showSearch = true"/>
         <q-btn
           flat
           dense
           round
           icon="menu"
           aria-label="Menu"
-          @click="onToggleLeftDrawer"
-        />
-        <q-toolbar-title class="text-black-9 text-center">
-          {{ $t('header.title') }}
-          <q-badge outline align="top" color="orange">
-            {{ $t('navigation.version')}} {{ version }}
-          </q-badge>
-        </q-toolbar-title>
-        <q-btn flat round dense class="cursor-pointer" name="search" icon="search" @click="showSearch = true"/>
+          @click="rightDrawerOpen = !rightDrawerOpen"
+        ></q-btn>
       </q-toolbar>
       <q-tabs shrink stretch>
           <q-route-tab to="/create" exact replace :label="$t('header.create')"/>
@@ -25,10 +33,9 @@
     </q-header>
     <q-drawer
       v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-      class="flex"
       side="left"
+      elevated
+      class="flex"
     >
       <q-list class="row self-start">
         <div class="text-h6 q-pa-md">
@@ -62,6 +69,29 @@
       </q-list>
       <div class="row full-width self-end flex-center q-pa-md">
         <q-chip icon="link" class="cursor-pointer" clickable :label="$t('navigation.feedback')" @click="onOpenFeedback"></q-chip>
+      </div>
+    </q-drawer>
+    <q-drawer
+      v-model="rightDrawerOpen"
+      show-if-above
+      side="right"
+      bordered
+    >
+      <div class="full-width q-pa-lg">
+        <q-chip
+            v-for="([name, value], objectKey) in archiveNames"
+            :key="objectKey"
+            dense
+            square
+            outline
+            clickable
+            @click="onSelectArchiveName(name)"
+        >
+          <q-avatar v-if="value > 1" color="secondary" text-color="white">{{ value }}</q-avatar>
+          <div class="ellipsis">{{ name }}</div>
+          <q-tooltip>{{ name }}</q-tooltip>
+        </q-chip>
+        <q-skeleton v-show="archiveNames.length === 0" type="QChip" animation="blink" width="100%" />
       </div>
     </q-drawer>
     <q-page-container>
@@ -108,10 +138,12 @@ import {version} from '../../package.json'
 import DatabaseComponent from 'components/DatabaseComponent.vue'
 
 const leftDrawerOpen = ref(false)
+const rightDrawerOpen = ref(false)
 const settingsOpen = ref(false)
 const confirm = ref(false)
 const searchText = ref('')
 const showSearch = ref(false)
+const archiveNames = ref([])
 
 let $q: QVueGlobals
 let router: Router
@@ -155,21 +187,39 @@ async function onClearDatabase() {
   }
 }
 
+function onSelectArchiveName(name: string) {
+  void router.push({
+    path: 'archive',
+    query: {
+      filter: name,
+      page: 1,
+    },
+  })
+}
+
 function main() {
   $q = useQuasar()
   router = useRouter()
 
+  void (async () => {
+    const map = await db.getContractNames()
+    archiveNames.value = Array.from(map)
+  })()
+
   return {
     leftDrawerOpen,
+    rightDrawerOpen,
     settingsOpen,
     confirm,
     version,
     searchText,
     showSearch,
+    archiveNames,
     onSearchText,
     onOpenFeedback,
     onToggleLeftDrawer,
     onClearDatabase,
+    onSelectArchiveName,
   }
 }
 
