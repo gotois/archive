@@ -192,6 +192,7 @@ async function onSelectArchiveName(name: string) {
     name: 'filter',
     query: {
       filter: name,
+      page: 1,
     },
   })
 }

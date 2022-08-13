@@ -7,7 +7,6 @@
       />
     </q-inner-loading>
     <archive-list-component
-      :page="currentPage"
       :loading="loadingVisible"
       :contracts="contracts"
       :pagination-count="paginationCount"
@@ -75,32 +74,22 @@ let store: VuexStore<StateInterface>
 
 const searchText = ref('')
 const limit = ref(5)
-const currentPage = ref(1)
 const loadingVisible = ref(true)
 
 async function onPaginate(page: number) {
-  const filter = searchText.value
-
-  if (filter.length) {
-    await router.push({
-      name: 'filter',
-      query: {
-        page: Number(page),
-        filter,
-      },
-    })
-  } else {
-    await router.push({
-      name: 'archive',
-      query: {
-        page: Number(page),
-      },
-    })
-  }
+  loadingVisible.value = true
+  await router.push({
+    name: router.currentRoute.value.name,
+    query: {
+      page: page,
+      filter: router.currentRoute.value.query?.filter
+    },
+  })
 }
 
 async function updateContracts({ page, filter }: LocationQuery|{page: number, filter: string}) {
-  const offset = (currentPage.value - 1) * limit.value
+  page = Number(page || 1)
+  const offset = (page - 1) * limit.value
   const query = String(filter ?? '')
 
   switch (router.currentRoute.value.name) {
@@ -117,19 +106,18 @@ async function updateContracts({ page, filter }: LocationQuery|{page: number, fi
       break
     }
   }
-  currentPage.value = Number(page ?? 1)
+  loadingVisible.value = false
 }
 
 function main() {
   store = useStore()
   router = useRouter()
 
-  router.afterEach((to) => (updateContracts(to.query)))
+  router.afterEach((to) => updateContracts(to.query))
   void (updateContracts)(router.currentRoute.value.query)
 
   return {
     searchText,
-    currentPage,
     loadingVisible,
     onPaginate,
   }

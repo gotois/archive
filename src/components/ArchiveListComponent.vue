@@ -6,6 +6,20 @@
   >
     <template #default="{ item, index }">
       <q-card
+        v-show="loading"
+        class="q-ma-lg"
+        flat
+        square
+        bordered
+      >
+        <q-skeleton type="text" height="80px" class="q-pa-md" />
+        <q-skeleton height="300px" square />
+        <q-card-section>
+          <q-skeleton type="rect" height="50px" />
+        </q-card-section>
+      </q-card>
+      <q-card
+        v-show="!loading"
         :key="index"
         class="q-ma-lg"
         flat
@@ -109,6 +123,7 @@ import {isDateNotOk, formatterDate} from '../services/dateHelper'
 import {createPDF} from '../services/pdfHelper'
 
 const items = ref([])
+const currentPage = ref(1)
 
 function prettyDate(item: Contract) {
   if (isDateNotOk(item.startTime) || isDateNotOk(item.endTime)) {
@@ -151,10 +166,6 @@ export default defineComponent({
       type: Boolean as PropType<boolean>,
       default: false,
     },
-    page: {
-      type: Number as PropType<number>,
-      required: true,
-    },
     contracts: {
       type: Array as PropType<FormatContract[]>,
       required: true,
@@ -169,7 +180,7 @@ export default defineComponent({
     return {
       nativeShareAvailable: !!navigator.share,
       items,
-      currentPage: props.page,
+      currentPage,
       prettyDate,
       onShareFullImage,
       checkItemEndTime,
