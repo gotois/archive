@@ -9,45 +9,32 @@
     >
       <q-step
         :name="1"
-        title="Политика конфиденциальности"
-        icon="settings"
+        :title="$t('tutorial.agreement.title')"
+        icon="article"
         :done="step > 1"
       >
-        {{ $t('tutorial.agreement') }}
+        <p class="text-body1">{{ $t('tutorial.agreement.body') }}</p>
         <q-stepper-navigation>
-          <q-btn color="primary" label="Принять" @click="$refs.stepper.next()" />
+          <q-btn color="secondary" label="Принять" @click="$refs.stepper.next()" />
         </q-stepper-navigation>
       </q-step>
       <q-step
         :name="2"
-        title="Пользовательское соглашение"
-        icon="create_new_folder"
+        :title="$t('tutorial.license.title')"
+        icon="article"
         :done="step > 2"
       >
-        {{ $t('tutorial.license') }}
+        <p class="text-body1">{{ $t('tutorial.license.body') }}</p>
         <q-stepper-navigation>
-          <q-btn color="primary" label="Принять" @click="$refs.stepper.next()" />
+          <q-btn color="secondary" label="Принять" @click="$refs.stepper.next()" />
         </q-stepper-navigation>
       </q-step>
       <q-step
         :name="3"
-        title="Безопасность"
+        :title="$t('tutorial.data.title')"
         icon="assignment"
-        :done="step > 3"
       >
-        {{ $t('tutorial.features') }}
-        <q-stepper-navigation>
-          <q-btn color="primary" label="Принять" @click="$refs.stepper.next()" />
-        </q-stepper-navigation>
-      </q-step>
-      <q-step
-        :name="4"
-        title="Установка имени"
-        icon="add_comment"
-      >
-        <h2>Зачем мне заполнять свои данные?</h2>
-        <p>Мы предлагаем вам ввести все ваши данные один раз, чтобы не вводить их постоянно для каждого документа.</p>
-        <p>Введенные данные хранятся только на вашем устройстве и не попадают никуда больше.</p>
+        <p class="text-body1">{{ $t('tutorial.data.body') }}</p>
         <q-form
           ref="nameForm"
           class="q-gutter-md"
@@ -64,6 +51,7 @@
             :hint="$t('consumer.hint')"
             name="consumer"
             autocomplete="on"
+            class="q-pa-lg"
             outlined
           >
             <template #prepend>
@@ -71,7 +59,7 @@
             </template>
           </q-input>
           <q-stepper-navigation>
-            <q-btn color="secondary" type="submit" label="Закончить"/>
+            <q-btn color="accent" type="submit" :label="$t('tutorial.complete')"/>
           </q-stepper-navigation>
         </q-form>
       </q-step>
@@ -96,12 +84,12 @@ const metaData = {
 }
 
 async function onFinish() {
-  void store.dispatch('tutorialComplete')
-  void store.dispatch('consumerName', consumer.value)
+  await store.dispatch('tutorialComplete')
+  await store.dispatch('consumerName', consumer.value)
   await router.push({
     name: 'archive',
     query: {
-      page: Number(1),
+      page: 1,
     },
   })
 }
