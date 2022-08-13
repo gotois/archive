@@ -68,7 +68,9 @@
         </q-expansion-item>
       </q-list>
       <div class="row full-width self-end flex-center q-pa-md">
-        <q-chip icon="link" class="cursor-pointer" clickable :label="$t('navigation.feedback')" @click="onOpenFeedback"></q-chip>
+        <q-chip icon="link" class="cursor-pointer" clickable :label="$t('navigation.feedback.label')" @click="onOpenFeedback">
+          <q-tooltip>{{$t('navigation.feedback.tooltip')}}</q-tooltip>
+        </q-chip>
       </div>
     </q-drawer>
     <q-drawer

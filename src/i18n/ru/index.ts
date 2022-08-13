@@ -17,7 +17,10 @@ export default {
   navigation: {
     version: 'v.',
     title: 'Настройки',
-    feedback: 'Ваши замечания по продукту',
+    feedback: {
+      label: 'Ваши замечания по продукту',
+      tooltip: 'Если Вы нашли ошибку, напишите об этом на почту',
+    },
   },
   settings: {
     native: {
