@@ -112,6 +112,7 @@ async function updateContracts({ page, filter }: LocationQuery|{page: number, fi
 function main() {
   store = useStore()
   router = useRouter()
+  useMeta(metaData)
 
   router.afterEach((to) => updateContracts(to.query))
   void (updateContracts)(router.currentRoute.value.query)
@@ -130,8 +131,6 @@ export default defineComponent({
     ArchiveListComponent,
   },
   setup() {
-    useMeta(metaData)
-
     return main()
   },
   computed: {

@@ -51,13 +51,23 @@
             :hint="$t('consumer.hint')"
             name="consumer"
             autocomplete="on"
-            class="q-pa-lg"
             outlined
           >
             <template #prepend>
               <q-icon name="face"/>
             </template>
           </q-input>
+          <p class="text-body">Опционально введите пин код (будет использовать при входе):</p>
+          <v-otp-input
+            input-classes="otp-input"
+            separator="-"
+            :num-inputs="4"
+            :is-input-num="true"
+            :conditional-class="['first', '', '', 'last']"
+            :placeholder="['*', '*', '*', '*']"
+            @on-change="handleOnChange"
+            @on-complete="handleOnComplete"
+          />
           <q-stepper-navigation>
             <q-btn color="accent" type="submit" :label="$t('tutorial.complete')"/>
           </q-stepper-navigation>
@@ -69,29 +79,39 @@
 <script lang="ts">
 import {defineComponent, ref} from 'vue'
 import {Store as VuexStore} from 'vuex'
-import {useMeta} from 'quasar'
-import {StateInterface, useStore} from '../store'
 import {Router, useRouter} from 'vue-router'
+import {useMeta} from 'quasar'
+import VOtpInput from 'vue3-otp-input'
+import {StateInterface, useStore} from '../store'
 
 let store: VuexStore<StateInterface>
 let router: Router
 
 const step = ref(1)
 const consumer = ref('')
+const pin = ref('')
 
 const metaData = {
   title: 'Обучение',
 }
 
 async function onFinish() {
-  await store.dispatch('tutorialComplete')
+  if (pin.value.length === 4) {
+    if (confirm('Действительно сохранить пин?')) {
+      await store.dispatch('Auth/setCode', pin.value)
+    }
+  }
+  await store.dispatch('Tutorial/tutorialComplete')
   await store.dispatch('consumerName', consumer.value)
-  await router.push({
-    name: 'archive',
-    query: {
-      page: 1,
-    },
-  })
+  await router.push('/create')
+}
+
+const handleOnChange = (value: string) => {
+  pin.value = value
+}
+
+const handleOnComplete = (value: string) => {
+  pin.value = value
 }
 
 function main() {
@@ -102,6 +122,8 @@ function main() {
   return {
     step,
     consumer,
+    handleOnComplete,
+    handleOnChange,
     onFinish,
   }
 }
@@ -109,6 +131,9 @@ function main() {
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
   name: 'Tutorial',
+  components: {
+    VOtpInput,
+  },
   setup () {
     return main()
   },

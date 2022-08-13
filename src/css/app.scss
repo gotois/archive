@@ -1,1 +1,34 @@
 // app global css in SCSS form
+
+.otp-input {
+  width: 40px;
+  height: 40px;
+  margin: 0 10px;
+  font-size: 20px;
+  border-radius: 4px;
+  border: 1px solid rgba($dark, 0.3);
+  text-align: center;
+
+  &.first {
+    margin-left: 0;
+  }
+  &.last {
+    margin-right: 0;
+  }
+
+  &.is-complete {
+    background-color: rgba($dark, 0.08);
+  }
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    appearance: none;
+    margin: 0;
+  }
+
+  input::placeholder {
+    font-size: 15px;
+    text-align: center;
+    font-weight: 600;
+  }
+}

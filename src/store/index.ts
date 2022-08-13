@@ -1,5 +1,4 @@
 import {store} from 'quasar/wrappers'
-import {LocalStorage} from 'quasar'
 import {InjectionKey} from 'vue'
 import {
   createStore,
@@ -8,6 +7,8 @@ import {
 } from 'vuex'
 import Profile from './profile'
 import Contract from './contract'
+import Tutorial, {TutorialState} from './tutorial'
+import Auth, {AuthState} from './auth'
 
 /*
  * If not building with SSR mode, you can
@@ -19,7 +20,8 @@ import Contract from './contract'
  */
 
 export interface StateInterface {
-  tutorialCompleted: boolean;
+  auth: AuthState;
+  tutorial: TutorialState;
 }
 
 // provide typings for `this.$store`
@@ -37,20 +39,8 @@ export default store(function () {
     modules: {
       Profile,
       Contract,
-    },
-    state: {
-      tutorialCompleted: LocalStorage.getItem('tutorialCompleted') ?? false,
-    },
-    mutations: {
-      tutorialComplete(state) {
-        state.tutorialCompleted = true
-      },
-    },
-    actions: {
-      tutorialComplete(context) {
-        LocalStorage.set('tutorialCompleted', true)
-        context.commit('tutorialComplete')
-      },
+      Auth,
+      Tutorial,
     },
 
     // enable strict mode (adds overhead!)

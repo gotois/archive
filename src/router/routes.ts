@@ -27,6 +27,16 @@ const routes: RouteRecordRaw[] = [
     redirect: '/',
   },
   {
+    path: '/auth',
+    component: () => import('layouts/EmptyLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/Auth.vue'),
+      },
+    ],
+  },
+  {
     path: '/create',
     component: () => import('layouts/MainLayout.vue'),
     children: [

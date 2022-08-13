@@ -5,6 +5,7 @@ import {
   createWebHashHistory,
   createWebHistory,
 } from 'vue-router'
+import {LocalStorage} from 'quasar'
 import {StateInterface} from '../store'
 import routes from './routes'
 
@@ -38,12 +39,18 @@ export default route<StateInterface>(function ({store/* , ssrContext */}) {
   })
   Router.beforeEach((to) => {
     switch (to.path) {
+      case '/auth':
       case '/tutorial': {
         return true
       }
       default: {
-        if (!store.state.tutorialCompleted) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        if (!store.getters['Tutorial/tutorialCompleted']) {
           return '/tutorial'
+        }
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+        if (store.getters['Auth/code'] !== LocalStorage.getItem('code')) {
+          return '/auth'
         }
         break
       }

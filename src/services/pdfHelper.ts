@@ -1,6 +1,7 @@
 import {jsPDF} from 'jspdf'
 import {FormatContract} from 'components/models'
 import {resizeImageA4} from './imgHelper'
+import {productName} from '../../package.json'
 
 export async function createPDF(object: FormatContract) {
   const doc = new jsPDF({
@@ -13,7 +14,7 @@ export async function createPDF(object: FormatContract) {
     title: object.instrument.name,
     subject: object.instrument.description,
     author: object.agent.name,
-    creator: object.participant.name,
+    creator: productName,
   })
   const files = []
   let docLength = 0
