@@ -32,6 +32,7 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '',
+        name: 'auth',
         component: () => import('pages/Auth.vue'),
       },
     ],

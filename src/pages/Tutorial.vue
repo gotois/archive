@@ -134,7 +134,7 @@ export default defineComponent({
   components: {
     VOtpInput,
   },
-  setup () {
+  setup() {
     return main()
   },
 })

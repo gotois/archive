@@ -31,7 +31,7 @@ const metaData = {
 export default defineComponent({
   // eslint-disable-next-line vue/multi-word-component-names
   name: 'Error404',
-  setup () {
+  setup() {
     useMeta(metaData)
   },
 })

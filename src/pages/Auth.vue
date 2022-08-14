@@ -33,7 +33,8 @@ async function handleOnComplete(value: string) {
   const codeValid = await store.dispatch('Auth/checkCode', value)
   if (codeValid) {
     await store.dispatch('Auth/setCode', value)
-    await router.push({
+    const prevPath = String(router.currentRoute.value.query.fullPath)
+    await router.replace(prevPath || {
       name: 'archive',
     })
   }
@@ -55,7 +56,7 @@ export default defineComponent({
   components: {
     VOtpInput,
   },
-  setup () {
+  setup() {
     return main()
   },
 })

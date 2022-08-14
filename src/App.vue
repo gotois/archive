@@ -17,7 +17,7 @@ const metaData = {
 
 export default defineComponent({
   name: 'App',
-  setup () {
+  setup() {
     useMeta(metaData)
   },
 })

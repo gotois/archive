@@ -49,7 +49,12 @@ export default route<StateInterface>(function ({store/* , ssrContext */}) {
         }
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
         if (!store.getters['Auth/checkAuth']) {
-          return '/auth'
+          return {
+            name: 'auth',
+            query: {
+              fullPath: to.fullPath,
+            },
+          }
         }
         break
       }
