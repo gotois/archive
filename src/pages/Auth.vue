@@ -15,7 +15,7 @@
 
 <script lang="ts">
 import {defineComponent} from 'vue'
-import {useMeta, LocalStorage} from 'quasar'
+import {useMeta} from 'quasar'
 import VOtpInput from 'vue3-otp-input'
 import {Store as VuexStore} from 'vuex'
 import {Router, useRouter} from 'vue-router'
@@ -29,8 +29,9 @@ const metaData = {
 }
 
 async function handleOnComplete(value: string) {
-// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  if (value === LocalStorage.getItem('code')) {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const codeValid = await store.dispatch('Auth/checkCode', value)
+  if (codeValid) {
     await store.dispatch('Auth/setCode', value)
     await router.push({
       name: 'archive',
