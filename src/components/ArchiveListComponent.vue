@@ -180,7 +180,11 @@ async function onShareFullImage(object: FormatContract) {
 }
 
 async function removeArchive(item: FormatContract) {
-  await db.remove(item)
+  const count = await db.remove(item)
+  if (count === 0) {
+    console.error('Cannot remove this item')
+    return
+  }
   // todo make refresh without reload
   location.reload()
 }

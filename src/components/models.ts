@@ -1,4 +1,5 @@
 export interface Contract {
+  id: number;
   agent_name: string;
   participant_name: string;
   instrument_name: string;
@@ -28,13 +29,18 @@ export interface FormatContract {
   };
   participant: {
     '@type': string;
-    name: string
+    name: string;
   };
   instrument: {
     '@type': string;
     name: string;
-    description: string
+    description: string;
   };
+  identifier: {
+    '@type': string;
+    propertyID: string;
+    value: string;
+  },
   startTime: Date;
   endTime: Date;
   object: { '@type': string, contentUrl: string }[];

@@ -23,9 +23,8 @@ export class ContractDatabase extends Dexie {
   }
 
   async remove(item: FormatContract) {
-    // fixme переделать startTime на ID
-    return db.contracts.where('startTime')
-      .equals(item.startTime)
+    return db.contracts.where('id')
+      .equals(Number(item.identifier.value))
       .delete()
   }
 

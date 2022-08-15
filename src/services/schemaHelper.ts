@@ -12,10 +12,15 @@ export function formatterContracts(contracts: Contract[]): FormatContract[] {
       '@type': 'Person',
       'name': contract.participant_name,
     },
-    instrument: {
+    'instrument': {
       '@type': 'Thing',
       'name': contract.instrument_name,
       'description': contract.instrument_description,
+    },
+    'identifier': {
+      '@type': 'PropertyValue',
+      'propertyID': 'Database ID',
+      'value':  String(contract.id),
     },
     'startTime': contract.startTime,
     'endTime': contract.endTime,
