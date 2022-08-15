@@ -16,14 +16,11 @@
       <template v-if="paginationCount < 1">
         <div v-if="isSearch" class="col-12 q-pa-lg flex flex-center self-start">
           <q-banner inline-actions class="text-center text-black">
-            <template #avatar>
-              <q-icon name="explore" color="secondary" />
-            </template>
             <template #default>
               {{ $t('archive.searchEmpty') }}
             </template>
             <template #action>
-              <q-btn flat color="primary" label="Очистить" to="/archive" />
+              <q-btn flat color="primary" icon="explore" label="На главную" to="/" />
             </template>
           </q-banner>
         </div>
