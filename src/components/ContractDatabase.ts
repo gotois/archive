@@ -1,5 +1,6 @@
+// todo перенести в services/databaseHelper
 import Dexie from 'dexie'
-import {ContractTable} from './models'
+import {ContractTable, FormatContract} from './models'
 
 export class ContractDatabase extends Dexie {
   public contracts: Dexie.Table<ContractTable, number> // id is number in this case
@@ -7,7 +8,7 @@ export class ContractDatabase extends Dexie {
   public constructor() {
     super('ContractDatabase')
     this.version(1).stores({
-      contracts: '++id, agent_name, participant_name, instrument_name, instrument_description, startTime, endTime, *images'
+      contracts: '++id, agent_name, participant_name, instrument_name, instrument_description, startTime, endTime, *images',
     })
     this.contracts = this.table('contracts')
   }
@@ -19,6 +20,13 @@ export class ContractDatabase extends Dexie {
       map.set(value.instrument_name, count + 1)
     })
     return map
+  }
+
+  async remove(item: FormatContract) {
+    // fixme переделать startTime на ID
+    return db.contracts.where('startTime')
+      .equals(item.startTime)
+      .delete()
   }
 
   public destroy() {

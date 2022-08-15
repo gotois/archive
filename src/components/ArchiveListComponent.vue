@@ -26,9 +26,29 @@
         square
         bordered
       >
-        <div class="row justify-between q-pa-md">
-          <p class="text-h6 text-uppercase text-weight-bold no-margin" :style="checkItemEndTime(item)">{{ item.instrument.name }}</p>
-          <p v-if="item.instrument.description" class="text-caption text-grey">{{ item.instrument.description }}</p>
+        <div class="row justify-between">
+          <div class="column q-pa-md wrap" style="width: calc(100% - 45px);">
+            <p class="text-h6 text-uppercase text-weight-bold no-margin" :style="checkItemEndTime(item)">{{ item.instrument.name }}</p>
+            <p v-if="item.instrument.description" class="text-caption text-grey">{{ item.instrument.description }}</p>
+          </div>
+          <q-btn
+            size="md"
+            style="margin: auto 0;"
+            round
+            flat
+            icon="more_vert"
+          >
+            <q-menu
+              transition-show="jump-down"
+              transition-hide="jump-up"
+            >
+              <q-list>
+                <q-item v-close-popup clickable @click="removeArchive(item)">
+                  <q-item-section>Удалить</q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+          </q-btn>
         </div>
         <q-separator v-if="item.object.length"/>
         <q-carousel
@@ -121,6 +141,7 @@ import {Contract, FormatContract} from 'components/models'
 import {showImageInPopup} from '../services/popup'
 import {isDateNotOk, formatterDate} from '../services/dateHelper'
 import {createPDF} from '../services/pdfHelper'
+import {db} from 'components/ContractDatabase'
 
 const items = ref([])
 const currentPage = ref(1)
@@ -158,6 +179,25 @@ async function onShareFullImage(object: FormatContract) {
   }
 }
 
+async function removeArchive(item: FormatContract) {
+  await db.remove(item)
+  // todo make refresh without reload
+  location.reload()
+}
+
+function main() {
+  return {
+    nativeShareAvailable: !!navigator.share,
+    items,
+    currentPage,
+    prettyDate,
+    onShareFullImage,
+    checkItemEndTime,
+    onShowFullImage,
+    removeArchive,
+  }
+}
+
 export default defineComponent({
   name: 'ArchiveListComponent',
   props: {
@@ -180,15 +220,7 @@ export default defineComponent({
       items.value = newVal
     }))
 
-    return {
-      nativeShareAvailable: !!navigator.share,
-      items,
-      currentPage,
-      prettyDate,
-      onShareFullImage,
-      checkItemEndTime,
-      onShowFullImage,
-    }
+    return main()
   },
 })
 </script>

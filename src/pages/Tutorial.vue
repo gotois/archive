@@ -69,7 +69,12 @@
             @on-complete="handleOnComplete"
           />
           <q-stepper-navigation>
-            <q-btn color="accent" type="submit" :label="$t('tutorial.complete')"/>
+            <q-btn
+              color="accent"
+              type="submit"
+              :label="$t('tutorial.complete')"
+              icon="login"
+            />
           </q-stepper-navigation>
         </q-form>
       </q-step>
