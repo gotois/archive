@@ -136,7 +136,7 @@ function prettyDate(item: Contract) {
 }
 
 function checkItemEndTime(item: Contract) {
-  if (item.endTime < new Date()) {
+  if (item.endTime !== null && item.endTime < new Date()) {
     return {
       'text-decoration': 'line-through',
     }

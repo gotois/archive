@@ -138,6 +138,7 @@ const afterYearDate = formatDate(new Date(now.setFullYear(now.getFullYear() + 1)
 
 let $q: QVueGlobals
 let store: VuexStore<StateInterface>
+let $emit: (event: 'onCreate', ...args: unknown[]) => void
 
 const contractType = ref('')
 const customer = ref('')
@@ -233,12 +234,15 @@ async function onSubmit() {
     }
     await db.contracts.add(newContract)
     $q.notify({
-      message: `Запись ${newContract.instrument_name} добавлена`,
+      message: `Запись ${newContract.instrument_name.toLocaleLowerCase()} добавлена`,
       type: 'positive',
       actions: [
         {
-          label: 'Закрыть',
+          label: 'Перейти',
           color: 'white',
+          handler: () => {
+            $emit('onCreate', newContract.instrument_name)
+          },
         },
       ],
     })
@@ -274,7 +278,10 @@ function main() {
 
 export default defineComponent({
   name: 'ContractFormComponent',
-  setup() {
+  emits: ['onCreate'],
+  setup(props, { emit }) {
+    $emit = emit
+
     return main()
   },
 })
