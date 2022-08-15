@@ -212,7 +212,7 @@ async function onSubmit() {
     return
   }
   const endDate = new Date(duration.value.to)
-  if (!dateNoLimit.value && !isDateNotOk(endDate)) {
+  if (!dateNoLimit.value && isDateNotOk(endDate)) {
     $q.notify({
       type: 'negative',
       message: 'Неверная дата окончания заявления',
