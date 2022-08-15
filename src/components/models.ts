@@ -10,12 +10,12 @@ export interface Contract {
 
 export interface ContractTable {
   id?: number;
-  agent_name?: string;
-  participant_name?: string;
-  instrument_name?: string;
+  agent_name: string;
+  participant_name: string;
+  instrument_name: string;
   instrument_description?: string;
-  startTime?: Date;
-  endTime?: Date;
+  startTime: Date;
+  endTime?: Date|null;
   images?: string[];
 }
 

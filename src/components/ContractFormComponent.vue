@@ -203,13 +203,18 @@ function onSelectDate(value: string | { from: string, to: string } | null) {
 
 async function onSubmit() {
   const startDate = new Date(duration.value.from)
-  // todo не использовать 9999999999999, вместо этого использовать Infinite для сохранения
-  const endDate = new Date(dateNoLimit.value ? 9999999999999 : duration.value.to)
-
-  if (isDateNotOk(startDate) || isDateNotOk(endDate)) {
+  if (isDateNotOk(startDate)) {
     $q.notify({
       type: 'negative',
-      message: 'Неверный тип даты',
+      message: 'Неверная дата подачи заявления',
+    })
+    return
+  }
+  const endDate = new Date(duration.value.to)
+  if (!dateNoLimit.value && !isDateNotOk(endDate)) {
+    $q.notify({
+      type: 'negative',
+      message: 'Неверная дата окончания заявления',
     })
     return
   }
@@ -223,7 +228,7 @@ async function onSubmit() {
       'instrument_name': contractType.value,
       'instrument_description': description.value,
       'startTime': startDate,
-      'endTime': endDate,
+      'endTime': dateNoLimit.value ? null : endDate,
       'images': images,
     }
     await db.contracts.add(newContract)

@@ -126,6 +126,9 @@ const items = ref([])
 const currentPage = ref(1)
 
 function prettyDate(item: Contract) {
+  if (!isDateNotOk(item.startTime) && item.endTime === null) {
+    return formatterDate.format(item.startTime)
+  }
   if (isDateNotOk(item.startTime) || isDateNotOk(item.endTime)) {
     return ''
   }
