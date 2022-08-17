@@ -53,7 +53,7 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '',
-        component: () => import('pages/Tutorial.vue'),
+        component: () => import('pages/page-tutorial.vue'),
       },
     ],
   },
@@ -61,7 +61,7 @@ const routes: RouteRecordRaw[] = [
   // but you can also remove it
   {
     path: '/:catchAll(.*)*',
-    component: () => import('pages/Error404.vue'),
+    component: () => import('pages/page-404.vue'),
   },
 ]
 

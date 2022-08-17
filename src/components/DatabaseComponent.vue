@@ -27,17 +27,16 @@
   </div>
 </template>
 
-<script lang="ts">
-import {defineComponent, ref} from 'vue'
-import {QVueGlobals, useQuasar} from 'quasar'
+<script lang="ts" setup>
+import {ref} from 'vue'
+import {useQuasar} from 'quasar'
 import {exportDB, importInto} from 'dexie-export-import'
 import {saveAs} from 'file-saver'
 import JSZip from 'jszip'
 import {BulkError} from 'dexie'
 import {db} from '../services/databaseHelper'
 
-let $q: QVueGlobals
-
+const $q = useQuasar()
 const file = ref()
 
 const EXPORT_NAME = 'contract-export'
@@ -115,21 +114,4 @@ async function onExportDB() {
   })
   return saveAs(content, EXPORT_NAME + '.zip')
 }
-
-function main() {
-  $q = useQuasar()
-
-  return {
-    file,
-    onImportDB,
-    onExportDB
-  }
-}
-
-export default defineComponent({
-  name: 'DatabaseComponent',
-  setup() {
-    return main()
-  },
-})
 </script>
