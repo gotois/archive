@@ -24,7 +24,7 @@
         icon="article"
         :done="step > 2"
       >
-        <p class="text-body1">{{ $t('tutorial.license.body') }}</p>
+        <p class="text-body1 license" v-html="$t('tutorial.license.body')"></p>
         <q-stepper-navigation>
           <q-btn color="secondary" label="Принять" @click="$refs.stepper.next()" />
         </q-stepper-navigation>
@@ -81,16 +81,17 @@
     </q-stepper>
 </template>
 
-<script lang="ts">
-import {defineComponent, ref} from 'vue'
-import {Store as VuexStore} from 'vuex'
-import {Router, useRouter} from 'vue-router'
+<script lang="ts" setup>
+import {ref} from 'vue'
+import {useRouter} from 'vue-router'
 import {useMeta} from 'quasar'
 import VOtpInput from 'vue3-otp-input'
-import {StateInterface, useStore} from '../store'
+import {useStore} from '../store'
+import {createContract} from '../services/pdfHelper'
+import {description, version, productName} from '../../package.json'
 
-let store: VuexStore<StateInterface>
-let router: Router
+const store = useStore()
+const router = useRouter()
 
 const step = ref(1)
 const consumer = ref('')
@@ -108,6 +109,20 @@ async function onFinish() {
   }
   await store.dispatch('Tutorial/tutorialComplete')
   await store.dispatch('consumerName', consumer.value)
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
+  const licenseText = ''
+  const contractPDF = createContract(licenseText)
+  const newContract = {
+    'agent_name': consumer.value,
+    'participant_name': productName + ' ' + version,
+    'instrument_name': 'Договор согласия',
+    'instrument_description': description,
+    'startTime': new Date(),
+    'images': [contractPDF],
+  }
+  await store.dispatch('addContract', newContract)
+
   await router.push('/create')
 }
 
@@ -119,28 +134,5 @@ const handleOnComplete = (value: string) => {
   pin.value = value
 }
 
-function main() {
-  store = useStore()
-  router = useRouter()
-  useMeta(metaData)
-
-  return {
-    step,
-    consumer,
-    handleOnComplete,
-    handleOnChange,
-    onFinish,
-  }
-}
-
-export default defineComponent({
-  // eslint-disable-next-line vue/multi-word-component-names
-  name: 'Tutorial',
-  components: {
-    VOtpInput,
-  },
-  setup() {
-    return main()
-  },
-})
+useMeta(metaData)
 </script>

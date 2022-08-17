@@ -36,8 +36,8 @@ function main() {
   router = useRouter()
 
   return {
-      onCreate,
-    }
+    onCreate,
+  }
 }
 
 export default defineComponent({

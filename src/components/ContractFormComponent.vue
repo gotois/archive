@@ -8,7 +8,7 @@
     spellcheck="true"
     greedy
     @submit="onSubmit"
-    @reset="onReset"
+    @reset="onResetForm"
   >
     <q-select
       v-model="contractType"
@@ -156,7 +156,7 @@ function filterOptions(val: string, update: (callback: () => void) => void) {
   })
 }
 
-function onReset() {
+function onResetForm() {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const contractFormValue = contractForm.value
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
@@ -232,7 +232,7 @@ async function onSubmit() {
       'endTime': dateNoLimit.value ? null : endDate,
       'images': images,
     }
-    await db.contracts.add(newContract)
+    await store.dispatch('addContract', newContract)
     $q.notify({
       message: `Запись ${newContract.instrument_name.toLocaleLowerCase()} добавлена`,
       type: 'positive',
@@ -246,7 +246,7 @@ async function onSubmit() {
         },
       ],
     })
-    onReset()
+    onResetForm()
   }).catch((error: Error) => {
     console.error(error)
     $q.notify({
@@ -271,7 +271,7 @@ function main() {
     contractOptions,
     filterOptions,
     onSubmit,
-    onReset,
+    onResetForm,
     onSelectDate,
   }
 }

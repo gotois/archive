@@ -20,19 +20,12 @@
   </div>
 </template>
 
-<script lang="ts">
-import {defineComponent} from 'vue'
+<script lang="ts" setup>
 import {useMeta} from 'quasar'
 
 const metaData = {
   title: 'Страница не найдена',
 }
 
-export default defineComponent({
-  // eslint-disable-next-line vue/multi-word-component-names
-  name: 'Error404',
-  setup() {
-    useMeta(metaData)
-  },
-})
+useMeta(metaData)
 </script>

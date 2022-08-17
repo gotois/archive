@@ -1,5 +1,5 @@
 import {Module} from 'vuex'
-import {Contract, FormatContract} from 'components/models';
+import {Contract, FormatContract, ContractTable} from 'components/models'
 import {db} from 'components/ContractDatabase'
 import {StateInterface} from './index'
 import {formatterContracts} from '../services/schemaHelper'
@@ -21,8 +21,15 @@ const Contract: Module<ContractState, StateInterface> = {
     setContracts(state, contracts: Contract[]) {
       state.contracts = contracts
     },
+    addContract(state, contract: Contract) {
+      state.contracts.push(contract)
+    },
   },
   actions: {
+    async addContract(context, contract: ContractTable) {
+      context.commit('addContract', contract)
+      await db.contracts.add(contract)
+    },
     async filterFromContracts(context, {query}: {query: string}) {
       const contracts = await db.contracts.where('instrument_name')
         .equals(query)

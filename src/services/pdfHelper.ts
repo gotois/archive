@@ -3,6 +3,21 @@ import {FormatContract} from 'components/models'
 import {resizeImageA4} from './imgHelper'
 import {productName} from '../../package.json'
 
+export function createContract(text: string) {
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'px',
+    format: 'a4',
+    hotfixes: ['px_scaling'],
+  })
+  doc.text(text, 10, 40);
+
+  const pdfURI = doc.output('datauristring', { filename: 'contract.pdf' })
+  doc.close()
+
+  return pdfURI
+}
+
 export async function createPDF(object: FormatContract) {
   const doc = new jsPDF({
     orientation: 'portrait',
