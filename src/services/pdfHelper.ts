@@ -1,36 +1,48 @@
-import {jsPDF} from 'jspdf'
+import {ImageFormat, jsPDF} from 'jspdf'
+import html2canvas from 'html2canvas'
 import {FormatContract} from 'components/models'
 import {resizeImageA4} from './imgHelper'
 import {productName} from '../../package.json'
 
+// todo пока не возможно использовать кириллицу для генерации через `doc.html` поэтому конвертирую в изображение
 export async function createContract(html: string) {
-  const htmlObject = document.createElement('html');
-  htmlObject.innerHTML = `
-  <html lang="ru">
-	<body>${html}</body>
-  </html>
-  `
+  const width = 1754
+  const htmlObject = document.createElement('div')
+  htmlObject.id = 'capture'
+  htmlObject.style.width = String(width / 2) + 'px'
+  htmlObject.innerHTML = html
+  htmlObject.style.hyphens = 'auto'
+
+  document.body.appendChild(htmlObject)
 
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'px',
     format: 'a4',
-    hotfixes: ['px_scaling', 'scale_text'],
+    hotfixes: ['px_scaling'],
   })
-  doc.setFont('Helvetica');
-  doc.setFontSize(10);
-  await doc.html(htmlObject, {
-    filename: 'contract.pdf',
-    autoPaging: false,
-    html2canvas: {
-      width: 800,
-      height: 800,
-    },
-    width: 800,
-    windowWidth: 800,
-    x: 10,
-    y: 10,
-  });
+  doc.setLanguage('ru')
+  doc.setFont('Times', 'Roman')
+  doc.setFontSize(10)
+
+  // todo hack options
+  const canvas = await html2canvas(document.querySelector('#capture'), {
+    width: width,
+    x: -10,
+    y: 0,
+    scale: 0.9,
+  })
+  document.body.removeChild(htmlObject)
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  doc.addImage({
+    imageData: canvas.toDataURL('image/png'),
+    x: 0,
+    y: 0,
+    format: 'PNG',
+    compression: 'SLOW',
+  })
 
   const pdfURI = doc.output('datauristring')
   doc.close()
@@ -68,13 +80,20 @@ export async function createPDF(object: FormatContract) {
       continue
     }
 
-    const format = mimeType.replace('image/', '').toUpperCase()
+    const format = mimeType.replace('image/', '').toUpperCase() as ImageFormat
     const [width, height] = await resizeImageA4(dataUrl)
 
     if (docLength != 0) {
       doc.addPage()
     }
-    doc.addImage(dataUrl, format, 0, 0, width, height)
+    doc.addImage({
+      imageData: dataUrl,
+      x: 0,
+      y: 0,
+      format,
+      width,
+      height,
+    })
     docLength++
   }
 
