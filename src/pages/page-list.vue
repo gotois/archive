@@ -57,12 +57,14 @@
 </template>
 
 <script lang="ts" setup>
-import {ref, computed} from 'vue'
+import {ref, computed, getCurrentInstance} from 'vue'
 import {useRouter, LocationQuery} from 'vue-router'
 import {useMeta} from 'quasar'
 import {useStore} from '../store'
 import {contractTypes} from '../services/contractTypes'
 import ArchiveListComponent from 'components/ArchiveListComponent.vue'
+
+const {$t} = getCurrentInstance().appContext.config.globalProperties
 
 const metaData = {
   title: 'Архив',
@@ -111,10 +113,10 @@ const isSearch = computed(() => {
   return Boolean(router.currentRoute.value.query.filter)
 })
 
-const archiveEmptyText = computed((self) => {
+const archiveEmptyText = computed(() => {
   const randomContractType = Math.floor(Math.random() * (contractTypes.length - 1))
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/restrict-plus-operands,@typescript-eslint/no-unsafe-member-access
-  return self.$t('archive.empty') + '. Например: ' + contractTypes[randomContractType].toLowerCase() + '.'
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/restrict-plus-operands
+  return $t('archive.empty') + '. Например: ' + contractTypes[randomContractType].toLowerCase() + '.'
 })
 
 const contracts = computed(() => {

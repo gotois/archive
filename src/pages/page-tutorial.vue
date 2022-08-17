@@ -24,7 +24,7 @@
         icon="article"
         :done="step > 2"
       >
-        <p class="text-body1 license" v-html="tutorialText"></p>
+        <p class="text-body1 license" v-html="$t('tutorial.license.body')"></p>
         <q-stepper-navigation>
           <q-btn color="secondary" label="Принять" @click="$refs.stepper.next()" />
         </q-stepper-navigation>
@@ -82,13 +82,15 @@
 </template>
 
 <script lang="ts" setup>
-import {ref, computed, onMounted} from 'vue'
+import {ref, getCurrentInstance} from 'vue'
 import {useRouter} from 'vue-router'
 import {useMeta} from 'quasar'
 import VOtpInput from 'vue3-otp-input'
 import {useStore} from '../store'
 import {createContract} from '../services/pdfHelper'
 import {description, version, productName} from '../../package.json'
+
+const {$t} = getCurrentInstance().appContext.config.globalProperties
 
 const store = useStore()
 const router = useRouter()
@@ -110,9 +112,9 @@ async function onFinish() {
   await store.dispatch('Tutorial/tutorialComplete')
   await store.dispatch('consumerName', consumer.value)
 
-  // console.log('qqq', tutorialText.value)
-
-  const contractPDF = createContract('tutorialText.value as string')
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
+  const html = $t('tutorial.license.body') as string
+  const contractPDF = await createContract(html)
   const newContract = {
     'agent_name': consumer.value,
     'participant_name': productName + ' ' + version,
@@ -133,15 +135,6 @@ const handleOnChange = (value: string) => {
 const handleOnComplete = (value: string) => {
   pin.value = value
 }
-
-onMounted(() => {
-  console.log('22', this)
-})
-const tutorialText = computed(() => {
-  // console.log(self)
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-  return ('tutorial.license.body')
-})
 
 useMeta(metaData)
 </script>

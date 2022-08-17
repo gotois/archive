@@ -3,16 +3,36 @@ import {FormatContract} from 'components/models'
 import {resizeImageA4} from './imgHelper'
 import {productName} from '../../package.json'
 
-export function createContract(text: string) {
+export async function createContract(html: string) {
+  const htmlObject = document.createElement('html');
+  htmlObject.innerHTML = `
+  <html lang="ru">
+	<body>${html}</body>
+  </html>
+  `
+
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'px',
     format: 'a4',
-    hotfixes: ['px_scaling'],
+    hotfixes: ['px_scaling', 'scale_text'],
   })
-  doc.text(text, 10, 40);
+  doc.setFont('Helvetica');
+  doc.setFontSize(10);
+  await doc.html(htmlObject, {
+    filename: 'contract.pdf',
+    autoPaging: false,
+    html2canvas: {
+      width: 800,
+      height: 800,
+    },
+    width: 800,
+    windowWidth: 800,
+    x: 10,
+    y: 10,
+  });
 
-  const pdfURI = doc.output('datauristring', { filename: 'contract.pdf' })
+  const pdfURI = doc.output('datauristring')
   doc.close()
 
   return pdfURI
