@@ -1,5 +1,5 @@
 <template>
-  <q-page padding class="col justify-center full-height">
+  <q-page padding class="full-height row content-center items-stretch justify-center">
     <q-inner-loading :showing="loadingVisible">
       <q-spinner-hourglass
         color="info"
@@ -9,12 +9,16 @@
     <archive-list-component
       :loading="loadingVisible"
       :contracts="contracts"
+      class="no-padding no-margin"
+      :class="{
+        'col-xs-6': $q.platform.is.desktop,
+      }"
       :pagination-count="paginationCount"
       @on-paginate="onPaginate"
     />
     <template v-if="!loadingVisible">
       <template v-if="paginationCount < 1">
-        <div v-if="isSearch" class="col-12 q-pa-lg flex flex-center self-start">
+        <div v-if="isSearch" class="col-xs-6 q-pa-lg flex flex-center self-start">
           <q-banner inline-actions class="text-center text-black">
             <template #default>
               {{ $t('archive.searchEmpty') }}

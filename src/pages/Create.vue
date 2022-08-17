@@ -1,7 +1,10 @@
 <template>
   <q-page class="row content-center items-stretch justify-center">
     <contract-form-component
-      class="col-xs-11"
+      class="q-pa-sm"
+      :class="{
+        'col-xs-6': $q.platform.is.desktop,
+      }"
       @on-create="onCreate"
     />
   </q-page>

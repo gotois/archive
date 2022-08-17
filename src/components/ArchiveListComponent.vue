@@ -2,12 +2,11 @@
   <q-virtual-scroll
     :items="items"
     separator
-    class="col-12"
   >
     <template #default="{ item, index }">
+      <q-space v-if="index > 0" style='height: 20px'/>
       <q-card
         v-show="loading"
-        class="q-ma-lg"
         flat
         square
         bordered
@@ -21,7 +20,6 @@
       <q-card
         v-show="!loading"
         :key="index"
-        class="q-ma-lg"
         flat
         square
         bordered
@@ -87,7 +85,9 @@
               :offset="[18, 18]"
             >
               <q-btn
-                round color="white" text-color="primary"
+                round
+                color="white"
+                text-color="primary"
                 icon="fullscreen"
                 @click="onShowFullImage(item)"
               />
@@ -98,7 +98,9 @@
               :offset="[18, 18]"
             >
               <q-btn
-                round color="white" text-color="primary"
+                round
+                color="white"
+                text-color="primary"
                 icon="ios_share"
                 @click="onShareFullImage(item)"
               />
@@ -120,7 +122,7 @@
       </q-card>
     </template>
     <template #after>
-      <div v-if="paginationCount > 0" class="col-12 q-pa-lg flex flex-center self-end">
+      <div v-if="paginationCount > 0" class="q-pa-lg flex flex-center self-end">
         <q-pagination
           v-model="currentPage"
           :max="paginationCount"
