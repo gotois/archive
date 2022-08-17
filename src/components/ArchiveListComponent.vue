@@ -4,7 +4,7 @@
     separator
   >
     <template #default="{ item, index }">
-      <q-space v-if="index > 0" style='height: 20px'/>
+      <q-space v-if="index > 0" style="height: 20px" />
       <q-card
         v-show="loading"
         flat
@@ -54,7 +54,7 @@
           v-model="item._currentSlide"
           transition-prev="slide-right"
           transition-next="slide-left"
-          control-color="primary"
+          control-color="secondary"
           :navigation="item.object.length > 1"
           animated
           swipeable
@@ -71,7 +71,7 @@
                 class="col"
                 fit="contain"
                 :ratio="1"
-                style="max-height: 400px"
+                style="height: 400px"
                 :src="object.contentUrl"
                 loading="lazy"
                 decoding="async"

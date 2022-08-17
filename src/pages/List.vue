@@ -7,40 +7,39 @@
       />
     </q-inner-loading>
     <archive-list-component
+      v-show="paginationCount >= 1"
       :loading="loadingVisible"
       :contracts="contracts"
       class="no-padding no-margin"
       :class="{
-        'col-xs-6': $q.platform.is.desktop,
+        'col-xs-6': $q.platform.is.desktop || $q.platform.is.ipad,
       }"
       :pagination-count="paginationCount"
       @on-paginate="onPaginate"
     />
-    <template v-if="!loadingVisible">
-      <template v-if="paginationCount < 1">
-        <div v-if="isSearch" class="col-xs-6 q-pa-lg flex flex-center self-start">
-          <q-banner inline-actions class="text-center text-black">
-            <template #default>
-              {{ $t('archive.searchEmpty') }}
-            </template>
-            <template #action>
-              <q-btn flat color="primary" icon="explore" label="На главную" to="/" />
-            </template>
-          </q-banner>
-        </div>
-        <template v-else>
-          <q-banner inline-actions class="col-12 q-pa-lg flex flex-center self-center text-black">
-            <template #avatar>
-              <q-icon name="add_task" color="secondary" />
-            </template>
-            <template #default>
-              {{ archiveEmptyText }}
-            </template>
-            <template #action>
-              <q-btn flat color="accent" label="Добавить" to="/create"/>
-            </template>
-          </q-banner>
-        </template>
+    <template v-if="!loadingVisible && paginationCount < 1">
+      <div v-if="isSearch" class="col-xs-6 q-pa-lg flex flex-center self-start">
+        <q-banner inline-actions class="text-center text-black">
+          <template #default>
+            {{ $t('archive.searchEmpty') }}
+          </template>
+          <template #action>
+            <q-btn flat color="primary" icon="explore" label="На главную" to="/" />
+          </template>
+        </q-banner>
+      </div>
+      <template v-else>
+        <q-banner inline-actions class="col-12 q-pa-lg flex flex-center self-center text-black">
+          <template #avatar>
+            <q-icon name="add_task" color="secondary" />
+          </template>
+          <template #default>
+            {{ archiveEmptyText }}
+          </template>
+          <template #action>
+            <q-btn flat color="accent" label="Добавить" to="/create"/>
+          </template>
+        </q-banner>
       </template>
     </template>
     <q-page-sticky position="bottom-right" :offset="[20, 20]">
