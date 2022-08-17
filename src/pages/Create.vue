@@ -10,13 +10,12 @@
   </q-page>
 </template>
 
-<script lang="ts">
-import {defineComponent} from 'vue'
+<script lang="ts" setup>
 import {useMeta} from 'quasar'
-import {Router, useRouter} from 'vue-router'
+import {useRouter} from 'vue-router'
 import ContractFormComponent from 'components/ContractFormComponent.vue'
 
-let router: Router
+const router = useRouter()
 
 const metaData = {
   title: 'Создание договора',
@@ -32,23 +31,5 @@ async function onCreate(value: string) {
   })
 }
 
-function main() {
-  router = useRouter()
-
-  return {
-    onCreate,
-  }
-}
-
-export default defineComponent({
-  name: 'PageIndex',
-  components: {
-    ContractFormComponent,
-  },
-  setup() {
-    useMeta(metaData)
-
-    return main()
-  },
-})
+useMeta(metaData)
 </script>
