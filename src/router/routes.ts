@@ -43,7 +43,7 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '',
-        component: () => import('pages/Create.vue'),
+        component: () => import('pages/page-create.vue'),
       },
     ],
   },
