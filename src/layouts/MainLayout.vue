@@ -135,7 +135,7 @@ import {defineComponent, ref} from 'vue'
 import {BulkError} from 'dexie'
 import {QVueGlobals, LocalStorage, useQuasar} from 'quasar'
 import {Router, useRouter} from 'vue-router'
-import {db} from 'components/ContractDatabase'
+import {db} from '../services/databaseHelper'
 import {version} from '../../package.json'
 import DatabaseComponent from 'components/DatabaseComponent.vue'
 

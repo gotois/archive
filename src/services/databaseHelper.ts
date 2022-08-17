@@ -1,6 +1,5 @@
-// todo перенести в services/databaseHelper
 import Dexie from 'dexie'
-import {ContractTable, FormatContract} from './models'
+import {ContractTable, FormatContract} from 'components/models'
 
 export class ContractDatabase extends Dexie {
   public contracts: Dexie.Table<ContractTable, number> // id is number in this case

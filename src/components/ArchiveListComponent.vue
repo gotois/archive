@@ -143,7 +143,7 @@ import {Contract, FormatContract} from 'components/models'
 import {showImageInPopup} from '../services/popup'
 import {isDateNotOk, formatterDate} from '../services/dateHelper'
 import {createPDF} from '../services/pdfHelper'
-import {db} from 'components/ContractDatabase'
+import {db} from '../services/databaseHelper'
 
 const items = ref([])
 const currentPage = ref(1)

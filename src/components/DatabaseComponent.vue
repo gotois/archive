@@ -34,7 +34,7 @@ import {exportDB, importInto} from 'dexie-export-import'
 import {saveAs} from 'file-saver'
 import JSZip from 'jszip'
 import {BulkError} from 'dexie'
-import {db} from 'components/ContractDatabase'
+import {db} from '../services/databaseHelper'
 
 let $q: QVueGlobals
 
