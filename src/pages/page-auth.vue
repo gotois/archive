@@ -16,17 +16,16 @@
   </div>
 </template>
 
-<script lang="ts">
-import {defineComponent, ref} from 'vue'
-import {QVueGlobals, useMeta, useQuasar} from 'quasar'
+<script lang="ts" setup>
+import {ref} from 'vue'
+import {useMeta, useQuasar} from 'quasar'
 import VOtpInput from 'vue3-otp-input'
-import {Store as VuexStore} from 'vuex'
-import {Router, useRouter} from 'vue-router'
-import {StateInterface, useStore} from '../store'
+import {useRouter} from 'vue-router'
+import {useStore} from '../store'
 
-let $q: QVueGlobals
-let store: VuexStore<StateInterface>
-let router: Router
+const $q = useQuasar()
+const router = useRouter()
+const store = useStore()
 
 const timeout = 2000
 const metaData = {
@@ -66,28 +65,5 @@ async function onHandleComplete(value: string) {
   }
 }
 
-function main() {
-  $q = useQuasar()
-  router = useRouter()
-  store = useStore()
-  useMeta(metaData)
-
-  return {
-    otpDisabled,
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    otpInput,
-    onHandleComplete,
-  }
-}
-
-export default defineComponent({
-  // eslint-disable-next-line vue/multi-word-component-names
-  name: 'Auth',
-  components: {
-    VOtpInput,
-  },
-  setup() {
-    return main()
-  },
-})
+useMeta(metaData)
 </script>

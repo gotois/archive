@@ -56,12 +56,11 @@
   </q-page>
 </template>
 
-<script lang="ts">
-import {defineComponent, ref} from 'vue'
-import {Router, useRouter, LocationQuery} from 'vue-router'
-import {Store as VuexStore} from 'vuex'
+<script lang="ts" setup>
+import {ref, computed} from 'vue'
+import {useRouter, LocationQuery} from 'vue-router'
 import {useMeta} from 'quasar'
-import {StateInterface, useStore} from '../store'
+import {useStore} from '../store'
 import {contractTypes} from '../services/contractTypes'
 import ArchiveListComponent from 'components/ArchiveListComponent.vue'
 
@@ -69,10 +68,9 @@ const metaData = {
   title: 'Архив',
 }
 
-let router: Router
-let store: VuexStore<StateInterface>
+const store = useStore()
+const router = useRouter()
 
-const searchText = ref('')
 const limit = ref(5)
 const loadingVisible = ref(true)
 
@@ -109,46 +107,28 @@ async function updateContracts({ page, filter }: LocationQuery|{page: number, fi
   loadingVisible.value = false
 }
 
-function main() {
-  store = useStore()
-  router = useRouter()
-  useMeta(metaData)
-
-  router.afterEach((to) => updateContracts(to.query))
-  void (updateContracts)(router.currentRoute.value.query)
-
-  return {
-    searchText,
-    loadingVisible,
-    onPaginate,
-  }
-}
-
-export default defineComponent({
-  // eslint-disable-next-line vue/multi-word-component-names
-  name: 'List',
-  components: {
-    ArchiveListComponent,
-  },
-  setup() {
-    return main()
-  },
-  computed: {
-    isSearch() {
-      return Boolean(router.currentRoute.value.query.filter)
-    },
-    archiveEmptyText() {
-      const randomContractType = Math.floor(Math.random() * (contractTypes.length - 1))
-      return this.$t('archive.empty') + '. Например: ' + contractTypes[randomContractType].toLowerCase() + '.'
-    },
-    contracts() {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
-      return Array.from(store.getters.contracts)
-    },
-    paginationCount() {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      return Math.ceil(store.getters.contractsCount / limit.value)
-    },
-  },
+const isSearch = computed(() => {
+  return Boolean(router.currentRoute.value.query.filter)
 })
+
+const archiveEmptyText = computed((self) => {
+  const randomContractType = Math.floor(Math.random() * (contractTypes.length - 1))
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/restrict-plus-operands,@typescript-eslint/no-unsafe-member-access
+  return self.$t('archive.empty') + '. Например: ' + contractTypes[randomContractType].toLowerCase() + '.'
+})
+
+const contracts = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
+  return Array.from(store.getters.contracts)
+})
+
+const paginationCount = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  return Math.ceil(store.getters.contractsCount / limit.value)
+})
+
+useMeta(metaData)
+
+router.afterEach((to) => updateContracts(to.query))
+void (updateContracts)(router.currentRoute.value.query)
 </script>

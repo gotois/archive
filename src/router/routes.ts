@@ -8,17 +8,17 @@ const routes: RouteRecordRaw[] = [
       {
         path: '',
         name: 'archive',
-        component: () => import('pages/List.vue'),
+        component: () => import('pages/page-list.vue'),
       },
       {
         path: 'filter',
         name: 'filter',
-        component: () => import('pages/List.vue'),
+        component: () => import('pages/page-list.vue'),
       },
       {
         path: 'search',
         name: 'search',
-        component: () => import('pages/List.vue'),
+        component: () => import('pages/page-list.vue'),
       },
     ],
   },
@@ -33,7 +33,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: '',
         name: 'auth',
-        component: () => import('pages/Auth.vue'),
+        component: () => import('pages/page-auth.vue'),
       },
     ],
   },
@@ -43,6 +43,7 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '',
+        name: 'create',
         component: () => import('pages/page-create.vue'),
       },
     ],
@@ -53,6 +54,7 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '',
+        name: 'tutorial',
         component: () => import('pages/page-tutorial.vue'),
       },
     ],
