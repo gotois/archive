@@ -16,20 +16,9 @@
   </q-layout>
 </template>
 
-<script lang="ts">
-import {defineComponent} from 'vue'
-import {version} from '../../package.json'
+<script lang="ts" setup>
+import {ref} from 'vue'
+import pkg from '../../package.json'
 
-function main() {
-  return {
-    version,
-  }
-}
-
-export default defineComponent({
-  name: 'EmptyLayout',
-  setup() {
-    return main()
-  },
-})
+const version = ref(pkg.version)
 </script>

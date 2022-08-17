@@ -130,13 +130,13 @@
   </q-layout>
 </template>
 
-<script lang="ts">
-import {defineComponent, ref} from 'vue'
+<script lang="ts" setup>
+import {ref} from 'vue'
 import {BulkError} from 'dexie'
-import {QVueGlobals, LocalStorage, useQuasar} from 'quasar'
-import {Router, useRouter} from 'vue-router'
+import {LocalStorage, useQuasar} from 'quasar'
+import {useRouter} from 'vue-router'
 import {db} from '../services/databaseHelper'
-import {version} from '../../package.json'
+import pkg from '../../package.json'
 import DatabaseComponent from 'components/DatabaseComponent.vue'
 
 const leftDrawerOpen = ref(false)
@@ -146,9 +146,10 @@ const confirm = ref(false)
 const searchText = ref('')
 const showSearch = ref(false)
 const archiveNames = ref([])
+const version = ref(pkg.version)
 
-let $q: QVueGlobals
-let router: Router
+const $q = useQuasar()
+const router = useRouter()
 
 function onToggleLeftDrawer(): void {
   leftDrawerOpen.value = !leftDrawerOpen.value
@@ -200,39 +201,8 @@ async function onSelectArchiveName(name: string) {
   })
 }
 
-function main() {
-  $q = useQuasar()
-  router = useRouter()
-
-  void (async () => {
-    const map = await db.getContractNames()
-    archiveNames.value = Array.from(map)
-  })()
-
-  return {
-    leftDrawerOpen,
-    rightDrawerOpen,
-    settingsOpen,
-    confirm,
-    version,
-    searchText,
-    showSearch,
-    archiveNames,
-    onSearchText,
-    onOpenFeedback,
-    onToggleLeftDrawer,
-    onClearDatabase,
-    onSelectArchiveName,
-  }
-}
-
-export default defineComponent({
-  name: 'MainLayout',
-  components: {
-    DatabaseComponent,
-  },
-  setup() {
-    return main()
-  },
-})
+void (async () => {
+  const map = await db.getContractNames()
+  archiveNames.value = Array.from(map)
+})()
 </script>
