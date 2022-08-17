@@ -126,7 +126,7 @@
         <q-pagination
           v-model="currentPage"
           :max="paginationCount"
-          :max-pages="5"
+          :max-pages="MAX_PAGES"
           direction-links
           boundary-numbers
           color="secondary"
@@ -147,6 +147,7 @@ import {db} from 'components/ContractDatabase'
 
 const items = ref([])
 const currentPage = ref(1)
+const MAX_PAGES = 5
 
 function prettyDate(item: Contract) {
   if (!isDateNotOk(item.startTime) && item.endTime === null) {
@@ -194,6 +195,7 @@ async function removeArchive(item: FormatContract) {
 function main() {
   return {
     nativeShareAvailable: !!navigator.share,
+    MAX_PAGES,
     items,
     currentPage,
     prettyDate,

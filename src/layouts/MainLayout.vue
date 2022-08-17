@@ -133,7 +133,7 @@
 <script lang="ts">
 import {defineComponent, ref} from 'vue'
 import {BulkError} from 'dexie'
-import {QVueGlobals, useQuasar} from 'quasar'
+import {QVueGlobals, LocalStorage, useQuasar} from 'quasar'
 import {Router, useRouter} from 'vue-router'
 import {db} from 'components/ContractDatabase'
 import {version} from '../../package.json'
@@ -177,6 +177,7 @@ async function onClearDatabase() {
   try {
     $q.loading.show()
     await db.destroy()
+    LocalStorage.clear()
     location.reload()
   } catch (error) {
     const msg = (error as BulkError).message
