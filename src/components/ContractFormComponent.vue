@@ -121,11 +121,10 @@
   </q-form>
 </template>
 
-<script lang="ts">
-import {defineComponent, ref} from 'vue'
-import {Store as VuexStore} from 'vuex'
-import {QVueGlobals, useQuasar} from 'quasar'
-import {StateInterface, useStore} from '../store'
+<script lang="ts" setup>
+import {ref, defineEmits} from 'vue'
+import {useQuasar} from 'quasar'
+import {useStore} from '../store'
 import {ContractTable} from './models'
 import {db} from '../services/databaseHelper'
 import {readFilesPromise} from '../services/fileHelper'
@@ -136,9 +135,9 @@ const now = new Date()
 const currentDate = formatDate(now)
 const afterYearDate = formatDate(new Date(now.setFullYear(now.getFullYear() + 1)))
 
-let $q: QVueGlobals
-let store: VuexStore<StateInterface>
-let $emit: (event: 'onCreate', ...args: unknown[]) => void
+const $q = useQuasar()
+const store = useStore()
+const emit = defineEmits(['onCreate'])
 
 const contractType = ref('')
 const customer = ref('')
@@ -241,7 +240,7 @@ async function onSubmit() {
           label: 'Перейти',
           color: 'white',
           handler: () => {
-            $emit('onCreate', newContract.instrument_name)
+            emit('onCreate', newContract.instrument_name)
           },
         },
       ],
@@ -255,34 +254,4 @@ async function onSubmit() {
     })
   })
 }
-
-function main() {
-  $q = useQuasar()
-  store = useStore()
-
-  return {
-    contractType,
-    customer,
-    description,
-    duration,
-    files,
-    dateNoLimit,
-    contractForm,
-    contractOptions,
-    filterOptions,
-    onSubmit,
-    onResetForm,
-    onSelectDate,
-  }
-}
-
-export default defineComponent({
-  name: 'ContractFormComponent',
-  emits: ['onCreate'],
-  setup(props, { emit }) {
-    $emit = emit
-
-    return main()
-  },
-})
 </script>

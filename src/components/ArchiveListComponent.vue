@@ -137,17 +137,39 @@
   </q-virtual-scroll>
 </template>
 
-<script lang="ts">
-import {defineComponent, PropType, ref, watch} from 'vue'
+<script lang="ts" setup>
+import {defineEmits, PropType, defineProps, ref, watch} from 'vue'
 import {Contract, FormatContract} from 'components/models'
 import {showImageInPopup} from '../services/popup'
 import {isDateNotOk, formatterDate} from '../services/dateHelper'
 import {createPDF} from '../services/pdfHelper'
 import {db} from '../services/databaseHelper'
 
+const props = defineProps({
+  paginationCount: {
+    type: Number as PropType<number>,
+    required: true,
+  },
+  loading: {
+    type: Boolean as PropType<boolean>,
+    default: false,
+  },
+  contracts: {
+    type: Array as PropType<FormatContract[]>,
+    required: true,
+  },
+})
+
+defineEmits(['onPaginate'])
+
 const items = ref([])
 const currentPage = ref(1)
-const MAX_PAGES = 5
+const MAX_PAGES = ref(5)
+const nativeShareAvailable = ref(!!navigator.share)
+
+watch(() => props.contracts, (newVal => {
+  items.value = newVal
+}))
 
 function prettyDate(item: Contract) {
   if (!isDateNotOk(item.startTime) && item.endTime === null) {
@@ -191,44 +213,4 @@ async function removeArchive(item: FormatContract) {
   // todo make refresh without reload
   location.reload()
 }
-
-function main() {
-  return {
-    nativeShareAvailable: !!navigator.share,
-    MAX_PAGES,
-    items,
-    currentPage,
-    prettyDate,
-    onShareFullImage,
-    checkItemEndTime,
-    onShowFullImage,
-    removeArchive,
-  }
-}
-
-export default defineComponent({
-  name: 'ArchiveListComponent',
-  props: {
-    paginationCount: {
-      type: Number as PropType<number>,
-      required: true,
-    },
-    loading: {
-      type: Boolean as PropType<boolean>,
-      default: false,
-    },
-    contracts: {
-      type: Array as PropType<FormatContract[]>,
-      required: true,
-    },
-  },
-  emits: ['onPaginate'],
-  setup(props) {
-    watch(() => props.contracts, (newVal => {
-      items.value = newVal
-    }))
-
-    return main()
-  },
-})
 </script>
