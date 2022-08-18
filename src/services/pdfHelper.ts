@@ -2,7 +2,7 @@ import {ImageFormat, jsPDF} from 'jspdf'
 import html2canvas from 'html2canvas'
 import {FormatContract} from 'components/models'
 import {resizeImageA4} from './imgHelper'
-import {productName} from '../../package.json'
+import pkg from '../../package.json'
 
 // todo пока не возможно использовать кириллицу для генерации через `doc.html` поэтому конвертирую в изображение
 export async function createContract(html: string) {
@@ -19,7 +19,7 @@ export async function createContract(html: string) {
     orientation: 'portrait',
     unit: 'px',
     format: 'a4',
-    hotfixes: ['px_scaling'],
+    hotfixes: ['px_scaling', 'scale_text'],
   })
   doc.setLanguage('ru')
   doc.setFont('Times', 'Roman')
@@ -61,7 +61,7 @@ export async function createPDF(object: FormatContract) {
     title: object.instrument.name,
     subject: object.instrument.description,
     author: object.agent.name,
-    creator: productName,
+    creator: pkg.productName,
   })
   const files = []
   let docLength = 0
@@ -81,10 +81,10 @@ export async function createPDF(object: FormatContract) {
     }
 
     const format = mimeType.replace('image/', '').toUpperCase() as ImageFormat
-    const [width, height] = await resizeImageA4(dataUrl)
+    const {width, height} = await resizeImageA4(dataUrl)
 
     if (docLength != 0) {
-      doc.addPage()
+      doc.addPage(format, 'portrait')
     }
     doc.addImage({
       imageData: dataUrl,

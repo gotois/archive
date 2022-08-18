@@ -7,7 +7,7 @@ export async function resizeImageA4(dataUrl: string) {
   await img.decode()
   let {width, height} = img
 
-  // resizing logic
+  // resizing logic portrait
   if (width > height) {
     if (width > MAX_WIDTH) {
       height *= MAX_WIDTH / width
@@ -18,5 +18,8 @@ export async function resizeImageA4(dataUrl: string) {
     height = MAX_HEIGHT
   }
 
-  return [width, height];
+  return {
+    width: Number(Math.floor(width)),
+    height: Number(Math.floor(height)),
+  }
 }
