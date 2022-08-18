@@ -1,5 +1,5 @@
 import Dexie from 'dexie'
-import {ContractTable, FormatContract} from 'components/models'
+import {ContractTable} from 'components/models'
 
 export class ContractDatabase extends Dexie {
   public contracts: Dexie.Table<ContractTable, number> // id is number in this case
@@ -21,9 +21,9 @@ export class ContractDatabase extends Dexie {
     return map
   }
 
-  async remove(item: FormatContract) {
+  async remove(id: number) {
     return db.contracts.where('id')
-      .equals(Number(item.identifier.value))
+      .equals(id)
       .delete()
   }
 

@@ -143,7 +143,6 @@ import {Contract, FormatContract} from 'components/models'
 import {showImageInPopup} from '../services/popup'
 import {isDateNotOk, formatterDate} from '../services/dateHelper'
 import {createPDF} from '../services/pdfHelper'
-import {db} from '../services/databaseHelper'
 
 const props = defineProps({
   paginationCount: {
@@ -160,7 +159,7 @@ const props = defineProps({
   },
 })
 
-defineEmits(['onPaginate'])
+const emit = defineEmits(['onPaginate', 'onRemove'])
 
 const items = ref([])
 const currentPage = ref(1)
@@ -204,13 +203,7 @@ async function onShareFullImage(object: FormatContract) {
   }
 }
 
-async function removeArchive(item: FormatContract) {
-  const count = await db.remove(item)
-  if (count === 0) {
-    console.error('Cannot remove this item')
-    return
-  }
-  // todo make refresh without reload
-  location.reload()
+function removeArchive(item: FormatContract) {
+  emit('onRemove', item)
 }
 </script>

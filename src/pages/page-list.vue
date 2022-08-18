@@ -16,6 +16,7 @@
       }"
       :pagination-count="paginationCount"
       @on-paginate="onPaginate"
+      @on-remove="onRemove"
     />
     <template v-if="!loadingVisible && paginationCount < 1">
       <div v-if="isSearch" class="col-xs-6 q-pa-lg flex flex-center self-start">
@@ -62,6 +63,7 @@ import {useRouter, LocationQuery} from 'vue-router'
 import {useMeta} from 'quasar'
 import {useStore} from '../store'
 import {contractTypes} from '../services/contractTypes'
+import {FormatContract} from 'components/models'
 import ArchiveListComponent from 'components/ArchiveListComponent.vue'
 
 const {$t} = getCurrentInstance().appContext.config.globalProperties
@@ -85,6 +87,10 @@ async function onPaginate(page: number) {
       filter: router.currentRoute.value.query?.filter
     },
   })
+}
+
+async function onRemove(item: FormatContract) {
+  await store.dispatch('removeContract', item)
 }
 
 async function updateContracts({ page, filter }: LocationQuery|{page: number, filter: string}) {

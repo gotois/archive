@@ -24,11 +24,24 @@ const Contract: Module<ContractState, StateInterface> = {
     addContract(state, contract: Contract) {
       state.contracts.push(contract)
     },
+    removeContract(state, id: number) {
+      const i = state.contracts.map(item => item.id).indexOf(id)
+      state.contracts.splice(i, 1);
+    },
   },
   actions: {
     async addContract(context, contract: ContractTable) {
       context.commit('addContract', contract)
       await db.contracts.add(contract)
+    },
+    async removeContract(context, contract: FormatContract) {
+      const id = Number(contract.identifier.value)
+      context.commit('removeContract', id)
+      const count = await db.remove(id)
+      if (count === 0) {
+        console.error('Cannot remove this item')
+        return
+      }
     },
     async filterFromContracts(context, {query}: {query: string}) {
       const contracts = await db.contracts.where('instrument_name')
