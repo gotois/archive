@@ -54,7 +54,7 @@
             outlined
           >
             <template #prepend>
-              <q-icon name="face"/>
+              <q-icon name="face" />
             </template>
           </q-input>
           <p class="text-body">Опционально введите пин код (будет использовать при входе):</p>

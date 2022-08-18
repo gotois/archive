@@ -85,7 +85,8 @@
       ></q-input>
       <q-toggle
         v-model="dateNoLimit"
-        :label="$t('duration.infinity')"/>
+        :label="$t('duration.infinity')"
+      />
     </div>
     <q-file
       v-model="files"
@@ -116,13 +117,13 @@
       </template>
     </q-input>
     <div class="text-right">
-      <q-btn :label="$t('contractForm.submit')" icon-right="save" type="submit" color="accent"/>
+      <q-btn :label="$t('contractForm.submit')" icon-right="save" type="submit" color="accent" />
     </div>
   </q-form>
 </template>
 
 <script lang="ts" setup>
-import {ref, defineEmits} from 'vue'
+import {ref} from 'vue'
 import {useQuasar} from 'quasar'
 import {useStore} from '../store'
 import {ContractTable} from './models'

@@ -4,7 +4,7 @@
     separator
   >
     <template #default="{ item, index }">
-      <q-space v-if="index > 0" style="height: 20px" />
+      <q-space v-if="index > 0" style="height: 20px;" />
       <q-card
         v-show="loading"
         flat
@@ -12,7 +12,7 @@
         bordered
       >
         <q-skeleton type="text" height="80px" class="q-pa-md" />
-        <q-skeleton height="300px" square />
+        <q-skeleton height="400px" class="window-width" square />
         <q-card-section>
           <q-skeleton type="rect" height="50px" />
         </q-card-section>
@@ -48,7 +48,7 @@
             </q-menu>
           </q-btn>
         </div>
-        <q-separator v-if="item.object.length"/>
+        <q-separator v-if="item.object.length" />
         <q-carousel
           v-if="item.object.length"
           v-model="item._currentSlide"
@@ -138,7 +138,7 @@
 </template>
 
 <script lang="ts" setup>
-import {defineEmits, PropType, defineProps, ref, watch} from 'vue'
+import {PropType, defineProps, ref, watch} from 'vue'
 import {Contract, FormatContract} from 'components/models'
 import {showImageInPopup} from '../services/popup'
 import {isDateNotOk, formatterDate} from '../services/dateHelper'

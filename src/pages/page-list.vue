@@ -24,7 +24,7 @@
             {{ $t('archive.searchEmpty') }}
           </template>
           <template #action>
-            <q-btn flat color="primary" icon="explore" label="На главную" to="/" />
+            <q-btn flat color="primary" icon="explore" label="На главную" :to="{ name: 'archive', query: {page: 1} }" />
           </template>
         </q-banner>
       </div>
@@ -37,7 +37,7 @@
             {{ archiveEmptyText }}
           </template>
           <template #action>
-            <q-btn flat color="accent" label="Добавить" to="/create"/>
+            <q-btn flat color="accent" label="Добавить" :to="{ name: 'create' }" />
           </template>
         </q-banner>
       </template>
@@ -50,7 +50,7 @@
         vertical-actions-align="right"
         color="accent"
       >
-        <q-fab-action push square color="primary" label="Создать документ" to="/create" />
+        <q-fab-action push square color="primary" label="Создать документ" :to="{ name: 'create' }" />
       </q-fab>
     </q-page-sticky>
   </q-page>

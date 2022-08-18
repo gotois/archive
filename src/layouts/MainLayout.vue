@@ -16,7 +16,7 @@
             {{ $t('navigation.version')}}{{ version }}
           </q-badge>
         </q-toolbar-title>
-        <q-btn flat round dense class="cursor-pointer" name="search" icon="search" @click="showSearch = true"/>
+        <q-btn flat round dense class="cursor-pointer" name="search" icon="search" @click="showSearch = true" />
         <q-btn
           flat
           dense
@@ -27,8 +27,8 @@
         ></q-btn>
       </q-toolbar>
       <q-tabs shrink stretch>
-        <q-route-tab to="/create" exact replace :label="$t('header.create')"/>
-        <q-route-tab :to="{ name: 'archive' }" exact replace :label="$t('header.archive')"/>
+        <q-route-tab :to="{ name: 'create' }" exact replace :label="$t('header.create')" />
+        <q-route-tab :to="{ name: 'archive', query: {page: 1} }" exact replace :label="$t('header.archive')" />
       </q-tabs>
     </q-header>
     <q-drawer

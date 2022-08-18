@@ -12,7 +12,7 @@
         color="white"
         text-color="blue"
         unelevated
-        to="/"
+        :to="{ name: 'archive', query: {page: 1} }"
         :label="$t('error404.submit')"
         no-caps
       />
