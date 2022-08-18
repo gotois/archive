@@ -88,8 +88,9 @@ import {useMeta} from 'quasar'
 import VOtpInput from 'vue3-otp-input'
 import {useStore} from '../store'
 import {createContract} from '../services/pdfHelper'
-import {description, version, productName} from '../../package.json'
+import pkg from '../../package.json'
 
+const {description, version, productName} = pkg
 const {$t} = getCurrentInstance().appContext.config.globalProperties
 
 const store = useStore()

@@ -4,6 +4,7 @@
 /* eslint-env node */
 /* eslint-disable @typescript-eslint/no-var-requires */
 const {configure} = require('quasar/wrappers')
+const pkg = require('./package.json')
 
 module.exports = configure(function (ctx) {
   return {
@@ -14,7 +15,7 @@ module.exports = configure(function (ctx) {
           enabled: true,
           files: './src/**/*.{ts,tsx,js,jsx,vue}',
         },
-      }
+      },
     },
 
     // https://v2.quasar.dev/quasar-cli/prefetch-feature
@@ -69,13 +70,13 @@ module.exports = configure(function (ctx) {
     devServer: {
       https: false,
       port: 8080,
-      open: true // opens browser window automatically
+      open: true, // opens browser window automatically
     },
 
     // https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
     framework: {
       config: {
-        notify: { /* look at QuasarConfOptions from the API card */}
+        notify: { /* look at QuasarConfOptions from the API card */},
       },
 
       // iconSet: 'material-icons', // Quasar icon set
@@ -122,13 +123,16 @@ module.exports = configure(function (ctx) {
       middlewares: [
         ctx.prod ? 'compression' : '',
         'render' // keep this as last one
-      ]
+      ],
     },
 
     // https://v2.quasar.dev/quasar-cli/developing-pwa/configuring-pwa
     pwa: {
-      workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
-      workboxOptions: {}, // only for GenerateSW
+      workboxPluginMode: 'GenerateSW',
+      workboxOptions: {
+        skipWaiting: true,
+        clientsClaim: true,
+      },
 
       // for the custom service worker ONLY (/src-pwa/custom-service-worker.[js|ts])
       // if using workbox in InjectManifest mode
@@ -137,9 +141,9 @@ module.exports = configure(function (ctx) {
       },
 
       manifest: {
-        name: 'contracts',
-        short_name: 'Мои договоры',
-        description: 'Ваша база договоров',
+        name: pkg.name,
+        short_name: pkg.productName,
+        description: pkg.description,
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#027be3',
@@ -152,29 +156,29 @@ module.exports = configure(function (ctx) {
           {
             src: 'icons/icon-128x128.png',
             sizes: '128x128',
-            type: 'image/png'
+            type: 'image/png',
           },
           {
             src: 'icons/icon-192x192.png',
             sizes: '192x192',
-            type: 'image/png'
+            type: 'image/png',
           },
           {
             src: 'icons/icon-256x256.png',
             sizes: '256x256',
-            type: 'image/png'
+            type: 'image/png',
           },
           {
             src: 'icons/icon-384x384.png',
             sizes: '384x384',
-            type: 'image/png'
+            type: 'image/png',
           },
           {
             src: 'icons/icon-512x512.png',
             sizes: '512x512',
-            type: 'image/png'
+            type: 'image/png',
           }
-        ]
+        ],
       },
       metaVariables: {
         appleMobileWebAppCapable: 'yes',
