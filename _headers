@@ -1,2 +1,6 @@
 /
   Cache-Control: public, max-age=604800, immutable
+
+/*
+  X-Frame-Options: DENY
+  X-XSS-Protection: 1; mode=block
