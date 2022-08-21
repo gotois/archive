@@ -126,7 +126,7 @@
         <q-pagination
           v-model="currentPage"
           :max="paginationCount"
-          :max-pages="MAX_PAGES"
+          :max-pages="$q.platform.is.desktop ? 10 : 5"
           direction-links
           boundary-numbers
           color="secondary"
@@ -163,7 +163,6 @@ const emit = defineEmits(['onPaginate', 'onRemove'])
 
 const items = ref([])
 const currentPage = ref(1)
-const MAX_PAGES = ref(5)
 const nativeShareAvailable = ref(!!navigator.share)
 
 watch(() => props.contracts, (newVal => {
