@@ -7,7 +7,7 @@
       />
     </q-inner-loading>
     <archive-list-component
-      v-show="paginationCount >= 1"
+      v-show="!isContractsEmpty"
       :loading="loadingVisible"
       :contracts="contracts"
       class="no-padding no-margin"
@@ -18,7 +18,7 @@
       @on-paginate="onPaginate"
       @on-remove="onRemove"
     />
-    <template v-if="!loadingVisible && paginationCount < 1">
+    <template v-if="!loadingVisible && isContractsEmpty">
       <div v-if="isSearch" class="col-xs-6 q-pa-lg flex flex-center self-start">
         <q-banner inline-actions class="text-center text-black">
           <template #default>
@@ -133,6 +133,10 @@ const contracts = computed(() => {
 const paginationCount = computed(() => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   return Math.ceil(store.getters.contractsCount / limit.value)
+})
+
+const isContractsEmpty = computed(() => {
+  return contracts.value.length === 0
 })
 
 useMeta(metaData)
