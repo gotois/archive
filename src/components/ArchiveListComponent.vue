@@ -170,7 +170,7 @@ watch(() => props.contracts, (newVal => {
 }))
 
 function prettyDate(item: Contract) {
-  if (!isDateNotOk(item.startTime) && item.endTime === null) {
+  if (!isDateNotOk(item.startTime) && (item.endTime === null || item.endTime === undefined)) {
     return formatterDate.format(item.startTime)
   }
   if (isDateNotOk(item.startTime) || isDateNotOk(item.endTime)) {
