@@ -139,10 +139,13 @@
 
 <script lang="ts" setup>
 import {PropType, defineProps, ref, watch} from 'vue'
+import {useQuasar} from 'quasar'
 import {Contract, FormatContract} from 'components/models'
 import {showImageInPopup} from '../services/popup'
 import {isDateNotOk, formatterDate} from '../services/dateHelper'
 import {createPDF} from '../services/pdfHelper'
+
+const $q = useQuasar()
 
 const props = defineProps({
   paginationCount: {
@@ -203,6 +206,24 @@ async function onShareFullImage(object: FormatContract) {
 }
 
 function removeArchive(item: FormatContract) {
-  emit('onRemove', item)
+  $q.notify({
+    message: 'Действительно удалить? Изменения нельзя отменить',
+    type: 'warning',
+    position: 'center',
+    timeout: 7500,
+    closeBtn: true,
+    attrs: {
+      role: 'alertdialog',
+    },
+    actions: [
+      {
+        label: 'Удалить',
+        color: 'negative',
+        handler: () => {
+          emit('onRemove', item)
+        },
+      },
+    ],
+  })
 }
 </script>
