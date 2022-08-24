@@ -30,7 +30,7 @@
         </q-banner>
       </div>
       <template v-else>
-        <q-banner inline-actions class="col-12 q-pa-lg flex flex-center self-center text-black">
+        <q-banner :inline-actions="!$q.platform.is.mobile" :class="{ 'col-6': $q.platform.is.desktop, }" class="q-pa-lg flex flex-center self-center text-black">
           <template #avatar>
             <q-icon name="add_task" color="secondary" />
           </template>

@@ -35,6 +35,7 @@
       v-model="leftDrawerOpen"
       side="left"
       elevated
+      persistent
       class="flex"
     >
       <q-list class="row self-start">
@@ -74,7 +75,9 @@
       </div>
     </q-drawer>
     <q-drawer
+      v-if="archiveNames.length"
       v-model="rightDrawerOpen"
+      persistent
       show-if-above
       side="right"
       bordered
