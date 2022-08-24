@@ -19,29 +19,23 @@
       @on-remove="onRemove"
     />
     <template v-if="!loadingVisible && isContractsEmpty">
-      <div v-if="isSearch" class="col-xs-6 q-pa-lg flex flex-center self-start">
-        <q-banner inline-actions class="text-center text-black">
-          <template #default>
-            {{ $t('archive.searchEmpty') }}
+      <q-banner :inline-actions="!$q.platform.is.mobile" :class="{ 'col-6': $q.platform.is.desktop, }" class="q-pa-lg flex flex-center self-center text-black">
+        <template v-if="!isSearch" #avatar>
+          <q-icon name="add_task" color="secondary" />
+        </template>
+        <template #default>
+          <template v-if="isSearch">{{ $t('archive.searchEmpty') }}</template>
+          <template v-else>{{ archiveEmptyText }}</template>
+        </template>
+        <template #action>
+          <template v-if="isSearch">
+            <q-btn flat color="accent" icon="explore" label="На главную" :to="{ name: 'archive', query: {page: 1} }" />
           </template>
-          <template #action>
-            <q-btn flat color="primary" icon="explore" label="На главную" :to="{ name: 'archive', query: {page: 1} }" />
-          </template>
-        </q-banner>
-      </div>
-      <template v-else>
-        <q-banner :inline-actions="!$q.platform.is.mobile" :class="{ 'col-6': $q.platform.is.desktop, }" class="q-pa-lg flex flex-center self-center text-black">
-          <template #avatar>
-            <q-icon name="add_task" color="secondary" />
-          </template>
-          <template #default>
-            {{ archiveEmptyText }}
-          </template>
-          <template #action>
+          <template v-else>
             <q-btn flat color="accent" label="Добавить" :to="{ name: 'create' }" />
           </template>
-        </q-banner>
-      </template>
+        </template>
+      </q-banner>
     </template>
     <q-page-sticky position="bottom-right" :offset="[20, 20]">
       <q-fab
