@@ -49,7 +49,33 @@
           class="full-width"
           :label="$t('settings.native.title')"
         >
-          <database-component class="col q-pa-md"></database-component>
+          <suspense>
+            <template #default>
+              <database-component class="col q-pa-md"></database-component>
+            </template>
+            <template #fallback>Loading...</template>
+          </suspense>
+        </q-expansion-item>
+        <q-expansion-item
+          v-model="otpOpen"
+          group="backupgroup"
+          icon="vpn_key"
+          class="full-width"
+          :label="$t('settings.native.otp')"
+        >
+          <q-tooltip>Измените ключ</q-tooltip>
+          <v-otp-input
+            ref="otpInput"
+            class="flex flex-center q-pa-lg"
+            input-classes="otp-input"
+            separator="-"
+            :num-inputs="4"
+            :should-auto-focus="true"
+            :is-input-num="true"
+            :conditional-class="['', '', '', '']"
+            :placeholder="['*', '*', '*', '*']"
+            @on-complete="onOTPHandleComplete"
+          />
         </q-expansion-item>
         <q-expansion-item
           group="backupgroup"
@@ -135,24 +161,33 @@
 </template>
 
 <script lang="ts" setup>
-import {ref} from 'vue'
+import {ref, defineAsyncComponent} from 'vue'
 import {BulkError} from 'dexie'
 import {LocalStorage, useQuasar} from 'quasar'
 import {useRouter} from 'vue-router'
 import {db} from '../services/databaseHelper'
+import {useStore} from '../store'
 import {recommendationContractTypes} from '../services/recommendationContractTypes'
 import pkg from '../../package.json'
-import DatabaseComponent from 'components/DatabaseComponent.vue'
+
+const DatabaseComponent = defineAsyncComponent(
+  () => import('components/DatabaseComponent.vue')
+)
+const VOtpInput = defineAsyncComponent(
+  () => import('vue3-otp-input')
+)
 
 const leftDrawerOpen = ref(false)
 const rightDrawerOpen = ref(false)
 const settingsOpen = ref(false)
+const otpOpen = ref(false)
 const confirm = ref(false)
 const searchText = ref('')
 const showSearch = ref(false)
 const archiveNames = ref([])
 const version = ref(pkg.version)
 
+const store = useStore()
 const $q = useQuasar()
 const router = useRouter()
 
@@ -177,6 +212,16 @@ async function onSearchText() {
   })
   showSearch.value = false
   searchText.value = ''
+}
+
+async function onOTPHandleComplete(value: string) {
+  if (window.confirm('Действительно сохранить пин?')) {
+    await store.dispatch('Auth/setCode', value)
+  }
+  $q.notify({
+    type: 'warning',
+    message: 'Ключ изменен',
+  })
 }
 
 async function onClearDatabase() {

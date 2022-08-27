@@ -107,7 +107,7 @@ const metaData = {
 
 async function onFinish() {
   if (pin.value.length === 4) {
-    if (confirm('Действительно сохранить пин?')) {
+    if (window.confirm('Действительно сохранить пин?')) {
       await store.dispatch('Auth/setCode', pin.value)
     }
   }
