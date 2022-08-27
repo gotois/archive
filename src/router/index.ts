@@ -38,6 +38,7 @@ export default route<StateInterface>(function ({store/* , ssrContext */}) {
   })
   Router.beforeEach((to) => {
     switch (to.path) {
+      case '/privacy':
       case '/auth':
       case '/tutorial': {
         return true
