@@ -1,53 +1,50 @@
 import {ImageFormat, jsPDF} from 'jspdf'
+import {generate} from '@pdfme/generator'
 import html2canvas from 'html2canvas'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import {convert} from 'html-to-text'
 import {FormatContract} from 'components/models'
 import {resizeImageA4} from './imgHelper'
 import pkg from '../../package.json'
+import {readFilesPromise} from '../services/fileHelper'
+import privacyNotice from '../ui/templates/privacy-notice'
 
-// todo пока не возможно использовать кириллицу для генерации через `doc.html` поэтому конвертирую в изображение
-export async function createContract(html: string) {
-  const width = 1754
+export async function createContract(html: string, useImage = false) {
   const htmlObject = document.createElement('div')
   htmlObject.id = 'capture'
-  htmlObject.style.width = String(width / 2) + 'px'
+  htmlObject.style.width = String(1752 / 2) + 'px'
   htmlObject.innerHTML = html
-  htmlObject.style.hyphens = 'auto'
-
-  document.body.appendChild(htmlObject)
-
-  const doc = new jsPDF({
-    orientation: 'portrait',
-    unit: 'px',
-    format: 'a4',
-    hotfixes: ['px_scaling', 'scale_text'],
-  })
-  doc.setLanguage('ru')
-  doc.setFont('Times', 'Roman')
-  doc.setFontSize(10)
-
-  // todo hack options
-  const canvas = await html2canvas(document.querySelector('#capture'), {
-    width: width,
-    x: -10,
-    y: 0,
-    scale: 0.9,
-  })
-  document.body.removeChild(htmlObject)
-
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  doc.addImage({
-    imageData: canvas.toDataURL('image/png'),
-    x: 0,
-    y: 0,
-    format: 'PNG',
-    compression: 'SLOW',
+  htmlObject.style.webkitHyphens = 'auto'
+  htmlObject.style.hyphens = 'auto'
+
+  let inputs
+  // генерируем изображение вместо текста
+  if (useImage) {
+    document.body.appendChild(htmlObject)
+    const canvas = await html2canvas(htmlObject, {
+      x: 0,
+      y: 0,
+      scale: 1,
+    })
+    inputs = [{ image: canvas.toDataURL('image/png') }]
+    document.body.removeChild(htmlObject)
+  } else {
+    const text = convert(html, {
+      wordwrap: 130,
+    })
+    inputs = [{ text: text }]
+  }
+
+  const pdf = await generate({
+    template: privacyNotice,
+    inputs,
   })
 
-  const pdfURI = doc.output('datauristring')
-  doc.close()
-
-  return pdfURI
+  const blob = new Blob([pdf.buffer], { type: 'application/pdf' })
+  return await readFilesPromise([blob])
 }
 
 export async function createPDF(object: FormatContract) {

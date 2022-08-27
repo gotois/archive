@@ -1,4 +1,4 @@
-export function readFilesPromise(files: File[]) {
+export function readFilesPromise(files: File[]|Blob[]) {
   const promises = []
   for (const file of files) {
     const promise = new Promise(((resolve, reject) => {
@@ -13,5 +13,5 @@ export function readFilesPromise(files: File[]) {
     }))
     promises.push(promise)
   }
-  return Promise.all(promises)
+  return Promise.all(promises) as Promise<string[]>
 }

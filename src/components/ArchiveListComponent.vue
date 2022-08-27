@@ -138,7 +138,7 @@
 </template>
 
 <script lang="ts" setup>
-import {PropType, defineProps, ref, watch} from 'vue'
+import {PropType, ref, watch} from 'vue'
 import {useQuasar} from 'quasar'
 import {Contract, FormatContract} from 'components/models'
 import {showImageInPopup} from '../services/popup'

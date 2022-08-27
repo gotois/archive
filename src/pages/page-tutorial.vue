@@ -24,7 +24,7 @@
         icon="article"
         :done="step > 2"
       >
-        <p class="text-body1 license" v-html="$t('tutorial.license.body')"></p>
+        <p class="text-body1" v-html="$t('tutorial.license.body')"></p>
         <q-stepper-navigation>
           <q-btn color="secondary" label="Принять" @click="$refs.stepper.next()" />
         </q-stepper-navigation>
@@ -84,7 +84,7 @@
 <script lang="ts" setup>
 import {ref, getCurrentInstance} from 'vue'
 import {useRouter} from 'vue-router'
-import {useMeta} from 'quasar'
+import {useQuasar, useMeta} from 'quasar'
 import VOtpInput from 'vue3-otp-input'
 import {useStore} from '../store'
 import {createContract} from '../services/pdfHelper'
@@ -93,6 +93,7 @@ import pkg from '../../package.json'
 const {description, version, productName} = pkg
 const {$t} = getCurrentInstance().appContext.config.globalProperties
 
+const $q = useQuasar()
 const store = useStore()
 const router = useRouter()
 
@@ -110,22 +111,24 @@ async function onFinish() {
       await store.dispatch('Auth/setCode', pin.value)
     }
   }
+  $q.loading.show()
   await store.dispatch('Tutorial/tutorialComplete')
   await store.dispatch('consumerName', consumer.value)
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
   const html = $t('tutorial.license.body') as string
-  const contractPDF = await createContract(html)
+  const contractPDF = await createContract(html, $q.platform.is.name === 'firefox')
   const newContract = {
     'agent_name': consumer.value,
     'participant_name': productName + ' ' + version,
     'instrument_name': 'Договор согласия',
     'instrument_description': description,
     'startTime': new Date(),
-    'images': [contractPDF],
+    'images': contractPDF,
   }
   await store.dispatch('addContract', newContract)
 
+  $q.loading.hide()
   await router.push('/create')
 }
 
