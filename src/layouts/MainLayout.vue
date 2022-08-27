@@ -91,7 +91,7 @@
             outline
             clickable
             :color="value.recomendation ? 'orange' : ''"
-            @click="onSelectArchiveName(name)"
+            @click="onSelectArchiveName(name, value)"
         >
           <q-avatar v-if="value.count > 1" color="secondary" text-color="white">{{ value.count }}</q-avatar>
           <div class="ellipsis">{{ name }}</div>
@@ -196,7 +196,17 @@ async function onClearDatabase() {
   }
 }
 
-async function onSelectArchiveName(name: string) {
+async function onSelectArchiveName(name: string, value: {count: number, recommendation: boolean}) {
+  if (value.count === 0) {
+    await router.push({
+      name: 'create',
+      query: {
+        contractTypeName: name,
+      },
+    })
+    return
+  }
+
   await router.push({
     name: 'filter',
     query: {
@@ -210,7 +220,7 @@ void (async () => {
   const map = new Map()
 
   recommendationContractTypes.forEach(contractName => {
-    map.set(contractName, { count: 1, recomendation: true, })
+    map.set(contractName, { count: 0, recomendation: true, })
   })
 
   for (const names of await db.getContractNames()) {

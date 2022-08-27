@@ -5,6 +5,7 @@
       :class="{
         'col-xs-6': $q.platform.is.desktop,
       }"
+      :contract-type-name="$router.currentRoute.value.query.contractTypeName"
       @on-create="onCreate"
     />
   </q-page>

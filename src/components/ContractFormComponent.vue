@@ -123,7 +123,7 @@
 </template>
 
 <script lang="ts" setup>
-import {ref} from 'vue'
+import {PropType, toRef, ref} from 'vue'
 import {useQuasar} from 'quasar'
 import {useStore} from '../store'
 import {ContractTable} from './models'
@@ -131,6 +131,7 @@ import {db} from '../services/databaseHelper'
 import {readFilesPromise} from '../services/fileHelper'
 import {isDateNotOk, formatDate} from '../services/dateHelper'
 import {contractTypes} from '../services/contractTypes'
+import {recommendationContractTypes} from '../services/recommendationContractTypes'
 
 const now = new Date()
 const currentDate = formatDate(now)
@@ -139,20 +140,28 @@ const afterYearDate = formatDate(new Date(now.setFullYear(now.getFullYear() + 1)
 const $q = useQuasar()
 const store = useStore()
 const emit = defineEmits(['onCreate'])
+const props = defineProps({
+  contractTypeName: {
+    type: String as PropType<string>,
+    default: '',
+  },
+})
 
-const contractType = ref('')
+const contractType = toRef(props, 'contractTypeName')
 const customer = ref('')
 const description = ref('')
 const duration = ref({from: currentDate, to: afterYearDate})
 const files = ref([])
 const contractForm = ref()
 const dateNoLimit = ref(false)
-const contractOptions = ref(contractTypes)
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+const allContractTypes: string[] = [].concat(recommendationContractTypes, contractTypes)
+const contractOptions = ref(allContractTypes)
 
 function filterOptions(val: string, update: (callback: () => void) => void) {
   update(() => {
     const needle = val.toLowerCase()
-    contractOptions.value = contractTypes.filter(v => v.toLowerCase().indexOf(needle) > -1)
+    contractOptions.value = allContractTypes.filter(v => v.toLowerCase().indexOf(needle) > -1)
   })
 }
 
