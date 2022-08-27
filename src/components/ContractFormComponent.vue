@@ -123,7 +123,7 @@
 </template>
 
 <script lang="ts" setup>
-import {PropType, toRef, ref} from 'vue'
+import {PropType, ref} from 'vue'
 import {useQuasar} from 'quasar'
 import {useStore} from '../store'
 import {ContractTable} from './models'
@@ -147,7 +147,7 @@ const props = defineProps({
   },
 })
 
-const contractType = toRef(props, 'contractTypeName')
+const contractType = ref(props.contractTypeName)
 const customer = ref('')
 const description = ref('')
 const duration = ref({from: currentDate, to: afterYearDate})
