@@ -16,7 +16,7 @@ export class ContractDatabase extends Dexie {
     const map = new Map()
     await db.contracts.each((value) => {
       const count = Number(map.get(value.instrument_name)) || 0
-      map.set(value.instrument_name, count + 1)
+      map.set(value.instrument_name, { count: count + 1 })
     })
     return map
   }

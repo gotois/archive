@@ -90,9 +90,10 @@
             square
             outline
             clickable
+            :color="value.recomendation ? 'orange' : ''"
             @click="onSelectArchiveName(name)"
         >
-          <q-avatar v-if="value > 1" color="secondary" text-color="white">{{ value }}</q-avatar>
+          <q-avatar v-if="value.count > 1" color="secondary" text-color="white">{{ value.count }}</q-avatar>
           <div class="ellipsis">{{ name }}</div>
           <q-tooltip>{{ name }}</q-tooltip>
         </q-chip>
@@ -139,6 +140,7 @@ import {BulkError} from 'dexie'
 import {LocalStorage, useQuasar} from 'quasar'
 import {useRouter} from 'vue-router'
 import {db} from '../services/databaseHelper'
+import {recommendationContractTypes} from '../services/recommendationContractTypes'
 import pkg from '../../package.json'
 import DatabaseComponent from 'components/DatabaseComponent.vue'
 
@@ -205,7 +207,16 @@ async function onSelectArchiveName(name: string) {
 }
 
 void (async () => {
-  const map = await db.getContractNames()
+  const map = new Map()
+
+  recommendationContractTypes.forEach(contractName => {
+    map.set(contractName, { count: 1, recomendation: true, })
+  })
+
+  for (const names of await db.getContractNames()) {
+    map.set(...names)
+  }
+
   archiveNames.value = Array.from(map)
 })()
 </script>
