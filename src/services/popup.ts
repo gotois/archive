@@ -25,6 +25,12 @@ export function showImageInPopup(image: { contentUrl: string }) {
   styleSheet.innerHTML = styleRules
   const newWin = window.open('about:blank', '_blank')
   newWin.document.write(`
+    <style>
+    @page {
+      size: A4;
+      margin: 0;
+    }
+    </style>
     <a href="javascript: self.close()">
       <img src="${closeIconBase64}" class="icon" alt="">
     </a>
