@@ -13,10 +13,13 @@ export class ContractDatabase extends Dexie {
   }
 
   public async getContractNames() {
-    const map = new Map()
+    const map: Map<string, {count: number}> = new Map()
     await db.contracts.each((value) => {
-      const count = Number(map.get(value.instrument_name)) || 0
-      map.set(value.instrument_name, { count: count + 1 })
+      let count = 1
+      if (map.get(value.instrument_name)) {
+        count += map.get(value.instrument_name).count
+      }
+      map.set(value.instrument_name, { count })
     })
     return map
   }
