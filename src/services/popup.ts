@@ -20,7 +20,15 @@ body {
 }
 `
 
-export function showImageInPopup(image: { contentUrl: string }) {
+export async function showPDFInPopup(contentUrl: string) {
+  const res = await fetch(contentUrl)
+  const blob = await res.blob()
+  const url = URL.createObjectURL(blob)
+
+  window.open(url, '_blank')
+}
+
+export function showImageInPopup(contentUrl: string) {
   const styleSheet = document.createElement('style')
   styleSheet.innerHTML = styleRules
   const newWin = window.open('about:blank', '_blank')
@@ -34,7 +42,8 @@ export function showImageInPopup(image: { contentUrl: string }) {
     <a href="javascript: self.close()">
       <img src="${closeIconBase64}" class="icon" alt="">
     </a>
-    <img width="100%" src="${image.contentUrl}" alt="">
+    <img width="100%" src="${contentUrl}" alt="">
   `)
+
   newWin.document.head.appendChild(styleSheet)
 }

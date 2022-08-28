@@ -141,7 +141,7 @@
 import {PropType, ref, watch} from 'vue'
 import {useQuasar} from 'quasar'
 import {Contract, FormatContract} from 'components/models'
-import {showImageInPopup} from '../services/popup'
+import {showImageInPopup, showPDFInPopup} from '../services/popup'
 import {isDateNotOk, formatterDate} from '../services/dateHelper'
 import {createPDF} from '../services/pdfHelper'
 
@@ -191,9 +191,15 @@ function checkItemEndTime(item: Contract) {
   return {}
 }
 
-function onShowFullImage(object: FormatContract) {
+async function onShowFullImage(object: FormatContract) {
   const image = object.object[object._currentSlide - 1]
-  showImageInPopup(image)
+
+  if (image.contentUrl.startsWith('data:application/pdf;', 0)) {
+    await showPDFInPopup(image.contentUrl)
+    return
+  }
+
+  showImageInPopup(image.contentUrl)
 }
 
 async function onShareFullImage(object: FormatContract) {
