@@ -71,20 +71,16 @@
 </template>
 
 <script lang="ts" setup>
-import {ref, getCurrentInstance} from 'vue'
+import {ref} from 'vue'
 import {useRouter} from 'vue-router'
 import {useQuasar, useMeta} from 'quasar'
 import VOtpInput from 'vue3-otp-input'
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import PagePrivacy from 'pages/page-privacy'
+import PrivacyComponent from 'components/PrivacyComponent.vue'
 import {useStore} from '../store'
 import {createContract} from '../services/pdfHelper'
 import pkg from '../../package.json'
 
 const {description, version, productName} = pkg
-const {$t} = getCurrentInstance().appContext.config.globalProperties
-
 const $q = useQuasar()
 const store = useStore()
 const router = useRouter()
@@ -107,8 +103,8 @@ async function onFinish() {
   await store.dispatch('Tutorial/tutorialComplete')
   await store.dispatch('consumerName', consumer.value)
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
-  const html = PagePrivacy.render().children[0].children as string
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+  const html = PrivacyComponent.render().children[0].children as string
   const contractPDF = await createContract(html, $q.platform.is.name === 'firefox')
   const newContract = {
     'agent_name': consumer.value,

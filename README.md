@@ -52,6 +52,5 @@ bubblewrap build
 bubblewrap install
 ```
 
-
 ---
-Сделано с любовью.
+Сделано на принципах [gotois](https://gotointeractive.com/mantra).
