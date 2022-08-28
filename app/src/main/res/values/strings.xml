@@ -15,7 +15,6 @@
      limitations under the License.
 -->
 <resources>
-  
 
   <!--
     This variable below expresses the relationship between the app and the site,
@@ -28,9 +27,8 @@
         \"relation\": [\"delegate_permission/common.handle_all_urls\"],
         \"target\": {
             \"namespace\": \"web\",
-            \"site\": \"https://archive.baskovsky.ru\"
+            \"site\": \"https://archive.gotointeractive.com\"
         }
     }]
-    
-  </string>  
+  </string>
 </resources>
