@@ -8,8 +8,9 @@
   "scripts": {
     "dev": "quasar dev",
     "dev:apk": "bubblewrap install",
-    "build": "quasar build -m pwa",
+    "build": "quasar build -m pwa && cp public/_redirects dist/pwa/ && cp public/_headers dist/pwa/ && cp public/.well-known/assetlinks.json dist/pwa/.well-known/",
     "build:apk": "bubblewrap build",
+    "fingerprint": "bubblewrap fingerprint generateAssetLinks --output=\"public/.well-known/assetlinks.json\"",
     "lint": "eslint --ext .js,.ts,.vue ./",
     "test": "echo \"No test specified\" && exit 0"
   },
