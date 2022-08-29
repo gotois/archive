@@ -1,0 +1,11 @@
+[{
+        "relation": ["delegate_permission/common.handle_all_urls"],
+        "target" : { "namespace": "android_app", "package_name": "ru.baskovsky.archive.twa",
+                     "sha256_cert_fingerprints": ["E2:67:06:41:A0:31:BD:7A:C7:0A:FD:F3:99:31:18:76:3F:BC:57:B9:10:F3:B1:91:93:38:1C:1E:7B:C3:F0:C2"] }
+      }
+,{
+        "relation": ["delegate_permission/common.handle_all_urls"],
+        "target" : { "namespace": "android_app", "package_name": "ru.baskovsky.archive.twa",
+                     "sha256_cert_fingerprints": ["55:A4:7E:29:D2:39:70:76:43:F6:3C:CF:10:5A:93:ED:5F:F9:8B:3A:0C:3C:DA:48:26:43:38:65:F4:D9:DD:40"] }
+      }
+]
