@@ -15,6 +15,7 @@
      limitations under the License.
 -->
 <resources>
+  
 
   <!--
     This variable below expresses the relationship between the app and the site,
@@ -30,5 +31,6 @@
             \"site\": \"https://archive.gotointeractive.com\"
         }
     }]
-  </string>
+    
+  </string>  
 </resources>

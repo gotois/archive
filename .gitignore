@@ -44,4 +44,5 @@ app/build
 local.properties
 manifest-checksum.txt
 android.keystore
+deployment_cert.der
 .gradle/
