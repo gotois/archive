@@ -1,3 +1,2 @@
-/.well-known/*                  /:splat             301
-/.well-known/assetlinks.json    /assetlinks.json    200
+/.well-known/*                  /:splat             200
 /*                              /                   200
