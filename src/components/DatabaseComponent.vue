@@ -23,6 +23,7 @@
       icon="file_download"
       :label="$t('settings.native.export')"
       class="full-width q-mt-md"
+      :disable="$store.getters.contractsCount === 0"
       @click="onExportDB" />
   </div>
 </template>

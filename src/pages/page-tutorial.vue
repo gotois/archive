@@ -24,6 +24,7 @@
         icon="assignment"
       >
         <p class="text-body1">{{ $t('tutorial.data.body') }}</p>
+        <q-space class="q-pa-xs"></q-space>
         <q-form
           ref="nameForm"
           class="q-gutter-md"
