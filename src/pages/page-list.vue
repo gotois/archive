@@ -1,23 +1,29 @@
 <template>
-  <q-page padding class="full-height row content-center items-stretch justify-center">
+  <q-page>
     <q-inner-loading :showing="loadingVisible">
       <q-spinner-hourglass
         color="info"
         size="6em"
       />
     </q-inner-loading>
-    <archive-list-component
-      v-show="!isContractsEmpty"
-      :loading="loadingVisible"
-      :contracts="contracts"
-      class="no-padding no-margin"
-      :class="{
-        'col-xs-6': $q.platform.is.desktop || $q.platform.is.ipad,
-      }"
-      :pagination-count="paginationCount"
-      @on-paginate="onPaginate"
-      @on-remove="onRemove"
-    />
+    <q-scroll-area style="height: calc(100vh - 100px);">
+      <archive-list-component
+        v-show="!isContractsEmpty"
+        :loading="loadingVisible"
+        :contracts="contracts"
+        class="q-pa-md"
+        :class="{
+          'col-xs-6': $q.platform.is.desktop || $q.platform.is.ipad,
+        }"
+        style="margin: auto;"
+        :style="{
+          width: $q.platform.is.desktop ? '600px' : 'auto'
+        }"
+        :pagination-count="paginationCount"
+        @on-paginate="onPaginate"
+        @on-remove="onRemove"
+      />
+    </q-scroll-area>
     <template v-if="!loadingVisible && isContractsEmpty">
       <q-banner :inline-actions="!$q.platform.is.mobile" :class="{ 'col-6': $q.platform.is.desktop, }" class="q-pa-lg flex flex-center self-center text-black">
         <template v-if="!isSearch" #avatar>

@@ -1,11 +1,14 @@
 <template>
-  <q-page class="full-height">
+  <q-page>
     <q-scroll-area style="height: calc(100vh - 100px);">
       <contract-form-component
-        class="q-pa-sm"
-        style="width: 400px; margin: auto"
+        class="q-pa-md"
         :class="{
           'col-xs-6': $q.platform.is.desktop,
+        }"
+        style="margin: auto;"
+        :style="{
+          width: $q.platform.is.desktop ? '600px' : 'auto'
         }"
         :contract-type-name="$router.currentRoute.value.query.contractTypeName"
         @on-create="onCreate"

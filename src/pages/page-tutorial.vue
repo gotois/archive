@@ -1,76 +1,78 @@
 <template>
-  <q-scroll-area style="height: calc(100vh - 50px);">
-    <q-stepper
-      ref="stepper"
-      v-model="step"
-      color="primary"
-      flat
-      vertical
-      animated
-    >
-      <q-step
-        :name="1"
-        :title="$t('tutorial.agreement.title')"
-        icon="article"
-        :done="step > 1"
+  <q-page>
+    <q-scroll-area style="height: calc(100vh - 50px);">
+      <q-stepper
+        ref="stepper"
+        v-model="step"
+        color="primary"
+        flat
+        vertical
+        animated
       >
-        <p class="text-body1">{{ $t('tutorial.agreement.body') }}</p>
-        <q-stepper-navigation>
-          <q-btn color="secondary" label="Принять" @click="$refs.stepper.next()" />
-        </q-stepper-navigation>
-      </q-step>
-      <q-step
-        :name="2"
-        :title="$t('tutorial.data.title')"
-        icon="assignment"
-      >
-        <p class="text-body1">{{ $t('tutorial.data.body') }}</p>
-        <q-space class="q-pa-xs"></q-space>
-        <q-form
-          ref="nameForm"
-          class="q-gutter-md"
-          autocorrect="off"
-          autocapitalize="off"
-          autocomplete="off"
-          greedy
-          @submit="onFinish"
+        <q-step
+          :name="1"
+          :title="$t('tutorial.agreement.title')"
+          icon="article"
+          :done="step > 1"
         >
-          <q-input
-            v-model="consumer"
-            :label="$t('consumer.type')"
-            :rules="[ val => val && val.length > 0 || $t('consumer.rules')]"
-            :hint="$t('consumer.hint')"
-            name="consumer"
-            autocomplete="on"
-            outlined
-          >
-            <template #prepend>
-              <q-icon name="face" />
-            </template>
-          </q-input>
-          <p class="text-body">Опционально введите пин код (будет использовать при входе):</p>
-          <v-otp-input
-            input-classes="otp-input"
-            separator="-"
-            :num-inputs="4"
-            :is-input-num="true"
-            :conditional-class="['first', '', '', 'last']"
-            :placeholder="['*', '*', '*', '*']"
-            @on-change="handleOnChange"
-            @on-complete="handleOnComplete"
-          />
+          <p class="text-body1">{{ $t('tutorial.agreement.body') }}</p>
           <q-stepper-navigation>
-            <q-btn
-              color="accent"
-              type="submit"
-              :label="$t('tutorial.complete')"
-              icon="login"
-            />
+            <q-btn color="secondary" label="Принять" @click="$refs.stepper.next()" />
           </q-stepper-navigation>
-        </q-form>
-      </q-step>
-    </q-stepper>
-  </q-scroll-area>
+        </q-step>
+        <q-step
+          :name="2"
+          :title="$t('tutorial.data.title')"
+          icon="assignment"
+        >
+          <p class="text-body1">{{ $t('tutorial.data.body') }}</p>
+          <q-space class="q-pa-xs"></q-space>
+          <q-form
+            ref="nameForm"
+            class="q-gutter-md"
+            autocorrect="off"
+            autocapitalize="off"
+            autocomplete="off"
+            greedy
+            @submit="onFinish"
+          >
+            <q-input
+              v-model="consumer"
+              :label="$t('consumer.type')"
+              :rules="[ val => val && val.length > 0 || $t('consumer.rules')]"
+              :hint="$t('consumer.hint')"
+              name="consumer"
+              autocomplete="on"
+              outlined
+            >
+              <template #prepend>
+                <q-icon name="face" />
+              </template>
+            </q-input>
+            <p class="text-body">Опционально введите пин код (будет использовать при входе):</p>
+            <v-otp-input
+              input-classes="otp-input"
+              separator="-"
+              :num-inputs="4"
+              :is-input-num="true"
+              :conditional-class="['first', '', '', 'last']"
+              :placeholder="['*', '*', '*', '*']"
+              @on-change="handleOnChange"
+              @on-complete="handleOnComplete"
+            />
+            <q-stepper-navigation>
+              <q-btn
+                color="accent"
+                type="submit"
+                :label="$t('tutorial.complete')"
+                icon="login"
+              />
+            </q-stepper-navigation>
+          </q-form>
+        </q-step>
+      </q-stepper>
+    </q-scroll-area>
+  </q-page>
 </template>
 
 <script lang="ts" setup>
