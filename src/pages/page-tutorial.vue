@@ -1,5 +1,6 @@
 <template>
-  <q-stepper
+  <q-scroll-area style="height: calc(100vh - 50px);">
+    <q-stepper
       ref="stepper"
       v-model="step"
       color="primary"
@@ -69,6 +70,7 @@
         </q-form>
       </q-step>
     </q-stepper>
+  </q-scroll-area>
 </template>
 
 <script lang="ts" setup>
