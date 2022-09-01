@@ -6,7 +6,7 @@
         size="6em"
       />
     </q-inner-loading>
-    <q-scroll-area style="height: calc(100vh - 100px);">
+    <q-scroll-area visible style="height: calc(100vh - 100px);">
       <archive-list-component
         v-show="!isContractsEmpty"
         :loading="loadingVisible"

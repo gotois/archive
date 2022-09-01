@@ -40,6 +40,7 @@
       name="customer"
       outlined
       lazy-rules
+      @focus="onFocusInput"
     >
       <template #prepend>
         <q-icon name="assignment_ind" />
@@ -111,6 +112,7 @@
       class="no-padding"
       outlined
       autogrow
+      @focus="onFocusInput"
     >
       <template #prepend>
         <q-icon name="sticky_note_2" />
@@ -209,6 +211,13 @@ function onSelectDate(value: string | { from: string, to: string } | null) {
       })
       break
   }
+}
+
+function onFocusInput(e: FocusEvent) {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  e.target.scrollIntoView()
 }
 
 async function onSubmit() {

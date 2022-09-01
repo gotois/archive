@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <q-scroll-area style="height: calc(100vh - 100px);">
+    <q-scroll-area visible style="height: 600px;">
       <contract-form-component
         class="q-pa-md"
         :class="{

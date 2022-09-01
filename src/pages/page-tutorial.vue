@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <q-scroll-area style="height: calc(100vh - 50px);">
+    <q-scroll-area visible style="height: calc(100vh - 50px);">
       <q-stepper
         ref="stepper"
         v-model="step"
@@ -44,6 +44,7 @@
               name="consumer"
               autocomplete="on"
               outlined
+              @focus="e => e.target.scrollIntoView()"
             >
               <template #prepend>
                 <q-icon name="face" />
