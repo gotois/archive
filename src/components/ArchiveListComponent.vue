@@ -166,7 +166,7 @@ const emit = defineEmits(['onPaginate', 'onRemove'])
 
 const items = ref([])
 const currentPage = ref(1)
-const nativeShareAvailable = ref(!!navigator.share)
+const nativeShareAvailable = ref(typeof navigator.share === 'function')
 
 watch(() => props.contracts, (newVal => {
   items.value = newVal
