@@ -68,7 +68,7 @@
           >
             <q-scroll-area class="fit">
               <template v-if="!($q.platform.is.ios || $q.platform.is.ipad || $q.platform.is.safari) && isContentPDF(object.contentUrl)">
-                <q-icon name="picture_as_pdf" size="400px" class="absolute-center" color="info"/>
+                <q-icon name="picture_as_pdf" size="300px" class="absolute-center" color="info"/>
               </template>
               <template v-else>
                 <q-img

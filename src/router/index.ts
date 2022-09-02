@@ -39,9 +39,15 @@ export default route<StateInterface>(function ({store/* , ssrContext */}) {
   Router.beforeEach((to) => {
     switch (to.path) {
       case '/privacy':
-      case '/auth':
-      case '/tutorial': {
+      case '/auth': {
         return true
+      }
+      case '/tutorial': {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        if (store.getters['Tutorial/tutorialCompleted']) {
+          return '/'
+        }
+        break
       }
       default: {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
