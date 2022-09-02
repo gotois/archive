@@ -1,12 +1,12 @@
 <template>
   <q-page>
-    <q-scroll-area visible style="height: 600px;">
+    <q-scroll-area visible class="absolute-full fit">
       <contract-form-component
         class="q-pa-md"
         :class="{
           'col-xs-6': $q.platform.is.desktop,
         }"
-        style="margin: auto;"
+        style="margin: auto; height: 500px;"
         :style="{
           width: $q.platform.is.desktop ? '600px' : 'auto'
         }"

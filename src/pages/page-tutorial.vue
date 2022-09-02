@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <q-scroll-area visible style="height: calc(100vh - 50px);">
+    <q-scroll-area visible class="absolute-full fit">
       <q-stepper
         ref="stepper"
         v-model="step"

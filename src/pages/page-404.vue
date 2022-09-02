@@ -11,9 +11,9 @@
         class="q-mt-xl"
         color="white"
         text-color="blue"
-        unelevated
         :to="{ name: 'archive', query: {page: 1} }"
         :label="$t('error404.submit')"
+        unelevated
         no-caps
       />
     </div>
