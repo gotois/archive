@@ -67,16 +67,22 @@
             :name="objectIndex + 1"
           >
             <q-scroll-area class="fit">
-              <q-img
-                class="col"
-                fit="contain"
-                :ratio="1"
-                style="height: 400px"
-                :src="object.contentUrl"
-                loading="lazy"
-                decoding="async"
-                no-native-menu
-              />
+              <template v-if="!($q.platform.is.ios || $q.platform.is.ipad || $q.platform.is.safari) && isContentPDF(object.contentUrl)">
+                <q-icon name="picture_as_pdf" size="400px" class="absolute-center" color="info"/>
+              </template>
+              <template v-else>
+                <q-img
+                  class="col"
+                  fit="contain"
+                  :ratio="1"
+                  style="height: 400px"
+                  :src="object.contentUrl"
+                  loading="lazy"
+                  decoding="async"
+                  no-spinner
+                  no-native-menu
+                />
+              </template>
             </q-scroll-area>
           </q-carousel-slide>
           <template #control>
@@ -191,10 +197,14 @@ function checkItemEndTime(item: Contract) {
   return {}
 }
 
+function isContentPDF(contentUrl: string) {
+  return contentUrl.startsWith('data:application/pdf;', 0)
+}
+
 async function onShowFullImage(object: FormatContract) {
   const image = object.object[object._currentSlide - 1]
 
-  if (image.contentUrl.startsWith('data:application/pdf;', 0)) {
+  if (isContentPDF(image.contentUrl)) {
     await showPDFInPopup(image.contentUrl)
     return
   }
