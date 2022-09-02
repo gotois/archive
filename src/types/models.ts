@@ -43,6 +43,11 @@ export interface FormatContract {
   },
   startTime: Date;
   endTime: Date;
-  object: { '@type': string, contentUrl: string }[];
+  object: FormatContractObject[];
   _currentSlide?: number;
+}
+
+export interface FormatContractObject {
+  '@type': string;
+  contentUrl: string;
 }

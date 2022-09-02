@@ -1,4 +1,4 @@
-import {Contract, FormatContract} from 'components/models'
+import {Contract, FormatContract} from '../types/models'
 
 export function formatterContracts(contracts: Contract[]): FormatContract[] {
   return contracts.map((contract: Contract) => ({

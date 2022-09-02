@@ -146,7 +146,7 @@
 <script lang="ts" setup>
 import {PropType, ref, watch} from 'vue'
 import {useQuasar} from 'quasar'
-import {Contract, FormatContract} from 'components/models'
+import {Contract, FormatContract} from '../types/models'
 import {showImageInPopup, showPDFInPopup} from '../services/popup'
 import {isDateNotOk, formatterDate} from '../services/dateHelper'
 import {createPDF} from '../services/pdfHelper'
@@ -205,7 +205,7 @@ async function onShowFullImage(object: FormatContract) {
   const image = object.object[object._currentSlide - 1]
 
   if (isContentPDF(image.contentUrl)) {
-    await showPDFInPopup(image.contentUrl)
+    await showPDFInPopup(image)
     return
   }
 

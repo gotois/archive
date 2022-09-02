@@ -4,7 +4,7 @@ import html2canvas from 'html2canvas'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import {convert} from 'html-to-text'
-import {FormatContract} from 'components/models'
+import {FormatContract} from '../types/models'
 import {resizeImageA4} from './imgHelper'
 import pkg from '../../package.json'
 import {readFilesPromise} from '../services/fileHelper'

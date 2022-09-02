@@ -128,7 +128,7 @@
 import {PropType, ref} from 'vue'
 import {useQuasar} from 'quasar'
 import {useStore} from '../store'
-import {ContractTable} from './models'
+import {ContractTable} from '../types/models'
 import {db} from '../services/databaseHelper'
 import {readFilesPromise} from '../services/fileHelper'
 import {isDateNotOk, formatDate} from '../services/dateHelper'

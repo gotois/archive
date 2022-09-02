@@ -1,5 +1,5 @@
 import {Module} from 'vuex'
-import {Contract, FormatContract, ContractTable} from 'components/models'
+import {Contract, FormatContract, ContractTable} from '../types/models'
 import {StateInterface} from './index'
 import {db} from '../services/databaseHelper'
 import {formatterContracts} from '../services/schemaHelper'

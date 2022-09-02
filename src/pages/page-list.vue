@@ -66,10 +66,10 @@
 import {ref, computed, getCurrentInstance} from 'vue'
 import {useRouter, LocationQuery} from 'vue-router'
 import {useMeta} from 'quasar'
+import ArchiveListComponent from 'components/ArchiveListComponent.vue'
 import {useStore} from '../store'
 import {contractTypes} from '../services/contractTypes'
-import {FormatContract} from 'components/models'
-import ArchiveListComponent from 'components/ArchiveListComponent.vue'
+import {FormatContract} from '../types/models'
 
 const {$t} = getCurrentInstance().appContext.config.globalProperties
 

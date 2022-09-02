@@ -1,5 +1,5 @@
 import Dexie from 'dexie'
-import {ContractTable} from 'components/models'
+import {ContractTable} from '../types/models'
 
 export class ContractDatabase extends Dexie {
   public contracts: Dexie.Table<ContractTable, number> // id is number in this case
