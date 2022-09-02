@@ -6,9 +6,8 @@
         size="6em"
       />
     </q-inner-loading>
-    <q-scroll-area visible style="height: calc(100vh - 100px);">
+    <q-scroll-area v-show="!isContractsEmpty" visible style="height: calc(100vh - 100px);">
       <archive-list-component
-        v-show="!isContractsEmpty"
         :loading="loadingVisible"
         :contracts="contracts"
         class="q-pa-md"
@@ -25,7 +24,13 @@
       />
     </q-scroll-area>
     <template v-if="!loadingVisible && isContractsEmpty">
-      <q-banner :inline-actions="!$q.platform.is.mobile" :class="{ 'col-6': $q.platform.is.desktop, }" class="q-pa-lg flex flex-center self-center text-black">
+      <q-banner
+        :inline-actions="!$q.platform.is.mobile"
+        :class="{
+          'col-6': $q.platform.is.desktop,
+        }"
+        class="q-pa-lg flex flex-center self-center text-black text-center"
+      >
         <template v-if="!isSearch" #avatar>
           <q-icon name="add_task" color="secondary" />
         </template>
