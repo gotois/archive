@@ -209,7 +209,7 @@ async function onShowFullImage(object: FormatContract) {
     return
   }
 
-  showImageInPopup(image.contentUrl)
+  showImageInPopup(image)
 }
 
 async function onShareFullImage(object: FormatContract) {
