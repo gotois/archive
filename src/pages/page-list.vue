@@ -6,7 +6,7 @@
         size="6em"
       />
     </q-inner-loading>
-    <q-scroll-area v-show="!isContractsEmpty" visible class="absolute-full fit">
+    <q-scroll-area v-show="!isContractsEmpty" ref="scrollAreaRef" visible class="absolute-full fit">
       <archive-list-component
         :loading="loadingVisible"
         :contracts="contracts"
@@ -82,6 +82,8 @@ const router = useRouter()
 
 const limit = ref(5)
 const loadingVisible = ref(true)
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+const scrollAreaRef = ref(null)
 
 async function onPaginate(page: number) {
   loadingVisible.value = true
@@ -92,6 +94,8 @@ async function onPaginate(page: number) {
       filter: router.currentRoute.value.query?.filter
     },
   })
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+  scrollAreaRef.value.setScrollPosition('vertical', 0, 150)
 }
 
 async function onRemove(item: FormatContract) {
