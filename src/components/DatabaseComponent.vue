@@ -8,15 +8,30 @@
         v-model="file"
         accept=".json,.zip"
         :label="$t('settings.native.import')"
+        :max-file-size="1024 * 1024 * 1024 * 2"
         filled
-      />
+        outlined
+        @rejected="rejectedEntries"
+      >
+        <q-tooltip>
+          Выберите файл размером до 2 Гб
+        </q-tooltip>
+        <template #prepend>
+          <q-icon name="attach_file" />
+        </template>
+      </q-file>
       <q-btn
         :label="$t('settings.native.submit')"
         :disable="!file"
         type="submit"
         icon="file_upload"
         color="primary"
-        class="full-width" />
+        class="full-width"
+      >
+        <q-tooltip>
+          Начать процедуру импорта базы данных
+        </q-tooltip>
+      </q-btn>
     </q-form>
     <q-btn
       color="secondary"
@@ -24,7 +39,12 @@
       :label="$t('settings.native.export')"
       class="full-width q-mt-md"
       :disable="$store.getters.contractsCount === 0"
-      @click="onExportDB" />
+      @click="onExportDB"
+    >
+      <q-tooltip>
+        Экспортировать базу в файл
+      </q-tooltip>
+    </q-btn>
   </div>
 </template>
 
@@ -57,6 +77,14 @@ async function getContent(value: File): Promise<Blob> {
       return value
     }
   }
+}
+
+function rejectedEntries() {
+  $q.notify({
+    type: 'error',
+    color: 'negative',
+    message: 'Выбранный файл слишком велик',
+  })
 }
 
 function progressCallback({ totalRows, completedRows }: { totalRows: number, completedRows: number }): boolean {

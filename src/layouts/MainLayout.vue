@@ -90,7 +90,11 @@
               icon="delete_outline"
               class="full-width q-mt-md"
               @click="confirm = true"
-            />
+            >
+              <q-tooltip>
+                Удалить базу данных
+              </q-tooltip>
+            </q-btn>
           </div>
         </q-expansion-item>
       </q-list>

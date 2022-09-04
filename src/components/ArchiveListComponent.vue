@@ -96,7 +96,11 @@
                 text-color="primary"
                 icon="fullscreen"
                 @click="onShowFullImage(item)"
-              />
+              >
+                <q-tooltip>
+                  Открыть файл в полном размере
+                </q-tooltip>
+              </q-btn>
             </q-carousel-control>
             <q-carousel-control
               v-if="nativeShareAvailable"
@@ -107,9 +111,13 @@
                 round
                 color="white"
                 text-color="primary"
-                icon="ios_share"
+                :icon="shareIcon"
                 @click="onShareFullImage(item)"
-              />
+              >
+                <q-tooltip>
+                  Поделиться документом
+                </q-tooltip>
+              </q-btn>
             </q-carousel-control>
           </template>
         </q-carousel>
@@ -144,7 +152,7 @@
 </template>
 
 <script lang="ts" setup>
-import {PropType, ref, watch} from 'vue'
+import {PropType, ref, computed, watch} from 'vue'
 import {useQuasar} from 'quasar'
 import {Contract, FormatContract} from '../types/models'
 import {showImageInPopup, showPDFInPopup} from '../services/popup'
@@ -211,6 +219,10 @@ async function onShowFullImage(object: FormatContract) {
 
   showImageInPopup(image)
 }
+
+const shareIcon = computed(() => {
+  return $q.platform.is.android ? 'share' : 'ios_share'
+})
 
 async function onShareFullImage(object: FormatContract) {
   const shareData = await createPDF(object)
