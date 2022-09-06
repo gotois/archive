@@ -79,17 +79,14 @@
 </template>
 
 <script lang="ts" setup>
-import {ref, defineAsyncComponent} from 'vue'
+import {ref} from 'vue'
 import {useRouter} from 'vue-router'
 import {useQuasar, useMeta} from 'quasar'
 import VOtpInput from 'vue3-otp-input'
 import {useStore} from '../store'
 import {createContract} from '../services/pdfHelper'
+import PrivacyComponent from 'components/PrivacyComponent.vue'
 import pkg from '../../package.json'
-
-const PrivacyComponent = defineAsyncComponent(
-  () => import('components/PrivacyComponent.vue')
-)
 
 const {description, version, productName} = pkg
 const $q = useQuasar()

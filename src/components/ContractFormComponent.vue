@@ -144,7 +144,7 @@
 
 <script lang="ts" setup>
 import {PropType, ref} from 'vue'
-import {useQuasar} from 'quasar'
+import {useQuasar, date} from 'quasar'
 import {useStore} from '../store'
 import {ContractTable} from '../types/models'
 import {db} from '../services/databaseHelper'
@@ -254,6 +254,14 @@ async function onSubmit() {
       message: 'Неверная дата окончания заявления',
     })
     return
+  }
+
+  // Если дата совпадает с текущей, то считаем что договор подписан сегодняшним числом
+  if (date.getDateDiff(startDate, new Date(), 'days') === 0) {
+    startDate.setHours(0)
+    startDate.setMinutes(0)
+    startDate.setSeconds(0)
+    startDate.setMilliseconds(0)
   }
 
   const images = await readFilesPromise(files.value)

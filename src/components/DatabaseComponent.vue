@@ -99,7 +99,11 @@ async function onImportDB() {
   $q.loading.show()
   try {
     const content = await getContent(file.value as unknown as File)
-    await importInto(db, content, {})
+    await importInto(db, content, {
+      noTransaction: true,
+      acceptChangedPrimaryKey: true,
+      overwriteValues: true,
+    })
     location.reload()
   } catch (error) {
     const msg = (error as BulkError).message
