@@ -1,6 +1,6 @@
 <template>
   <q-page>
-    <q-inner-loading :showing="loadingVisible">
+    <q-inner-loading :showing="loadingVisible && isContractsEmpty">
       <q-spinner-hourglass
         color="info"
         size="6em"
