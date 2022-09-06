@@ -178,7 +178,7 @@
 <script lang="ts" setup>
 import {ref, defineAsyncComponent} from 'vue'
 import {BulkError} from 'dexie'
-import {LocalStorage, useQuasar} from 'quasar'
+import {LocalStorage, openURL, useQuasar} from 'quasar'
 import {useRouter} from 'vue-router'
 import {db} from '../services/databaseHelper'
 import {useStore} from '../store'
@@ -211,7 +211,14 @@ function onToggleLeftDrawer(): void {
 }
 
 function onOpenFeedback() {
-  location.href = 'https://baskovsky.ru/feedback/'
+  openURL('https://baskovsky.ru/feedback/', null,
+    {
+      noopener: true,
+      menubar: false,
+      toolbar: false,
+      noreferrer: true,
+    },
+  )
 }
 
 async function onSearchText() {

@@ -1,3 +1,7 @@
+import {format} from 'quasar'
+
+const {humanStorageSize} = format
+
 export default {
   error404: {
     title: '404',
@@ -96,7 +100,7 @@ export default {
     shareFile: 'Поделиться документом',
   },
   database: {
-    fileSize: 'Выберите файл размером до 2 Гб',
+    fileSize: 'Выберите файл размером до ' + humanStorageSize(1024 * 1024 * 1024 * 2),
     fileImport: 'Начать процедуру импорта базы данных',
     fileExport: 'Экспортировать базу в файл',
     loading: 'Загрузка...',
