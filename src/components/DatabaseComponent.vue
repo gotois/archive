@@ -14,7 +14,7 @@
         @rejected="rejectedEntries"
       >
         <q-tooltip>
-          Выберите файл размером до 2 Гб
+          {{ $t('database.fileSize') }}
         </q-tooltip>
         <template #prepend>
           <q-icon name="attach_file" />
@@ -29,7 +29,7 @@
         class="full-width"
       >
         <q-tooltip>
-          Начать процедуру импорта базы данных
+          {{ $t('database.fileImport') }}
         </q-tooltip>
       </q-btn>
     </q-form>
@@ -42,7 +42,7 @@
       @click="onExportDB"
     >
       <q-tooltip>
-        Экспортировать базу в файл
+        {{ $t('database.fileExport') }}
       </q-tooltip>
     </q-btn>
   </div>

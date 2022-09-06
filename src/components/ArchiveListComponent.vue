@@ -42,7 +42,7 @@
             >
               <q-list>
                 <q-item v-close-popup clickable @click="removeArchive(item)">
-                  <q-item-section>Удалить</q-item-section>
+                  <q-item-section>{{ $t('archiveList.remove') }}</q-item-section>
                 </q-item>
               </q-list>
             </q-menu>
@@ -74,8 +74,8 @@
                 <q-img
                   class="col"
                   fit="contain"
+                  height="400px"
                   :ratio="1"
-                  style="height: 400px"
                   :src="object.contentUrl"
                   loading="lazy"
                   decoding="async"
@@ -98,7 +98,7 @@
                 @click="onShowFullImage(item)"
               >
                 <q-tooltip>
-                  Открыть файл в полном размере
+                  {{ $t('archiveList.openFile') }}
                 </q-tooltip>
               </q-btn>
             </q-carousel-control>
@@ -115,7 +115,7 @@
                 @click="onShareFullImage(item)"
               >
                 <q-tooltip>
-                  Поделиться документом
+                  {{ $t('archiveList.shareFile') }}
                 </q-tooltip>
               </q-btn>
             </q-carousel-control>
@@ -135,18 +135,17 @@
         </q-card-section>
       </q-card>
     </template>
-    <template #after>
-      <div v-if="paginationCount > 0" class="q-pa-lg flex flex-center self-end">
-        <q-pagination
-          v-model="currentPage"
-          :max="paginationCount"
-          :max-pages="$q.platform.is.desktop ? 10 : 5"
-          direction-links
-          boundary-numbers
-          color="secondary"
-          @update:model-value="$emit('onPaginate', currentPage)"
-        />
-      </div>
+    <template v-if="paginationCount > 0" #after>
+      <q-pagination
+        v-model="currentPage"
+        :max="paginationCount"
+        :max-pages="$q.platform.is.desktop ? 10 : 5"
+        direction-links
+        boundary-numbers
+        color="secondary"
+        class="q-pa-lg flex flex-center self-end"
+        @update:model-value="$emit('onPaginate', currentPage)"
+      />
     </template>
   </q-virtual-scroll>
 </template>

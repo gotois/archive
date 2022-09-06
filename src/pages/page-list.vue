@@ -14,8 +14,8 @@
         :class="{
           'col-xs-6': $q.platform.is.desktop || $q.platform.is.ipad,
         }"
-        style="margin: auto;"
         :style="{
+          margin: 'auto',
           width: $q.platform.is.desktop ? '600px' : 'auto'
         }"
         :pagination-count="paginationCount"
@@ -40,23 +40,24 @@
         </template>
         <template #action>
           <template v-if="isSearch">
-            <q-btn flat color="accent" icon="explore" label="На главную" :to="{ name: 'archive', query: {page: 1} }" />
+            <q-btn flat color="accent" icon="explore" :label="$t('list.explore')" :to="{ name: 'archive', query: { page: 1 } }" />
           </template>
           <template v-else>
-            <q-btn flat color="accent" label="Добавить" :to="{ name: 'create' }" />
+            <q-btn flat color="accent" :label="$t('list.add')" :to="{ name: 'create' }" />
           </template>
         </template>
       </q-banner>
     </template>
     <q-page-sticky position="bottom-right" :offset="[20, 20]">
       <q-fab
-        glossy
+        push
+        hide-label
         icon="add"
         direction="up"
         vertical-actions-align="right"
         color="accent"
       >
-        <q-fab-action push square color="primary" label="Создать документ" :to="{ name: 'create' }" />
+        <q-fab-action push square color="primary" :label="$t('list.create')" :to="{ name: 'create' }" />
       </q-fab>
     </q-page-sticky>
   </q-page>

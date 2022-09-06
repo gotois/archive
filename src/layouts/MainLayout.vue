@@ -53,7 +53,9 @@
             <template #default>
               <database-component class="col q-pa-md"></database-component>
             </template>
-            <template #fallback>Loading...</template>
+            <template #fallback>
+              {{ $t('database.loading') }}
+            </template>
           </suspense>
         </q-expansion-item>
         <q-expansion-item
@@ -92,7 +94,7 @@
               @click="confirm = true"
             >
               <q-tooltip>
-                Удалить базу данных
+                {{ $t('database.removeDatabase') }}
               </q-tooltip>
             </q-btn>
           </div>
@@ -100,7 +102,9 @@
       </q-list>
       <div class="row full-width self-end flex-center q-pa-md">
         <q-chip icon="link" class="cursor-pointer" clickable :label="$t('navigation.feedback.label')" @click="onOpenFeedback">
-          <q-tooltip>{{$t('navigation.feedback.tooltip')}}</q-tooltip>
+          <q-tooltip>
+            {{ $t('navigation.feedback.tooltip') }}
+          </q-tooltip>
         </q-chip>
       </div>
     </q-drawer>
@@ -120,7 +124,7 @@
             square
             outline
             clickable
-            :color="value.recomendation ? 'orange' : ''"
+            :color="value.recommendation ? 'orange' : ''"
             @click="onSelectArchiveName(name, value)"
         >
           <q-avatar v-if="value.count > 1" color="secondary" text-color="white">{{ value.count }}</q-avatar>
@@ -152,11 +156,18 @@
             <div class="text-h6">{{ $t('archive.search') }}</div>
           </q-card-section>
           <q-card-section class="q-pt-none">
-            <q-input v-model="searchText" dense autofocus :placeholder="'Название договора'" @keyup.enter="onSearchText" />
+            <q-input
+              v-model="searchText"
+              dense
+              square
+              autofocus
+              :placeholder="$t('searchDialog.searchText')"
+              @keyup.enter="onSearchText"
+            />
           </q-card-section>
           <q-card-actions align="right" class="text-primary">
-            <q-btn v-close-popup flat label="Отмена" />
-            <q-btn v-close-popup color="accent" label="Найти" @click="onSearchText" />
+            <q-btn v-close-popup flat :label="$t('searchDialog.cancel')" />
+            <q-btn v-close-popup outline color="accent" icon-right="search" :label="$t('searchDialog.search')" @click="onSearchText" />
           </q-card-actions>
         </q-card>
       </q-dialog>
@@ -269,7 +280,7 @@ void (async () => {
   const map = new Map()
 
   recommendationContractTypes.forEach(contractName => {
-    map.set(contractName, { count: 0, recomendation: true, })
+    map.set(contractName, { count: 0, recommendation: true, })
   })
 
   for (const names of await db.getContractNames()) {

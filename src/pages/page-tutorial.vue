@@ -50,7 +50,9 @@
                 <q-icon name="face" />
               </template>
             </q-input>
-            <p class="text-body">Опционально введите пин код (будет использовать при входе):</p>
+            <p class="text-body">
+              {{ $t('tutorial.otp') }}
+            </p>
             <v-otp-input
               input-classes="otp-input"
               separator="-"

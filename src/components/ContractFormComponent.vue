@@ -25,6 +25,7 @@
       hide-selected
       fill-input
       outlined
+      square
       @filter="filterOptions"
     >
       <template #prepend>
@@ -40,6 +41,7 @@
       name="customer"
       outlined
       lazy-rules
+      square
       @focus="onFocusInput"
     >
       <template #prepend>
@@ -53,10 +55,14 @@
         :label="$t('duration.from')"
         class="col no-padding"
         mask="date"
-        outlined>
-      </q-input>
+        outlined
+        square
+      />
       <div>
-        <q-icon size="md" name="event" class="cursor-pointer">
+        <q-icon size="md" name="event" class="cursor-pointer" color="dark" style='padding: 0 6px;'>
+          <q-tooltip>
+            {{ $t('contractForm.date') }}
+          </q-tooltip>
           <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
             <template v-if="dateNoLimit">
               <q-date v-model="duration.from" default-view="Months" first-day-of-week="1" @update:model-value="onSelectDate">
@@ -83,7 +89,8 @@
         class="col no-padding"
         mask="date"
         outlined
-      ></q-input>
+        square
+      />
       <q-toggle
         v-model="dateNoLimit"
         :label="$t('duration.infinity')"
@@ -93,16 +100,17 @@
       v-model="files"
       :label="$t('files.type')"
       accept="image/*, .pdf"
-      hint="PDF, PNG, JPG, etc"
+      hint="PDF, PNG, JPG"
       outlined
       multiple
+      square
       counter
     >
       <template #prepend>
         <q-icon name="image" />
       </template>
       <template #append>
-        <q-icon name="add" @click.stop/>
+        <q-icon name="add" @click.stop />
       </template>
     </q-file>
     <q-input
@@ -111,6 +119,7 @@
       type="textarea"
       class="no-padding"
       outlined
+      square
       autogrow
       @focus="onFocusInput"
     >
@@ -119,7 +128,16 @@
       </template>
     </q-input>
     <div class="text-right">
-      <q-btn :label="$t('contractForm.submit')" icon-right="save" type="submit" color="accent" />
+      <q-btn
+        ripple
+        outline
+        square
+        stretch
+        :label="$t('contractForm.submit')"
+        icon-right="save"
+        type="submit"
+        color="accent"
+      />
     </div>
   </q-form>
 </template>

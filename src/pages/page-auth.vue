@@ -1,6 +1,8 @@
 <template>
   <div class="fullscreen bg-white flex flex-center column">
-    <p class="text-caption text-center">Введите ключ</p>
+    <p class="text-caption text-center">
+      {{ $t('auth.caption') }}
+    </p>
     <v-otp-input
       ref="otpInput"
       input-classes="otp-input"

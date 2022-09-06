@@ -6,9 +6,10 @@
         :class="{
           'col-xs-6': $q.platform.is.desktop,
         }"
-        style="margin: auto; height: 500px;"
         :style="{
-          width: $q.platform.is.desktop ? '600px' : 'auto'
+          margin: 'auto',
+          width: $q.platform.is.desktop ? '600px' : 'auto',
+          height: '500px',
         }"
         :contract-type-name="$router.currentRoute.value.query.contractTypeName"
         @on-create="onCreate"
