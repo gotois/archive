@@ -31,8 +31,8 @@ const Contract: Module<ContractState, StateInterface> = {
   },
   actions: {
     async addContract(context, contract: ContractTable) {
+      await db.add(contract)
       context.commit('addContract', contract)
-      await db.contracts.add(contract)
     },
     async removeContract(context, contract: FormatContract) {
       const id = Number(contract.identifier.value)

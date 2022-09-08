@@ -102,15 +102,7 @@ const metaData = {
 }
 
 async function onFinish() {
-  if (pin.value.length === 4) {
-    if (window.confirm('Действительно сохранить пин?')) {
-      await store.dispatch('Auth/setCode', pin.value)
-    }
-  }
   $q.loading.show()
-  await store.dispatch('Tutorial/tutorialComplete')
-  await store.dispatch('consumerName', consumer.value)
-
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
   const html = PrivacyComponent.render().children[0].children as string
   const contractPDF = await createContract(html, $q.platform.is.name === 'firefox')
@@ -122,9 +114,28 @@ async function onFinish() {
     'startTime': new Date(),
     'images': contractPDF,
   }
-  await store.dispatch('addContract', newContract)
-
-  $q.loading.hide()
+  try {
+    await store.dispatch('addContract', newContract)
+    await store.dispatch('consumerName', consumer.value)
+    await store.dispatch('Tutorial/tutorialComplete')
+  } catch (e) {
+    console.error(e)
+    $q.notify({
+      type: 'error',
+      color: 'negative',
+      message: 'Что-то пошло не так',
+      position: 'center',
+      timeout: 99999999999,
+    })
+    return
+  } finally {
+    $q.loading.hide()
+  }
+  if (pin.value.length === 4) {
+    if (window.confirm('Действительно сохранить пин?')) {
+      await store.dispatch('Auth/setCode', pin.value)
+    }
+  }
   await router.push('/create')
 }
 

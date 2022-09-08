@@ -24,7 +24,11 @@ export class ContractDatabase extends Dexie {
     return map
   }
 
-  async remove(id: number) {
+  add(contract: ContractTable) {
+    return db.contracts.add(contract)
+  }
+
+  remove(id: number) {
     return db.contracts.where('id')
       .equals(id)
       .delete()
@@ -36,4 +40,3 @@ export class ContractDatabase extends Dexie {
 }
 
 export const db = new ContractDatabase()
-
