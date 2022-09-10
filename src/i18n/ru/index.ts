@@ -36,11 +36,12 @@ export default {
   },
   settings: {
     native: {
+      profile: 'Настройки профиля',
       title: 'Настройки базы',
       import: 'Файл импорта базы',
       submit: 'Импорт базы',
       export: 'Экспорт базы',
-      otp: 'Настройка входа',
+      otp: 'Настройки входа',
     },
     clean: {
       title: 'Удаление всего',
@@ -59,6 +60,7 @@ export default {
   consumer: {
     type: 'Ваше ФИО',
     rules: 'Пожалуйста, введите потребителя',
+    save: 'Сохранить',
   },
   customer: {
     rules: 'Пожалуйста, введите заказчика',

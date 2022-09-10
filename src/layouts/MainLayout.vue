@@ -43,20 +43,39 @@
           {{ $t('navigation.title')}}
         </div>
         <q-expansion-item
-          v-model="settingsOpen"
+          v-model="profileOpen"
           group="backupgroup"
-          icon="import_export"
+          icon="person"
           class="full-width"
-          :label="$t('settings.native.title')"
+          :label="$t('settings.native.profile')"
         >
-          <suspense>
-            <template #default>
-              <database-component class="col q-pa-md"></database-component>
-            </template>
-            <template #fallback>
-              {{ $t('database.loading') }}
-            </template>
-          </suspense>
+          <q-form
+            ref="nameForm"
+            autocorrect="off"
+            autocapitalize="off"
+            autocomplete="off"
+            class="q-pa-md"
+            greedy
+            @submit="onFinishProfile"
+          >
+            <q-input
+              v-model="consumer"
+              :label="$t('consumer.type')"
+              :rules="[ val => val && val.length > 0 || $t('consumer.rules')]"
+              name="consumer"
+              autocomplete="on"
+            >
+              <template #prepend>
+                <q-icon name="face" />
+              </template>
+            </q-input>
+            <q-btn
+              :label="$t('consumer.save')"
+              icon-right="save"
+              type="submit"
+              color="accent"
+            />
+          </q-form>
         </q-expansion-item>
         <q-expansion-item
           v-model="otpOpen"
@@ -78,6 +97,22 @@
             :placeholder="['*', '*', '*', '*']"
             @on-complete="onOTPHandleComplete"
           />
+        </q-expansion-item>
+        <q-expansion-item
+          v-model="settingsOpen"
+          group="backupgroup"
+          icon="import_export"
+          class="full-width"
+          :label="$t('settings.native.title')"
+        >
+          <suspense>
+            <template #default>
+              <database-component class="col q-pa-md"></database-component>
+            </template>
+            <template #fallback>
+              {{ $t('database.loading') }}
+            </template>
+          </suspense>
         </q-expansion-item>
         <q-expansion-item
           group="backupgroup"
@@ -192,19 +227,22 @@ const VOtpInput = defineAsyncComponent(
   () => import('vue3-otp-input')
 )
 
+const store = useStore()
+const $q = useQuasar()
+const router = useRouter()
+
 const leftDrawerOpen = ref(false)
 const rightDrawerOpen = ref(false)
 const settingsOpen = ref(false)
+const profileOpen = ref(false)
 const otpOpen = ref(false)
 const confirm = ref(false)
 const searchText = ref('')
 const showSearch = ref(false)
 const archiveNames = ref([])
 const version = ref(pkg.version)
-
-const store = useStore()
-const $q = useQuasar()
-const router = useRouter()
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+const consumer = ref(store.getters.consumer as string)
 
 function onToggleLeftDrawer(): void {
   leftDrawerOpen.value = !leftDrawerOpen.value
@@ -219,6 +257,10 @@ function onOpenFeedback() {
       noreferrer: true,
     },
   )
+}
+
+async function onFinishProfile() {
+  await store.dispatch('consumerName', consumer.value)
 }
 
 async function onSearchText() {

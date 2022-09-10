@@ -40,9 +40,9 @@
               transition-show="jump-down"
               transition-hide="jump-up"
             >
-              <q-list>
+              <q-list dense padding class="bg-red">
                 <q-item v-close-popup clickable @click="removeArchive(item)">
-                  <q-item-section>{{ $t('archiveList.remove') }}</q-item-section>
+                  <q-item-section class="text-white text-uppercase">{{ $t('archiveList.remove') }}</q-item-section>
                 </q-item>
               </q-list>
             </q-menu>

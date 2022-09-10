@@ -267,8 +267,7 @@ async function onSubmit() {
   const images = await readFilesPromise(files.value)
   db.transaction('rw', db.contracts, async () => {
     const newContract: ContractTable = {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
-      'agent_name': store.getters.consumer,
+      'agent_name': (store.getters as { consumer: string }).consumer,
       'participant_name': customer.value,
       'instrument_name': contractType.value,
       'instrument_description': description.value,
