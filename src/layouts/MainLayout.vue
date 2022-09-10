@@ -249,7 +249,7 @@ async function onOTPHandleComplete(value: string) {
 async function onClearDatabase() {
   try {
     $q.loading.show()
-    await db.destroy()
+    await db.delete()
     LocalStorage.clear()
     location.reload()
   } catch (error) {

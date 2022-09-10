@@ -24,11 +24,11 @@ export class ContractDatabase extends Dexie {
     return map
   }
 
-  add(contract: ContractTable) {
+  public add(contract: ContractTable) {
     return db.contracts.add(contract)
   }
 
-  remove(id: number) {
+  public remove(id: number) {
     return db.contracts.where('id')
       .equals(id)
       .delete()

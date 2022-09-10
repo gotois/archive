@@ -17,7 +17,7 @@
         >
           <p class="text-body1">{{ $t('tutorial.agreement.body') }}</p>
           <q-stepper-navigation>
-            <q-btn color="secondary" label="Принять" @click="$refs.stepper.next()" />
+            <q-btn color="secondary" :label="$t('tutorial.agreement.ok')" @click="$refs.stepper.next()" />
           </q-stepper-navigation>
         </q-step>
         <q-step
