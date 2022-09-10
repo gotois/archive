@@ -8,20 +8,32 @@
         flat
         vertical
         animated
+        transition-next="slide-down"
       >
         <q-step
           :name="1"
-          :title="$t('tutorial.agreement.title')"
-          icon="article"
+          :title="$t('tutorial.info.title')"
+          icon="create_new_folder"
           :done="step > 1"
         >
-          <p class="text-body1">{{ $t('tutorial.agreement.body') }}</p>
+          <p class="text-body1" style="white-space: break-spaces;">{{ $t('tutorial.info.body') }}</p>
+          <q-stepper-navigation>
+            <q-btn color="secondary" :label="$t('tutorial.info.ok')" @click="$refs.stepper.next()" />
+          </q-stepper-navigation>
+        </q-step>
+        <q-step
+          :name="2"
+          :title="$t('tutorial.agreement.title')"
+          icon="article"
+          :done="step > 2"
+        >
+          <p class="text-body1" style="white-space: break-spaces;">{{ $t('tutorial.agreement.body') }}</p>
           <q-stepper-navigation>
             <q-btn color="secondary" :label="$t('tutorial.agreement.ok')" @click="$refs.stepper.next()" />
           </q-stepper-navigation>
         </q-step>
         <q-step
-          :name="2"
+          :name="3"
           :title="$t('tutorial.data.title')"
           icon="assignment"
         >
@@ -40,7 +52,7 @@
               v-model="consumer"
               :label="$t('consumer.type')"
               :rules="[ val => val && val.length > 0 || $t('consumer.rules')]"
-              :hint="$t('consumer.hint')"
+              style="width: 300px"
               name="consumer"
               autocomplete="on"
               outlined
@@ -50,7 +62,7 @@
                 <q-icon name="face" />
               </template>
             </q-input>
-            <p class="text-body">
+            <p class="text-body2">
               {{ $t('tutorial.otp') }}
             </p>
             <v-otp-input
