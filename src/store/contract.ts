@@ -56,21 +56,26 @@ const Contract: Module<ContractState, StateInterface> = {
         context.commit('setContracts', [])
         return
       }
-      const searchTerms = query.split(' ')
-      const count = await db.contracts.where('instrument_name')
-        .startsWithAnyOfIgnoreCase(searchTerms)
-        .or('instrument_name')
-        .anyOfIgnoreCase(searchTerms)
-        .count()
+      const searchTerms = query.split(' ').map(term => term.toLowerCase())
+      const cursor = db.contracts
+        .orderBy('startTime')
+        .filter(contract => {
+          const instrumentName = contract.instrument_name.toLowerCase()
+          const instrumentDescription = contract.instrument_description.toLowerCase()
+          const agentName = contract.agent_name.toLowerCase()
+          return searchTerms.some((term) => {
+            if (instrumentName.includes(term)) return true
+            if (instrumentDescription.includes(term)) return true
+            if (agentName.includes(term)) return true
+          })
+        })
+      const count = await cursor.count()
       context.commit('setContractsCount', count)
       if (!count) {
         context.commit('setContracts', [])
         return
       }
-      const contracts = await db.contracts.where('instrument_name')
-        .startsWithAnyOfIgnoreCase(searchTerms)
-        .or('instrument_name')
-        .anyOfIgnoreCase(searchTerms)
+      const contracts = await cursor
         .reverse()
         .offset(offset)
         .limit(limit)
