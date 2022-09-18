@@ -40,8 +40,11 @@
               transition-show="jump-down"
               transition-hide="jump-up"
             >
-              <q-list dense padding class="bg-red">
-                <q-item v-close-popup clickable @click="removeArchive(item)">
+              <q-list dense>
+                <q-item v-close-popup clickable class="bg-warning" @click="editArchive(item)">
+                  <q-item-section class="text-white text-uppercase">{{ $t('archiveList.edit') }}</q-item-section>
+                </q-item>
+                <q-item v-close-popup clickable class="bg-red" @click="removeArchive(item)">
                   <q-item-section class="text-white text-uppercase">{{ $t('archiveList.remove') }}</q-item-section>
                 </q-item>
               </q-list>
@@ -175,7 +178,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['onPaginate', 'onRemove'])
+const emit = defineEmits(['onPaginate', 'onRemove', 'onEdit'])
 
 const items = ref([])
 const currentPage = ref(1)
@@ -230,6 +233,10 @@ async function onShareFullImage(object: FormatContract) {
   } catch (error) {
     console.warn('Sharing failed', error)
   }
+}
+
+function editArchive(item: FormatContract) {
+  emit('onEdit', item)
 }
 
 function removeArchive(item: FormatContract) {

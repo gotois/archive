@@ -103,6 +103,7 @@ export default {
   },
   archiveList: {
     remove: 'Удалить',
+    edit: 'Редактировать',
     openFile: 'Открыть файл в полном размере',
     shareFile: 'Поделиться документом',
   },

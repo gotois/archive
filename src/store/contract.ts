@@ -30,9 +30,19 @@ const Contract: Module<ContractState, StateInterface> = {
     },
   },
   actions: {
-    async addContract(context, contract: ContractTable) {
-      await db.add(contract)
-      context.commit('addContract', contract)
+    async addContract(context, contractTable: ContractTable) {
+      await db.add(contractTable)
+      context.commit('addContract', contractTable)
+    },
+    async editContract(context, contract: FormatContract) {
+      const id = Number(contract.identifier.value)
+      const count = await db.contracts.where('id').equals(id).modify({
+        instrument_description: contract.instrument.description,
+      })
+      if (count === 0) {
+        console.error('Cannot edit this item')
+        return
+      }
     },
     async removeContract(context, contract: FormatContract) {
       const id = Number(contract.identifier.value)

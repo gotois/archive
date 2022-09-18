@@ -21,6 +21,7 @@
         :pagination-count="paginationCount"
         @on-paginate="onPaginate"
         @on-remove="onRemove"
+        @on-edit="onEdit"
       />
     </q-scroll-area>
     <template v-if="!loadingVisible && isContractsEmpty">
@@ -104,6 +105,15 @@ async function onPaginate(page: number) {
 
 async function onRemove(item: FormatContract) {
   await store.dispatch('removeContract', item)
+}
+
+async function onEdit(item: FormatContract) {
+  const value = window.prompt('Введите новое описание:')
+  if (!value) {
+    return
+  }
+  item.instrument.description = value
+  await store.dispatch('editContract', item)
 }
 
 async function updateContracts({ page, filter }: LocationQuery|{page: number, filter: string}) {
