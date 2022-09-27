@@ -124,10 +124,7 @@ module.exports = configure((ctx) => {
     // https://v2.quasar.dev/quasar-cli/developing-pwa/configuring-pwa
     pwa: {
       workboxPluginMode: 'InjectManifest',
-      workboxOptions: {
-        skipWaiting: true,
-        clientsClaim: true,
-      },
+      workboxOptions: {},
 
       // for the custom service worker ONLY (/src-pwa/custom-service-worker.[js|ts])
       // if using workbox in InjectManifest mode
