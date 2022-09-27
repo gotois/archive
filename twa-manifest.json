@@ -16,7 +16,7 @@
   "splashScreenFadeOutDuration": 250,
   "signingKey": {
     "path": "./android.keystore",
-    "alias": "android"
+    "alias": "archive"
   },
   "appVersionName": "4",
   "appVersionCode": 4,
