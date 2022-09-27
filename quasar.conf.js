@@ -6,7 +6,7 @@
 const {configure} = require('quasar/wrappers')
 const pkg = require('./package.json')
 
-module.exports = configure(function (ctx) {
+module.exports = configure((ctx) => {
   return {
     // https://v2.quasar.dev/quasar-cli/supporting-ts
     supportTS: {
@@ -51,8 +51,8 @@ module.exports = configure(function (ctx) {
       // Applies only if "transpile" is set to true.
       // transpileDependencies: [],
 
-      // rtl: true, // https://v2.quasar.dev/options/rtl-support
-      // preloadChunks: true,
+      rtl: false, // https://v2.quasar.dev/options/rtl-support
+      preloadChunks: true,
       showProgress: true,
       gzip: true,
       // analyze: true,
@@ -82,13 +82,6 @@ module.exports = configure(function (ctx) {
 
       // iconSet: 'material-icons', // Quasar icon set
       lang: 'ru', // Quasar language pack
-
-      // For special cases outside of where the auto-import strategy can have an impact
-      // (like functional components as one of the examples),
-      // you can manually specify Quasar components/directives to be available everywhere:
-      //
-      // components: [],
-      // directives: [],
 
       // Quasar plugins
       plugins: [
@@ -130,7 +123,7 @@ module.exports = configure(function (ctx) {
 
     // https://v2.quasar.dev/quasar-cli/developing-pwa/configuring-pwa
     pwa: {
-      workboxPluginMode: 'GenerateSW',
+      workboxPluginMode: 'InjectManifest',
       workboxOptions: {
         skipWaiting: true,
         clientsClaim: true,
