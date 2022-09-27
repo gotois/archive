@@ -2,8 +2,15 @@
   "name": "contracts",
   "version": "0.2.0",
   "description": "Офлайн база договоров",
+  "keywords": ["archive", "архив", "договоры"],
+  "homepage": "https://baskovsky.ru/2021/09/my-archive/",
+  "bugs": {
+    "url" : "https://github.com/gotois/archive/issues",
+    "email" : "baskovsky@yandex.ru"
+  },
+  "repository": "github:gotois/archive",
   "productName": "Мои договоры",
-  "author": "qertis",
+  "author": "Denis Baskovsky <baskovsky@yandex.ru> (https://baskovsky.ru/)",
   "private": false,
   "scripts": {
     "dev": "quasar dev",
