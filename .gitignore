@@ -33,6 +33,7 @@ yarn-error.log*
 *.sln
 .vscode
 contracts.iml
+.iml
 
 # APK
 *.aab
