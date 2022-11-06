@@ -31,9 +31,9 @@ yarn-error.log*
 *.ntvs*
 *.njsproj
 *.sln
+*.iml
 .vscode
 contracts.iml
-.iml
 
 # APK
 *.aab
