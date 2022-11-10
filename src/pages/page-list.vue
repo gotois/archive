@@ -76,6 +76,7 @@ const ArchiveListComponent = defineAsyncComponent(
   () => import('components/ArchiveListComponent.vue')
 )
 
+// eslint-disable-next-line @typescript-eslint/unbound-method
 const {$t} = getCurrentInstance().appContext.config.globalProperties
 
 const metaData = {

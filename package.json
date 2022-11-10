@@ -2,7 +2,7 @@
   "name": "contracts",
   "version": "0.2.0",
   "description": "Офлайн база договоров",
-  "keywords": ["archive", "архив", "договоры"],
+  "keywords": ["archive", "архив", "договоры", "мои договоры"],
   "homepage": "https://baskovsky.ru/2021/09/my-archive/",
   "bugs": {
     "url" : "https://github.com/gotois/archive/issues",
@@ -22,7 +22,7 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
-    "@pdfme/generator": "1.0.14",
+    "@pdfme/generator": "1.0.17",
     "@quasar/extras": "1.15.5",
     "core-js": "3.26.0",
     "dexie": "3.2.2",
@@ -41,8 +41,8 @@
     "@types/file-saver": "~2.0.5",
     "@types/html-to-text": "~8.1.1",
     "@types/node": "~18.11.9",
-    "@typescript-eslint/eslint-plugin": "~5.42.0",
-    "@typescript-eslint/parser": "~5.42.0",
+    "@typescript-eslint/eslint-plugin": "~5.42.1",
+    "@typescript-eslint/parser": "~5.42.1",
     "dexie-export-import": "~1.0.3",
     "eslint": "~8.27.0",
     "eslint-config-prettier": "~8.5.0",
