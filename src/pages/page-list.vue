@@ -79,7 +79,8 @@ const ArchiveListComponent = defineAsyncComponent(
 const {$t} = getCurrentInstance().appContext.config.globalProperties
 
 const metaData = {
-  title: 'Архив',
+  title: 'Архив договоров',
+  'og:title': 'Архив договоров',
 }
 
 const store = useStore()

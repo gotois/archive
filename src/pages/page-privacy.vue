@@ -8,6 +8,7 @@ import PrivacyComponent from 'components/PrivacyComponent'
 
 const metaData = {
   title: 'Пользовательское соглашение',
+  'og:title': 'Пользовательское соглашение',
 }
 
 useMeta(metaData)

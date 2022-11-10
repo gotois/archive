@@ -26,6 +26,7 @@ import {useMeta} from 'quasar'
 
 const metaData = {
   title: 'Страница не найдена',
+  'og:title': 'Страница не найдена',
 }
 
 useMeta(metaData)

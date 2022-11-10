@@ -111,6 +111,7 @@ const pin = ref('')
 
 const metaData = {
   title: 'Обучение',
+  'og:title': 'Обучение',
 }
 
 async function onFinish() {

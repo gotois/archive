@@ -31,6 +31,7 @@ const router = useRouter()
 
 const metaData = {
   title: 'Создание договора',
+  'og:title': 'Создание договора',
 }
 
 async function onCreate(value: string) {

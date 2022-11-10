@@ -32,6 +32,7 @@ const store = useStore()
 const timeout = 2000
 const metaData = {
   title: 'Авторизация',
+  'og:title': 'Авторизация',
 }
 
 const otpDisabled = ref(false)

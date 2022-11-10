@@ -136,10 +136,12 @@ module.exports = configure((ctx) => {
         name: pkg.name,
         short_name: pkg.productName,
         description: pkg.description,
+        start_url: '.',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#027be3',
         dir: 'auto',
+        scope: '/',
         iarc_rating_id: 'e84b072d-71b3-4d3e-86ae-31a8ce4e53b7',
         lang: 'ru',
         categories: ['productivity'],
@@ -170,6 +172,11 @@ module.exports = configure((ctx) => {
             sizes: '512x512',
             type: 'image/png',
           }
+        ],
+        url_handlers: [
+          {
+            origin: 'https://archive.gotointeractive.com',
+          },
         ],
       },
       metaVariables: {
