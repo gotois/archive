@@ -54,7 +54,7 @@ export function showImageInPopup(image: FormatContractObject) {
     <a href="javascript: self.close()">
       <img src="${closeIconBase64}" class="icon" alt="">
     </a>
-    <img width="100%" src="${contentUrl}" alt="">
+    <img loading="eager" width="100%" src="${contentUrl}" alt="">
   `)
 
   newWin.document.head.appendChild(styleSheet)

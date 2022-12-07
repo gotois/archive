@@ -241,7 +241,7 @@ function editArchive(item: FormatContract) {
 
 function removeArchive(item: FormatContract) {
   $q.notify({
-    message: 'Действительно удалить? Изменения нельзя отменить',
+    message: 'Действительно удалить? Отменить изменения будет невозможно',
     type: 'warning',
     position: 'center',
     timeout: 7500,

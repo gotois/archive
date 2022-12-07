@@ -8,15 +8,6 @@ import {
 import {StateInterface} from '../store'
 import routes from './routes'
 
-/*
- * If not building with SSR mode, you can
- * directly export the Router instantiation;
- *
- * The function below can be async too; either use
- * async/await or return a Promise which resolves
- * with the Router instance.
- */
-
 export default route<StateInterface>(function ({store/* , ssrContext */}) {
   const createHistory = process.env.SERVER
     ? createMemoryHistory
@@ -68,7 +59,7 @@ export default route<StateInterface>(function ({store/* , ssrContext */}) {
     }
   // explicitly return false to cancel the navigation
   // return false
-})
+  })
 
   return Router
 })

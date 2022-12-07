@@ -1,5 +1,5 @@
 <template>
-  <privacy-component></privacy-component>
+  <privacy-component/>
 </template>
 
 <script lang="ts" setup>
