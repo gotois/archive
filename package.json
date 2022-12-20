@@ -2,11 +2,16 @@
   "name": "contracts",
   "version": "0.2.0",
   "description": "Офлайн база договоров",
-  "keywords": ["archive", "архив", "договоры", "мои договоры"],
+  "keywords": [
+    "archive",
+    "архив",
+    "договоры",
+    "мои договоры"
+  ],
   "homepage": "https://baskovsky.ru/2021/09/my-archive/",
   "bugs": {
-    "url" : "https://github.com/gotois/archive/issues",
-    "email" : "baskovsky@yandex.ru"
+    "url": "https://github.com/gotois/archive/issues",
+    "email": "baskovsky@yandex.ru"
   },
   "repository": "github:gotois/archive",
   "productName": "Мои договоры",
@@ -23,13 +28,13 @@
   },
   "dependencies": {
     "@pdfme/generator": "1.0.17",
-    "@quasar/extras": "1.15.7",
+    "@quasar/extras": "1.15.8",
     "core-js": "3.26.1",
     "dexie": "3.2.2",
     "html-to-text": "8.2.1",
     "jspdf": "2.5.1",
     "jszip": "3.10.1",
-    "quasar": "2.10.2",
+    "quasar": "2.11.1",
     "vue-i18n": "9.2.2",
     "vue3-otp-input": "0.3.6",
     "vuex": "4.1.0"
@@ -41,11 +46,12 @@
     "@types/file-saver": "~2.0.5",
     "@types/html-to-text": "~8.1.1",
     "@types/node": "~18.11.9",
-    "@typescript-eslint/eslint-plugin": "~5.45.1",
-    "@typescript-eslint/parser": "~5.45.1",
+    "@typescript-eslint/eslint-plugin": "~5.47.0",
+    "@typescript-eslint/parser": "~5.47.0",
     "dexie-export-import": "~1.0.3",
-    "eslint": "~8.29.0",
+    "eslint": "~8.30.0",
     "eslint-config-prettier": "~8.5.0",
+    "eslint-plugin-quasar": "~1.1.0",
     "eslint-plugin-vue": "~9.8.0",
     "file-saver": "~2.0.5",
     "workbox-webpack-plugin": "~6.5.4"

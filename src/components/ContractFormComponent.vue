@@ -2,7 +2,6 @@
   <q-form
     ref="contractForm"
     class="q-gutter-md"
-    autocorrect="off"
     autocapitalize="off"
     autocomplete="off"
     spellcheck="true"

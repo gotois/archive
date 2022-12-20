@@ -51,7 +51,6 @@
         >
           <q-form
             ref="nameForm"
-            autocorrect="off"
             autocapitalize="off"
             autocomplete="off"
             class="q-pa-md"

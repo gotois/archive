@@ -42,7 +42,6 @@
           <q-form
             ref="nameForm"
             class="q-gutter-md"
-            autocorrect="off"
             autocapitalize="off"
             autocomplete="off"
             greedy
