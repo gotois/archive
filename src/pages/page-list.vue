@@ -30,22 +30,30 @@
           'col-6': $q.platform.is.desktop,
         }"
         rounded
-        class="q-pa-lg flex absolute-center flex-center self-center text-black-9 text-center"
-        style="width: 500px"
+        class="q-pa-lg flex absolute-center flex-center self-center text-black-9 text-left"
+        style="max-width: 500px"
       >
-        <template v-if="!isSearch" #avatar>
-          <q-icon name="add_task" color="secondary" />
-        </template>
         <template #default>
           <template v-if="isSearch">{{ $t('archive.searchEmpty') }}</template>
-          <template v-else>{{ archiveEmptyText }}</template>
+          <template v-else>{{$t('archive.empty')}}
+            <br>
+            Например:
+            <q-btn
+              :to="{ name: 'create', query: { contractTypeName: archiveEmptyText} }"
+              padding="none"
+              unelevated
+              push
+              align="left"
+              flat
+              text-color="accent"
+              type="a"
+              no-caps
+              :label="archiveEmptyText" />.
+          </template>
         </template>
         <template #action>
           <template v-if="isSearch">
             <q-btn flat color="accent" icon="explore" :label="$t('list.explore')" :to="{ name: 'archive', query: { page: 1 } }" />
-          </template>
-          <template v-else>
-            <q-btn flat color="accent" :label="$t('list.add')" :to="{ name: 'create' }" />
           </template>
         </template>
       </q-banner>
@@ -148,7 +156,7 @@ const isSearch = computed(() => {
 const archiveEmptyText = computed(() => {
   const randomContractType = Math.floor(Math.random() * (contractTypes.length - 1))
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/restrict-plus-operands
-  return $t('archive.empty') + '. Например: ' + contractTypes[randomContractType].toLowerCase() + '.'
+  return contractTypes[randomContractType]
 })
 
 const contracts = computed(() => {
