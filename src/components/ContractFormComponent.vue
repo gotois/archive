@@ -276,7 +276,7 @@ async function onSubmit() {
     }
     await store.dispatch('addContract', newContract)
     $q.notify({
-      message: `Запись ${newContract.instrument_name.toLocaleLowerCase()} добавлена`,
+      message: `Запись "${newContract.instrument_name.toLocaleLowerCase()}" добавлена`,
       type: 'positive',
       actions: [
         {

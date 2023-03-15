@@ -26,11 +26,12 @@
     </q-scroll-area>
     <template v-if="!loadingVisible && isContractsEmpty">
       <q-banner
-        :inline-actions="!$q.platform.is.mobile"
         :class="{
           'col-6': $q.platform.is.desktop,
         }"
-        class="q-pa-lg flex flex-center self-center text-black text-center"
+        rounded
+        class="q-pa-lg flex absolute-center flex-center self-center text-black-9 text-center"
+        style="width: 500px"
       >
         <template v-if="!isSearch" #avatar>
           <q-icon name="add_task" color="secondary" />

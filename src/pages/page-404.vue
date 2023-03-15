@@ -1,5 +1,5 @@
 <template>
-  <div class="fullscreen bg-blue text-white text-center q-pa-md flex flex-center">
+  <div class="fullscreen bg-info text-white text-center q-pa-md flex flex-center">
     <div>
       <div style="font-size: 30vh">
         {{ $t('error404.title') }}
@@ -10,7 +10,7 @@
       <q-btn
         class="q-mt-xl"
         color="white"
-        text-color="blue"
+        text-color="info"
         :to="{ name: 'archive', query: { page: 1 } }"
         :label="$t('error404.submit')"
         unelevated

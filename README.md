@@ -26,12 +26,14 @@
 npm install
 ```
 
-## Запуск и сборка
+## Запуск
 
 ### Запуск в режиме разработки (hot-code reloading, error reporting, etc.)
 ```bash
 npm run dev
 ```
+
+## Cборка
 
 ### Создание сборки для продакшена
 ```bash

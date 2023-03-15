@@ -6,7 +6,9 @@
     "archive",
     "архив",
     "договоры",
-    "мои договоры"
+    "мои договоры",
+    "архив договоров",
+    "my archive"
   ],
   "homepage": "https://baskovsky.ru/2021/09/my-archive/",
   "bugs": {
@@ -27,32 +29,32 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
-    "@pdfme/generator": "1.0.17",
-    "@quasar/extras": "1.15.8",
-    "core-js": "3.26.1",
-    "dexie": "3.2.2",
-    "html-to-text": "8.2.1",
+    "@pdfme/generator": "1.1.9",
+    "@quasar/extras": "1.15.11",
+    "core-js": "3.29.1",
+    "dexie": "3.2.3",
+    "html-to-text": "9.0.4",
     "jspdf": "2.5.1",
     "jszip": "3.10.1",
-    "quasar": "2.11.1",
+    "quasar": "2.11.7",
     "vue-i18n": "9.2.2",
     "vue3-otp-input": "0.3.6",
     "vuex": "4.1.0"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "~7.19.1",
-    "@bubblewrap/cli": "~1.18.1",
+    "@babel/eslint-parser": "~7.21.3",
+    "@bubblewrap/cli": "~1.19.1",
     "@quasar/app": "~3.3.3",
     "@types/file-saver": "~2.0.5",
     "@types/html-to-text": "~8.1.1",
-    "@types/node": "~18.11.9",
-    "@typescript-eslint/eslint-plugin": "~5.47.0",
-    "@typescript-eslint/parser": "~5.47.0",
+    "@types/node": "~18.15.3",
+    "@typescript-eslint/eslint-plugin": "~5.55.0",
+    "@typescript-eslint/parser": "~5.55.0",
     "dexie-export-import": "~1.0.3",
-    "eslint": "~8.30.0",
-    "eslint-config-prettier": "~8.5.0",
+    "eslint": "~8.36.0",
+    "eslint-config-prettier": "~8.7.0",
     "eslint-plugin-quasar": "~1.1.0",
-    "eslint-plugin-vue": "~9.8.0",
+    "eslint-plugin-vue": "~9.9.0",
     "file-saver": "~2.0.5",
     "workbox-webpack-plugin": "~6.5.4"
   },
@@ -62,13 +64,13 @@
     "last 2 Edge versions",
     "last 3 Safari versions",
     "last 8 Android versions",
-    "last 8 ChromeAndroid versions",
-    "last 8 FirefoxAndroid versions",
-    "last 5 iOS versions",
+    "last 5 ChromeAndroid versions",
+    "last 5 FirefoxAndroid versions",
+    "last 3 iOS versions",
     "last 5 Opera versions"
   ],
   "engines": {
-    "node": ">= 16.x",
-    "npm": ">= 7.x"
+    "node": ">= 18.x",
+    "npm": ">= 8.x"
   }
 }

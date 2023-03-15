@@ -44,7 +44,7 @@
                 <q-item v-close-popup clickable class="bg-warning" @click="editArchive(item)">
                   <q-item-section class="text-white text-uppercase">{{ $t('archiveList.edit') }}</q-item-section>
                 </q-item>
-                <q-item v-close-popup clickable class="bg-red" @click="removeArchive(item)">
+                <q-item v-close-popup clickable class="bg-negative" @click="removeArchive(item)">
                   <q-item-section class="text-white text-uppercase">{{ $t('archiveList.remove') }}</q-item-section>
                 </q-item>
               </q-list>
@@ -78,10 +78,13 @@
                   class="col"
                   fit="contain"
                   height="400px"
+                  alt="Document"
                   :ratio="1"
                   :src="object.contentUrl"
+                  placeholder-src="/icons/icon-512x512.png"
                   loading="lazy"
                   decoding="async"
+                  fetchpriority="high"
                   no-spinner
                   no-native-menu
                 />
@@ -131,7 +134,7 @@
           </p>
           <q-space/>
           <div class="row items-center">
-            <p class="text-black text-weight-light no-margin">
+            <p class="text-black-9 text-weight-light no-margin">
               {{ item.participant.name }}
             </p>
           </div>

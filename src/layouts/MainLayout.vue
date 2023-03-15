@@ -12,7 +12,7 @@
         />
         <q-toolbar-title class="text-black-9 text-center">
           {{ $t('header.title') }}
-          <q-badge outline align="top" color="orange">
+          <q-badge outline rounded align="top" color="accent">
             {{ $t('navigation.version')}}{{ version }}
           </q-badge>
         </q-toolbar-title>
@@ -26,9 +26,18 @@
           @click="rightDrawerOpen = !rightDrawerOpen"
         ></q-btn>
       </q-toolbar>
-      <q-tabs shrink stretch>
-        <q-route-tab :to="{ name: 'create' }" exact replace :label="$t('header.create')" />
-        <q-route-tab :to="{ name: 'archive', query: {page: 1} }" exact replace :label="$t('header.archive')" />
+      <q-tabs shrink stretch inline-label outside-arrows mobile-arrows align="center">
+        <q-route-tab
+          :to="{ name: 'create' }"
+          icon="create"
+          :label="$t('header.create')"
+        />
+        <q-route-tab
+          :to="{ name: 'archive', query: {page: 1} }"
+          icon="archive"
+          :disable="$store.getters.contractsCount === 0"
+          :label="$t('header.archive')"
+        />
       </q-tabs>
     </q-header>
     <q-drawer
@@ -122,7 +131,7 @@
           <div class="col q-pa-md">
             <q-btn
               :label="$t('settings.clean.submit')"
-              color="red"
+              color="negative"
               icon="delete_outline"
               class="full-width q-mt-md"
               @click="confirm = true"
@@ -147,6 +156,7 @@
       v-model="rightDrawerOpen"
       persistent
       show-if-above
+      :overlay="$q.platform.is.desktop"
       side="right"
       bordered
     >
