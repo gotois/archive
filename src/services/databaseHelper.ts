@@ -25,6 +25,22 @@ export class ContractDatabase extends Dexie {
     return map
   }
 
+  public async getFulltextDocument() {
+    const documents: {
+      id: number
+      instrument_name: string
+      instrument_description: string
+    }[] = []
+    await db.contracts.each((contract) => {
+      documents.push({
+        id: contract.id,
+        instrument_name: contract.instrument_name,
+        instrument_description: contract.instrument_description,
+      })
+    })
+    return documents
+  }
+
   public add(contract: ContractTable) {
     return db.contracts.add(contract)
   }

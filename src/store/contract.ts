@@ -1,5 +1,4 @@
 import { Module } from 'vuex'
-import MiniSearch from 'minisearch'
 import { Contract, FormatContract, ContractTable } from '../types/models'
 import { StateInterface } from './index'
 import { db } from '../services/databaseHelper'
@@ -100,21 +99,6 @@ const ContractClass: Module<ContractState, StateInterface> = {
         .toArray()) as Contract[]
       context.commit('setContracts', contracts)
     },
-    // Index all documents
-    async loadFullText(context) {
-      const documents = context.state.contracts
-      const miniSearch = new MiniSearch({
-        fields: ['instrument_name', 'instrument_description'],
-        searchOptions: {
-          boost: {
-            instrument_name: 2,
-          },
-        },
-      })
-      await miniSearch.addAllAsync(documents)
-
-      return miniSearch
-    },
     async loadAllContracts(
       context,
       { offset = 0, limit = 10 }: { offset: number; limit: number },
@@ -135,9 +119,6 @@ const ContractClass: Module<ContractState, StateInterface> = {
     },
   },
   getters: {
-    pureContracts(state) {
-      return state.contracts
-    },
     contracts(state): FormatContract[] {
       return formatterContracts(state.contracts)
     },

@@ -323,7 +323,14 @@ const version = ref(pkg.version)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 const consumer = ref(store.getters.consumer as string)
 
-let miniSearch: MiniSearch = null
+const miniSearch: MiniSearch = new MiniSearch({
+  fields: ['instrument_name', 'instrument_description'],
+  searchOptions: {
+    boost: {
+      instrument_name: 2,
+    },
+  },
+})
 
 function onToggleLeftDrawer(): void {
   leftDrawerOpen.value = !leftDrawerOpen.value
@@ -464,7 +471,7 @@ void (async () => {
 
   archiveNames.value = Array.from(map)
 
-  await store.dispatch('loadAllContracts', {})
-  miniSearch = (await store.dispatch('loadFullText')) as MiniSearch
+  // Index all documents
+  await miniSearch.addAllAsync(await db.getFulltextDocument())
 })()
 </script>
