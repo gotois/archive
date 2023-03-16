@@ -16,7 +16,7 @@
       :hint="$t('contract.hint')"
       :rules="[(val) => (val && val.length > 0) || $t('contract.rules')]"
       new-value-mode="add-unique"
-      input-debounce="0"
+      input-debounce="50"
       name="contractType"
       autocomplete="on"
       use-input
@@ -25,6 +25,7 @@
       fill-input
       outlined
       square
+      color="secondary"
       @filter="filterOptions"
     >
       <template #prepend>
@@ -41,6 +42,7 @@
       outlined
       lazy-rules
       square
+      color="secondary"
       @focus="onFocusInput"
     >
       <template #prepend>
@@ -56,6 +58,7 @@
         mask="date"
         outlined
         square
+        color="secondary"
       />
       <div>
         <q-icon
@@ -120,6 +123,7 @@
         mask="date"
         outlined
         square
+        color="secondary"
       />
       <q-toggle v-model="dateNoLimit" :label="$t('duration.infinity')" />
     </div>
@@ -131,6 +135,7 @@
       outlined
       multiple
       square
+      color="secondary"
       counter
     >
       <template #prepend>
@@ -148,6 +153,7 @@
       outlined
       square
       autogrow
+      color="secondary"
       @focus="onFocusInput"
     >
       <template #prepend>

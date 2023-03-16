@@ -248,14 +248,29 @@
             <div class="text-h6">{{ $t('archive.search') }}</div>
           </q-card-section>
           <q-card-section class="q-pt-none">
-            <q-input
+            <q-select
               v-model="searchText"
-              dense
-              square
+              use-input
+              fill-input
+              hide-selected
               autofocus
+              filled
+              outlined
+              square
+              color="secondary"
+              input-debounce="50"
+              :options="searchOptions"
               :placeholder="$t('searchDialog.searchText')"
-              @keyup.enter="onSearchText"
-            />
+              @filter="onFilterSelect"
+            >
+              <template #no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    {{ $t('archive.notfound') }}
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
           </q-card-section>
           <q-card-actions align="right" class="text-primary">
             <q-btn v-close-popup flat :label="$t('searchDialog.cancel')" />
@@ -277,10 +292,11 @@
 <script lang="ts" setup>
 import { ref, defineAsyncComponent } from 'vue'
 import { BulkError } from 'dexie'
-import { LocalStorage, openURL, useQuasar } from 'quasar'
+import { LocalStorage, openURL, QSelect, useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 import { db } from '../services/databaseHelper'
 import { useStore } from '../store'
+import MiniSearch from 'minisearch'
 import { recommendationContractTypes } from '../services/recommendationContractTypes'
 import pkg from '../../package.json'
 
@@ -301,10 +317,13 @@ const otpOpen = ref(false)
 const confirm = ref(false)
 const searchText = ref('')
 const showSearch = ref(false)
+const searchOptions = ref([])
 const archiveNames = ref([])
 const version = ref(pkg.version)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 const consumer = ref(store.getters.consumer as string)
+
+let miniSearch: MiniSearch = null
 
 function onToggleLeftDrawer(): void {
   leftDrawerOpen.value = !leftDrawerOpen.value
@@ -321,6 +340,50 @@ function onOpenFeedback() {
 
 async function onFinishProfile() {
   await store.dispatch('consumerName', consumer.value)
+}
+
+function onFilterSelect(
+  val: string,
+  // eslint-disable-next-line no-unused-vars
+  update: (callback: () => void, callback2: (ref: QSelect) => void) => void,
+  abort: () => void,
+) {
+  if (val.length < 3) {
+    abort()
+    return
+  }
+
+  abort()
+  setTimeout(() => {
+    update(
+      () => {
+        if (val === '') {
+          /* empty */
+        } else {
+          const suggest = miniSearch.autoSuggest(val, {
+            fuzzy: (term) => (term.length > 3 ? 0.2 : null),
+          })
+          const suggestion = suggest.reduce((acc, val) => {
+            if (val.terms.length > 0) {
+              acc.push(val.terms[0])
+            }
+            return acc
+          }, [] as Array<string>)
+          searchOptions.value = suggestion
+        }
+      },
+      (ref) => {
+        if (
+          val !== '' &&
+          ref.options.length > 0 &&
+          ref.getOptionIndex() === -1
+        ) {
+          ref.setOptionIndex(-1)
+          ref.moveOptionSelection(1, true)
+        }
+      },
+    )
+  }, 500)
 }
 
 async function onSearchText() {
@@ -400,5 +463,8 @@ void (async () => {
   }
 
   archiveNames.value = Array.from(map)
+
+  await store.dispatch('loadAllContracts', {})
+  miniSearch = (await store.dispatch('loadFullText')) as MiniSearch
 })()
 </script>

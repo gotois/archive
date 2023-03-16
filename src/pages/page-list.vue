@@ -40,6 +40,7 @@
           <template v-if="isSearch">{{ $t('archive.searchEmpty') }}</template>
           <template v-else
             >{{ $t('archive.empty') }}
+            Например:
             <br />
             <q-btn
               :to="{
@@ -66,17 +67,6 @@
               color="accent"
               outline
               :icon="$q.platform.is.desktop ? 'explore' : ''"
-              :label="$t('list.explore')"
-              :to="{ name: 'archive', query: { page: 1 } }"
-            />
-          </template>
-          <template v-else>
-            Например:
-            <q-btn
-              flat
-              align="left"
-              color="accent"
-              icon="explore"
               :label="$t('list.explore')"
               :to="{ name: 'archive', query: { page: 1 } }"
             />
