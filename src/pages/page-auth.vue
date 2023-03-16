@@ -19,11 +19,11 @@
 </template>
 
 <script lang="ts" setup>
-import {ref} from 'vue'
-import {useMeta, useQuasar} from 'quasar'
+import { ref } from 'vue'
+import { useMeta, useQuasar } from 'quasar'
+import { useRouter } from 'vue-router'
 import VOtpInput from 'vue3-otp-input'
-import {useRouter} from 'vue-router'
-import {useStore} from '../store'
+import { useStore } from '../store'
 
 const $q = useQuasar()
 const router = useRouter()
@@ -31,7 +31,7 @@ const store = useStore()
 
 const timeout = 2000
 const metaData = {
-  title: 'Авторизация',
+  'title': 'Авторизация',
   'og:title': 'Авторизация',
 }
 
@@ -43,9 +43,9 @@ function clearOTP() {
   otpDisabled.value = false
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
   otpInput.value.clearInput()
-  document.querySelectorAll('.otp-input').forEach((element) => {
-    (element as HTMLElement).blur()
-  })
+  document
+    .querySelectorAll('.otp-input')
+    .forEach((element) => (element as HTMLElement).blur())
 }
 
 async function onHandleComplete(value: string) {
@@ -54,9 +54,11 @@ async function onHandleComplete(value: string) {
   if (codeValid) {
     await store.dispatch('Auth/setCode', value)
     const prevPath = String(router.currentRoute.value.query.fullPath)
-    await router.replace(prevPath || {
-      name: 'archive',
-    })
+    await router.replace(
+      prevPath || {
+        name: 'archive',
+      },
+    )
   } else {
     otpDisabled.value = true
     $q.notify({

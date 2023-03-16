@@ -1,15 +1,15 @@
-import {Module} from 'vuex'
-import {Contract, FormatContract, ContractTable} from '../types/models'
-import {StateInterface} from './index'
-import {db} from '../services/databaseHelper'
-import {formatterContracts} from '../services/schemaHelper'
+import { Module } from 'vuex'
+import { Contract, FormatContract, ContractTable } from '../types/models'
+import { StateInterface } from './index'
+import { db } from '../services/databaseHelper'
+import { formatterContracts } from '../services/schemaHelper'
 
 export interface ContractState {
-  contracts: Contract[];
-  contractsCount: number;
+  contracts: Contract[]
+  contractsCount: number
 }
 
-const Contract: Module<ContractState, StateInterface> = {
+const ContractClass: Module<ContractState, StateInterface> = {
   state: () => ({
     contracts: [],
     contractsCount: 0,
@@ -25,8 +25,8 @@ const Contract: Module<ContractState, StateInterface> = {
       state.contracts.push(contract)
     },
     removeContract(state, id: number) {
-      const i = state.contracts.map(item => item.id).indexOf(id)
-      state.contracts.splice(i, 1);
+      const i = state.contracts.map((item) => item.id).indexOf(id)
+      state.contracts.splice(i, 1)
     },
   },
   actions: {
@@ -53,57 +53,68 @@ const Contract: Module<ContractState, StateInterface> = {
         return
       }
     },
-    async filterFromContracts(context, {query}: {query: string}) {
-      const contracts = await db.contracts.where('instrument_name')
+    async filterFromContracts(context, { query }: { query: string }) {
+      const contracts = (await db.contracts
+        .where('instrument_name')
         .equals(query)
         .reverse()
-        .toArray() as Contract[]
+        .toArray()) as Contract[]
       context.commit('setContractsCount', contracts.length)
       context.commit('setContracts', contracts)
     },
-    async searchFromContracts(context, { query, offset, limit }: { query: string, offset: number, limit: number }) {
+    async searchFromContracts(
+      context,
+      {
+        query,
+        offset,
+        limit,
+      }: { query: string; offset: number; limit: number },
+    ) {
       if (query.length <= 0) {
         context.commit('setContracts', [])
         return
       }
-      const searchTerms = query.split(' ').map(term => term.toLowerCase())
-      const cursor = db.contracts
-        .orderBy('startTime')
-        .filter(contract => {
-          const instrumentName = contract.instrument_name.toLowerCase()
-          const instrumentDescription = contract.instrument_description.toLowerCase()
-          const agentName = contract.agent_name.toLowerCase()
-          return searchTerms.some((term) => {
-            if (instrumentName.includes(term)) return true
-            if (instrumentDescription.includes(term)) return true
-            if (agentName.includes(term)) return true
-          })
+      const searchTerms = query.split(' ').map((term) => term.toLowerCase())
+      const cursor = db.contracts.orderBy('startTime').filter((contract) => {
+        const instrumentName = contract.instrument_name.toLowerCase()
+        const instrumentDescription =
+          contract.instrument_description.toLowerCase()
+        const agentName = contract.agent_name.toLowerCase()
+        return searchTerms.some((term) => {
+          if (instrumentName.includes(term)) return true
+          if (instrumentDescription.includes(term)) return true
+          if (agentName.includes(term)) return true
         })
+      })
       const count = await cursor.count()
       context.commit('setContractsCount', count)
       if (!count) {
         context.commit('setContracts', [])
         return
       }
-      const contracts = await cursor
+      const contracts = (await cursor
         .reverse()
         .offset(offset)
         .limit(limit)
-        .toArray() as Contract[]
+        .toArray()) as Contract[]
       context.commit('setContracts', contracts)
     },
-    async loadAllContracts(context, {offset,limit}: {offset: number, limit: number}) {
+    async loadAllContracts(
+      context,
+      { offset, limit }: { offset: number; limit: number },
+    ) {
       const count: number = await db.contracts.count()
       context.commit('setContractsCount', count)
       if (!count) {
         context.commit('setContracts', [])
         return
       }
-      const contracts = await db.contracts.orderBy('startTime')
+      const contracts = (await db.contracts
+        .orderBy('startTime')
         .reverse()
         .offset(offset)
         .limit(limit)
-        .toArray() as Contract[]
+        .toArray()) as Contract[]
       context.commit('setContracts', contracts)
     },
   },
@@ -117,4 +128,4 @@ const Contract: Module<ContractState, StateInterface> = {
   },
 }
 
-export default Contract
+export default ContractClass

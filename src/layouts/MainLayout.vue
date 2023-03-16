@@ -13,10 +13,18 @@
         <q-toolbar-title class="text-black-9 text-center">
           {{ $t('header.title') }}
           <q-badge outline rounded align="top" color="accent">
-            {{ $t('navigation.version')}}{{ version }}
+            {{ $t('navigation.version') }}{{ version }}
           </q-badge>
         </q-toolbar-title>
-        <q-btn flat round dense class="cursor-pointer" name="search" icon="search" @click="showSearch = true" />
+        <q-btn
+          flat
+          round
+          dense
+          class="cursor-pointer"
+          name="search"
+          icon="search"
+          @click="showSearch = true"
+        />
         <q-btn
           flat
           dense
@@ -26,14 +34,21 @@
           @click="rightDrawerOpen = !rightDrawerOpen"
         ></q-btn>
       </q-toolbar>
-      <q-tabs shrink stretch inline-label outside-arrows mobile-arrows align="center">
+      <q-tabs
+        shrink
+        stretch
+        inline-label
+        outside-arrows
+        mobile-arrows
+        align="center"
+      >
         <q-route-tab
           :to="{ name: 'create' }"
           icon="create"
           :label="$t('header.create')"
         />
         <q-route-tab
-          :to="{ name: 'archive', query: {page: 1} }"
+          :to="{ name: 'archive', query: { page: 1 } }"
           icon="archive"
           :disable="$store.getters.contractsCount === 0"
           :label="$t('header.archive')"
@@ -49,7 +64,7 @@
     >
       <q-list class="row self-start">
         <div class="text-h6 q-pa-md">
-          {{ $t('navigation.title')}}
+          {{ $t('navigation.title') }}
         </div>
         <q-expansion-item
           v-model="profileOpen"
@@ -69,7 +84,9 @@
             <q-input
               v-model="consumer"
               :label="$t('consumer.type')"
-              :rules="[ val => val && val.length > 0 || $t('consumer.rules')]"
+              :rules="[
+                (val) => (val && val.length > 0) || $t('consumer.rules'),
+              ]"
               name="consumer"
               autocomplete="on"
             >
@@ -144,7 +161,13 @@
         </q-expansion-item>
       </q-list>
       <div class="row full-width self-end flex-center q-pa-md">
-        <q-chip icon="link" class="cursor-pointer" clickable :label="$t('navigation.feedback.label')" @click="onOpenFeedback">
+        <q-chip
+          icon="link"
+          class="cursor-pointer"
+          clickable
+          :label="$t('navigation.feedback.label')"
+          @click="onOpenFeedback"
+        >
           <q-tooltip>
             {{ $t('navigation.feedback.tooltip') }}
           </q-tooltip>
@@ -162,25 +185,40 @@
     >
       <div class="full-width q-pa-lg">
         <q-chip
-            v-for="([name, value], objectKey) in archiveNames"
-            :key="objectKey"
-            dense
-            square
-            outline
-            clickable
-            :color="value.recommendation ? 'orange' : ''"
-            @click="onSelectArchiveName(name, value)"
+          v-for="([name, value], objectKey) in archiveNames"
+          :key="objectKey"
+          dense
+          square
+          outline
+          clickable
+          :color="value.recommendation ? 'orange' : ''"
+          @click="onSelectArchiveName(name, value)"
         >
-          <q-avatar v-if="value.count > 1" color="secondary" text-color="white">{{ value.count }}</q-avatar>
+          <q-avatar
+            v-if="value.count > 1"
+            color="secondary"
+            text-color="white"
+            >{{ value.count }}</q-avatar
+          >
           <div class="ellipsis">{{ name }}</div>
           <q-tooltip>{{ name }}</q-tooltip>
         </q-chip>
-        <q-skeleton v-show="archiveNames.length === 0" type="QChip" animation="blink" width="100%" />
+        <q-skeleton
+          v-show="archiveNames.length === 0"
+          type="QChip"
+          animation="blink"
+          width="100%"
+        />
       </div>
     </q-drawer>
     <q-page-container>
-      <router-view/>
-      <q-dialog v-model="confirm" persistent transition-show="scale" transition-hide="scale">
+      <router-view />
+      <q-dialog
+        v-model="confirm"
+        persistent
+        transition-show="scale"
+        transition-hide="scale"
+      >
         <q-card class="bg-red text-white" style="width: 300px">
           <q-card-section>
             <div class="text-h6">{{ $t('settings.clean.submit') }}</div>
@@ -189,8 +227,18 @@
             {{ $t('settings.clean.label') }}
           </q-card-section>
           <q-card-actions align="right" class="bg-white text-teal">
-            <q-btn v-close-popup flat :label="$t('settings.clean.cancel')" color="primary" />
-            <q-btn flat :label="$t('settings.clean.ok')" color="red" @click="onClearDatabase" />
+            <q-btn
+              v-close-popup
+              flat
+              :label="$t('settings.clean.cancel')"
+              color="primary"
+            />
+            <q-btn
+              flat
+              :label="$t('settings.clean.ok')"
+              color="red"
+              @click="onClearDatabase"
+            />
           </q-card-actions>
         </q-card>
       </q-dialog>
@@ -211,7 +259,14 @@
           </q-card-section>
           <q-card-actions align="right" class="text-primary">
             <q-btn v-close-popup flat :label="$t('searchDialog.cancel')" />
-            <q-btn v-close-popup outline color="accent" icon-right="search" :label="$t('searchDialog.search')" @click="onSearchText" />
+            <q-btn
+              v-close-popup
+              outline
+              color="accent"
+              icon-right="search"
+              :label="$t('searchDialog.search')"
+              @click="onSearchText"
+            />
           </q-card-actions>
         </q-card>
       </q-dialog>
@@ -220,21 +275,19 @@
 </template>
 
 <script lang="ts" setup>
-import {ref, defineAsyncComponent} from 'vue'
-import {BulkError} from 'dexie'
-import {LocalStorage, openURL, useQuasar} from 'quasar'
-import {useRouter} from 'vue-router'
-import {db} from '../services/databaseHelper'
-import {useStore} from '../store'
-import {recommendationContractTypes} from '../services/recommendationContractTypes'
+import { ref, defineAsyncComponent } from 'vue'
+import { BulkError } from 'dexie'
+import { LocalStorage, openURL, useQuasar } from 'quasar'
+import { useRouter } from 'vue-router'
+import { db } from '../services/databaseHelper'
+import { useStore } from '../store'
+import { recommendationContractTypes } from '../services/recommendationContractTypes'
 import pkg from '../../package.json'
 
 const DatabaseComponent = defineAsyncComponent(
-  () => import('components/DatabaseComponent.vue')
+  () => import('components/DatabaseComponent.vue'),
 )
-const VOtpInput = defineAsyncComponent(
-  () => import('vue3-otp-input')
-)
+const VOtpInput = defineAsyncComponent(() => import('vue3-otp-input'))
 
 const store = useStore()
 const $q = useQuasar()
@@ -258,14 +311,12 @@ function onToggleLeftDrawer(): void {
 }
 
 function onOpenFeedback() {
-  openURL('https://baskovsky.ru/feedback/', null,
-    {
-      noopener: true,
-      menubar: false,
-      toolbar: false,
-      noreferrer: true,
-    },
-  )
+  openURL('https://baskovsky.ru/feedback/', null, {
+    noopener: true,
+    menubar: false,
+    toolbar: false,
+    noreferrer: true,
+  })
 }
 
 async function onFinishProfile() {
@@ -314,7 +365,10 @@ async function onClearDatabase() {
   }
 }
 
-async function onSelectArchiveName(name: string, value: {count: number, recommendation: boolean}) {
+async function onSelectArchiveName(
+  name: string,
+  value: { count: number; recommendation: boolean },
+) {
   if (value.count === 0) {
     await router.push({
       name: 'create',
@@ -337,8 +391,8 @@ async function onSelectArchiveName(name: string, value: {count: number, recommen
 void (async () => {
   const map = new Map()
 
-  recommendationContractTypes.forEach(contractName => {
-    map.set(contractName, { count: 0, recommendation: true, })
+  recommendationContractTypes.forEach((contractName) => {
+    map.set(contractName, { count: 0, recommendation: true })
   })
 
   for (const names of await db.getContractNames()) {

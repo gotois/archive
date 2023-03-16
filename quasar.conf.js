@@ -3,7 +3,7 @@
 
 /* eslint-env node */
 /* eslint-disable @typescript-eslint/no-var-requires */
-const {configure} = require('quasar/wrappers')
+const { configure } = require('quasar/wrappers')
 const pkg = require('./package.json')
 
 module.exports = configure((ctx) => {
@@ -24,15 +24,10 @@ module.exports = configure((ctx) => {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli/boot-files
-    boot: [
-      'i18n',
-      'addressbar-color',
-    ],
+    boot: ['i18n', 'addressbar-color'],
 
     // https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
-    css: [
-      'app.scss',
-    ],
+    css: ['app.scss'],
 
     // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
@@ -77,7 +72,9 @@ module.exports = configure((ctx) => {
     // https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
     framework: {
       config: {
-        notify: { /* look at QuasarConfOptions from the API card */},
+        notify: {
+          /* look at QuasarConfOptions from the API card */
+        },
       },
 
       // iconSet: 'material-icons', // Quasar icon set
@@ -105,8 +102,7 @@ module.exports = configure((ctx) => {
       // manualStoreHydration: true,
       // manualPostHydrationTrigger: true,
 
-      prodPort: 3000, // The default port that the production server should use
-                      // (gets superseded if process.env.PORT is specified at runtime)
+      prodPort: 3000,
 
       maxAge: 1000 * 60 * 60 * 24 * 30,
       // Tell browser when a file from the server should expire from cache (in ms)
@@ -117,7 +113,7 @@ module.exports = configure((ctx) => {
 
       middlewares: [
         ctx.prod ? 'compression' : '',
-        'render' // keep this as last one
+        'render', // keep this as last one
       ],
     },
 
@@ -192,4 +188,4 @@ module.exports = configure((ctx) => {
       },
     },
   }
-});
+})

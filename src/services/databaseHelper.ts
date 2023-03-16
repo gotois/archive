@@ -1,5 +1,5 @@
 import Dexie from 'dexie'
-import {ContractTable} from '../types/models'
+import { ContractTable } from '../types/models'
 
 export class ContractDatabase extends Dexie {
   public contracts: Dexie.Table<ContractTable, number> // id is number in this case
@@ -7,13 +7,14 @@ export class ContractDatabase extends Dexie {
   public constructor() {
     super('ContractDatabase')
     this.version(1).stores({
-      contracts: '++id, agent_name, participant_name, instrument_name, instrument_description, startTime, endTime, *images',
+      contracts:
+        '++id, agent_name, participant_name, instrument_name, instrument_description, startTime, endTime, *images',
     })
     this.contracts = this.table('contracts')
   }
 
   public async getContractNames() {
-    const map: Map<string, {count: number}> = new Map()
+    const map: Map<string, { count: number }> = new Map()
     await db.contracts.each((value) => {
       let count = 1
       if (map.get(value.instrument_name)) {
@@ -29,9 +30,7 @@ export class ContractDatabase extends Dexie {
   }
 
   public remove(id: number) {
-    return db.contracts.where('id')
-      .equals(id)
-      .delete()
+    return db.contracts.where('id').equals(id).delete()
   }
 
   public destroy() {

@@ -14,7 +14,7 @@
       :options="contractOptions"
       :label="$t('contract.type')"
       :hint="$t('contract.hint')"
-      :rules="[ val => val && val.length > 0 || $t('contract.rules')]"
+      :rules="[(val) => (val && val.length > 0) || $t('contract.rules')]"
       new-value-mode="add-unique"
       input-debounce="0"
       name="contractType"
@@ -35,7 +35,7 @@
       v-model="customer"
       :label="$t('customer.type')"
       :hint="$t('customer.hint')"
-      :rules="[ val => val && val.length > 0 || $t('customer.rules')]"
+      :rules="[(val) => (val && val.length > 0) || $t('customer.rules')]"
       autocomplete="on"
       name="customer"
       outlined
@@ -58,22 +58,53 @@
         square
       />
       <div>
-        <q-icon size="md" name="event" class="cursor-pointer" color="dark" style='padding: 0 6px;'>
+        <q-icon
+          size="md"
+          name="event"
+          class="cursor-pointer"
+          color="dark"
+          style="padding: 0 6px"
+        >
           <q-tooltip>
             {{ $t('contractForm.date') }}
           </q-tooltip>
-          <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+          <q-popup-proxy
+            ref="qDateProxy"
+            transition-show="scale"
+            transition-hide="scale"
+          >
             <template v-if="dateNoLimit">
-              <q-date v-model="duration.from" default-view="Months" first-day-of-week="1" @update:model-value="onSelectDate">
+              <q-date
+                v-model="duration.from"
+                default-view="Months"
+                first-day-of-week="1"
+                @update:model-value="onSelectDate"
+              >
                 <div class="row items-center justify-end">
-                  <q-btn v-close-popup :label="$t('duration.close')" color="primary" flat />
+                  <q-btn
+                    v-close-popup
+                    :label="$t('duration.close')"
+                    color="primary"
+                    flat
+                  />
                 </div>
               </q-date>
             </template>
             <template v-else>
-              <q-date v-model="duration" default-view="Months" range first-day-of-week="1" @update:model-value="onSelectDate">
+              <q-date
+                v-model="duration"
+                default-view="Months"
+                range
+                first-day-of-week="1"
+                @update:model-value="onSelectDate"
+              >
                 <div class="row items-center justify-end">
-                  <q-btn v-close-popup :label="$t('duration.close')" color="primary" flat />
+                  <q-btn
+                    v-close-popup
+                    :label="$t('duration.close')"
+                    color="primary"
+                    flat
+                  />
                 </div>
               </q-date>
             </template>
@@ -90,10 +121,7 @@
         outlined
         square
       />
-      <q-toggle
-        v-model="dateNoLimit"
-        :label="$t('duration.infinity')"
-      />
+      <q-toggle v-model="dateNoLimit" :label="$t('duration.infinity')" />
     </div>
     <q-file
       v-model="files"
@@ -142,19 +170,21 @@
 </template>
 
 <script lang="ts" setup>
-import {PropType, ref} from 'vue'
-import {useQuasar, date} from 'quasar'
-import {useStore} from '../store'
-import {ContractTable} from '../types/models'
-import {db} from '../services/databaseHelper'
-import {readFilesPromise} from '../services/fileHelper'
-import {isDateNotOk, formatDate} from '../services/dateHelper'
-import {contractTypes} from '../services/contractTypes'
-import {recommendationContractTypes} from '../services/recommendationContractTypes'
+import { PropType, ref } from 'vue'
+import { useQuasar, date } from 'quasar'
+import { useStore } from '../store'
+import { ContractTable } from '../types/models'
+import { db } from '../services/databaseHelper'
+import { readFilesPromise } from '../services/fileHelper'
+import { isDateNotOk, formatDate } from '../services/dateHelper'
+import { contractTypes } from '../services/contractTypes'
+import { recommendationContractTypes } from '../services/recommendationContractTypes'
 
 const now = new Date()
 const currentDate = formatDate(now)
-const afterYearDate = formatDate(new Date(now.setFullYear(now.getFullYear() + 1)))
+const afterYearDate = formatDate(
+  new Date(now.setFullYear(now.getFullYear() + 1)),
+)
 
 const $q = useQuasar()
 const store = useStore()
@@ -169,18 +199,24 @@ const props = defineProps({
 const contractType = ref(props.contractTypeName)
 const customer = ref('')
 const description = ref('')
-const duration = ref({from: currentDate, to: afterYearDate})
+const duration = ref({ from: currentDate, to: afterYearDate })
 const files = ref([])
 const contractForm = ref()
 const dateNoLimit = ref(false)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-const allContractTypes: string[] = [].concat(recommendationContractTypes, contractTypes)
+const allContractTypes: string[] = [].concat(
+  recommendationContractTypes,
+  contractTypes,
+)
 const contractOptions = ref(allContractTypes)
 
+// eslint-disable-next-line no-unused-vars
 function filterOptions(val: string, update: (callback: () => void) => void) {
   update(() => {
     const needle = val.toLowerCase()
-    contractOptions.value = allContractTypes.filter(v => v.toLowerCase().indexOf(needle) > -1)
+    contractOptions.value = allContractTypes.filter(
+      (v) => v.toLowerCase().indexOf(needle) > -1,
+    )
   })
 }
 
@@ -192,18 +228,18 @@ function onResetForm() {
   contractType.value = ''
   customer.value = ''
   description.value = ''
-  duration.value = {from: currentDate, to: afterYearDate}
+  duration.value = { from: currentDate, to: afterYearDate }
   files.value = []
   dateNoLimit.value = false
 }
 
-function onSelectDate(value: string | { from: string, to: string } | null) {
+function onSelectDate(value: string | { from: string; to: string } | null) {
   if (value === null) {
     $q.notify({
       type: 'warning',
       message: 'Начало даты не может быть позже сегодняшней',
     })
-    duration.value = {from: currentDate, to: afterYearDate}
+    duration.value = { from: currentDate, to: afterYearDate }
     return
   }
   switch (typeof value) {
@@ -266,13 +302,13 @@ async function onSubmit() {
   const images = await readFilesPromise(files.value)
   db.transaction('rw', db.contracts, async () => {
     const newContract: ContractTable = {
-      'agent_name': (store.getters as { consumer: string }).consumer,
-      'participant_name': customer.value,
-      'instrument_name': contractType.value,
-      'instrument_description': description.value,
-      'startTime': startDate,
-      'endTime': dateNoLimit.value ? null : endDate,
-      'images': images,
+      agent_name: (store.getters as { consumer: string }).consumer,
+      participant_name: customer.value,
+      instrument_name: contractType.value,
+      instrument_description: description.value,
+      startTime: startDate,
+      endTime: dateNoLimit.value ? null : endDate,
+      images: images,
     }
     await store.dispatch('addContract', newContract)
     $q.notify({

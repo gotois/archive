@@ -1,11 +1,11 @@
-import {ImageFormat, jsPDF} from 'jspdf'
-import {generate} from '@pdfme/generator'
+import { ImageFormat, jsPDF } from 'jspdf'
+import { generate } from '@pdfme/generator'
 import html2canvas from 'html2canvas'
-import {convert} from 'html-to-text'
-import {FormatContract} from '../types/models'
-import {resizeImageA4} from './imgHelper'
+import { convert } from 'html-to-text'
+import { FormatContract } from '../types/models'
+import { resizeImageA4 } from './imgHelper'
 import pkg from '../../package.json'
-import {readFilesPromise} from '../services/fileHelper'
+import { readFilesPromise } from '../services/fileHelper'
 import privacyNotice from '../ui/templates/privacy-notice'
 
 export async function createContract(html: string, useImage = false) {
@@ -76,7 +76,7 @@ export async function createPDF(object: FormatContract) {
     }
 
     const format = mimeType.replace('image/', '').toUpperCase() as ImageFormat
-    const {width, height} = await resizeImageA4(dataUrl)
+    const { width, height } = await resizeImageA4(dataUrl)
 
     if (docLength != 0) {
       doc.addPage(format, 'portrait')

@@ -1,12 +1,14 @@
 <template>
   <q-page>
     <q-inner-loading :showing="loadingVisible && isContractsEmpty">
-      <q-spinner-hourglass
-        color="info"
-        size="6em"
-      />
+      <q-spinner-hourglass color="info" size="6em" />
     </q-inner-loading>
-    <q-scroll-area v-show="!isContractsEmpty" ref="scrollAreaRef" visible class="absolute-full fit">
+    <q-scroll-area
+      v-show="!isContractsEmpty"
+      ref="scrollAreaRef"
+      visible
+      class="absolute-full fit"
+    >
       <archive-list-component
         :loading="loadingVisible"
         :contracts="contracts"
@@ -16,7 +18,7 @@
         }"
         :style="{
           margin: 'auto',
-          width: $q.platform.is.desktop ? '600px' : 'auto'
+          width: $q.platform.is.desktop ? '600px' : 'auto',
         }"
         :pagination-count="paginationCount"
         @on-paginate="onPaginate"
@@ -29,17 +31,21 @@
         :class="{
           'col-6': $q.platform.is.desktop,
         }"
+        :inline-actions="$q.platform.is.desktop"
         rounded
         class="q-pa-lg flex absolute-center flex-center self-center text-black-9 text-left"
         style="max-width: 500px"
       >
         <template #default>
           <template v-if="isSearch">{{ $t('archive.searchEmpty') }}</template>
-          <template v-else>{{$t('archive.empty')}}
-            <br>
-            Например:
+          <template v-else
+            >{{ $t('archive.empty') }}
+            <br />
             <q-btn
-              :to="{ name: 'create', query: { contractTypeName: archiveEmptyText} }"
+              :to="{
+                name: 'create',
+                query: { contractTypeName: archiveEmptyText },
+              }"
               padding="none"
               unelevated
               push
@@ -48,12 +54,32 @@
               text-color="accent"
               type="a"
               no-caps
-              :label="archiveEmptyText" />.
+              :label="archiveEmptyText"
+            />.
           </template>
         </template>
         <template #action>
           <template v-if="isSearch">
-            <q-btn flat color="accent" icon="explore" :label="$t('list.explore')" :to="{ name: 'archive', query: { page: 1 } }" />
+            <q-btn
+              flat
+              align="left"
+              color="accent"
+              outline
+              :icon="$q.platform.is.desktop ? 'explore' : ''"
+              :label="$t('list.explore')"
+              :to="{ name: 'archive', query: { page: 1 } }"
+            />
+          </template>
+          <template v-else>
+            Например:
+            <q-btn
+              flat
+              align="left"
+              color="accent"
+              icon="explore"
+              :label="$t('list.explore')"
+              :to="{ name: 'archive', query: { page: 1 } }"
+            />
           </template>
         </template>
       </q-banner>
@@ -67,29 +93,35 @@
         vertical-actions-align="right"
         color="accent"
       >
-        <q-fab-action push square color="primary" :label="$t('list.create')" :to="{ name: 'create' }" />
+        <q-fab-action
+          push
+          square
+          color="primary"
+          :label="$t('list.create')"
+          :to="{ name: 'create' }"
+        />
       </q-fab>
     </q-page-sticky>
   </q-page>
 </template>
 
 <script lang="ts" setup>
-import {ref, computed, getCurrentInstance, defineAsyncComponent} from 'vue'
-import {useRouter, LocationQuery} from 'vue-router'
-import {useMeta} from 'quasar'
-import {useStore} from '../store'
-import {contractTypes} from '../services/contractTypes'
-import {FormatContract} from '../types/models'
+import { ref, computed, getCurrentInstance, defineAsyncComponent } from 'vue'
+import { useRouter, LocationQuery } from 'vue-router'
+import { useMeta } from 'quasar'
+import { useStore } from '../store'
+import { contractTypes } from '../services/contractTypes'
+import { FormatContract } from '../types/models'
 
 const ArchiveListComponent = defineAsyncComponent(
-  () => import('components/ArchiveListComponent.vue')
+  () => import('components/ArchiveListComponent.vue'),
 )
 
 // eslint-disable-next-line @typescript-eslint/unbound-method
-const {$t} = getCurrentInstance().appContext.config.globalProperties
+const { $t } = getCurrentInstance().appContext.config.globalProperties
 
 const metaData = {
-  title: 'Архив договоров',
+  'title': 'Архив договоров',
   'og:title': 'Архив договоров',
 }
 
@@ -107,7 +139,7 @@ async function onPaginate(page: number) {
     name: router.currentRoute.value.name,
     query: {
       page: page,
-      filter: router.currentRoute.value.query?.filter
+      filter: router.currentRoute.value.query?.filter,
     },
   })
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
@@ -127,22 +159,29 @@ async function onEdit(item: FormatContract) {
   await store.dispatch('editContract', item)
 }
 
-async function updateContracts({ page, filter }: LocationQuery|{page: number, filter: string}) {
+async function updateContracts({
+  page,
+  filter,
+}: LocationQuery | { page: number; filter: string }) {
   page = Number(page || 1)
   const offset = (page - 1) * limit.value
   const query = String(filter ?? '')
 
   switch (router.currentRoute.value.name) {
     case 'search': {
-      await store.dispatch('searchFromContracts', {query, offset, limit: limit.value})
+      await store.dispatch('searchFromContracts', {
+        query,
+        offset,
+        limit: limit.value,
+      })
       break
     }
     case 'filter': {
-      await store.dispatch('filterFromContracts', {query})
+      await store.dispatch('filterFromContracts', { query })
       break
     }
     default: {
-      await store.dispatch('loadAllContracts', {offset, limit: limit.value})
+      await store.dispatch('loadAllContracts', { offset, limit: limit.value })
       break
     }
   }
@@ -154,7 +193,9 @@ const isSearch = computed(() => {
 })
 
 const archiveEmptyText = computed(() => {
-  const randomContractType = Math.floor(Math.random() * (contractTypes.length - 1))
+  const randomContractType = Math.floor(
+    Math.random() * (contractTypes.length - 1),
+  )
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/restrict-plus-operands
   return contractTypes[randomContractType]
 })
@@ -176,5 +217,5 @@ const isContractsEmpty = computed(() => {
 useMeta(metaData)
 
 router.afterEach((to) => updateContracts(to.query))
-void (updateContracts)(router.currentRoute.value.query)
+void updateContracts(router.currentRoute.value.query)
 </script>

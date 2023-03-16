@@ -1,4 +1,4 @@
-import {Contract, FormatContract} from '../types/models'
+import { Contract, FormatContract } from '../types/models'
 
 export function formatterContracts(contracts: Contract[]): FormatContract[] {
   return contracts.map((contract: Contract) => ({
@@ -20,7 +20,7 @@ export function formatterContracts(contracts: Contract[]): FormatContract[] {
     'identifier': {
       '@type': 'PropertyValue',
       'propertyID': 'Database ID',
-      'value':  String(contract.id),
+      'value': String(contract.id),
     },
     'startTime': contract.startTime,
     'endTime': contract.endTime,
@@ -28,6 +28,6 @@ export function formatterContracts(contracts: Contract[]): FormatContract[] {
       '@type': 'ImageObject',
       'contentUrl': image,
     })),
-    _currentSlide: 1,
+    '_currentSlide': 1,
   }))
 }

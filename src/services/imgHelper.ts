@@ -5,7 +5,7 @@ export async function resizeImageA4(dataUrl: string) {
   const img = new Image()
   img.src = dataUrl
   await img.decode()
-  let {width, height} = img
+  let { width, height } = img
 
   // resizing logic portrait
   if (width > height) {

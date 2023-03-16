@@ -19,18 +19,18 @@
 </template>
 
 <script lang="ts" setup>
-import {defineAsyncComponent} from 'vue'
-import {useMeta} from 'quasar'
-import {useRouter} from 'vue-router'
+import { defineAsyncComponent } from 'vue'
+import { useMeta } from 'quasar'
+import { useRouter } from 'vue-router'
 
 const ContractFormComponent = defineAsyncComponent(
-  () => import('components/ContractFormComponent.vue')
+  () => import('components/ContractFormComponent.vue'),
 )
 
 const router = useRouter()
 
 const metaData = {
-  title: 'Создание договора',
+  'title': 'Создание договора',
   'og:title': 'Создание договора',
 }
 

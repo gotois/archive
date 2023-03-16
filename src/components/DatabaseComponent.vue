@@ -1,9 +1,6 @@
 <template>
   <div>
-    <q-form
-      class="full-width"
-      @submit="onImportDB"
-    >
+    <q-form class="full-width" @submit="onImportDB">
       <q-file
         v-model="file"
         accept=".json,.zip"
@@ -49,13 +46,13 @@
 </template>
 
 <script lang="ts" setup>
-import {ref} from 'vue'
-import {useQuasar} from 'quasar'
-import {exportDB, importInto} from 'dexie-export-import'
-import {saveAs} from 'file-saver'
+import { ref } from 'vue'
+import { useQuasar } from 'quasar'
+import { exportDB, importInto } from 'dexie-export-import'
+import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
-import {BulkError} from 'dexie'
-import {db} from '../services/databaseHelper'
+import { BulkError } from 'dexie'
+import { db } from '../services/databaseHelper'
 
 const $q = useQuasar()
 const file = ref()
@@ -87,7 +84,13 @@ function rejectedEntries() {
   })
 }
 
-function progressCallback({ totalRows, completedRows }: { totalRows: number, completedRows: number }): boolean {
+function progressCallback({
+  totalRows,
+  completedRows,
+}: {
+  totalRows: number
+  completedRows: number
+}): boolean {
   if (completedRows === totalRows) {
     $q.loading.hide()
     return true
@@ -129,22 +132,25 @@ async function onExportDB() {
   })
   const zip = new JSZip()
   zip.file(EXPORT_NAME + '.json', blob)
-  const content = await zip.generateAsync({
-    type: 'blob',
-    compression: 'DEFLATE',
-    compressionOptions: {
-      level: 1,
+  const content = await zip.generateAsync(
+    {
+      type: 'blob',
+      compression: 'DEFLATE',
+      compressionOptions: {
+        level: 1,
+      },
+      platform: 'UNIX',
     },
-    platform: 'UNIX',
-  }, metadata => {
-    const percentage = metadata.percent
-    dialog.update({
-      message: `Создание... ${percentage}%`,
-    })
-    if (percentage === 100 && metadata.currentFile !== null) {
-      dialog.hide()
-    }
-  })
+    (metadata) => {
+      const percentage = metadata.percent
+      dialog.update({
+        message: `Создание... ${percentage}%`,
+      })
+      if (percentage === 100 && metadata.currentFile !== null) {
+        dialog.hide()
+      }
+    },
+  )
   return saveAs(content, EXPORT_NAME + '.zip')
 }
 </script>

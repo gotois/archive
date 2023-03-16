@@ -1,10 +1,10 @@
-import {LocalStorage} from 'quasar'
-import {Module} from 'vuex'
-import {StateInterface} from './index'
-import {getHash} from '../services/cryptoHelper'
+import { LocalStorage } from 'quasar'
+import { Module } from 'vuex'
+import { StateInterface } from './index'
+import { getHash } from '../services/cryptoHelper'
 
 export interface AuthState {
-  code: string|null;
+  code: string | null
 }
 
 const Auth: Module<AuthState, StateInterface> = {

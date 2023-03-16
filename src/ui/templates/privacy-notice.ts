@@ -1,4 +1,4 @@
-import {Template, BLANK_PDF} from '@pdfme/generator'
+import { Template, BLANK_PDF } from '@pdfme/generator'
 
 // A4, значение в MM
 const A4 = {

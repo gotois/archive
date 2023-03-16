@@ -1,6 +1,6 @@
 {
   "singleQuote": true,
-  "semi": true,
+  "semi": false,
   "printWidth": 80,
   "quoteProps": "consistent",
   "rangeStart": 0,

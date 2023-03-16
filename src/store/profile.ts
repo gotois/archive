@@ -1,9 +1,9 @@
-import {LocalStorage} from 'quasar'
-import {Module} from 'vuex'
-import {StateInterface} from './index'
+import { LocalStorage } from 'quasar'
+import { Module } from 'vuex'
+import { StateInterface } from './index'
 
 export interface ProfileState {
-  consumer: string;
+  consumer: string
 }
 
 const Profile: Module<ProfileState, StateInterface> = {
@@ -24,7 +24,7 @@ const Profile: Module<ProfileState, StateInterface> = {
   getters: {
     consumer(state) {
       return state.consumer
-    }
+    },
   },
 }
 

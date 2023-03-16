@@ -1,17 +1,19 @@
-import {route} from 'quasar/wrappers'
+import { route } from 'quasar/wrappers'
 import {
   createMemoryHistory,
   createRouter,
   createWebHashHistory,
   createWebHistory,
 } from 'vue-router'
-import {StateInterface} from '../store'
+import { StateInterface } from '../store'
 import routes from './routes'
 
-export default route<StateInterface>(function ({store/* , ssrContext */}) {
+export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
   const createHistory = process.env.SERVER
     ? createMemoryHistory
-    : (process.env.VUE_ROUTER_MODE === 'history' ? createWebHistory : createWebHashHistory)
+    : process.env.VUE_ROUTER_MODE === 'history'
+    ? createWebHistory
+    : createWebHashHistory
 
   const Router = createRouter({
     scrollBehavior: () => ({
@@ -24,7 +26,7 @@ export default route<StateInterface>(function ({store/* , ssrContext */}) {
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath
     history: createHistory(
-      process.env.MODE === 'ssr' ? void 0 : process.env.VUE_ROUTER_BASE
+      process.env.MODE === 'ssr' ? void 0 : process.env.VUE_ROUTER_BASE,
     ),
   })
   Router.beforeEach((to) => {
@@ -54,11 +56,14 @@ export default route<StateInterface>(function ({store/* , ssrContext */}) {
             },
           }
         }
+        if (to.path === '/' && Object.keys(to.query).length === 0) {
+          return '/?page=1'
+        }
         break
       }
     }
-  // explicitly return false to cancel the navigation
-  // return false
+    // explicitly return false to cancel the navigation
+    // return false
   })
 
   return Router

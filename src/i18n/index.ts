@@ -1,5 +1,5 @@
 import ru from './ru'
 
 export default {
-  'ru': ru,
+  ru: ru,
 }

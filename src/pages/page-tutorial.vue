@@ -16,9 +16,15 @@
           icon="create_new_folder"
           :done="step > 1"
         >
-          <p class="text-body1" style="white-space: break-spaces;">{{ $t('tutorial.info.body') }}</p>
+          <p class="text-body1" style="white-space: break-spaces">{{
+            $t('tutorial.info.body')
+          }}</p>
           <q-stepper-navigation>
-            <q-btn color="secondary" :label="$t('tutorial.info.ok')" @click="$refs.stepper.next()" />
+            <q-btn
+              color="secondary"
+              :label="$t('tutorial.info.ok')"
+              @click="$refs.stepper.next()"
+            />
           </q-stepper-navigation>
         </q-step>
         <q-step
@@ -27,16 +33,18 @@
           icon="article"
           :done="step > 2"
         >
-          <p class="text-body1" style="white-space: break-spaces;">{{ $t('tutorial.agreement.body') }}</p>
+          <p class="text-body1" style="white-space: break-spaces">{{
+            $t('tutorial.agreement.body')
+          }}</p>
           <q-stepper-navigation>
-            <q-btn color="secondary" :label="$t('tutorial.agreement.ok')" @click="$refs.stepper.next()" />
+            <q-btn
+              color="secondary"
+              :label="$t('tutorial.agreement.ok')"
+              @click="$refs.stepper.next()"
+            />
           </q-stepper-navigation>
         </q-step>
-        <q-step
-          :name="3"
-          :title="$t('tutorial.data.title')"
-          icon="assignment"
-        >
+        <q-step :name="3" :title="$t('tutorial.data.title')" icon="assignment">
           <p class="text-body1">{{ $t('tutorial.data.body') }}</p>
           <q-space class="q-pa-xs"></q-space>
           <q-form
@@ -50,12 +58,14 @@
             <q-input
               v-model="consumer"
               :label="$t('consumer.type')"
-              :rules="[ val => val && val.length > 0 || $t('consumer.rules')]"
+              :rules="[
+                (val) => (val && val.length > 0) || $t('consumer.rules'),
+              ]"
               style="width: 300px"
               name="consumer"
               autocomplete="on"
               outlined
-              @focus="e => e.target.scrollIntoView()"
+              @focus="(e) => e.target.scrollIntoView()"
             >
               <template #prepend>
                 <q-icon name="face" />
@@ -90,16 +100,16 @@
 </template>
 
 <script lang="ts" setup>
-import {ref} from 'vue'
-import {useRouter} from 'vue-router'
-import {useQuasar, useMeta} from 'quasar'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useQuasar, useMeta } from 'quasar'
 import VOtpInput from 'vue3-otp-input'
-import {useStore} from '../store'
-import {createContract} from '../services/pdfHelper'
+import { useStore } from '../store'
+import { createContract } from '../services/pdfHelper'
 import PrivacyComponent from 'components/PrivacyComponent.vue'
 import pkg from '../../package.json'
 
-const {description, version, productName} = pkg
+const { description, version, productName } = pkg
 const $q = useQuasar()
 const store = useStore()
 const router = useRouter()
@@ -109,7 +119,7 @@ const consumer = ref('')
 const pin = ref('')
 
 const metaData = {
-  title: 'Обучение',
+  'title': 'Обучение',
   'og:title': 'Обучение',
 }
 
@@ -117,14 +127,17 @@ async function onFinish() {
   $q.loading.show()
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
   const html = PrivacyComponent.render().children[0].children as string
-  const contractPDF = await createContract(html, $q.platform.is.name === 'firefox')
+  const contractPDF = await createContract(
+    html,
+    $q.platform.is.name === 'firefox',
+  )
   const newContract = {
-    'agent_name': consumer.value,
-    'participant_name': productName + ' ' + version,
-    'instrument_name': 'Пользовательское соглашение',
-    'instrument_description': description,
-    'startTime': new Date(),
-    'images': contractPDF,
+    agent_name: consumer.value,
+    participant_name: productName + ' ' + version,
+    instrument_name: 'Пользовательское соглашение',
+    instrument_description: description,
+    startTime: new Date(),
+    images: contractPDF,
   }
   try {
     await store.dispatch('addContract', newContract)

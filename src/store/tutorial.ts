@@ -1,9 +1,9 @@
-import {LocalStorage} from 'quasar'
-import {Module} from 'vuex'
-import {StateInterface} from './index'
+import { LocalStorage } from 'quasar'
+import { Module } from 'vuex'
+import { StateInterface } from './index'
 
 export interface TutorialState {
-  tutorialCompleted: boolean;
+  tutorialCompleted: boolean
 }
 
 const Tutorial: Module<TutorialState, StateInterface> = {

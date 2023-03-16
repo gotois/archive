@@ -1,6 +1,6 @@
-import {format} from 'quasar'
+import { format } from 'quasar'
 
-const {humanStorageSize} = format
+const { humanStorageSize } = format
 
 export default {
   error404: {
@@ -48,7 +48,7 @@ export default {
       ok: 'Удалить',
       cancel: 'Отмена',
       submit: 'Удаление базы',
-    }
+    },
   },
   contract: {
     rules: 'Пожалуйста, введите тип договора',
@@ -107,7 +107,8 @@ export default {
     shareFile: 'Поделиться документом',
   },
   database: {
-    fileSize: 'Выберите файл размером до ' + humanStorageSize(1024 * 1024 * 1024 * 2),
+    fileSize:
+      'Выберите файл размером до ' + humanStorageSize(1024 * 1024 * 1024 * 2),
     fileImport: 'Начать процедуру импорта базы данных',
     fileExport: 'Экспортировать базу в файл',
     loading: 'Загрузка...',
