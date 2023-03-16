@@ -1,5 +1,5 @@
 <template>
-  <q-page>
+  <q-page class="bg-grey-1">
     <q-inner-loading :showing="loadingVisible && isContractsEmpty">
       <q-spinner-hourglass color="info" size="6em" />
     </q-inner-loading>

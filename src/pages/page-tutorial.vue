@@ -1,5 +1,5 @@
 <template>
-  <q-page>
+  <q-page class="bg-grey-1">
     <q-scroll-area visible class="absolute-full fit">
       <q-stepper
         ref="stepper"

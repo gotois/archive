@@ -1,19 +1,27 @@
 <template>
-  <q-page>
+  <q-page class="bg-grey-1">
     <q-scroll-area visible class="absolute-full fit">
-      <contract-form-component
-        class="q-pa-md"
-        :class="{
-          'col-xs-6': $q.platform.is.desktop,
-        }"
-        :style="{
-          margin: 'auto',
-          width: $q.platform.is.desktop ? '600px' : 'auto',
-          height: '500px',
-        }"
-        :contract-type-name="$router.currentRoute.value.query.contractTypeName"
-        @on-create="onCreate"
-      />
+      <q-card
+        flat
+        square
+        bordered
+        style="max-width: 600px; margin-left: auto; margin-right: auto"
+        class="q-pa-md q-ma-md"
+      >
+        <contract-form-component
+          class="q-pa-md"
+          :class="{
+            'col-xs-6': $q.platform.is.desktop,
+          }"
+          :style="{
+            height: '500px',
+          }"
+          :contract-type-name="
+            $router.currentRoute.value.query.contractTypeName
+          "
+          @on-create="onCreate"
+        />
+      </q-card>
     </q-scroll-area>
   </q-page>
 </template>

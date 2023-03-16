@@ -68,7 +68,7 @@
             class="no-margin no-padding"
             :name="objectIndex + 1"
           >
-            <q-scroll-area class="fit">
+            <q-scroll-area class="absolute-full fit">
               <template
                 v-if="
                   !(
@@ -141,7 +141,6 @@
           <p class="text-overline text-orange-9 no-margin">
             {{ prettyDate(item) }}
           </p>
-          <q-space />
           <div class="row items-center">
             <p class="text-black-9 text-weight-light no-margin">
               {{ item.participant.name }}
