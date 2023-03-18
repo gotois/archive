@@ -5,16 +5,15 @@
         flat
         square
         bordered
-        style="max-width: 600px; margin-left: auto; margin-right: auto"
-        class="q-pa-md q-ma-md"
+        style="max-width: 600px"
+        class="q-pa-md q-ml-auto q-mr-auto q-mt-md q-mb-md"
       >
         <contract-form-component
-          class="q-pa-md"
           :class="{
             'col-xs-6': $q.platform.is.desktop,
           }"
           :style="{
-            height: '500px',
+            minHeight: '460px',
           }"
           :contract-type-name="
             $router.currentRoute.value.query.contractTypeName

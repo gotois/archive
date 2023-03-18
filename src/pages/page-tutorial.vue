@@ -8,6 +8,8 @@
         flat
         vertical
         animated
+        class="q-pa-md q-card--bordered q-ml-auto q-mr-auto q-mt-md q-mb-md"
+        style="max-width: 600px"
         transition-next="slide-down"
       >
         <q-step

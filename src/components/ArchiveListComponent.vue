@@ -10,20 +10,29 @@
         </q-card-section>
       </q-card>
       <q-card v-show="!loading" :key="index" flat square bordered>
-        <div class="row justify-between">
-          <div class="column q-pa-md wrap" style="width: calc(100% - 45px)">
+        <div class="row">
+          <div class="column wrap" style="max-width: calc(100% - 45px)">
             <p
-              class="text-h6 text-uppercase text-weight-bold no-margin"
+              class="text-h6 q-pt-md q-pl-md q-pr-md text-uppercase text-weight-bold no-margin"
               :style="checkItemEndTime(item)"
+              :class="item.instrument.description ? '' : 'q-pb-md'"
               >{{ item.instrument.name }}</p
             >
             <p
               v-if="item.instrument.description"
-              class="text-caption text-grey"
+              class="text-caption q-pl-md q-pb-md text-grey no-margin"
               >{{ item.instrument.description }}</p
             >
           </div>
-          <q-btn size="md" style="margin: auto 0" round flat icon="more_vert">
+          <q-space></q-space>
+          <q-btn
+            size="md"
+            class="q-ml-auto q-mr-auto q-mt-none q-mb-none"
+            round
+            square
+            flat
+            icon="more_vert"
+          >
             <q-menu transition-show="jump-down" transition-hide="jump-up">
               <q-list dense>
                 <q-item
@@ -93,7 +102,7 @@
                   alt="Document"
                   :ratio="1"
                   :src="object.contentUrl"
-                  placeholder-src="/icons/icon-512x512.png"
+                  placeholder-src="/icons/icon-256x256.png"
                   loading="lazy"
                   decoding="async"
                   fetchpriority="high"
@@ -155,6 +164,7 @@
         :max="paginationCount"
         :max-pages="$q.platform.is.desktop ? 10 : 5"
         direction-links
+        active-design="flat"
         boundary-numbers
         color="secondary"
         class="q-pa-lg flex flex-center self-end"

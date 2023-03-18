@@ -6,6 +6,7 @@
     autocomplete="off"
     spellcheck="true"
     greedy
+    autofocus
     @submit="onSubmit"
     @reset="onResetForm"
   >
@@ -160,10 +161,9 @@
         <q-icon name="sticky_note_2" />
       </template>
     </q-input>
-    <div class="text-right">
+    <div class="text-left">
       <q-btn
         ripple
-        outline
         square
         stretch
         :label="$t('contractForm.submit')"

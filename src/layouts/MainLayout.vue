@@ -12,7 +12,13 @@
         />
         <q-toolbar-title class="text-black-9 text-center">
           {{ $t('header.title') }}
-          <q-badge outline rounded align="top" color="accent">
+          <q-badge
+            outline
+            rounded
+            align="top"
+            color="accent"
+            class="absolute q-ml-xs"
+          >
             {{ $t('navigation.version') }}{{ version }}
           </q-badge>
         </q-toolbar-title>
@@ -23,7 +29,7 @@
           class="cursor-pointer"
           name="search"
           icon="search"
-          @click="showSearch = true"
+          @click="onOpenShowSearch"
         />
         <q-btn
           flat
@@ -50,7 +56,6 @@
         <q-route-tab
           :to="{ name: 'archive', query: { page: 1 } }"
           icon="archive"
-          :disable="$store.getters.contractsCount === 0"
           :label="$t('header.archive')"
         />
       </q-tabs>
@@ -279,6 +284,7 @@
               outline
               color="accent"
               icon-right="search"
+              :disable="searchOptions.length === 0"
               :label="$t('searchDialog.search')"
               @click="onSearchText"
             />
@@ -325,11 +331,8 @@ const consumer = ref(store.getters.consumer as string)
 
 const miniSearch: MiniSearch = new MiniSearch({
   fields: ['instrument_name', 'instrument_description'],
-  searchOptions: {
-    boost: {
-      instrument_name: 2,
-    },
-  },
+  storeFields: ['instrument_name', 'instrument_description'],
+  searchOptions: {},
 })
 
 function onToggleLeftDrawer(): void {
@@ -367,16 +370,21 @@ function onFilterSelect(
         if (val === '') {
           /* empty */
         } else {
-          const suggest = miniSearch.autoSuggest(val, {
+          const suggestionInstrumentDesc = [] as Array<string>
+          miniSearch.autoSuggest(val, {
             fuzzy: (term) => (term.length > 3 ? 0.2 : null),
+            processTerm: (term) => term.toLowerCase(),
+            boost: {
+              instrument_name: 2,
+            },
+            prefix: true,
+            filter: (searchResult) => {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+              suggestionInstrumentDesc.push(searchResult.instrument_name)
+              return true
+            },
           })
-          const suggestion = suggest.reduce((acc, val) => {
-            if (val.terms.length > 0) {
-              acc.push(val.terms[0])
-            }
-            return acc
-          }, [] as Array<string>)
-          searchOptions.value = suggestion
+          searchOptions.value = suggestionInstrumentDesc
         }
       },
       (ref) => {
@@ -435,6 +443,13 @@ async function onClearDatabase() {
   }
 }
 
+async function onOpenShowSearch() {
+  showSearch.value = true
+
+  // Index all documents
+  await miniSearch.addAllAsync(await db.getFulltextDocument())
+}
+
 async function onSelectArchiveName(
   name: string,
   value: { count: number; recommendation: boolean },
@@ -470,8 +485,5 @@ void (async () => {
   }
 
   archiveNames.value = Array.from(map)
-
-  // Index all documents
-  await miniSearch.addAllAsync(await db.getFulltextDocument())
 })()
 </script>

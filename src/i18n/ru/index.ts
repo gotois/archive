@@ -116,8 +116,8 @@ export default {
     removeDatabase: 'Удалить базу данных',
   },
   searchDialog: {
-    searchText: 'Название договора',
-    cancel: 'Отмена',
+    searchText: 'Тип или исполнитель договора',
+    cancel: 'Закрыть',
     search: 'Найти',
   },
 }

@@ -4,7 +4,13 @@
       <q-toolbar>
         <q-toolbar-title class="text-black-9 text-center">
           {{ $t('header.title') }}
-          <q-badge outline rounded align="top" color="accent">
+          <q-badge
+            outline
+            rounded
+            align="top"
+            color="accent"
+            class="absolute q-ml-xs"
+          >
             {{ $t('navigation.version') }}{{ version }}
           </q-badge>
         </q-toolbar-title>
