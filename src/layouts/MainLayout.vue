@@ -221,6 +221,7 @@
       <q-dialog
         v-model="confirm"
         persistent
+        square
         transition-show="scale"
         transition-hide="scale"
       >
@@ -247,7 +248,7 @@
           </q-card-actions>
         </q-card>
       </q-dialog>
-      <q-dialog v-model="showSearch" persistent>
+      <q-dialog v-model="showSearch" square>
         <q-card style="min-width: 350px">
           <q-card-section>
             <div class="text-h6">{{ $t('archive.search') }}</div>
@@ -332,7 +333,6 @@ const consumer = ref(store.getters.consumer as string)
 const miniSearch: MiniSearch = new MiniSearch({
   fields: ['instrument_name', 'instrument_description'],
   storeFields: ['instrument_name', 'instrument_description'],
-  searchOptions: {},
 })
 
 function onToggleLeftDrawer(): void {
@@ -370,7 +370,7 @@ function onFilterSelect(
         if (val === '') {
           /* empty */
         } else {
-          const suggestionInstrumentDesc = [] as Array<string>
+          const suggestionElement = new Set()
           miniSearch.autoSuggest(val, {
             fuzzy: (term) => (term.length > 3 ? 0.2 : null),
             processTerm: (term) => term.toLowerCase(),
@@ -379,12 +379,14 @@ function onFilterSelect(
             },
             prefix: true,
             filter: (searchResult) => {
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-              suggestionInstrumentDesc.push(searchResult.instrument_name)
+              if (suggestionElement.has(searchResult.instrument_name)) {
+                return false
+              }
+              suggestionElement.add(searchResult.instrument_name)
               return true
             },
           })
-          searchOptions.value = suggestionInstrumentDesc
+          searchOptions.value = Array.from(suggestionElement)
         }
       },
       (ref) => {
@@ -443,11 +445,12 @@ async function onClearDatabase() {
   }
 }
 
+// Index all documents
 async function onOpenShowSearch() {
   showSearch.value = true
 
-  // Index all documents
-  await miniSearch.addAllAsync(await db.getFulltextDocument())
+  const documents = await db.getFulltextDocument()
+  await miniSearch.addAllAsync(documents)
 }
 
 async function onSelectArchiveName(

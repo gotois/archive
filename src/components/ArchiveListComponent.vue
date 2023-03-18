@@ -164,8 +164,11 @@
         :max="paginationCount"
         :max-pages="$q.platform.is.desktop ? 10 : 5"
         direction-links
-        active-design="flat"
+        ellipses
+        flat
+        :boundary-links="$q.platform.is.desktop"
         boundary-numbers
+        active-design="outline"
         color="secondary"
         class="q-pa-lg flex flex-center self-end"
         @update:model-value="$emit('onPaginate', currentPage)"
@@ -273,20 +276,26 @@ function editArchive(item: FormatContract) {
 function removeArchive(item: FormatContract) {
   $q.notify({
     message: 'Действительно удалить? Отменить изменения будет невозможно',
-    type: 'warning',
+    type: 'negative',
     position: 'center',
+    group: false,
+    multiLine: true,
+    textColor: 'white',
     timeout: 7500,
-    closeBtn: true,
     attrs: {
       role: 'alertdialog',
     },
     actions: [
       {
         label: 'Удалить',
-        color: 'negative',
+        color: 'warning',
         handler: () => {
           emit('onRemove', item)
         },
+      },
+      {
+        label: 'Отмена',
+        color: 'white',
       },
     ],
   })
