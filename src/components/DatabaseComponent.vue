@@ -23,6 +23,7 @@
         type="submit"
         icon="file_upload"
         color="primary"
+        :outline="!file"
         class="full-width"
       >
         <q-tooltip>

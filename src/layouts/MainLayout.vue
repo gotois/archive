@@ -104,8 +104,12 @@
               </q-input>
               <q-btn
                 :label="$t('consumer.save')"
-                icon-right="save"
+                icon="save"
                 class="full-width"
+                :class="{
+                  'q-mt-md': consumer.length === 0,
+                }"
+                :outline="consumer.length === 0"
                 type="submit"
                 color="accent"
               />
