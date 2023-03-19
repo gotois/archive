@@ -80,6 +80,7 @@
         push
         hide-label
         outline
+        class="bg-white"
         icon="add"
         direction="up"
         vertical-actions-align="right"

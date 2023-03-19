@@ -90,6 +90,7 @@
               <q-btn
                 color="accent"
                 type="submit"
+                :outline="consumer.length === 0"
                 :label="$t('tutorial.complete')"
                 icon="login"
               />

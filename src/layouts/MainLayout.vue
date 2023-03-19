@@ -376,6 +376,10 @@ function onOpenFeedback() {
 
 async function onFinishProfile() {
   await store.dispatch('consumerName', consumer.value)
+  $q.notify({
+    message: 'ФИО сохранено',
+    type: 'positive',
+  })
 }
 
 function onFilterSelect(
@@ -450,7 +454,7 @@ async function onOTPHandleComplete(value: string) {
     await store.dispatch('Auth/setCode', value)
   }
   $q.notify({
-    type: 'warning',
+    type: 'positive',
     message: 'Ключ изменен',
   })
 }
@@ -460,7 +464,18 @@ async function onClearDatabase() {
     $q.loading.show()
     await db.delete()
     LocalStorage.clear()
-    location.reload()
+    $q.loading.hide()
+    const timeout = 1500
+    $q.notify({
+      type: 'warning',
+      progress: false,
+      spinner: true,
+      timeout: timeout,
+      message: 'База данных удалена. Дождитесь перезагрузки.',
+    })
+    setTimeout(() => {
+      location.reload()
+    }, timeout)
   } catch (error) {
     const msg = (error as BulkError).message
     console.error(error)
