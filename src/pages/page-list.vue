@@ -7,7 +7,7 @@
       v-show="!isContractsEmpty"
       ref="scrollAreaRef"
       :delay="500"
-      visible
+      :visible="$q.platform.is.desktop"
       class="absolute-full fit"
     >
       <archive-list-component
@@ -77,9 +77,8 @@
     </template>
     <q-page-sticky position="bottom-right" :offset="[20, 20]">
       <q-fab
-        push
         hide-label
-        outline
+        glossy
         class="bg-white"
         icon="add"
         direction="up"

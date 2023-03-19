@@ -184,7 +184,9 @@
       <div class="row full-width self-end flex-center q-pa-md">
         <q-chip
           icon="link"
-          class="cursor-pointer"
+          class="cursor-pointer full-width"
+          color="white"
+          square
           clickable
           :label="$t('navigation.feedback.label')"
           @click="onOpenFeedback"
@@ -205,7 +207,11 @@
       bordered
     >
       <p
-        class="block full-width text-h6 q-pa-md no-border-radius non-selectable no-pointer-events"
+        class="block full-width text-h6 q-pl-md q-pr-md q-pt-md q-pb-none no-border-radius non-selectable no-pointer-events"
+        :class="{
+          'q-pa-md': $q.platform.is.mobile,
+          'q-mb-none': $q.platform.is.desktop,
+        }"
       >
         {{ $t('documentTypes.title') }}
       </p>
@@ -270,7 +276,15 @@
         </q-card>
       </q-dialog>
       <q-dialog v-model="showSearch" square>
-        <q-card style="min-width: 350px">
+        <q-card
+          :style="{
+            'min-width': $q.platform.is.desktop ? '380px' : '',
+          }"
+          :class="{
+            'full-width': $q.platform.is.mobile,
+            'fixed-top': $q.platform.is.mobile,
+          }"
+        >
           <q-card-section>
             <div class="text-h6 non-selectable">{{ $t('archive.search') }}</div>
           </q-card-section>
@@ -288,6 +302,7 @@
               spellcheck="false"
               rounded
               color="secondary"
+              bg-color="white"
               input-debounce="50"
               :options="searchOptions"
               :placeholder="$t('searchDialog.searchText')"
@@ -465,6 +480,7 @@ async function onOTPHandleComplete(value: string) {
 
 async function onClearDatabase() {
   try {
+    confirm.value = false
     $q.loading.show()
     await db.delete()
     LocalStorage.clear()

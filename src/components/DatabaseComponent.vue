@@ -32,6 +32,7 @@
       </q-btn>
     </q-form>
     <q-btn
+      v-if="$store.getters.contractsCount > 0"
       color="secondary"
       icon="file_download"
       :label="$t('settings.native.export')"

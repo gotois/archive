@@ -4,7 +4,7 @@
       <q-space v-if="index > 0" style="height: 20px" />
       <q-card v-show="loading" flat square bordered>
         <q-skeleton type="text" height="80px" class="q-pa-md" />
-        <q-skeleton height="400px" class="window-width" square />
+        <q-skeleton height="400px" class="full-width" square />
         <q-card-section>
           <q-skeleton type="rect" height="50px" />
         </q-card-section>
