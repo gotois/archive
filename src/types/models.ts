@@ -23,28 +23,36 @@ export interface ContractTable {
 export interface FormatContract {
   '@context': string
   '@type': string
-  'agent': {
-    '@type': string
-    'name': string
-  }
-  'participant': {
-    '@type': string
-    'name': string
-  }
-  'instrument': {
-    '@type': string
-    'name': string
-    'description': string
-  }
-  'identifier': {
-    '@type': string
-    'propertyID': string
-    'value': string
-  }
+  'agent': FormatContractAgent
+  'participant': FormatContractParticipant
+  'instrument': FormatContractInstrument
+  'identifier': FormatContractIdentifier
   'startTime': Date
   'endTime': Date
   'object': FormatContractObject[]
   '_currentSlide'?: number
+}
+
+interface FormatContractAgent {
+  '@type': string
+  'name': string
+}
+
+interface FormatContractParticipant {
+  '@type': string
+  'name': string
+}
+
+interface FormatContractIdentifier {
+  '@type': string
+  'propertyID': string
+  'value': string
+}
+
+interface FormatContractInstrument {
+  '@type': string
+  'name': string
+  'description': string
 }
 
 export interface FormatContractObject {

@@ -10,7 +10,7 @@
           aria-label="Settings"
           @click="onToggleLeftDrawer"
         />
-        <q-toolbar-title class="text-black-9 text-center">
+        <q-toolbar-title class="text-black-9 text-center non-selectable">
           {{ $t('header.title') }}
           <q-badge
             outline
@@ -68,9 +68,11 @@
       class="flex"
     >
       <q-list class="row self-start">
-        <div class="text-h6 q-pa-md">
+        <p
+          class="block full-width text-h6 q-pa-md no-border-radius non-selectable no-pointer-events"
+        >
           {{ $t('navigation.title') }}
-        </div>
+        </p>
         <q-expansion-item
           v-model="profileOpen"
           group="backupgroup"
@@ -78,34 +80,37 @@
           class="full-width"
           :label="$t('settings.native.profile')"
         >
-          <q-form
-            ref="nameForm"
-            autocapitalize="off"
-            autocomplete="off"
-            class="q-pa-md"
-            greedy
-            @submit="onFinishProfile"
-          >
-            <q-input
-              v-model="consumer"
-              :label="$t('consumer.type')"
-              :rules="[
-                (val) => (val && val.length > 0) || $t('consumer.rules'),
-              ]"
-              name="consumer"
-              autocomplete="on"
+          <div class="q-pa-md">
+            <p>{{ $t('settings.consumer.description') }}</p>
+            <q-form
+              ref="nameForm"
+              autocapitalize="off"
+              autocomplete="off"
+              greedy
+              @submit="onFinishProfile"
             >
-              <template #prepend>
-                <q-icon name="face" />
-              </template>
-            </q-input>
-            <q-btn
-              :label="$t('consumer.save')"
-              icon-right="save"
-              type="submit"
-              color="accent"
-            />
-          </q-form>
+              <q-input
+                v-model="consumer"
+                :label="$t('consumer.type')"
+                :rules="[
+                  (val) => (val && val.length > 0) || $t('consumer.rules'),
+                ]"
+                name="consumer"
+                autocomplete="on"
+              >
+                <template #prepend>
+                  <q-icon name="face" />
+                </template>
+              </q-input>
+              <q-btn
+                :label="$t('consumer.save')"
+                icon-right="save"
+                class="full-width"
+                type="submit"
+                color="accent"
+              />
+            </q-form>
+          </div>
         </q-expansion-item>
         <q-expansion-item
           v-model="otpOpen"
@@ -114,19 +119,22 @@
           class="full-width"
           :label="$t('settings.native.otp')"
         >
-          <q-tooltip>Измените ключ</q-tooltip>
-          <v-otp-input
-            ref="otpInput"
-            class="flex flex-center q-pa-lg"
-            input-classes="otp-input"
-            separator="-"
-            :num-inputs="4"
-            :should-auto-focus="true"
-            :is-input-num="true"
-            :conditional-class="['', '', '', '']"
-            :placeholder="['*', '*', '*', '*']"
-            @on-complete="onOTPHandleComplete"
-          />
+          <div class="col q-pa-md">
+            <p>{{ $t('settings.otp.description') }}</p>
+            <q-tooltip>{{ $t('settings.otp.label') }}</q-tooltip>
+            <v-otp-input
+              ref="otpInput"
+              class="flex flex-center"
+              input-classes="otp-input"
+              separator="-"
+              :num-inputs="4"
+              :should-auto-focus="true"
+              :is-input-num="true"
+              :conditional-class="['', '', '', '']"
+              :placeholder="['*', '*', '*', '*']"
+              @on-complete="onOTPHandleComplete"
+            />
+          </div>
         </q-expansion-item>
         <q-expansion-item
           v-model="settingsOpen"
@@ -135,14 +143,17 @@
           class="full-width"
           :label="$t('settings.native.title')"
         >
-          <suspense>
-            <template #default>
-              <database-component class="col q-pa-md"></database-component>
-            </template>
-            <template #fallback>
-              {{ $t('database.loading') }}
-            </template>
-          </suspense>
+          <div class="col q-pa-md">
+            <p>{{ $t('settings.native.description') }}</p>
+            <suspense>
+              <template #default>
+                <database-component></database-component>
+              </template>
+              <template #fallback>
+                {{ $t('database.loading') }}
+              </template>
+            </suspense>
+          </div>
         </q-expansion-item>
         <q-expansion-item
           group="backupgroup"
@@ -151,6 +162,7 @@
           :label="$t('settings.clean.title')"
         >
           <div class="col q-pa-md">
+            <p>{{ $t('settings.clean.description') }}</p>
             <q-btn
               :label="$t('settings.clean.submit')"
               color="negative"
@@ -188,7 +200,12 @@
       side="right"
       bordered
     >
-      <div class="full-width q-pa-lg">
+      <p
+        class="block full-width text-h6 q-pa-md no-border-radius non-selectable no-pointer-events"
+      >
+        {{ $t('documentTypes.title') }}
+      </p>
+      <div class="full-width q-pa-md">
         <q-chip
           v-for="([name, value], objectKey) in archiveNames"
           :key="objectKey"
@@ -251,7 +268,7 @@
       <q-dialog v-model="showSearch" square>
         <q-card style="min-width: 350px">
           <q-card-section>
-            <div class="text-h6">{{ $t('archive.search') }}</div>
+            <div class="text-h6 non-selectable">{{ $t('archive.search') }}</div>
           </q-card-section>
           <q-card-section class="q-pt-none">
             <q-select
@@ -263,6 +280,9 @@
               filled
               outlined
               square
+              autocomplete="off"
+              spellcheck="false"
+              rounded
               color="secondary"
               input-debounce="50"
               :options="searchOptions"

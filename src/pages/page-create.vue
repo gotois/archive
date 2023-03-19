@@ -1,6 +1,6 @@
 <template>
   <q-page class="bg-grey-1">
-    <q-scroll-area visible class="absolute-full fit">
+    <q-scroll-area visible class="absolute-full fit non-selectable">
       <q-card
         flat
         square

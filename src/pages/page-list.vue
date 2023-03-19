@@ -30,6 +30,7 @@
       <q-banner
         :class="{
           'col-6': $q.platform.is.desktop,
+          'full-width': $q.platform.is.mobile,
         }"
         :inline-actions="$q.platform.is.desktop"
         rounded
@@ -78,6 +79,7 @@
       <q-fab
         push
         hide-label
+        outline
         icon="add"
         direction="up"
         vertical-actions-align="right"
@@ -85,7 +87,9 @@
       >
         <q-fab-action
           push
+          icon="create"
           square
+          outline
           color="primary"
           :label="$t('list.create')"
           :to="{ name: 'create' }"

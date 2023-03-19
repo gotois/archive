@@ -1,5 +1,5 @@
 <template>
-  <q-virtual-scroll :items="items" separator>
+  <q-virtual-scroll :items="items as FormatContract[]" separator>
     <template #default="{ item, index }">
       <q-space v-if="index > 0" style="height: 20px" />
       <q-card v-show="loading" flat square bordered>
@@ -33,25 +33,15 @@
             flat
             icon="more_vert"
           >
-            <q-menu transition-show="jump-down" transition-hide="jump-up">
-              <q-list dense>
-                <q-item
-                  v-close-popup
-                  clickable
-                  class="bg-warning"
-                  @click="editArchive(item)"
-                >
-                  <q-item-section class="text-white text-uppercase">{{
+            <q-menu transition-show="jump-down">
+              <q-list bordered separator padding>
+                <q-item v-close-popup clickable @click="editArchive(item)">
+                  <q-item-section side class="text-uppercase">{{
                     $t('archiveList.edit')
                   }}</q-item-section>
                 </q-item>
-                <q-item
-                  v-close-popup
-                  clickable
-                  class="bg-negative"
-                  @click="removeArchive(item)"
-                >
-                  <q-item-section class="text-white text-uppercase">{{
+                <q-item v-close-popup clickable @click="removeArchive(item)">
+                  <q-item-section side class="text-negative text-uppercase">{{
                     $t('archiveList.remove')
                   }}</q-item-section>
                 </q-item>
@@ -180,7 +170,7 @@
 <script lang="ts" setup>
 import { PropType, ref, computed, watch } from 'vue'
 import { useQuasar } from 'quasar'
-import { Contract, FormatContract } from '../types/models'
+import { FormatContract } from '../types/models'
 import { showImageInPopup, showPDFInPopup } from '../services/popup'
 import { isDateNotOk, formatterDate } from '../services/dateHelper'
 import { createPDF } from '../services/pdfHelper'
@@ -204,7 +194,7 @@ const props = defineProps({
 
 const emit = defineEmits(['onPaginate', 'onRemove', 'onEdit'])
 
-const items = ref([])
+const items = ref(props.contracts ?? [])
 const currentPage = ref(1)
 const nativeShareAvailable = ref(typeof navigator.share === 'function')
 
@@ -215,7 +205,7 @@ watch(
   },
 )
 
-function prettyDate(item: Contract) {
+function prettyDate(item: FormatContract) {
   if (
     !isDateNotOk(item.startTime) &&
     (item.endTime === null || item.endTime === undefined)
@@ -232,7 +222,7 @@ function prettyDate(item: Contract) {
   )
 }
 
-function checkItemEndTime(item: Contract) {
+function checkItemEndTime(item: FormatContract) {
   if (item.endTime !== null && item.endTime < new Date()) {
     return {
       'text-decoration': 'line-through',
@@ -275,7 +265,7 @@ function editArchive(item: FormatContract) {
 
 function removeArchive(item: FormatContract) {
   $q.notify({
-    message: 'Действительно удалить? Отменить изменения будет невозможно',
+    message: 'Действительно удалить? Отменить изменения будет невозможно.',
     type: 'negative',
     position: 'center',
     group: false,
