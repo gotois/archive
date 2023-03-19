@@ -33,7 +33,7 @@
             flat
             icon="more_vert"
           >
-            <q-menu transition-show="jump-down">
+            <q-menu transition-show="jump-down" transition-duration="200">
               <q-list bordered separator padding>
                 <q-item v-close-popup clickable @click="editArchive(item)">
                   <q-item-section side class="text-uppercase">{{

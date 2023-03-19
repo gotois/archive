@@ -64,6 +64,7 @@ async function onHandleComplete(value: string) {
     $q.notify({
       color: 'negative',
       message: 'Неверный ключ',
+      progress: true,
       timeout: timeout,
     })
     setTimeout(() => clearOTP(), timeout)

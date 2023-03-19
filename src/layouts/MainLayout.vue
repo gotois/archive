@@ -299,13 +299,19 @@
             </q-select>
           </q-card-section>
           <q-card-actions align="right" class="text-primary">
-            <q-btn v-close-popup flat :label="$t('searchDialog.cancel')" />
             <q-btn
               v-close-popup
-              outline
+              flat
+              :dense="$q.platform.is.desktop"
+              :label="$t('searchDialog.cancel')"
+            />
+            <q-btn
+              v-close-popup
               color="accent"
               icon-right="search"
+              :outline="searchOptions.length === 0"
               :disable="searchOptions.length === 0"
+              :dense="$q.platform.is.desktop"
               :label="$t('searchDialog.search')"
               @click="onSearchText"
             />
@@ -427,6 +433,7 @@ async function onSearchText() {
   if (!searchText.value.length) {
     return
   }
+  $q.loading.show()
   await router.push({
     name: 'search',
     query: {

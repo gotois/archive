@@ -152,6 +152,7 @@ async function onFinish() {
       color: 'negative',
       message: 'Что-то пошло не так',
       position: 'center',
+      progress: false,
       timeout: 99999999999,
     })
     return

@@ -102,7 +102,7 @@
 <script lang="ts" setup>
 import { ref, computed, getCurrentInstance, defineAsyncComponent } from 'vue'
 import { useRouter, LocationQuery } from 'vue-router'
-import { useMeta } from 'quasar'
+import { useMeta, useQuasar } from 'quasar'
 import { useStore } from '../store'
 import { contractTypes } from '../services/contractTypes'
 import { FormatContract } from '../types/models'
@@ -113,12 +113,12 @@ const ArchiveListComponent = defineAsyncComponent(
 
 // eslint-disable-next-line @typescript-eslint/unbound-method
 const { $t } = getCurrentInstance().appContext.config.globalProperties
+const $q = useQuasar()
 
 const metaData = {
   'title': 'Архив договоров',
   'og:title': 'Архив договоров',
 }
-
 const store = useStore()
 const router = useRouter()
 
@@ -178,6 +178,9 @@ async function updateContracts({
       await store.dispatch('loadAllContracts', { offset, limit: limit.value })
       break
     }
+  }
+  if ($q.loading.isActive) {
+    $q.loading.hide()
   }
   loadingVisible.value = false
 }
