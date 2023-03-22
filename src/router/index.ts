@@ -29,6 +29,9 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
       process.env.MODE === 'ssr' ? void 0 : process.env.VUE_ROUTER_BASE,
     ),
   })
+
+  void store.dispatch('loadContractNames')
+
   Router.beforeEach((to) => {
     switch (to.path) {
       case '/privacy':
