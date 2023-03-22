@@ -90,6 +90,7 @@
           icon="create"
           square
           outline
+          class="bg-white"
           color="primary"
           :label="$t('list.create')"
           :to="{ name: 'create' }"
@@ -142,6 +143,7 @@ async function onPaginate(page: number) {
 
 async function onRemove(item: FormatContract) {
   await store.dispatch('removeContract', item)
+  await store.dispatch('loadContractNames')
 }
 
 async function onEdit(item: FormatContract) {

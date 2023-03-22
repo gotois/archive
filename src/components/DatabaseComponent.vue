@@ -32,12 +32,12 @@
       </q-btn>
     </q-form>
     <q-btn
-      v-if="$store.getters.contractsCount > 0"
+      v-if="contractsCount > 0"
       color="secondary"
       icon="file_download"
       :label="$t('settings.native.export')"
       class="full-width q-mt-md"
-      :disable="$store.getters.contractsCount === 0"
+      :disable="contractsCount === 0"
       @click="onExportDB"
     >
       <q-tooltip>
@@ -48,16 +48,21 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useQuasar } from 'quasar'
 import { exportDB, importInto } from 'dexie-export-import'
 import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
 import { BulkError } from 'dexie'
+import { useStore } from '../store'
 import { db } from '../services/databaseHelper'
 
 const $q = useQuasar()
+const store = useStore()
+
 const file = ref()
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+const contractsCount = computed(() => store.getters.contractsCount as number)
 
 const EXPORT_NAME = 'contract-export'
 

@@ -2,19 +2,25 @@ import { Module } from 'vuex'
 import { Contract, FormatContract, ContractTable } from '../types/models'
 import { StateInterface } from './index'
 import { db } from '../services/databaseHelper'
+import { recommendationContractTypes } from '../services/recommendationContractTypes'
 import { formatterContracts } from '../services/schemaHelper'
 
 export interface ContractState {
   contracts: Contract[]
   contractsCount: number
+  contractNames: Map<string, { count: number }>
 }
 
 const ContractClass: Module<ContractState, StateInterface> = {
   state: () => ({
     contracts: [],
+    contractNames: new Map(),
     contractsCount: 0,
   }),
   mutations: {
+    setContractNames(state, contractNames: Map<string, { count: number }>) {
+      state.contractNames = contractNames
+    },
     setContractsCount(state, count: number) {
       state.contractsCount = count
     },
@@ -117,8 +123,31 @@ const ContractClass: Module<ContractState, StateInterface> = {
         .toArray()) as Contract[]
       context.commit('setContracts', contracts)
     },
+    async loadContractNames(context) {
+      const map = new Map()
+      for (const names of await db.getContractNames()) {
+        map.set(...names)
+      }
+      context.commit('setContractNames', map)
+    },
   },
   getters: {
+    archiveNames(state) {
+      const map = new Map()
+
+      recommendationContractTypes.forEach((contractName) => {
+        map.set(contractName, { count: 0, recommendation: true })
+      })
+
+      state.contractNames.forEach((contractName, name) => {
+        map.set(name, {
+          count: contractName.count,
+          recommendation: false,
+        })
+      })
+
+      return Array.from(map)
+    },
     contracts(state): FormatContract[] {
       return formatterContracts(state.contracts)
     },

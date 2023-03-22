@@ -54,6 +54,7 @@
             class="q-gutter-md"
             autocapitalize="off"
             autocomplete="off"
+            autofocus
             greedy
             @submit="onFinish"
           >

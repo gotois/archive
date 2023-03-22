@@ -60,142 +60,142 @@
         />
       </q-tabs>
     </q-header>
-    <q-drawer
-      v-model="leftDrawerOpen"
-      side="left"
-      elevated
-      persistent
-      class="flex"
-    >
-      <q-list class="row self-start">
+    <q-drawer v-model="leftDrawerOpen" side="left" elevated persistent>
+      <q-scroll-area class="full-height full-width">
         <p
-          class="block full-width text-h6 q-pa-md no-border-radius non-selectable no-pointer-events"
+          class="full-width block text-h6 q-pa-md no-border-radius non-selectable no-pointer-events"
         >
           {{ $t('navigation.title') }}
         </p>
-        <q-expansion-item
-          v-model="profileOpen"
-          group="backupgroup"
-          icon="person"
-          class="full-width"
-          :label="$t('settings.native.profile')"
-        >
-          <div class="q-pa-md">
-            <p>{{ $t('settings.consumer.description') }}</p>
-            <q-form
-              ref="nameForm"
-              autocapitalize="off"
-              autocomplete="off"
-              greedy
-              @submit="onFinishProfile"
-            >
-              <q-input
-                v-model="consumer"
-                :label="$t('consumer.type')"
-                :rules="[
-                  (val) => (val && val.length > 0) || $t('consumer.rules'),
-                ]"
-                name="consumer"
-                autocomplete="on"
+        <q-list>
+          <q-expansion-item
+            v-model="profileOpen"
+            group="backupgroup"
+            icon="person"
+            :dense="$q.platform.is.desktop"
+            class="full-width column"
+            :label="$t('settings.native.profile')"
+          >
+            <q-item-section class="q-pa-md">
+              <p>{{ $t('settings.consumer.description') }}</p>
+              <q-form
+                ref="nameForm"
+                autocapitalize="off"
+                autocomplete="off"
+                greedy
+                @submit="onFinishProfile"
               >
-                <template #prepend>
-                  <q-icon name="face" />
-                </template>
-              </q-input>
-              <q-btn
-                :label="$t('consumer.save')"
-                icon="save"
-                class="full-width"
-                :class="{
-                  'q-mt-md': consumer.length === 0,
-                }"
-                :outline="consumer.length === 0"
-                type="submit"
-                color="accent"
+                <q-input
+                  v-model="consumer"
+                  :label="$t('consumer.type')"
+                  :rules="[
+                    (val) => (val && val.length > 0) || $t('consumer.rules'),
+                  ]"
+                  name="consumer"
+                  autocomplete="on"
+                >
+                  <template #prepend>
+                    <q-icon name="face" />
+                  </template>
+                </q-input>
+                <q-btn
+                  :label="$t('consumer.save')"
+                  icon="save"
+                  class="full-width"
+                  :class="{
+                    'q-mt-md': consumer.length === 0,
+                  }"
+                  :outline="consumer.length === 0"
+                  type="submit"
+                  color="accent"
+                />
+              </q-form>
+            </q-item-section>
+          </q-expansion-item>
+          <q-expansion-item
+            v-model="otpOpen"
+            group="backupgroup"
+            icon="vpn_key"
+            :dense="$q.platform.is.desktop"
+            class="full-width column"
+            :label="$t('settings.native.otp')"
+          >
+            <q-item-section class="col q-pa-md">
+              <p>{{ $t('settings.otp.description') }}</p>
+              <q-tooltip>{{ $t('settings.otp.label') }}</q-tooltip>
+              <v-otp-input
+                ref="otpInput"
+                class="flex flex-center"
+                input-classes="otp-input"
+                separator="-"
+                :num-inputs="4"
+                :should-auto-focus="true"
+                :is-input-num="true"
+                :conditional-class="['', '', '', '']"
+                :placeholder="['*', '*', '*', '*']"
+                @on-change="onOTPChange"
+                @on-complete="onOTPHandleComplete"
               />
-            </q-form>
-          </div>
-        </q-expansion-item>
-        <q-expansion-item
-          v-model="otpOpen"
-          group="backupgroup"
-          icon="vpn_key"
-          class="full-width"
-          :label="$t('settings.native.otp')"
-        >
-          <div class="col q-pa-md">
-            <p>{{ $t('settings.otp.description') }}</p>
-            <q-tooltip>{{ $t('settings.otp.label') }}</q-tooltip>
-            <v-otp-input
-              ref="otpInput"
-              class="flex flex-center"
-              input-classes="otp-input"
-              separator="-"
-              :num-inputs="4"
-              :should-auto-focus="true"
-              :is-input-num="true"
-              :conditional-class="['', '', '', '']"
-              :placeholder="['*', '*', '*', '*']"
-              @on-complete="onOTPHandleComplete"
-            />
-          </div>
-        </q-expansion-item>
-        <q-expansion-item
-          v-model="settingsOpen"
-          group="backupgroup"
-          icon="import_export"
-          class="full-width"
-          :label="$t('settings.native.title')"
-        >
-          <div class="col q-pa-md">
-            <p>{{ $t('settings.native.description') }}</p>
-            <suspense>
-              <template #default>
-                <database-component></database-component>
-              </template>
-              <template #fallback>
-                {{ $t('database.loading') }}
-              </template>
-            </suspense>
-          </div>
-        </q-expansion-item>
-        <q-expansion-item
-          group="backupgroup"
-          class="full-width"
-          icon="warning"
-          :label="$t('settings.clean.title')"
-        >
-          <div class="col q-pa-md">
-            <p>{{ $t('settings.clean.description') }}</p>
-            <q-btn
-              :label="$t('settings.clean.submit')"
-              color="negative"
-              icon="delete_outline"
-              class="full-width q-mt-md"
-              @click="confirm = true"
-            >
-              <q-tooltip>
-                {{ $t('database.removeDatabase') }}
-              </q-tooltip>
-            </q-btn>
-          </div>
-        </q-expansion-item>
-      </q-list>
-      <div class="row full-width self-end flex-center q-pa-md">
-        <q-chip
-          icon="link"
-          class="cursor-pointer full-width"
-          color="white"
-          square
-          clickable
-          :label="$t('navigation.feedback.label')"
-          @click="onOpenFeedback"
-        >
-          <q-tooltip>
-            {{ $t('navigation.feedback.tooltip') }}
-          </q-tooltip>
-        </q-chip>
-      </div>
+            </q-item-section>
+          </q-expansion-item>
+          <q-expansion-item
+            v-model="settingsOpen"
+            group="backupgroup"
+            icon="import_export"
+            :dense="$q.platform.is.desktop"
+            class="full-width column"
+            :label="$t('settings.native.title')"
+          >
+            <q-item-section class="col q-pa-md">
+              <p>{{ $t('settings.native.description') }}</p>
+              <suspense>
+                <template #default>
+                  <database-component></database-component>
+                </template>
+                <template #fallback>
+                  {{ $t('database.loading') }}
+                </template>
+              </suspense>
+            </q-item-section>
+          </q-expansion-item>
+          <q-expansion-item
+            group="backupgroup"
+            class="full-width column"
+            icon="warning"
+            :dense="$q.platform.is.desktop"
+            :label="$t('settings.clean.title')"
+          >
+            <q-item-section class="col q-pa-md">
+              <p>{{ $t('settings.clean.description') }}</p>
+              <q-btn
+                :label="$t('settings.clean.submit')"
+                color="negative"
+                icon="delete_outline"
+                class="full-width q-mt-md"
+                @click="confirm = true"
+              >
+                <q-tooltip>
+                  {{ $t('database.removeDatabase') }}
+                </q-tooltip>
+              </q-btn>
+            </q-item-section>
+          </q-expansion-item>
+          <q-separator class="q-ma-md"></q-separator>
+          <q-chip
+            icon="link"
+            class="cursor-pointer full-width q-pa-md self-end"
+            color="white"
+            square
+            clickable
+            :label="$t('navigation.feedback.label')"
+            @click="onOpenFeedback"
+          >
+            <q-tooltip>
+              {{ $t('navigation.feedback.tooltip') }}
+            </q-tooltip>
+          </q-chip>
+        </q-list>
+      </q-scroll-area>
     </q-drawer>
     <q-drawer
       v-if="archiveNames.length"
@@ -206,16 +206,12 @@
       side="right"
       bordered
     >
-      <p
-        class="block full-width text-h6 q-pl-md q-pr-md q-pt-md q-pb-none no-border-radius non-selectable no-pointer-events"
-        :class="{
-          'q-pa-md': $q.platform.is.mobile,
-          'q-mb-none': $q.platform.is.desktop,
-        }"
-      >
-        {{ $t('documentTypes.title') }}
-      </p>
-      <div class="full-width q-pa-md">
+      <q-scroll-area class="full-height full-width fit q-pa-md">
+        <p
+          class="block full-width text-h6 text-left q-mb-md no-border-radius non-selectable no-pointer-events"
+        >
+          {{ $t('documentTypes.title') }}
+        </p>
         <q-chip
           v-for="([name, value], objectKey) in archiveNames"
           :key="objectKey"
@@ -241,7 +237,7 @@
           animation="blink"
           width="100%"
         />
-      </div>
+      </q-scroll-area>
     </q-drawer>
     <q-page-container>
       <router-view />
@@ -288,34 +284,39 @@
           <q-card-section>
             <div class="text-h6 non-selectable">{{ $t('archive.search') }}</div>
           </q-card-section>
-          <q-card-section class="q-pt-none">
-            <q-select
-              v-model="searchText"
-              use-input
-              fill-input
-              hide-selected
-              autofocus
-              filled
-              outlined
-              square
-              autocomplete="off"
-              spellcheck="false"
-              rounded
-              color="secondary"
-              bg-color="white"
-              input-debounce="50"
-              :options="searchOptions"
-              :placeholder="$t('searchDialog.searchText')"
-              @filter="onFilterSelect"
-            >
-              <template #no-option>
-                <q-item>
-                  <q-item-section class="text-grey">
-                    {{ $t('archive.notfound') }}
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
+          <q-card-section class="q-pt-none no-border">
+            <q-form greedy>
+              <q-tooltip>
+                {{ $t('archive.tooltip') }}
+              </q-tooltip>
+              <q-select
+                v-model="searchText"
+                autocomplete="off"
+                spellcheck="false"
+                color="secondary"
+                bg-color="white"
+                input-debounce="50"
+                :options="searchOptions"
+                :label="$t('searchDialog.searchText')"
+                use-input
+                rounded
+                fill-input
+                hide-selected
+                autofocus
+                filled
+                outlined
+                square
+                @filter="onFilterSelect"
+              >
+                <template #no-option>
+                  <q-item>
+                    <q-item-section class="text-grey">
+                      {{ $t('archive.notfound') }}
+                    </q-item-section>
+                  </q-item>
+                </template>
+              </q-select>
+            </q-form>
           </q-card-section>
           <q-card-actions align="right" class="text-primary">
             <q-btn
@@ -342,14 +343,13 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, defineAsyncComponent } from 'vue'
+import { ref, computed, defineAsyncComponent } from 'vue'
 import { BulkError } from 'dexie'
 import { LocalStorage, openURL, QSelect, useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 import { db } from '../services/databaseHelper'
 import { useStore } from '../store'
 import MiniSearch from 'minisearch'
-import { recommendationContractTypes } from '../services/recommendationContractTypes'
 import pkg from '../../package.json'
 
 const DatabaseComponent = defineAsyncComponent(
@@ -370,10 +370,11 @@ const confirm = ref(false)
 const searchText = ref('')
 const showSearch = ref(false)
 const searchOptions = ref([])
-const archiveNames = ref([])
 const version = ref(pkg.version)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-const consumer = ref(store.getters.consumer as string)
+const consumer = computed(() => store.getters.consumer as string)
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return
+const archiveNames = computed(() => store.getters.archiveNames)
 
 const miniSearch: MiniSearch = new MiniSearch({
   fields: ['instrument_name', 'instrument_description'],
@@ -468,14 +469,26 @@ async function onSearchText() {
   searchText.value = ''
 }
 
+async function onOTPChange(value: string) {
+  if (value === '') {
+    if (window.confirm('Действительно удалить пин?')) {
+      await store.dispatch('Auth/removeCode')
+      $q.notify({
+        type: 'positive',
+        message: 'Ключ отключен',
+      })
+    }
+  }
+}
+
 async function onOTPHandleComplete(value: string) {
   if (window.confirm('Действительно сохранить пин?')) {
     await store.dispatch('Auth/setCode', value)
+    $q.notify({
+      type: 'positive',
+      message: 'Ключ изменен',
+    })
   }
-  $q.notify({
-    type: 'positive',
-    message: 'Ключ изменен',
-  })
 }
 
 async function onClearDatabase() {
@@ -511,8 +524,10 @@ async function onClearDatabase() {
 async function onOpenShowSearch() {
   showSearch.value = true
 
-  const documents = await db.getFulltextDocument()
-  await miniSearch.addAllAsync(documents)
+  if (miniSearch.documentCount === 0) {
+    const documents = await db.getFulltextDocument()
+    await miniSearch.addAllAsync(documents)
+  }
 }
 
 async function onSelectArchiveName(
@@ -539,16 +554,6 @@ async function onSelectArchiveName(
 }
 
 void (async () => {
-  const map = new Map()
-
-  recommendationContractTypes.forEach((contractName) => {
-    map.set(contractName, { count: 0, recommendation: true })
-  })
-
-  for (const names of await db.getContractNames()) {
-    map.set(...names)
-  }
-
-  archiveNames.value = Array.from(map)
+  await store.dispatch('loadContractNames')
 })()
 </script>

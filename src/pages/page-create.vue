@@ -26,13 +26,14 @@
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent } from 'vue'
+import { defineAsyncComponent, h } from 'vue'
 import { useMeta } from 'quasar'
 import { useRouter } from 'vue-router'
 
-const ContractFormComponent = defineAsyncComponent(
-  () => import('components/ContractFormComponent.vue'),
-)
+const ContractFormComponent = defineAsyncComponent({
+  loader: () => import('components/ContractFormComponent.vue'),
+  loadingComponent: h('q-skeleton', { style: 'height: 460px' }),
+})
 
 const router = useRouter()
 

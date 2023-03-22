@@ -20,13 +20,16 @@
       input-debounce="50"
       name="contractType"
       autocomplete="on"
+      spellcheck="false"
+      color="secondary"
+      bg-color="white"
       use-input
       lazy-rules
       hide-selected
       fill-input
+      rounded
       outlined
       square
-      color="secondary"
       @filter="filterOptions"
     >
       <template #prepend>
@@ -40,6 +43,7 @@
       :rules="[(val) => (val && val.length > 0) || $t('customer.rules')]"
       autocomplete="on"
       name="customer"
+      spellcheck="true"
       outlined
       lazy-rules
       square
@@ -166,6 +170,10 @@
         ripple
         square
         stretch
+        rounded
+        :class="{
+          'full-width': !$q.platform.is.desktop,
+        }"
         :label="$t('contractForm.submit')"
         icon-right="save"
         type="submit"
@@ -330,6 +338,7 @@ async function onSubmit() {
         },
       ],
     })
+    await store.dispatch('loadContractNames')
     onResetForm()
   }).catch((error: Error) => {
     console.error(error)

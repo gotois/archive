@@ -23,6 +23,10 @@ const Auth: Module<AuthState, StateInterface> = {
       LocalStorage.set('code', cryptoCode)
       context.commit('setCode', cryptoCode)
     },
+    removeCode(context) {
+      LocalStorage.remove('code')
+      context.commit('setCode', '')
+    },
     async checkCode(context, value: string) {
       const cryptoCode = await getHash(value)
       return cryptoCode === LocalStorage.getItem('code')
