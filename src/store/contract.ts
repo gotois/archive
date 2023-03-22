@@ -80,17 +80,19 @@ const ContractClass: Module<ContractState, StateInterface> = {
         context.commit('setContracts', [])
         return
       }
-      const searchTerms = query.split(' ').map((term) => term.toLowerCase())
-      const cursor = db.contracts.orderBy('startTime').filter((contract) => {
-        const instrumentName = contract.instrument_name.toLowerCase()
-        const instrumentDescription =
-          contract.instrument_description.toLowerCase()
-        const agentName = contract.agent_name.toLowerCase()
-        return searchTerms.some((term) => {
-          if (instrumentName.includes(term)) return true
-          if (instrumentDescription.includes(term)) return true
-          if (agentName.includes(term)) return true
-        })
+      const MiniSearch = await import('minisearch')
+      const miniSearch = new MiniSearch.default({
+        fields: ['instrument_name'],
+      })
+      const documents = await db.getFulltextDocument()
+      miniSearch.addAll(documents)
+      const searchResults = miniSearch.search(query, {
+        filter({ score }) {
+          return score >= 5
+        },
+      })
+      const cursor = db.contracts.orderBy('startTime').filter(({ id }) => {
+        return searchResults.some((result) => result.id === id)
       })
       const count = await cursor.count()
       context.commit('setContractsCount', count)
