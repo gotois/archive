@@ -128,6 +128,37 @@ const loadingVisible = ref(true)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 const scrollAreaRef = ref(null)
 
+const isSearch = computed(() => {
+  return Boolean(router.currentRoute.value.query.filter)
+})
+
+const archiveEmptyText = computed(() => {
+  const randomContractType = Math.floor(
+    Math.random() * (contractTypes.length - 1),
+  )
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/restrict-plus-operands
+  return contractTypes[randomContractType]
+})
+
+const contracts = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
+  return Array.from(store.getters.contracts)
+})
+
+const paginationCount = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  return Math.ceil(store.getters.contractsCount / limit.value)
+})
+
+const isContractsEmpty = computed(() => {
+  return contracts.value.length === 0
+})
+
+useMeta(metaData)
+
+router.afterEach((to) => updateContracts(to.query))
+void updateContracts(router.currentRoute.value.query)
+
 async function onPaginate(page: number) {
   loadingVisible.value = true
   await router.push({
@@ -186,35 +217,4 @@ async function updateContracts({
   }
   loadingVisible.value = false
 }
-
-const isSearch = computed(() => {
-  return Boolean(router.currentRoute.value.query.filter)
-})
-
-const archiveEmptyText = computed(() => {
-  const randomContractType = Math.floor(
-    Math.random() * (contractTypes.length - 1),
-  )
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/restrict-plus-operands
-  return contractTypes[randomContractType]
-})
-
-const contracts = computed(() => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
-  return Array.from(store.getters.contracts)
-})
-
-const paginationCount = computed(() => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  return Math.ceil(store.getters.contractsCount / limit.value)
-})
-
-const isContractsEmpty = computed(() => {
-  return contracts.value.length === 0
-})
-
-useMeta(metaData)
-
-router.afterEach((to) => updateContracts(to.query))
-void updateContracts(router.currentRoute.value.query)
 </script>

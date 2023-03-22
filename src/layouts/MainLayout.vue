@@ -264,8 +264,10 @@ import { openURL, useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 import { useStore } from '../store'
 import pkg from '../../package.json'
-import DatabaseRemoveComponent from 'components/DatabaseRemoveComponent.vue'
 
+const DatabaseRemoveComponent = defineAsyncComponent(
+  () => import('components/DatabaseRemoveComponent.vue'),
+)
 const DatabaseComponent = defineAsyncComponent(
   () => import('components/DatabaseComponent.vue'),
 )

@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white text-black-9 q-pa-md">
+  <div>
     <h3 class="text-h5">Пользовательское соглашение</h3>
     <p class="text-body1"
       >Настоящее Пользовательское Соглашение (Далее Соглашение) регулирует
@@ -38,7 +38,7 @@
     <b class="text-subtitle1">Администратор обязуется:</b>
     <p class="text-body1"
       >- предоставлять исходный код своего проекта
-      [https://github.com/gotois/archive/]</p
+      [https://github.com/gotois/archive]</p
     >
     <h4 class="text-h5">Ответственность сторон</h4>
     <p class="text-body1"
