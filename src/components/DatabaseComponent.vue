@@ -54,8 +54,29 @@ import { exportDB, importInto } from 'dexie-export-import'
 import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
 import { BulkError } from 'dexie'
+import {
+  getThing,
+  setThing,
+  // getInteger,
+  // getIntegerAll,
+  // getStringByLocaleAll,
+  // getStringNoLocale,
+  buildThing,
+  createThing,
+  saveSolidDatasetAt,
+  getSolidDataset,
+  getThingAll,
+} from '@inrupt/solid-client'
+import {
+  handleIncomingRedirect,
+  login,
+  fetch,
+  getDefaultSession,
+} from '@inrupt/solid-client-authn-browser'
+import pkg from '../../package.json'
 import { useStore } from '../store'
 import { db } from '../services/databaseHelper'
+import { RDF, SCHEMA_INRUPT } from '@inrupt/vocab-common-rdf'
 
 const $q = useQuasar()
 const store = useStore()
