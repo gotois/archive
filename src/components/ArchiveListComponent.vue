@@ -179,7 +179,7 @@ import { FormatContract } from '../types/models'
 import { showImageInPopup, showPDFInPopup } from '../services/popup'
 import { isDateNotOk, formatterDate } from '../services/dateHelper'
 import { createPDF } from '../services/pdfHelper'
-import { saveToPod } from '../services/podHelper'
+import { updateIntoPod, saveToPod } from '../services/podHelper'
 
 const $q = useQuasar()
 
@@ -265,7 +265,18 @@ async function onShareFullImage(object: FormatContract) {
   }
 }
 
-function editArchive(item: FormatContract) {
+async function uploadArchive(item: FormatContract) {
+  // fixme - ставить рандомное имя
+  await saveToPod('dogovor_4', item)
+  $q.notify({
+    type: 'positive',
+    message: 'Данные записаны на Ваш Pod',
+  })
+}
+
+async function editArchive(item: FormatContract) {
+  // fixme - ставить рандомное имя
+  await updateIntoPod('dogovor_4', item)
   emit('onEdit', item)
 }
 
