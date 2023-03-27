@@ -19,7 +19,7 @@
             color="accent"
             class="absolute q-ml-xs"
           >
-            {{ $t('navigation.version') }}{{ version }}
+            {{ $t('navigation.version') }}{{ navigatorVersion }}
           </q-badge>
         </q-toolbar-title>
         <q-btn
@@ -265,6 +265,8 @@ import { useRouter } from 'vue-router'
 import { useStore } from '../store'
 import pkg from '../../package.json'
 
+const { version } = pkg
+
 const DatabaseRemoveComponent = defineAsyncComponent(
   () => import('components/DatabaseRemoveComponent.vue'),
 )
@@ -288,7 +290,7 @@ const profileOpen = ref(false)
 const otpOpen = ref(false)
 const confirm = ref(false)
 const showSearch = ref(false)
-const version = ref(pkg.version)
+const navigatorVersion = ref(version)
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 const consumer = computed(() => store.getters.consumer as string)

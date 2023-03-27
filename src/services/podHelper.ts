@@ -15,6 +15,8 @@ import { RDF, FOAF, SCHEMA_INRUPT } from '@inrupt/vocab-common-rdf'
 import { FormatContract } from '../types/models'
 import pkg from '../../package.json'
 
+const { name } = pkg
+
 export const OIDC_ISSUER = 'https://login.inrupt.com'
 export const CLIENT_NAME = 'Contracts'
 
@@ -34,7 +36,7 @@ async function getResourceRootUrl() {
 }
 
 async function getResourceBaseUrl() {
-  const url = (await getResourceRootUrl()) + pkg.name + '/'
+  const url = (await getResourceRootUrl()) + name + '/'
   return url
 }
 
@@ -58,7 +60,7 @@ export async function initPod() {
     fetch,
   })
   const hasAnyContracts = getThingAll(myBaseDataset).some(({ url }) =>
-    url.includes(pkg.name),
+    url.includes(name),
   )
   if (!hasAnyContracts) {
     return saveSolidDatasetAt(resourceBaseUrl, myBaseDataset, {
@@ -69,9 +71,9 @@ export async function initPod() {
   }
 }
 
-export async function updateIntoPod(name: string, item: FormatContract) {
+export async function updateIntoPod(dogovorName: string, item: FormatContract) {
   const resourceBaseUrl = await getResourceBaseUrl()
-  const resourceUrl = resourceBaseUrl + name
+  const resourceUrl = resourceBaseUrl + dogovorName
   let dataset = await getSolidDataset(resourceUrl, {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -95,9 +97,9 @@ export async function updateIntoPod(name: string, item: FormatContract) {
   })
 }
 
-export async function saveToPod(name: string, item: FormatContract) {
+export async function saveToPod(dogovorName: string, item: FormatContract) {
   const resourceBaseUrl = await getResourceBaseUrl()
-  const resourceUrl = resourceBaseUrl + name
+  const resourceUrl = resourceBaseUrl + dogovorName
   const agent = buildThing(createThing({ url: resourceUrl + '#agent' }))
     .addStringNoLocale(SCHEMA_INRUPT.name, item.agent.name)
     .addUrl(RDF.type, 'https://schema.org/Person')
