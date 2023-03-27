@@ -55,7 +55,6 @@ import { saveAs } from 'file-saver'
 import { BulkError } from 'dexie'
 import { useStore } from '../store'
 import { db } from '../services/databaseHelper'
-import { loginAndFetch, initPod } from '../services/podHelper'
 import { getContent, generate } from '../services/zipHelper'
 
 const $q = useQuasar()
@@ -64,25 +63,6 @@ const store = useStore()
 const file = ref()
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 const contractsCount = computed(() => store.getters.contractsCount as number)
-
-const EXPORT_NAME = 'contract-export'
-
-async function getContent(value: File): Promise<Blob> {
-  const zip = new JSZip()
-  switch (value.type) {
-    case 'application/zip': {
-      const all = await zip.loadAsync(value, {})
-      const file = all.file(EXPORT_NAME + '.json')
-      if (!file) {
-        throw new Error('File not found')
-      }
-      return await file.async('blob')
-    }
-    default: {
-      return value
-    }
-  }
-}
 
 function rejectedEntries() {
   $q.notify({

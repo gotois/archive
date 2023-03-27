@@ -128,7 +128,12 @@ import PrivacyComponent from 'components/PrivacyComponent.vue'
 import { useStore } from '../store'
 import pkg from '../../package.json'
 import { createContract } from '../services/pdfHelper'
-import { OIDC_ISSUER, CLIENT_NAME, getProfileName } from '../services/podHelper'
+import {
+  OIDC_ISSUER,
+  CLIENT_NAME,
+  getProfileName,
+  initPod,
+} from '../services/podHelper'
 
 const { description, version, productName } = pkg
 const $q = useQuasar()
@@ -171,6 +176,9 @@ async function onFinish() {
     images: contractPDF,
   }
   try {
+    // todo - инициировать pod только если есть интернет и webId
+    await initPod()
+
     await store.dispatch('addContract', newContract)
     await store.dispatch('consumerName', consumer.value)
     await store.dispatch('Tutorial/tutorialComplete')
