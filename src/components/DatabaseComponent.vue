@@ -52,31 +52,11 @@ import { ref, computed } from 'vue'
 import { useQuasar } from 'quasar'
 import { exportDB, importInto } from 'dexie-export-import'
 import { saveAs } from 'file-saver'
-import JSZip from 'jszip'
 import { BulkError } from 'dexie'
-import {
-  getThing,
-  setThing,
-  // getInteger,
-  // getIntegerAll,
-  // getStringByLocaleAll,
-  // getStringNoLocale,
-  buildThing,
-  createThing,
-  saveSolidDatasetAt,
-  getSolidDataset,
-  getThingAll,
-} from '@inrupt/solid-client'
-import {
-  handleIncomingRedirect,
-  login,
-  fetch,
-  getDefaultSession,
-} from '@inrupt/solid-client-authn-browser'
-import pkg from '../../package.json'
 import { useStore } from '../store'
 import { db } from '../services/databaseHelper'
-import { RDF, SCHEMA_INRUPT } from '@inrupt/vocab-common-rdf'
+import { loginAndFetch, initPod } from '../services/podHelper'
+import { getContent, generate } from '../services/zipHelper'
 
 const $q = useQuasar()
 const store = useStore()
@@ -148,6 +128,7 @@ async function onImportDB() {
 }
 
 async function onExportDB() {
+  const EXPORT_NAME = 'contract-export'
   const dialog = $q.dialog({
     message: 'Подготовка...',
     progress: true,
@@ -158,27 +139,16 @@ async function onExportDB() {
     prettyJson: false,
     progressCallback,
   })
-  const zip = new JSZip()
-  zip.file(EXPORT_NAME + '.json', blob)
-  const content = await zip.generateAsync(
-    {
-      type: 'blob',
-      compression: 'DEFLATE',
-      compressionOptions: {
-        level: 1,
-      },
-      platform: 'UNIX',
-    },
-    (metadata) => {
-      const percentage = metadata.percent
-      dialog.update({
-        message: `Создание... ${percentage}%`,
-      })
-      if (percentage === 100 && metadata.currentFile !== null) {
-        dialog.hide()
-      }
-    },
-  )
+  const content = await generate(blob, (metadata) => {
+    const percentage = metadata.percent
+    dialog.update({
+      message: `Создание... ${percentage}%`,
+    })
+    if (percentage === 100 && metadata.currentFile !== null) {
+      dialog.hide()
+    }
+  })
+
   return saveAs(content, EXPORT_NAME + '.zip')
 }
 </script>

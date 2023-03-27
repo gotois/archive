@@ -40,6 +40,11 @@
                     $t('archiveList.edit')
                   }}</q-item-section>
                 </q-item>
+                <q-item v-close-popup clickable @click="uploadArchive(item)">
+                  <q-item-section side class="text-uppercase">{{
+                    'Загрузить на POD'
+                  }}</q-item-section>
+                </q-item>
                 <q-item v-close-popup clickable @click="removeArchive(item)">
                   <q-item-section side class="text-negative text-uppercase">{{
                     $t('archiveList.remove')
@@ -92,7 +97,7 @@
                   alt="Document"
                   :ratio="1"
                   :src="object.contentUrl"
-                  placeholder-src="/icons/icon-256x256.png"
+                  placeholder-src="/icons/icon-128x128.png"
                   loading="lazy"
                   decoding="async"
                   fetchpriority="high"
@@ -174,6 +179,7 @@ import { FormatContract } from '../types/models'
 import { showImageInPopup, showPDFInPopup } from '../services/popup'
 import { isDateNotOk, formatterDate } from '../services/dateHelper'
 import { createPDF } from '../services/pdfHelper'
+import { saveToPod } from '../services/podHelper'
 
 const $q = useQuasar()
 
