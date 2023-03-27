@@ -5,7 +5,9 @@
         flat
         square
         bordered
-        style="max-width: 600px"
+        :style="{
+          'max-width': $q.platform.is.desktop ? '720px' : '600px',
+        }"
         class="q-pa-md q-ml-auto q-mr-auto q-mt-md q-mb-md"
       >
         <contract-form-component

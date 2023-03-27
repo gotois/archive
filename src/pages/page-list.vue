@@ -18,7 +18,7 @@
           'col-xs-6': $q.platform.is.desktop || $q.platform.is.ipad,
         }"
         :style="{
-          width: $q.platform.is.desktop ? '600px' : 'auto',
+          'max-width': $q.platform.is.desktop ? '720px' : 'auto',
         }"
         :pagination-count="paginationCount"
         @on-paginate="onPaginate"
@@ -35,7 +35,9 @@
         :inline-actions="$q.platform.is.desktop"
         rounded
         class="q-pa-lg flex absolute-center flex-center self-center text-black-9 text-left"
-        style="max-width: 600px"
+        :style="{
+          'max-width': $q.platform.is.desktop ? '720px' : '600px',
+        }"
       >
         <template #default>
           <template v-if="isSearch">{{ $t('archive.searchEmpty') }}</template>

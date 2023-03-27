@@ -6,11 +6,19 @@
         v-model="step"
         color="primary"
         flat
-        vertical
-        animated
+        alternative-labels
+        contracted
+        :animated="!$q.platform.is.desktop"
+        :vertical="!$q.platform.is.desktop"
         class="q-pa-md q-card--bordered q-ml-auto q-mr-auto q-mt-md q-mb-md"
-        style="max-width: 600px"
-        transition-next="slide-down"
+        :class="{
+          'no-margin': $q.platform.is.mobile,
+          'no-padding': $q.platform.is.mobile,
+        }"
+        :style="{
+          'max-width': $q.platform.is.desktop ? '720px' : 'auto',
+        }"
+        :transition-next="$q.platform.is.desktop ? 'slide-left' : 'slide-down'"
       >
         <q-step
           :name="1"
@@ -18,6 +26,9 @@
           icon="create_new_folder"
           :done="step > 1"
         >
+          <p v-show="$q.platform.is.desktop" class="text-h4">
+            {{ $t('tutorial.info.title') }}
+          </p>
           <p class="text-body1" style="white-space: break-spaces">{{
             $t('tutorial.info.body')
           }}</p>
@@ -26,6 +37,9 @@
               color="secondary"
               :label="$t('tutorial.info.ok')"
               @click="$refs.stepper.next()"
+              :class="{
+                'full-width': !$q.platform.is.desktop,
+              }"
             />
           </q-stepper-navigation>
         </q-step>
@@ -35,6 +49,9 @@
           icon="article"
           :done="step > 2"
         >
+          <p v-show="$q.platform.is.desktop" class="text-h4">
+            {{ $t('tutorial.agreement.title') }}
+          </p>
           <p class="text-body1" style="white-space: break-spaces">{{
             $t('tutorial.agreement.body')
           }}</p>
@@ -43,10 +60,16 @@
               color="secondary"
               :label="$t('tutorial.agreement.ok')"
               @click="$refs.stepper.next()"
+              :class="{
+                'full-width': !$q.platform.is.desktop,
+              }"
             />
           </q-stepper-navigation>
         </q-step>
         <q-step :name="3" :title="$t('tutorial.data.title')" icon="assignment">
+          <p v-show="$q.platform.is.desktop" class="text-h4">
+            {{ $t('tutorial.data.title') }}
+          </p>
           <p class="text-body1">{{ $t('tutorial.data.body') }}</p>
           <q-space class="q-pa-xs"></q-space>
           <q-btn
@@ -75,7 +98,7 @@
               :rules="[
                 (val) => (val && val.length > 0) || $t('consumer.rules'),
               ]"
-              style="width: 300px"
+              style="max-width: 300px"
               name="consumer"
               autocomplete="on"
               outlined
@@ -98,12 +121,15 @@
               @on-change="handleOnChange"
               @on-complete="handleOnComplete"
             />
-            <q-stepper-navigation>
+            <q-stepper-navigation class="q-mb-md">
               <q-btn
                 color="accent"
                 type="submit"
                 :outline="consumer.length === 0"
                 :label="$t('tutorial.complete')"
+                :class="{
+                  'full-width': !$q.platform.is.desktop,
+                }"
                 icon="login"
               />
             </q-stepper-navigation>
