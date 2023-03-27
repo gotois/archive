@@ -264,8 +264,10 @@ import { openURL, useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 import { useStore } from '../store'
 import pkg from '../../package.json'
+import twaManifest from '../../twa-manifest.json'
 
 const { version } = pkg
+const { packageId } = twaManifest
 
 const DatabaseRemoveComponent = defineAsyncComponent(
   () => import('components/DatabaseRemoveComponent.vue'),
@@ -314,6 +316,17 @@ async function onSearch(searchText: string) {
 }
 
 function onOpenFeedback() {
+  if ($q.platform.is.android) {
+    openURL(
+      'https://play.google.com/store/apps/details?id=' + packageId,
+      null,
+      {
+        menubar: false,
+        toolbar: false,
+      },
+    )
+    return
+  }
   openURL('https://baskovsky.ru/feedback/', null, {
     noopener: true,
     menubar: false,
