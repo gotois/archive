@@ -8,41 +8,46 @@ import {
   saveSolidDatasetAt,
   getPodUrlAll,
   getThingAll,
-  // getStringNoLocale,
+  getStringNoLocale,
 } from '@inrupt/solid-client'
-import {
-  handleIncomingRedirect,
-  login,
-  fetch,
-  getDefaultSession,
-} from '@inrupt/solid-client-authn-browser'
-import { RDF, SCHEMA_INRUPT } from '@inrupt/vocab-common-rdf'
+import { getDefaultSession, fetch } from '@inrupt/solid-client-authn-browser'
+import { RDF, FOAF, SCHEMA_INRUPT } from '@inrupt/vocab-common-rdf'
 import { FormatContract } from '../types/models'
 import pkg from '../../package.json'
 
-async function getResourceBaseUrl() {
-  const podsUrl = await getPodUrlAll(getDefaultSession().info.webId)
+export const OIDC_ISSUER = 'https://login.inrupt.com'
+export const CLIENT_NAME = 'Contracts'
+
+async function getResourceRootUrl() {
+  const podsUrl = await getPodUrlAll(getDefaultSession().info.webId, {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    fetch,
+  })
   const selectedPod = 0
   if (podsUrl.length > 1) {
     // todo здесь пользователь должен бы самостоятельно выбирать какой Pod будет использовать
     // ...
     // selectedPod = 1 || 2 || ...
   }
-  return podsUrl[selectedPod] + pkg.name + '/'
+  return podsUrl[selectedPod]
 }
 
-export async function loginAndFetch() {
-  const OIDC_ISSUER = 'https://login.inrupt.com'
-  const CLIENT_NAME = 'Contracts'
+async function getResourceBaseUrl() {
+  const url = (await getResourceRootUrl()) + pkg.name + '/'
+  return url
+}
 
-  const sessionInfo = await handleIncomingRedirect()
-  if (!sessionInfo.isLoggedIn) {
-    await login({
-      oidcIssuer: OIDC_ISSUER,
-      redirectUrl: window.location.href,
-      clientName: CLIENT_NAME,
-    })
-  }
+export async function getProfileName() {
+  const resourceProfileUrl = (await getResourceRootUrl()) + 'profile'
+  const profileDataset = await getSolidDataset(resourceProfileUrl, {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    fetch,
+  })
+  const profile = getThing(profileDataset, getDefaultSession().info.webId)
+
+  return getStringNoLocale(profile, FOAF.name)
 }
 
 export async function initPod() {

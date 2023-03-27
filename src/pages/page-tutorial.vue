@@ -49,6 +49,17 @@
         <q-step :name="3" :title="$t('tutorial.data.title')" icon="assignment">
           <p class="text-body1">{{ $t('tutorial.data.body') }}</p>
           <q-space class="q-pa-xs"></q-space>
+          <q-btn
+            color="accent"
+            type="button"
+            label="WebID"
+            icon="login"
+            no-caps
+            @click="onAuthorize"
+          >
+            <q-tooltip>Данные необходимы для создания документов</q-tooltip>
+          </q-btn>
+
           <q-form
             ref="nameForm"
             class="q-gutter-md"
@@ -108,10 +119,16 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar, useMeta } from 'quasar'
 import VOtpInput from 'vue3-otp-input'
-import { useStore } from '../store'
-import { createContract } from '../services/pdfHelper'
+import {
+  handleIncomingRedirect,
+  login,
+  getDefaultSession,
+} from '@inrupt/solid-client-authn-browser'
 import PrivacyComponent from 'components/PrivacyComponent.vue'
+import { useStore } from '../store'
 import pkg from '../../package.json'
+import { createContract } from '../services/pdfHelper'
+import { OIDC_ISSUER, CLIENT_NAME, getProfileName } from '../services/podHelper'
 
 const { description, version, productName } = pkg
 const $q = useQuasar()
@@ -123,8 +140,18 @@ const consumer = ref('')
 const pin = ref('')
 
 const metaData = {
-  'title': 'Обучение',
-  'og:title': 'Обучение',
+  'title': 'Примите лицензионное соглашение',
+  'og:title': 'Лицензионное соглашение',
+}
+
+async function onAuthorize() {
+  if (!getDefaultSession().info.isLoggedIn) {
+    await login({
+      oidcIssuer: OIDC_ISSUER,
+      redirectUrl: window.location.href,
+      clientName: CLIENT_NAME,
+    })
+  }
 }
 
 async function onFinish() {
@@ -178,4 +205,10 @@ const handleOnComplete = (value: string) => {
 }
 
 useMeta(metaData)
+
+void (async () => {
+  await handleIncomingRedirect()
+  const profileName = await getProfileName()
+  consumer.value = profileName
+})()
 </script>
