@@ -36,10 +36,10 @@
             <q-btn
               color="secondary"
               :label="$t('tutorial.info.ok')"
-              @click="$refs.stepper.next()"
               :class="{
                 'full-width': !$q.platform.is.desktop,
               }"
+              @click="$refs.stepper.next()"
             />
           </q-stepper-navigation>
         </q-step>
@@ -59,10 +59,10 @@
             <q-btn
               color="secondary"
               :label="$t('tutorial.agreement.ok')"
-              @click="$refs.stepper.next()"
               :class="{
                 'full-width': !$q.platform.is.desktop,
               }"
+              @click="$refs.stepper.next()"
             />
           </q-stepper-navigation>
         </q-step>
