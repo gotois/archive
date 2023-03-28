@@ -72,18 +72,43 @@
           </p>
           <p class="text-body1">{{ $t('tutorial.data.body') }}</p>
           <q-space class="q-pa-xs"></q-space>
-          <q-btn
-            color="accent"
-            type="button"
-            label="WebID"
-            icon="login"
-            no-caps
-            @click="onAuthorize"
+          <q-btn-group
+            v-if="!loggedIn"
+            outline
+            rounded
+            stretch
+            class="full-width"
           >
-            <q-tooltip>Данные необходимы для создания документов</q-tooltip>
-          </q-btn>
+            <q-btn
+              color="accent"
+              type="button"
+              label="Использовать ФИО"
+              icon="login"
+              no-caps
+              @click="onOfflineAuthorize"
+            >
+              <q-tooltip
+                >Оффлайн режим. Данные необходимы для создания
+                документов</q-tooltip
+              >
+            </q-btn>
+            <q-btn
+              color="accent"
+              type="button"
+              label="Использовать WebID"
+              icon="login"
+              no-caps
+              @click="onOnlineAuthorize"
+            >
+              <q-tooltip
+                >Онлайн режим. Данные необходимы для создания
+                документов</q-tooltip
+              >
+            </q-btn>
+          </q-btn-group>
 
           <q-form
+            v-if="loggedIn"
             ref="nameForm"
             class="q-gutter-md"
             autocapitalize="off"
@@ -98,7 +123,6 @@
               :rules="[
                 (val) => (val && val.length > 0) || $t('consumer.rules'),
               ]"
-              style="max-width: 300px"
               name="consumer"
               autocomplete="on"
               outlined
@@ -166,23 +190,34 @@ const $q = useQuasar()
 const store = useStore()
 const router = useRouter()
 
-const step = ref(1)
+const searchParams = new URLSearchParams(window.location.search)
+
+const step = ref(Number(searchParams.get('step') ?? 1))
 const consumer = ref('')
 const pin = ref('')
+const loggedIn = ref(false)
 
 const metaData = {
   'title': 'Примите лицензионное соглашение',
   'og:title': 'Лицензионное соглашение',
 }
 
-async function onAuthorize() {
-  if (!getDefaultSession().info.isLoggedIn) {
-    await login({
-      oidcIssuer: OIDC_ISSUER,
-      redirectUrl: window.location.href,
-      clientName: CLIENT_NAME,
-    })
-  }
+function onOfflineAuthorize() {
+  loggedIn.value = true
+}
+
+async function onOnlineAuthorize() {
+  const redirectUrl =
+    window.location.origin +
+    window.location.pathname +
+    '?step=' +
+    String(step.value)
+  await login({
+    oidcIssuer: OIDC_ISSUER,
+    redirectUrl: redirectUrl,
+    clientName: CLIENT_NAME,
+  })
+  loggedIn.value = true
 }
 
 async function onFinish() {
@@ -202,8 +237,9 @@ async function onFinish() {
     images: contractPDF,
   }
   try {
-    // todo - инициировать pod только если есть интернет и webId
-    await initPod()
+    if (getDefaultSession().info.isLoggedIn) {
+      await initPod()
+    }
 
     await store.dispatch('addContract', newContract)
     await store.dispatch('consumerName', consumer.value)
@@ -241,8 +277,14 @@ const handleOnComplete = (value: string) => {
 useMeta(metaData)
 
 void (async () => {
-  await handleIncomingRedirect()
-  const profileName = await getProfileName()
-  consumer.value = profileName
+  if (navigator.onLine) {
+    await handleIncomingRedirect()
+    const isLoggedIn = getDefaultSession().info.isLoggedIn
+    loggedIn.value = isLoggedIn
+
+    if (isLoggedIn) {
+      consumer.value = await getProfileName()
+    }
+  }
 })()
 </script>
