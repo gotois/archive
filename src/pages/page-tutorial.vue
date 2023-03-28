@@ -223,6 +223,11 @@ async function onOnlineAuthorize() {
 }
 
 async function onFinish() {
+  if (pin.value.length === 4) {
+    if (window.confirm('Пин ' + pin.value + ' будет сохранен?')) {
+      await store.dispatch('Auth/setCode', pin.value)
+    }
+  }
   $q.loading.show()
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
   const html = PrivacyComponent.render().children[0].children as string
@@ -261,12 +266,13 @@ async function onFinish() {
   } finally {
     $q.loading.hide()
   }
-  if (pin.value.length === 4) {
-    if (window.confirm('Действительно сохранить пин?')) {
-      await store.dispatch('Auth/setCode', pin.value)
-    }
-  }
-  await router.push('/create')
+  await router.push({
+    name: 'filter',
+    query: {
+      filter: newContract.instrument_name,
+      page: 1,
+    },
+  })
 }
 
 const handleOnComplete = (value: string) => {
