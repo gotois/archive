@@ -1,10 +1,6 @@
 <template>
   <q-page class="bg-grey-1">
-    <q-inner-loading :showing="loadingVisible && isContractsEmpty">
-      <q-spinner-hourglass color="info" size="6em" />
-    </q-inner-loading>
     <q-scroll-area
-      v-show="!isContractsEmpty"
       ref="scrollAreaRef"
       :delay="500"
       :visible="$q.platform.is.desktop"
@@ -18,9 +14,9 @@
           'col-xs-6': $q.platform.is.desktop || $q.platform.is.ipad,
         }"
         :style="{
-          width: $q.platform.is.desktop ? '600px' : 'auto',
+          'max-width': $q.platform.is.desktop ? '720px' : 'auto',
         }"
-        :pagination-count="paginationCount"
+        :pagination-count="isContractsEmpty ? 0 : paginationCount"
         @on-paginate="onPaginate"
         @on-remove="onRemove"
         @on-edit="onEdit"
@@ -33,9 +29,12 @@
           'full-width': $q.platform.is.mobile,
         }"
         :inline-actions="$q.platform.is.desktop"
+        :dense="$q.platform.is.desktop"
         rounded
         class="q-pa-lg flex absolute-center flex-center self-center text-black-9 text-left"
-        style="max-width: 600px"
+        :style="{
+          'max-width': $q.platform.is.desktop ? '720px' : '600px',
+        }"
       >
         <template #default>
           <template v-if="isSearch">{{ $t('archive.searchEmpty') }}</template>
@@ -75,7 +74,7 @@
         </template>
       </q-banner>
     </template>
-    <q-page-sticky position="bottom-right" :offset="[20, 20]">
+    <q-page-sticky position="bottom-right" :offset="[18, 18]">
       <q-fab
         hide-label
         glossy
@@ -101,16 +100,20 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, getCurrentInstance, defineAsyncComponent } from 'vue'
+import { ref, computed, getCurrentInstance, defineAsyncComponent, h } from 'vue'
 import { useRouter, LocationQuery } from 'vue-router'
-import { useMeta, useQuasar } from 'quasar'
+import { useMeta, useQuasar, QSkeleton } from 'quasar'
 import { useStore } from '../store'
 import { contractTypes } from '../services/contractTypes'
 import { FormatContract } from '../types/models'
 
-const ArchiveListComponent = defineAsyncComponent(
-  () => import('components/ArchiveListComponent.vue'),
-)
+const ArchiveListComponent = defineAsyncComponent({
+  loader: () => import('components/ArchiveListComponent.vue'),
+  delay: 0,
+  loadingComponent: h(QSkeleton, {
+    class: 'absolute-full',
+  }),
+})
 
 // eslint-disable-next-line @typescript-eslint/unbound-method
 const { $t } = getCurrentInstance().appContext.config.globalProperties

@@ -40,6 +40,16 @@
                     $t('archiveList.edit')
                   }}</q-item-section>
                 </q-item>
+                <q-item
+                  v-if="isLogedIn"
+                  v-close-popup
+                  clickable
+                  @click="uploadArchive(item)"
+                >
+                  <q-item-section side class="text-uppercase">{{
+                    'Загрузить на POD'
+                  }}</q-item-section>
+                </q-item>
                 <q-item v-close-popup clickable @click="removeArchive(item)">
                   <q-item-section side class="text-negative text-uppercase">{{
                     $t('archiveList.remove')
@@ -92,7 +102,7 @@
                   alt="Document"
                   :ratio="1"
                   :src="object.contentUrl"
-                  placeholder-src="/icons/icon-256x256.png"
+                  placeholder-src="/icons/icon-128x128.png"
                   loading="lazy"
                   decoding="async"
                   fetchpriority="high"
@@ -153,11 +163,11 @@
         v-model="currentPage"
         :max="paginationCount"
         :max-pages="$q.platform.is.desktop ? 10 : 5"
-        direction-links
+        :direction-links="paginationCount > 10"
+        boundary-numbers
         ellipses
         flat
         :boundary-links="$q.platform.is.desktop"
-        boundary-numbers
         active-design="outline"
         color="secondary"
         class="q-pa-lg flex flex-center self-end"
@@ -170,10 +180,12 @@
 <script lang="ts" setup>
 import { PropType, ref, computed, watch } from 'vue'
 import { useQuasar } from 'quasar'
+import { getDefaultSession } from '@inrupt/solid-client-authn-browser'
 import { FormatContract } from '../types/models'
 import { showImageInPopup, showPDFInPopup } from '../services/popup'
 import { isDateNotOk, formatterDate } from '../services/dateHelper'
 import { createPDF } from '../services/pdfHelper'
+import { updateIntoPod, saveToPod } from '../services/podHelper'
 
 const $q = useQuasar()
 
@@ -191,6 +203,8 @@ const props = defineProps({
     required: true,
   },
 })
+
+const isLogedIn = ref(getDefaultSession().info.isLoggedIn)
 
 const emit = defineEmits(['onPaginate', 'onRemove', 'onEdit'])
 
@@ -259,7 +273,16 @@ async function onShareFullImage(object: FormatContract) {
   }
 }
 
-function editArchive(item: FormatContract) {
+async function uploadArchive(item: FormatContract) {
+  await saveToPod(item)
+  $q.notify({
+    type: 'positive',
+    message: 'Данные записаны на Ваш Pod',
+  })
+}
+
+async function editArchive(item: FormatContract) {
+  await updateIntoPod(item)
   emit('onEdit', item)
 }
 

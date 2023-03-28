@@ -8,6 +8,8 @@ import pkg from '../../package.json'
 import { readFilesPromise } from '../services/fileHelper'
 import privacyNotice from '../ui/templates/privacy-notice'
 
+const { productName } = pkg
+
 export async function createContract(html: string, useImage = false) {
   const htmlObject = document.createElement('div')
   htmlObject.id = 'capture'
@@ -42,7 +44,7 @@ export async function createContract(html: string, useImage = false) {
   })
 
   const blob = new Blob([pdf.buffer], { type: 'application/pdf' })
-  return await readFilesPromise([blob])
+  return readFilesPromise([blob])
 }
 
 export async function createPDF(object: FormatContract) {
@@ -56,7 +58,7 @@ export async function createPDF(object: FormatContract) {
     title: object.instrument.name,
     subject: object.instrument.description,
     author: object.agent.name,
-    creator: pkg.productName,
+    creator: productName,
   })
   const files = []
   let docLength = 0

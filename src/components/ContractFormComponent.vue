@@ -64,7 +64,9 @@
         outlined
         square
         color="secondary"
-      />
+      >
+        <q-tooltip>{{ $t('duration.fromHint') }}</q-tooltip>
+      </q-input>
       <div>
         <q-icon
           size="md"
@@ -129,7 +131,9 @@
         outlined
         square
         color="secondary"
-      />
+      >
+        <q-tooltip>{{ $t('duration.toHint') }}</q-tooltip>
+      </q-input>
       <q-toggle v-model="dateNoLimit" :label="$t('duration.infinity')" />
     </div>
     <q-file

@@ -1,7 +1,13 @@
-import { Contract, FormatContract } from '../types/models'
+import { ContractTable, FormatContract } from '../types/models'
 
-export function formatterContracts(contracts: Contract[]): FormatContract[] {
-  return contracts.map((contract: Contract) => ({
+export function formatterContracts(
+  contracts: ContractTable[],
+): FormatContract[] {
+  return contracts.map((contract: ContractTable) => formatterContract(contract))
+}
+
+export function formatterContract(contract: ContractTable): FormatContract {
+  return {
     '@context': 'https://schema.org',
     '@type': 'OrganizeAction',
     'agent': {
@@ -29,5 +35,5 @@ export function formatterContracts(contracts: Contract[]): FormatContract[] {
       'contentUrl': image,
     })),
     '_currentSlide': 1,
-  }))
+  }
 }

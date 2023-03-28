@@ -4,15 +4,6 @@
       <q-toolbar>
         <q-toolbar-title class="text-black-9 text-center">
           {{ $t('header.title') }}
-          <q-badge
-            outline
-            rounded
-            align="top"
-            color="accent"
-            class="absolute q-ml-xs"
-          >
-            {{ $t('navigation.version') }}{{ version }}
-          </q-badge>
         </q-toolbar-title>
       </q-toolbar>
     </q-header>
@@ -21,10 +12,3 @@
     </q-page-container>
   </q-layout>
 </template>
-
-<script lang="ts" setup>
-import { ref } from 'vue'
-import pkg from '../../package.json'
-
-const version = ref(pkg.version)
-</script>

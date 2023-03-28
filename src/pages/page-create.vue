@@ -5,7 +5,9 @@
         flat
         square
         bordered
-        style="max-width: 600px"
+        :style="{
+          'max-width': $q.platform.is.desktop ? '720px' : '600px',
+        }"
         class="q-pa-md q-ml-auto q-mr-auto q-mt-md q-mb-md"
       >
         <contract-form-component
@@ -27,12 +29,15 @@
 
 <script lang="ts" setup>
 import { defineAsyncComponent, h } from 'vue'
-import { useMeta } from 'quasar'
+import { QSkeleton, useMeta } from 'quasar'
 import { useRouter } from 'vue-router'
 
 const ContractFormComponent = defineAsyncComponent({
   loader: () => import('components/ContractFormComponent.vue'),
-  loadingComponent: h('q-skeleton', { style: 'height: 460px' }),
+  delay: 0,
+  loadingComponent: h(QSkeleton, {
+    style: { height: '460px' },
+  }),
 })
 
 const router = useRouter()

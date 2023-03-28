@@ -13,7 +13,7 @@
         <div class="text-h6 non-selectable">{{ $t('archive.search') }}</div>
       </q-card-section>
       <q-card-section class="q-pt-none no-border">
-        <q-form greedy>
+        <q-form greedy autofocus>
           <q-tooltip>
             {{ $t('archive.tooltip') }}
           </q-tooltip>

@@ -19,7 +19,7 @@
             color="accent"
             class="absolute q-ml-xs"
           >
-            {{ $t('navigation.version') }}{{ version }}
+            {{ $t('navigation.version') }}{{ navigatorVersion }}
           </q-badge>
         </q-toolbar-title>
         <q-btn
@@ -62,7 +62,7 @@
     </q-header>
     <q-drawer v-model="leftDrawerOpen" side="left" show-if-above bordered>
       <p
-        class="full-width block text-h6 q-pa-md no-border-radius non-selectable no-pointer-events"
+        class="full-width block text-h6 q-pl-md q-pr-md q-pt-md no-border-radius non-selectable no-pointer-events"
       >
         {{ $t('navigation.title') }}
       </p>
@@ -72,7 +72,7 @@
           group="backupgroup"
           icon="person"
           :dense="$q.platform.is.desktop"
-          class="full-width column"
+          class="column"
           :class="{
             'bg-grey-2': profileOpen,
           }"
@@ -89,6 +89,9 @@
             >
               <q-input
                 v-model="consumer"
+                bg-color="white"
+                color="secondary"
+                outlined
                 :label="$t('consumer.type')"
                 :rules="[
                   (val) => (val && val.length > 0) || $t('consumer.rules'),
@@ -120,17 +123,18 @@
           group="backupgroup"
           icon="vpn_key"
           :dense="$q.platform.is.desktop"
-          class="full-width column"
+          class="column"
           :class="{
             'bg-grey-2': otpOpen,
           }"
           :label="$t('settings.native.otp')"
         >
-          <q-item-section class="col q-pa-md">
+          <q-item-section class="q-pa-md">
             <p>{{ $t('settings.otp.description') }}</p>
             <q-tooltip>{{ $t('settings.otp.label') }}</q-tooltip>
             <v-otp-input
               ref="otpInput"
+              :value="pin"
               class="flex flex-center"
               input-classes="otp-input"
               separator="-"
@@ -150,36 +154,23 @@
           group="backupgroup"
           icon="import_export"
           :dense="$q.platform.is.desktop"
-          class="full-width column"
+          class="column"
           :class="{
             'bg-grey-2': settingsOpen,
           }"
           :label="$t('settings.native.title')"
         >
-          <q-item-section class="col q-pa-md">
+          <q-item-section class="q-pa-md">
             <p>{{ $t('settings.native.description') }}</p>
             <database-component v-if="settingsOpen" />
           </q-item-section>
-        </q-expansion-item>
-        <q-separator />
-        <q-expansion-item
-          v-model="destroyOpen"
-          group="backupgroup"
-          class="full-width column"
-          icon="warning"
-          :dense="$q.platform.is.desktop"
-          :class="{
-            'bg-grey-2': destroyOpen,
-          }"
-          :label="$t('settings.clean.title')"
-        >
-          <q-item-section class="col q-pa-md">
+          <q-separator />
+          <q-item-section class="q-pa-md">
             <p>{{ $t('settings.clean.description') }}</p>
             <q-btn
               :label="$t('settings.clean.submit')"
               color="negative"
               icon="delete_outline"
-              class="full-width q-mt-md"
               @click="confirm = true"
             >
               <q-tooltip>
@@ -264,6 +255,10 @@ import { openURL, useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 import { useStore } from '../store'
 import pkg from '../../package.json'
+import twaManifest from '../../twa-manifest.json'
+
+const { version } = pkg
+const { packageId } = twaManifest
 
 const DatabaseRemoveComponent = defineAsyncComponent(
   () => import('components/DatabaseRemoveComponent.vue'),
@@ -280,18 +275,18 @@ const store = useStore()
 const $q = useQuasar()
 const router = useRouter()
 
+const pin = ref('')
 const leftDrawerOpen = ref(false)
 const rightDrawerOpen = ref(false)
 const settingsOpen = ref(false)
-const destroyOpen = ref(false)
 const profileOpen = ref(false)
 const otpOpen = ref(false)
 const confirm = ref(false)
 const showSearch = ref(false)
-const version = ref(pkg.version)
-
+const navigatorVersion = ref(version)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-const consumer = computed(() => store.getters.consumer as string)
+const consumer = ref(store.getters.consumer as string)
+
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return
 const archiveNames = computed(() => store.getters.archiveNames)
 
@@ -312,6 +307,17 @@ async function onSearch(searchText: string) {
 }
 
 function onOpenFeedback() {
+  if ($q.platform.is.android) {
+    openURL(
+      'https://play.google.com/store/apps/details?id=' + packageId,
+      null,
+      {
+        menubar: false,
+        toolbar: false,
+      },
+    )
+    return
+  }
   openURL('https://baskovsky.ru/feedback/', null, {
     noopener: true,
     menubar: false,

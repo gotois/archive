@@ -10,6 +10,7 @@
     "архив договоров",
     "my archive"
   ],
+  "publisher": "goto Interactive Software",
   "homepage": "https://baskovsky.ru/2021/09/my-archive/",
   "bugs": {
     "url": "https://github.com/gotois/archive/issues",
@@ -29,17 +30,22 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
+    "@inrupt/solid-client": "1.26.0",
+    "@inrupt/solid-client-authn-browser": "1.14.0",
+    "@inrupt/vocab-common-rdf": "1.0.5",
     "@pdfme/generator": "1.1.9",
-    "@quasar/extras": "1.15.11",
+    "@quasar/extras": "1.16.1",
     "core-js": "3.29.1",
     "dexie": "3.2.3",
-    "html-to-text": "9.0.4",
+    "dexie-export-import": "4.0.6",
+    "html-to-text": "9.0.5",
+    "file-saver": "2.0.5",
     "jspdf": "2.5.1",
     "jszip": "3.10.1",
     "minisearch": "6.0.1",
-    "quasar": "2.11.7",
+    "quasar": "2.11.9",
     "vue-i18n": "9.2.2",
-    "vue3-otp-input": "0.3.6",
+    "vue3-otp-input": "0.4.1",
     "vuex": "4.1.0"
   },
   "devDependencies": {
@@ -47,17 +53,15 @@
     "@bubblewrap/cli": "~1.19.1",
     "@quasar/app": "~3.3.3",
     "@types/file-saver": "~2.0.5",
-    "@types/html-to-text": "~8.1.1",
-    "@types/node": "~18.15.3",
-    "@typescript-eslint/eslint-plugin": "~5.55.0",
-    "@typescript-eslint/parser": "~5.55.0",
-    "dexie-export-import": "~1.0.3",
+    "@types/html-to-text": "~9.0.0",
+    "@types/node": "~18.15.10",
+    "@typescript-eslint/eslint-plugin": "~5.57.0",
+    "@typescript-eslint/parser": "~5.57.0",
     "eslint": "~8.36.0",
-    "eslint-config-prettier": "~8.7.0",
+    "eslint-config-prettier": "~8.8.0",
     "eslint-plugin-prettier": "~4.2.1",
     "eslint-plugin-quasar": "~1.1.0",
-    "eslint-plugin-vue": "~9.9.0",
-    "file-saver": "~2.0.5",
+    "eslint-plugin-vue": "~9.10.0",
     "workbox-webpack-plugin": "~6.5.4"
   },
   "browserslist": [
