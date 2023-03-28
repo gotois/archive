@@ -158,11 +158,11 @@
         v-model="currentPage"
         :max="paginationCount"
         :max-pages="$q.platform.is.desktop ? 10 : 5"
-        direction-links
+        :direction-links="paginationCount > 10"
+        boundary-numbers
         ellipses
         flat
         :boundary-links="$q.platform.is.desktop"
-        boundary-numbers
         active-design="outline"
         color="secondary"
         class="q-pa-lg flex flex-center self-end"

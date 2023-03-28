@@ -74,7 +74,8 @@ const ContractClass: Module<ContractState, StateInterface> = {
         query,
         offset,
         limit,
-      }: { query: string; offset: number; limit: number },
+        scoreRate = 0.5,
+      }: { query: string; offset: number; limit: number; scoreRate: number },
     ) {
       if (query.length <= 0) {
         context.commit('setContracts', [])
@@ -87,8 +88,9 @@ const ContractClass: Module<ContractState, StateInterface> = {
       const documents = await db.getFulltextDocument()
       miniSearch.addAll(documents)
       const searchResults = miniSearch.search(query, {
+        fuzzy: (term) => (term.length > 3 ? 0.2 : null),
         filter({ score }) {
-          return score >= 5
+          return score >= scoreRate
         },
       })
       const cursor = db.contracts.orderBy('startTime').filter(({ id }) => {

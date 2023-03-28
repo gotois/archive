@@ -1,6 +1,6 @@
 <template>
   <div>
-    <q-form class="full-width" @submit="onImportDB">
+    <q-form @submit="onImportDB">
       <q-file
         v-model="file"
         accept=".json,.zip"
@@ -32,12 +32,12 @@
       </q-btn>
     </q-form>
     <q-btn
-      v-if="contractsCount > 0"
       color="secondary"
       icon="file_download"
       :label="$t('settings.native.export')"
       class="full-width q-mt-md"
       :disable="contractsCount === 0"
+      :outline="contractsCount === 0"
       @click="onExportDB"
     >
       <q-tooltip>
@@ -108,7 +108,10 @@ async function onImportDB() {
 }
 
 async function onExportDB() {
-  const EXPORT_NAME = 'contract-export'
+  const exportName = window.prompt('Введите название файла договоров:')
+  if (!exportName) {
+    return
+  }
   const dialog = $q.dialog({
     message: 'Подготовка...',
     progress: true,
@@ -128,7 +131,8 @@ async function onExportDB() {
       dialog.hide()
     }
   })
+  const filename = exportName.replace(/\.zip$/, '') + '.zip'
 
-  return saveAs(content, EXPORT_NAME + '.zip')
+  return saveAs(content, filename)
 }
 </script>

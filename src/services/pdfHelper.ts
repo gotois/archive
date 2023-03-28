@@ -44,7 +44,7 @@ export async function createContract(html: string, useImage = false) {
   })
 
   const blob = new Blob([pdf.buffer], { type: 'application/pdf' })
-  return await readFilesPromise([blob])
+  return readFilesPromise([blob])
 }
 
 export async function createPDF(object: FormatContract) {
