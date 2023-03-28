@@ -71,7 +71,8 @@ export async function initPod() {
   }
 }
 
-export async function updateIntoPod(dogovorName: string, item: FormatContract) {
+export async function updateIntoPod(item: FormatContract) {
+  const dogovorName = item.startTime.toJSON()
   const resourceBaseUrl = await getResourceBaseUrl()
   const resourceUrl = resourceBaseUrl + dogovorName
   let dataset = await getSolidDataset(resourceUrl, {
@@ -97,7 +98,8 @@ export async function updateIntoPod(dogovorName: string, item: FormatContract) {
   })
 }
 
-export async function saveToPod(dogovorName: string, item: FormatContract) {
+export async function saveToPod(item: FormatContract) {
+  const dogovorName = item.startTime.toJSON()
   const resourceBaseUrl = await getResourceBaseUrl()
   const resourceUrl = resourceBaseUrl + dogovorName
   const agent = buildThing(createThing({ url: resourceUrl + '#agent' }))

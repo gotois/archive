@@ -134,6 +134,7 @@
             <q-tooltip>{{ $t('settings.otp.label') }}</q-tooltip>
             <v-otp-input
               ref="otpInput"
+              :value="pin"
               class="flex flex-center"
               input-classes="otp-input"
               separator="-"
@@ -274,6 +275,7 @@ const store = useStore()
 const $q = useQuasar()
 const router = useRouter()
 
+const pin = ref('')
 const leftDrawerOpen = ref(false)
 const rightDrawerOpen = ref(false)
 const settingsOpen = ref(false)

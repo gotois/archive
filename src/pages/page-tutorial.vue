@@ -136,13 +136,13 @@
               {{ $t('tutorial.otp') }}
             </p>
             <v-otp-input
+              :value="pin"
               input-classes="otp-input"
               separator="-"
               :num-inputs="4"
               :is-input-num="true"
               :conditional-class="['first', '', '', 'last']"
               :placeholder="['*', '*', '*', '*']"
-              @on-change="handleOnChange"
               @on-complete="handleOnComplete"
             />
             <q-stepper-navigation class="q-mb-md">
@@ -183,7 +183,9 @@ import {
   CLIENT_NAME,
   getProfileName,
   initPod,
+  saveToPod,
 } from '../services/podHelper'
+import { formatterContract } from '../services/schemaHelper'
 
 const { description, version, productName } = pkg
 const $q = useQuasar()
@@ -237,13 +239,14 @@ async function onFinish() {
     images: contractPDF,
   }
   try {
-    if (getDefaultSession().info.isLoggedIn) {
-      await initPod()
-    }
-
     await store.dispatch('addContract', newContract)
     await store.dispatch('consumerName', consumer.value)
     await store.dispatch('Tutorial/tutorialComplete')
+
+    if (getDefaultSession().info.isLoggedIn) {
+      await initPod()
+      await saveToPod(formatterContract(newContract))
+    }
   } catch (e) {
     console.error(e)
     $q.notify({
@@ -264,10 +267,6 @@ async function onFinish() {
     }
   }
   await router.push('/create')
-}
-
-const handleOnChange = (value: string) => {
-  pin.value = value
 }
 
 const handleOnComplete = (value: string) => {

@@ -1,12 +1,12 @@
 import { Module } from 'vuex'
-import { Contract, FormatContract, ContractTable } from '../types/models'
+import { FormatContract, ContractTable } from '../types/models'
 import { StateInterface } from './index'
 import { db } from '../services/databaseHelper'
 import { recommendationContractTypes } from '../services/recommendationContractTypes'
 import { formatterContracts } from '../services/schemaHelper'
 
 export interface ContractState {
-  contracts: Contract[]
+  contracts: ContractTable[]
   contractsCount: number
   contractNames: Map<string, { count: number }>
 }
@@ -24,10 +24,10 @@ const ContractClass: Module<ContractState, StateInterface> = {
     setContractsCount(state, count: number) {
       state.contractsCount = count
     },
-    setContracts(state, contracts: Contract[]) {
+    setContracts(state, contracts: ContractTable[]) {
       state.contracts = contracts
     },
-    addContract(state, contract: Contract) {
+    addContract(state, contract: ContractTable) {
       state.contracts.push(contract)
     },
     removeContract(state, id: number) {
@@ -60,11 +60,11 @@ const ContractClass: Module<ContractState, StateInterface> = {
       }
     },
     async filterFromContracts(context, { query }: { query: string }) {
-      const contracts = (await db.contracts
+      const contracts = await db.contracts
         .where('instrument_name')
         .equals(query)
         .reverse()
-        .toArray()) as Contract[]
+        .toArray()
       context.commit('setContractsCount', contracts.length)
       context.commit('setContracts', contracts)
     },
@@ -102,11 +102,11 @@ const ContractClass: Module<ContractState, StateInterface> = {
         context.commit('setContracts', [])
         return
       }
-      const contracts = (await cursor
+      const contracts = await cursor
         .reverse()
         .offset(offset)
         .limit(limit)
-        .toArray()) as Contract[]
+        .toArray()
       context.commit('setContracts', contracts)
     },
     async loadAllContracts(
@@ -119,12 +119,12 @@ const ContractClass: Module<ContractState, StateInterface> = {
         context.commit('setContracts', [])
         return
       }
-      const contracts = (await db.contracts
+      const contracts = await db.contracts
         .orderBy('startTime')
         .reverse()
         .offset(offset)
         .limit(limit)
-        .toArray()) as Contract[]
+        .toArray()
       context.commit('setContracts', contracts)
     },
     async loadContractNames(context) {
