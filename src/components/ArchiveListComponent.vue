@@ -274,8 +274,7 @@ async function onShareFullImage(object: FormatContract) {
 }
 
 async function uploadArchive(item: FormatContract) {
-  // fixme - ставить рандомное имя
-  await saveToPod('dogovor_4', item)
+  await saveToPod(item)
   $q.notify({
     type: 'positive',
     message: 'Данные записаны на Ваш Pod',
@@ -283,8 +282,7 @@ async function uploadArchive(item: FormatContract) {
 }
 
 async function editArchive(item: FormatContract) {
-  // fixme - ставить рандомное имя
-  await updateIntoPod('dogovor_4', item)
+  await updateIntoPod(item)
   emit('onEdit', item)
 }
 
