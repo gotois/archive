@@ -102,7 +102,7 @@
 <script lang="ts" setup>
 import { ref, computed, getCurrentInstance, defineAsyncComponent, h } from 'vue'
 import { useRouter, LocationQuery } from 'vue-router'
-import { useMeta, useQuasar, QSkeleton } from 'quasar'
+import { useMeta, useQuasar, QSkeleton, QScrollArea } from 'quasar'
 import { useStore } from '../store'
 import { contractTypes } from '../services/contractTypes'
 import { FormatContract } from '../types/models'
@@ -128,8 +128,7 @@ const router = useRouter()
 
 const limit = ref(5)
 const loadingVisible = ref(true)
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-const scrollAreaRef = ref(null)
+const scrollAreaRef = ref<QScrollArea>(null)
 
 const isSearch = computed(() => {
   return Boolean(router.currentRoute.value.query.filter)
@@ -139,7 +138,6 @@ const archiveEmptyText = computed(() => {
   const randomContractType = Math.floor(
     Math.random() * (contractTypes.length - 1),
   )
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/restrict-plus-operands
   return contractTypes[randomContractType]
 })
 
@@ -171,7 +169,6 @@ async function onPaginate(page: number) {
       filter: router.currentRoute.value.query?.filter,
     },
   })
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
   scrollAreaRef.value.setScrollPosition('vertical', 0, 150)
 }
 

@@ -281,8 +281,10 @@ const handleOnComplete = (value: string) => {
 
 useMeta(metaData)
 
+const isOnline = navigator.onLine
+
 void (async () => {
-  if (navigator.onLine) {
+  if (isOnline) {
     await handleIncomingRedirect()
     const isLoggedIn = getDefaultSession().info.isLoggedIn
     loggedIn.value = isLoggedIn

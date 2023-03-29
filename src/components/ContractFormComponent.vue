@@ -189,7 +189,7 @@
 
 <script lang="ts" setup>
 import { PropType, ref } from 'vue'
-import { useQuasar, date } from 'quasar'
+import { useQuasar, date, QForm } from 'quasar'
 import { useStore } from '../store'
 import { ContractTable } from '../types/models'
 import { db } from '../services/databaseHelper'
@@ -219,13 +219,9 @@ const customer = ref('')
 const description = ref('')
 const duration = ref({ from: currentDate, to: afterYearDate })
 const files = ref([])
-const contractForm = ref()
+const contractForm = ref<QForm>()
 const dateNoLimit = ref(false)
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-const allContractTypes: string[] = [].concat(
-  recommendationContractTypes,
-  contractTypes,
-)
+const allContractTypes = [].concat(recommendationContractTypes, contractTypes)
 const contractOptions = ref(allContractTypes)
 
 // eslint-disable-next-line no-unused-vars
@@ -233,16 +229,14 @@ function filterOptions(val: string, update: (callback: () => void) => void) {
   update(() => {
     const needle = val.toLowerCase()
     contractOptions.value = allContractTypes.filter(
-      (v) => v.toLowerCase().indexOf(needle) > -1,
+      (v: string) => v.toLowerCase().indexOf(needle) > -1,
     )
   })
 }
 
 function onResetForm() {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const contractFormValue = contractForm.value
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-  contractFormValue?.resetValidation()
+  contractFormValue.resetValidation()
   contractType.value = ''
   customer.value = ''
   description.value = ''
@@ -284,11 +278,26 @@ function onSelectDate(value: string | { from: string; to: string } | null) {
   }
 }
 
-function onFocusInput(e: FocusEvent) {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  e.target.scrollIntoView()
+function onFocusInput({ target }: { target: HTMLElement }) {
+  target.scrollIntoView()
+}
+
+async function addNewContract(newContract: ContractTable) {
+  await store.dispatch('addContract', newContract)
+  $q.notify({
+    message: `Запись "${newContract.instrument_name.toLocaleLowerCase()}" добавлена`,
+    type: 'positive',
+    actions: [
+      {
+        label: 'Перейти',
+        color: 'white',
+        handler: () => {
+          emit('onCreate', newContract.instrument_name)
+        },
+      },
+    ],
+  })
+  await store.dispatch('loadContractNames')
 }
 
 async function onSubmit() {
@@ -318,32 +327,18 @@ async function onSubmit() {
   }
 
   const images = await readFilesPromise(files.value)
+  const newContract: ContractTable = {
+    agent_name: (store.getters as { consumer: string }).consumer,
+    participant_name: customer.value,
+    instrument_name: contractType.value,
+    instrument_description: description.value,
+    startTime: startDate,
+    endTime: dateNoLimit.value ? null : endDate,
+    images: images,
+  }
+
   db.transaction('rw', db.contracts, async () => {
-    const newContract: ContractTable = {
-      agent_name: (store.getters as { consumer: string }).consumer,
-      participant_name: customer.value,
-      instrument_name: contractType.value,
-      instrument_description: description.value,
-      startTime: startDate,
-      endTime: dateNoLimit.value ? null : endDate,
-      images: images,
-    }
-    await store.dispatch('addContract', newContract)
-    $q.notify({
-      message: `Запись "${newContract.instrument_name.toLocaleLowerCase()}" добавлена`,
-      type: 'positive',
-      actions: [
-        {
-          label: 'Перейти',
-          color: 'white',
-          handler: () => {
-            emit('onCreate', newContract.instrument_name)
-          },
-        },
-      ],
-    })
-    await store.dispatch('loadContractNames')
-    onResetForm()
+    await addNewContract(newContract)
   }).catch((error: Error) => {
     console.error(error)
     $q.notify({
@@ -351,5 +346,6 @@ async function onSubmit() {
       message: error.message,
     })
   })
+  onResetForm()
 }
 </script>

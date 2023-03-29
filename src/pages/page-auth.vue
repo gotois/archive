@@ -5,6 +5,7 @@
     </p>
     <v-otp-input
       ref="otpInput"
+      :value="pin"
       input-classes="otp-input"
       separator="-"
       :num-inputs="4"
@@ -38,6 +39,7 @@ const metaData = {
 const otpDisabled = ref(false)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 const otpInput = ref(null)
+const pin = ref('')
 
 function clearOTP() {
   otpDisabled.value = false

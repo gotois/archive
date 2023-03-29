@@ -60,7 +60,7 @@ import { getContent, generate } from '../services/zipHelper'
 const $q = useQuasar()
 const store = useStore()
 
-const file = ref()
+const file = ref<File>()
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 const contractsCount = computed(() => store.getters.contractsCount as number)
 
@@ -89,7 +89,7 @@ function progressCallback({
 async function onImportDB() {
   $q.loading.show()
   try {
-    const content = await getContent(file.value as unknown as File)
+    const content = await getContent(file.value)
     await importInto(db, content, {
       noTransaction: true,
       acceptChangedPrimaryKey: true,
