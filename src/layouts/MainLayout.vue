@@ -11,6 +11,21 @@
           @click="onToggleLeftDrawer"
         />
         <q-toolbar-title class="text-black-9 text-center non-selectable">
+          <template v-if="isLoggedIn">
+            <q-badge rounded color="green">
+              <q-tooltip>Вы подключены к SOLID серверу</q-tooltip>
+            </q-badge>
+          </template>
+          <template v-else-if="isOnline">
+            <q-badge rounded color="yellow">
+              <q-tooltip>Вы онлайн</q-tooltip>
+            </q-badge>
+          </template>
+          <template v-else>
+            <q-badge rounded color="red">
+              <q-tooltip>Вы офлайн</q-tooltip>
+            </q-badge>
+          </template>
           {{ $t('header.title') }}
           <q-badge
             outline
@@ -179,6 +194,18 @@
           </q-item-section>
         </q-expansion-item>
         <q-separator class="q-mb-md"></q-separator>
+
+        <q-btn
+          square
+          outline
+          color="primary"
+          glossy
+          push
+          class="full-width"
+          label="Войти через Web Id"
+          @click="loginToPod"
+        />
+
         <q-chip
           icon="link"
           class="cursor-pointer full-width q-pa-md self-end"
