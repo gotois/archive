@@ -41,7 +41,7 @@
                   }}</q-item-section>
                 </q-item>
                 <q-item
-                  v-if="isLogedIn"
+                  v-if="isLoggedIn"
                   v-close-popup
                   clickable
                   @click="uploadArchive(item)"
@@ -180,12 +180,11 @@
 <script lang="ts" setup>
 import { PropType, ref, computed, watch } from 'vue'
 import { useQuasar } from 'quasar'
-import { getDefaultSession } from '@inrupt/solid-client-authn-browser'
 import { FormatContract } from '../types/models'
 import { showImageInPopup, showPDFInPopup } from '../services/popup'
 import { isDateNotOk, formatterDate } from '../services/dateHelper'
 import { createPDF } from '../services/pdfHelper'
-import { updateIntoPod, saveToPod } from '../services/podHelper'
+import { saveToPod, getLoggedIn } from '../services/podHelper'
 
 const $q = useQuasar()
 
@@ -204,11 +203,10 @@ const props = defineProps({
   },
 })
 
-const isLogedIn = ref(getDefaultSession().info.isLoggedIn)
-
 const emit = defineEmits(['onPaginate', 'onRemove', 'onEdit'])
 
 const items = ref(props.contracts ?? [])
+const isLoggedIn = ref(getLoggedIn())
 const currentPage = ref(1)
 const nativeShareAvailable = ref(typeof navigator.share === 'function')
 
@@ -281,8 +279,7 @@ async function uploadArchive(item: FormatContract) {
   })
 }
 
-async function editArchive(item: FormatContract) {
-  await updateIntoPod(item)
+function editArchive(item: FormatContract) {
   emit('onEdit', item)
 }
 

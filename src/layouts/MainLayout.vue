@@ -133,10 +133,9 @@
             <p>{{ $t('settings.otp.description') }}</p>
             <q-tooltip>{{ $t('settings.otp.label') }}</q-tooltip>
             <v-otp-input
-              ref="otpInput"
               :value="pin"
-              class="flex flex-center"
               input-classes="otp-input"
+              class="flex flex-center"
               separator="-"
               :num-inputs="4"
               :should-auto-focus="true"
@@ -253,9 +252,11 @@
 import { ref, computed, defineAsyncComponent } from 'vue'
 import { openURL, useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
+import { login } from '@inrupt/solid-client-authn-browser'
 import { useStore } from '../store'
 import pkg from '../../package.json'
 import twaManifest from '../../twa-manifest.json'
+import { OIDC_ISSUER, CLIENT_NAME, getLoggedIn } from '../services/podHelper'
 
 const { version } = pkg
 const { packageId } = twaManifest
@@ -287,6 +288,9 @@ const navigatorVersion = ref(version)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 const consumer = ref(store.getters.consumer as string)
 
+const isOnline = ref(navigator.onLine)
+const isLoggedIn = ref(getLoggedIn())
+
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return
 const archiveNames = computed(() => store.getters.archiveNames)
 
@@ -304,6 +308,16 @@ async function onSearch(searchText: string) {
     },
   })
   showSearch.value = false
+}
+
+async function loginToPod() {
+  if (!isLoggedIn.value) {
+    await login({
+      oidcIssuer: OIDC_ISSUER,
+      redirectUrl: window.location.href,
+      clientName: CLIENT_NAME,
+    })
+  }
 }
 
 function onOpenFeedback() {

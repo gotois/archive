@@ -106,6 +106,7 @@ import { useMeta, useQuasar, QSkeleton, QScrollArea } from 'quasar'
 import { useStore } from '../store'
 import { contractTypes } from '../services/contractTypes'
 import { FormatContract } from '../types/models'
+import { updateIntoPod, getLoggedIn } from '../services/podHelper'
 
 const ArchiveListComponent = defineAsyncComponent({
   loader: () => import('components/ArchiveListComponent.vue'),
@@ -129,6 +130,7 @@ const router = useRouter()
 const limit = ref(5)
 const loadingVisible = ref(true)
 const scrollAreaRef = ref<QScrollArea>(null)
+const isLoggedIn = ref(getLoggedIn())
 
 const isSearch = computed(() => {
   return Boolean(router.currentRoute.value.query.filter)
@@ -184,6 +186,10 @@ async function onEdit(item: FormatContract) {
   }
   item.instrument.description = value
   await store.dispatch('editContract', item)
+
+  if (isLoggedIn.value) {
+    await updateIntoPod(item)
+  }
 }
 
 async function updateContracts({

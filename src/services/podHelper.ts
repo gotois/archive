@@ -21,7 +21,7 @@ export const OIDC_ISSUER = 'https://login.inrupt.com'
 export const CLIENT_NAME = 'Contracts'
 
 async function getResourceRootUrl() {
-  const podsUrl = await getPodUrlAll(getDefaultSession().info.webId, {
+  const podsUrl = await getPodUrlAll(getWebId(), {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     fetch,
@@ -47,7 +47,7 @@ export async function getProfileName() {
     // @ts-ignore
     fetch,
   })
-  const profile = getThing(profileDataset, getDefaultSession().info.webId)
+  const profile = getThing(profileDataset, getWebId())
 
   return getStringNoLocale(profile, FOAF.name)
 }
@@ -150,4 +150,12 @@ export async function saveToPod(item: FormatContract) {
     // @ts-ignore
     fetch,
   })
+}
+
+export const getLoggedIn = () => {
+  return getDefaultSession().info.isLoggedIn
+}
+
+const getWebId = () => {
+  return getDefaultSession().info.webId
 }

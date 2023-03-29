@@ -169,11 +169,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar, useMeta } from 'quasar'
 import VOtpInput from 'vue3-otp-input'
-import {
-  handleIncomingRedirect,
-  login,
-  getDefaultSession,
-} from '@inrupt/solid-client-authn-browser'
+import { login } from '@inrupt/solid-client-authn-browser'
 import PrivacyComponent from 'components/PrivacyComponent.vue'
 import { useStore } from '../store'
 import pkg from '../../package.json'
@@ -183,6 +179,7 @@ import {
   CLIENT_NAME,
   getProfileName,
   initPod,
+  getLoggedIn,
   saveToPod,
 } from '../services/podHelper'
 import { formatterContract } from '../services/schemaHelper'
@@ -197,7 +194,7 @@ const searchParams = new URLSearchParams(window.location.search)
 const step = ref(Number(searchParams.get('step') ?? 1))
 const consumer = ref('')
 const pin = ref('')
-const loggedIn = ref(false)
+const loggedIn = ref(getLoggedIn())
 
 const metaData = {
   'title': 'Примите лицензионное соглашение',
@@ -248,7 +245,7 @@ async function onFinish() {
     await store.dispatch('consumerName', consumer.value)
     await store.dispatch('Tutorial/tutorialComplete')
 
-    if (getDefaultSession().info.isLoggedIn) {
+    if (getLoggedIn()) {
       await initPod()
       await saveToPod(formatterContract(newContract))
     }
@@ -285,11 +282,7 @@ const isOnline = navigator.onLine
 
 void (async () => {
   if (isOnline) {
-    await handleIncomingRedirect()
-    const isLoggedIn = getDefaultSession().info.isLoggedIn
-    loggedIn.value = isLoggedIn
-
-    if (isLoggedIn) {
+    if (loggedIn.value) {
       consumer.value = await getProfileName()
     }
   }

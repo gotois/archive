@@ -5,6 +5,7 @@ import {
   createWebHashHistory,
   createWebHistory,
 } from 'vue-router'
+import { handleIncomingRedirect } from '@inrupt/solid-client-authn-browser'
 import { StateInterface } from '../store'
 import routes from './routes'
 
@@ -32,7 +33,7 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
 
   void store.dispatch('loadContractNames')
 
-  Router.beforeEach((to) => {
+  Router.beforeEach(async (to) => {
     switch (to.path) {
       case '/privacy':
       case '/auth': {
@@ -64,6 +65,9 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
         }
         break
       }
+    }
+    if (navigator.onLine) {
+      await handleIncomingRedirect()
     }
     // explicitly return false to cancel the navigation
     // return false
