@@ -67,7 +67,7 @@ const Auth: Module<AuthState, StateInterface> = {
       return state.code
     },
     isLoggedIn(state) {
-      return state.openIdIsLoggedIn
+      return navigator.onLine && state.openIdIsLoggedIn
     },
   },
 }

@@ -73,7 +73,7 @@
           <p class="text-body1">{{ $t('tutorial.data.body') }}</p>
           <q-space class="q-pa-xs"></q-space>
           <q-btn-group
-            v-if="!isLoggedIn"
+            v-if="!showForm"
             outline
             rounded
             stretch
@@ -108,7 +108,7 @@
           </q-btn-group>
 
           <q-form
-            v-if="isLoggedIn"
+            v-if="showForm"
             ref="nameForm"
             class="q-gutter-md"
             autocapitalize="off"
@@ -191,6 +191,7 @@ const searchParams = new URLSearchParams(window.location.search)
 const step = ref(Number(searchParams.get('step') ?? 1))
 const consumer = ref('')
 const pin = ref('')
+const showForm = ref(false)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 const isLoggedIn = computed(() => store.getters['Auth/isLoggedIn'] as boolean)
 
@@ -200,7 +201,7 @@ const metaData = {
 }
 
 function onOfflineAuthorize() {
-  console.log('fixme')
+  showForm.value = true
 }
 
 async function onOnlineAuthorize() {
@@ -277,13 +278,10 @@ const handleOnComplete = (value: string) => {
 
 useMeta(metaData)
 
-const isOnline = navigator.onLine
-
 void (async () => {
-  if (isOnline) {
-    if (isLoggedIn.value) {
-      consumer.value = await getProfileName()
-    }
+  if (isLoggedIn.value) {
+    showForm.value = true
+    consumer.value = await getProfileName()
   }
 })()
 </script>
