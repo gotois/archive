@@ -60,14 +60,23 @@ export async function getProfileName() {
     fetch,
   })
   const profile = getThing(profileDataset, getWebId())
-
-  return getStringNoLocale(profile, FOAF.name)
+  if (profile) {
+    return getStringNoLocale(profile, FOAF.name)
+  }
+  return ''
 }
 
 export async function initPod() {
   const resourceBaseUrl = await getResourceBaseUrl()
-  const session = getDefaultSession()
-  const fetch = session.fetch
+  // hack - у inrupt.net и других провайдеров, при первичной инициализации падает getSolidDataset
+  if (!resourceBaseUrl.includes('inrupt.com')) {
+    const dataset = createSolidDataset()
+    return saveSolidDatasetAt(resourceBaseUrl, dataset, {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      fetch,
+    })
+  }
   const myBaseDataset = await getSolidDataset(resourceBaseUrl, {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
