@@ -196,6 +196,7 @@
         <q-separator class="q-mb-md"></q-separator>
 
         <q-btn
+          v-if="!isLoggedIn"
           square
           outline
           color="primary"
@@ -337,13 +338,11 @@ async function onSearch(searchText: string) {
 }
 
 async function loginToPod() {
-  if (!isLoggedIn.value) {
-    await solidAuth({
-      sessionRestoreCallback: () =>
-        void store.dispatch('Auth/openIdHandleIncoming'),
-      loginCallback: () => void store.dispatch('Auth/openIdHandleIncoming'),
-    })
-  }
+  await solidAuth({
+    sessionRestoreCallback: () =>
+      void store.dispatch('Auth/openIdHandleIncoming'),
+    loginCallback: () => void store.dispatch('Auth/openIdHandleIncoming'),
+  })
 }
 
 function onOpenFeedback() {
