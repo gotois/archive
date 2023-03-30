@@ -72,7 +72,7 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
         if (to.path === '/' && Object.keys(to.query).length === 0) {
           return '/?page=1'
         }
-        if (navigator.onLine) {
+        if (navigator.onLine && !to.query.error) {
           await solidAuth({
             sessionRestoreCallback: () =>
               void store.dispatch('Auth/openIdHandleIncoming'),
