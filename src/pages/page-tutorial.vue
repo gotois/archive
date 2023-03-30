@@ -240,15 +240,16 @@ async function onFinish() {
     startTime: new Date(),
     images: contractPDF,
   }
-  if (isLoggedIn.value) {
-    await initPod()
-  }
-
   try {
+    if (isLoggedIn.value) {
+      await initPod()
+    }
     await store.dispatch('addContract', newContract)
     await store.dispatch('consumerName', consumer.value)
     await store.dispatch('Tutorial/tutorialComplete')
-    await saveToPod(formatterContract(newContract))
+    if (isLoggedIn.value) {
+      await saveToPod(formatterContract(newContract))
+    }
   } catch (e) {
     console.error(e)
     $q.notify({

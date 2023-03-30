@@ -9,6 +9,7 @@ import {
   getPodUrlAll,
   getThingAll,
   getStringNoLocale,
+  deleteSolidDataset,
 } from '@inrupt/solid-client'
 import {
   getDefaultSession,
@@ -65,6 +66,8 @@ export async function getProfileName() {
 
 export async function initPod() {
   const resourceBaseUrl = await getResourceBaseUrl()
+  const session = getDefaultSession()
+  const fetch = session.fetch
   const myBaseDataset = await getSolidDataset(resourceBaseUrl, {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -78,6 +81,25 @@ export async function initPod() {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       fetch,
+    })
+  }
+}
+
+export async function removeContractsDataset() {
+  const resourceBaseUrl = await getResourceBaseUrl()
+  const myDataset = await getSolidDataset(resourceBaseUrl, {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    fetch: fetch,
+  })
+  const allThing = getThingAll(myDataset).filter((thing) => {
+    return thing.url !== myDataset.internal_resourceInfo.sourceIri
+  })
+  for (const thing of allThing) {
+    await deleteSolidDataset(thing.url, {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      fetch: fetch,
     })
   }
 }
@@ -112,7 +134,7 @@ export async function updateIntoPod(item: FormatContract) {
 export async function saveToPod(item: FormatContract) {
   const dogovorName = item.startTime.toJSON()
   const resourceBaseUrl = await getResourceBaseUrl()
-  const resourceUrl = resourceBaseUrl + dogovorName
+  const resourceUrl = resourceBaseUrl + dogovorName + '.ttl'
   const agent = buildThing(createThing({ url: resourceUrl + '#agent' }))
     .addStringNoLocale(SCHEMA_INRUPT.name, item.agent.name)
     .addUrl(RDF.type, 'https://schema.org/Person')
