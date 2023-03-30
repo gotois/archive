@@ -106,7 +106,7 @@ import { useMeta, useQuasar, QSkeleton, QScrollArea } from 'quasar'
 import { useStore } from '../store'
 import { contractTypes } from '../services/contractTypes'
 import { FormatContract } from '../types/models'
-import { updateIntoPod, getLoggedIn } from '../services/podHelper'
+import { updateIntoPod } from '../services/podHelper'
 
 const ArchiveListComponent = defineAsyncComponent({
   loader: () => import('components/ArchiveListComponent.vue'),
@@ -130,7 +130,8 @@ const router = useRouter()
 const limit = ref(5)
 const loadingVisible = ref(true)
 const scrollAreaRef = ref<QScrollArea>(null)
-const isLoggedIn = ref(getLoggedIn())
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+const isLoggedIn = computed(() => store.getters['Auth/isLoggedIn'] as boolean)
 
 const isSearch = computed(() => {
   return Boolean(router.currentRoute.value.query.filter)

@@ -5,9 +5,9 @@ import {
   createWebHashHistory,
   createWebHistory,
 } from 'vue-router'
-import { handleIncomingRedirect } from '@inrupt/solid-client-authn-browser'
 import { StateInterface } from '../store'
 import routes from './routes'
+import { solidAuth } from '../services/podHelper'
 
 export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
   const createHistory = process.env.SERVER
@@ -44,6 +44,15 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
         if (store.getters['Tutorial/tutorialCompleted']) {
           return '/'
         }
+        // Если мы останвоились на шаге три, то возвращаем аутентификацию
+        if (navigator.onLine && to.query.code && to.query.state) {
+          await solidAuth({
+            sessionRestoreCallback: () =>
+              void store.dispatch('Auth/openIdHandleIncoming'),
+            loginCallback: () =>
+              void store.dispatch('Auth/openIdHandleIncoming'),
+          })
+        }
         break
       }
       default: {
@@ -63,12 +72,18 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
         if (to.path === '/' && Object.keys(to.query).length === 0) {
           return '/?page=1'
         }
+        if (navigator.onLine) {
+          await solidAuth({
+            sessionRestoreCallback: () =>
+              void store.dispatch('Auth/openIdHandleIncoming'),
+            loginCallback: () =>
+              void store.dispatch('Auth/openIdHandleIncoming'),
+          })
+        }
         break
       }
     }
-    if (navigator.onLine) {
-      await handleIncomingRedirect()
-    }
+
     // explicitly return false to cancel the navigation
     // return false
   })

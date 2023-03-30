@@ -73,7 +73,7 @@
           <p class="text-body1">{{ $t('tutorial.data.body') }}</p>
           <q-space class="q-pa-xs"></q-space>
           <q-btn-group
-            v-if="!loggedIn"
+            v-if="!isLoggedIn"
             outline
             rounded
             stretch
@@ -108,7 +108,7 @@
           </q-btn-group>
 
           <q-form
-            v-if="loggedIn"
+            v-if="isLoggedIn"
             ref="nameForm"
             class="q-gutter-md"
             autocapitalize="off"
@@ -165,21 +165,18 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar, useMeta } from 'quasar'
 import VOtpInput from 'vue3-otp-input'
-import { login } from '@inrupt/solid-client-authn-browser'
 import PrivacyComponent from 'components/PrivacyComponent.vue'
 import { useStore } from '../store'
 import pkg from '../../package.json'
 import { createContract } from '../services/pdfHelper'
 import {
-  OIDC_ISSUER,
-  CLIENT_NAME,
+  solidAuth,
   getProfileName,
   initPod,
-  getLoggedIn,
   saveToPod,
 } from '../services/podHelper'
 import { formatterContract } from '../services/schemaHelper'
@@ -194,7 +191,8 @@ const searchParams = new URLSearchParams(window.location.search)
 const step = ref(Number(searchParams.get('step') ?? 1))
 const consumer = ref('')
 const pin = ref('')
-const loggedIn = ref(getLoggedIn())
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+const isLoggedIn = computed(() => store.getters['Auth/isLoggedIn'] as boolean)
 
 const metaData = {
   'title': 'Примите лицензионное соглашение',
@@ -202,21 +200,22 @@ const metaData = {
 }
 
 function onOfflineAuthorize() {
-  loggedIn.value = true
+  console.log('fixme')
 }
 
 async function onOnlineAuthorize() {
+  $q.loading.show()
   const redirectUrl =
     window.location.origin +
     window.location.pathname +
     '?step=' +
     String(step.value)
-  await login({
-    oidcIssuer: OIDC_ISSUER,
-    redirectUrl: redirectUrl,
-    clientName: CLIENT_NAME,
+  await solidAuth({
+    redirectUrl,
+    sessionRestoreCallback: () =>
+      void store.dispatch('Auth/openIdHandleIncoming'),
+    loginCallback: () => void store.dispatch('Auth/openIdHandleIncoming'),
   })
-  loggedIn.value = true
 }
 
 async function onFinish() {
@@ -240,15 +239,15 @@ async function onFinish() {
     startTime: new Date(),
     images: contractPDF,
   }
+  if (isLoggedIn.value) {
+    await initPod()
+  }
+
   try {
     await store.dispatch('addContract', newContract)
     await store.dispatch('consumerName', consumer.value)
     await store.dispatch('Tutorial/tutorialComplete')
-
-    if (getLoggedIn()) {
-      await initPod()
-      await saveToPod(formatterContract(newContract))
-    }
+    await saveToPod(formatterContract(newContract))
   } catch (e) {
     console.error(e)
     $q.notify({
@@ -282,7 +281,7 @@ const isOnline = navigator.onLine
 
 void (async () => {
   if (isOnline) {
-    if (loggedIn.value) {
+    if (isLoggedIn.value) {
       consumer.value = await getProfileName()
     }
   }

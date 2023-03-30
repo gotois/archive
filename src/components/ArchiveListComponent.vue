@@ -180,13 +180,15 @@
 <script lang="ts" setup>
 import { PropType, ref, computed, watch } from 'vue'
 import { useQuasar } from 'quasar'
+import { useStore } from '../store'
 import { FormatContract } from '../types/models'
 import { showImageInPopup, showPDFInPopup } from '../services/popup'
 import { isDateNotOk, formatterDate } from '../services/dateHelper'
 import { createPDF } from '../services/pdfHelper'
-import { saveToPod, getLoggedIn } from '../services/podHelper'
+import { saveToPod } from '../services/podHelper'
 
 const $q = useQuasar()
+const store = useStore()
 
 const props = defineProps({
   paginationCount: {
@@ -206,7 +208,8 @@ const props = defineProps({
 const emit = defineEmits(['onPaginate', 'onRemove', 'onEdit'])
 
 const items = ref(props.contracts ?? [])
-const isLoggedIn = ref(getLoggedIn())
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+const isLoggedIn = computed(() => store.getters['Auth/isLoggedIn'] as boolean)
 const currentPage = ref(1)
 const nativeShareAvailable = ref(typeof navigator.share === 'function')
 

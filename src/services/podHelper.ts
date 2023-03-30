@@ -10,7 +10,14 @@ import {
   getThingAll,
   getStringNoLocale,
 } from '@inrupt/solid-client'
-import { getDefaultSession, fetch } from '@inrupt/solid-client-authn-browser'
+import {
+  getDefaultSession,
+  fetch,
+  handleIncomingRedirect,
+  onLogin,
+  login,
+  onSessionRestore,
+} from '@inrupt/solid-client-authn-browser'
 import { RDF, FOAF, SCHEMA_INRUPT } from '@inrupt/vocab-common-rdf'
 import { FormatContract } from '../types/models'
 import pkg from '../../package.json'
@@ -19,6 +26,10 @@ const { name } = pkg
 
 export const OIDC_ISSUER = 'https://login.inrupt.com'
 export const CLIENT_NAME = 'Contracts'
+
+const getWebId = (): string => {
+  return getDefaultSession().info.webId
+}
 
 async function getResourceRootUrl() {
   const podsUrl = await getPodUrlAll(getWebId(), {
@@ -152,10 +163,31 @@ export async function saveToPod(item: FormatContract) {
   })
 }
 
-export const getLoggedIn = () => {
-  return getDefaultSession().info.isLoggedIn
-}
-
-const getWebId = () => {
-  return getDefaultSession().info.webId
+export async function solidAuth({
+  redirectUrl = window.location.href,
+  sessionRestoreCallback,
+  loginCallback,
+}: {
+  redirectUrl?: string
+  // eslint-disable-next-line no-unused-vars
+  sessionRestoreCallback: (currentUrl: string) => unknown
+  // eslint-disable-next-line no-unused-vars
+  loginCallback: () => unknown
+}) {
+  onSessionRestore((url) => {
+    sessionRestoreCallback(url)
+  })
+  onLogin(() => {
+    loginCallback()
+  })
+  const sessionInfo = await handleIncomingRedirect({
+    restorePreviousSession: true,
+  })
+  if (sessionInfo && !sessionInfo.isLoggedIn) {
+    await login({
+      oidcIssuer: OIDC_ISSUER,
+      redirectUrl,
+      clientName: CLIENT_NAME,
+    })
+  }
 }
