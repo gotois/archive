@@ -15,10 +15,14 @@ import {
   // @ts-ignore
 } from '@digitalbazaar/ed25519-signature-2020'
 
-export function getBaseCredential(webId: string, issuanceDate?: string) {
-  return {
-    '@context': ['https://www.w3.org/2018/credentials/v1'],
-    'type': ['VerifiableCredential'],
+export function createCredential(webId: string, issuanceDate?: string) {
+  const baseCredential = {
+    '@context': [
+      'https://www.w3.org/2018/credentials/v1',
+    ],
+    'type': [
+      'VerifiableCredential',
+    ],
     'issuer': {
       id: 'https://archive.gotointeractive.com',
     },
@@ -27,6 +31,8 @@ export function getBaseCredential(webId: string, issuanceDate?: string) {
       id: webId,
     },
   }
+
+  return baseCredential
 }
 
 function getDocumentLoader(url: string) {
@@ -34,7 +40,6 @@ function getDocumentLoader(url: string) {
   if (url === suiteContext.constants.CONTEXT_URL) {
     const document = suiteContext.CONTEXT
     return {
-      contextUrl: null,
       documentUrl: suiteContext.constants.CONTEXT_URL,
       document,
     }
@@ -84,7 +89,12 @@ export function createAndSignPresentation({
 }
 
 export async function getAndSaveKeyPair() {
-  if (localStorage.hasOwnProperty('publicKey') && localStorage.hasOwnProperty('privateKey')) {
+  if (
+    // eslint-disable-next-line no-prototype-builtins
+    localStorage.hasOwnProperty('publicKey') &&
+    // eslint-disable-next-line no-prototype-builtins
+    localStorage.hasOwnProperty('privateKey')
+  ) {
     return Ed25519VerificationKey2020.from({
       ...JSON.parse(localStorage.getItem('publicKey')),
       ...JSON.parse(localStorage.getItem('privateKey')),

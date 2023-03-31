@@ -203,7 +203,7 @@ import { formatterContract } from '../services/schemaHelper'
 import {
   sign,
   getAndSaveKeyPair,
-  getBaseCredential,
+  createCredential,
 } from '../services/cryptoHelper'
 
 const { description, version, productName } = pkg
@@ -277,6 +277,10 @@ async function onFinish() {
     images: contractPDF,
   }
   try {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const keyPair = await getAndSaveKeyPair()
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+
     if (isLoggedIn.value) {
       await initPod()
     }
