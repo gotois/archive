@@ -44,8 +44,22 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
         if (store.getters['Tutorial/tutorialCompleted']) {
           return '/'
         }
+        // если пользователь отменил вход через WebId
+        if (to.query.error === 'access_denied') {
+          return {
+            name: 'tutorial',
+            query: {
+              step: 3,
+            },
+          }
+        }
         // Если мы останвоились на шаге три, то возвращаем аутентификацию
-        if (navigator.onLine && to.query.code && to.query.state) {
+        if (
+          navigator.onLine &&
+          to.query.code &&
+          to.query.state &&
+          !to.query.error
+        ) {
           await solidAuth({
             sessionRestoreCallback: () =>
               void store.dispatch('Auth/openIdHandleIncoming'),
@@ -58,7 +72,9 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
       default: {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         if (!store.getters['Tutorial/tutorialCompleted']) {
-          return '/tutorial'
+          return {
+            name: 'tutorial',
+          }
         }
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
         if (!store.getters['Auth/checkAuth']) {
@@ -70,7 +86,20 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
           }
         }
         if (to.path === '/' && Object.keys(to.query).length === 0) {
-          return '/?page=1'
+          return {
+            name: '/',
+            query: {
+              page: 1,
+            },
+          }
+        }
+        if (to.query.error === 'access_denied') {
+          return {
+            name: '/',
+            query: {
+              page: 1,
+            },
+          }
         }
         if (navigator.onLine && !to.query.error) {
           await solidAuth({
