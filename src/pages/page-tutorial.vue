@@ -197,8 +197,14 @@ import {
   getProfileName,
   initPod,
   saveToPod,
+  getWebId,
 } from '../services/podHelper'
 import { formatterContract } from '../services/schemaHelper'
+import {
+  sign,
+  getAndSaveKeyPair,
+  getBaseCredential,
+} from '../services/cryptoHelper'
 
 const { description, version, productName } = pkg
 const $q = useQuasar()

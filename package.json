@@ -30,6 +30,8 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
+    "@digitalbazaar/ed25519-verification-key-2020": "^4.1.0",
+    "@digitalbazaar/vc": "6.0.1",
     "@inrupt/solid-client": "1.26.0",
     "@inrupt/solid-client-authn-browser": "1.14.0",
     "@inrupt/vocab-common-rdf": "1.0.5",
@@ -40,7 +42,6 @@
     "dexie-export-import": "4.0.7",
     "file-saver": "2.0.5",
     "html-to-text": "9.0.5",
-    "jsonld-signatures": "11.1.0",
     "jspdf": "2.5.1",
     "jszip": "3.10.1",
     "minisearch": "6.0.1",
@@ -53,7 +54,7 @@
   "devDependencies": {
     "@babel/eslint-parser": "~7.21.3",
     "@bubblewrap/cli": "~1.19.1",
-    "@openpgp/web-stream-tools": "~0.0.13",
+    "@digitalbazaar/ed25519-signature-2020": "^5.2.0",
     "@quasar/app": "~3.3.3",
     "@types/file-saver": "~2.0.5",
     "@types/html-to-text": "~9.0.0",

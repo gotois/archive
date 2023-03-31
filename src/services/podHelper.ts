@@ -28,7 +28,7 @@ const { name } = pkg
 
 export const CLIENT_NAME = 'Contracts'
 
-const getWebId = (): string => {
+export const getWebId = (): string => {
   return getDefaultSession().info.webId
 }
 
