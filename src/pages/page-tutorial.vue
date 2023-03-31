@@ -92,6 +92,25 @@
                 документов</q-tooltip
               >
             </q-btn>
+            <q-select
+              v-model="oidcIssuer"
+              label="Где постится Ваш Pod?"
+              use-input
+              square
+              :options="[
+                'https://login.inrupt.com',
+                'https://login.inrupt.net',
+              ]"
+              hide-dropdown-icon
+              input-debounce="0"
+              clearable
+              new-value-mode="add-unique"
+            >
+              <q-tooltip
+                >Используйте адрес своего Pod или используйте заранее
+                заведенные</q-tooltip
+              >
+            </q-select>
             <q-btn
               color="accent"
               type="button"
@@ -189,6 +208,7 @@ const router = useRouter()
 const searchParams = new URLSearchParams(window.location.search)
 
 const step = ref(Number(searchParams.get('step') ?? 1))
+const oidcIssuer = ref<string>(null)
 const consumer = ref('')
 const pin = ref('')
 const showForm = ref(false)
@@ -211,12 +231,22 @@ async function onOnlineAuthorize() {
     window.location.pathname +
     '?step=' +
     String(step.value)
-  await solidAuth({
-    redirectUrl,
-    sessionRestoreCallback: () =>
-      void store.dispatch('Auth/openIdHandleIncoming'),
-    loginCallback: () => void store.dispatch('Auth/openIdHandleIncoming'),
-  })
+  try {
+    await solidAuth({
+      redirectUrl,
+      oidcIssuer: oidcIssuer.value,
+      sessionRestoreCallback: () =>
+        void store.dispatch('Auth/openIdHandleIncoming'),
+      loginCallback: () => void store.dispatch('Auth/openIdHandleIncoming'),
+    })
+  } catch (e) {
+    console.error(e)
+    $q.notify({
+      color: 'negative',
+      message: 'Ошибка входа',
+    })
+    $q.loading.hide()
+  }
 }
 
 async function onFinish() {

@@ -28,7 +28,6 @@
             :label="$t('searchDialog.searchText')"
             use-input
             rounded
-            fill-input
             hide-selected
             autofocus
             filled

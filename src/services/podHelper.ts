@@ -1,3 +1,4 @@
+import { LocalStorage } from 'quasar'
 import {
   getThing,
   setThing,
@@ -25,7 +26,6 @@ import pkg from '../../package.json'
 
 const { name } = pkg
 
-export const OIDC_ISSUER = 'https://login.inrupt.com'
 export const CLIENT_NAME = 'Contracts'
 
 const getWebId = (): string => {
@@ -198,12 +198,14 @@ export async function solidAuth({
   redirectUrl = window.location.href,
   sessionRestoreCallback,
   loginCallback,
+  oidcIssuer = LocalStorage.getItem('oidcIssuer'),
 }: {
   redirectUrl?: string
   // eslint-disable-next-line no-unused-vars
   sessionRestoreCallback: (currentUrl: string) => unknown
   // eslint-disable-next-line no-unused-vars
   loginCallback: () => unknown
+  oidcIssuer?: string
 }) {
   onSessionRestore((url) => {
     sessionRestoreCallback(url)
@@ -215,8 +217,9 @@ export async function solidAuth({
     restorePreviousSession: true,
   })
   if (sessionInfo && !sessionInfo.isLoggedIn) {
+    LocalStorage.set('oidcIssuer', oidcIssuer)
     await login({
-      oidcIssuer: OIDC_ISSUER,
+      oidcIssuer,
       redirectUrl,
       clientName: CLIENT_NAME,
     })
