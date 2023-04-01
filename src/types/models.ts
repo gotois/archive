@@ -9,8 +9,12 @@ export interface ContractTable {
   images?: string[]
 }
 
+export interface ContextCredential<T> {
+  [key: string]: T
+}
+
 export interface Credential {
-  '@context': string[]
+  '@context': string[] | ContextCredential<string>[]
   'type': string[]
   'issuer': { id: string }
   'issuanceDate': string
