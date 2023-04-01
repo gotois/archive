@@ -283,7 +283,7 @@ function onFocusInput({ target }: { target: HTMLElement }) {
 }
 
 async function addNewContract(newContract: ContractTable) {
-  await store.dispatch('addContract', newContract)
+  await store.dispatch('addContract', { contractData: newContract, usePod: true })
   $q.notify({
     message: `Запись "${newContract.instrument_name.toLocaleLowerCase()}" добавлена`,
     type: 'positive',

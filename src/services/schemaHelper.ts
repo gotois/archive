@@ -42,11 +42,10 @@ function deepMerge<T extends { [key: string]: any }>(target: T, source: DeepPart
   return source as T;
 }
 
-export function formatterLDContract(formatContract: FormatContract) {
+export function formatterLDContract(webId: string, formatContract: FormatContract) {
   const context = new Map()
   const credentialSubject = new Map()
 
-  const webId = getWebId()
   const baseCredential = createCredential(webId)
   const type = formatContract['@type']
   const agent = formatContract.agent

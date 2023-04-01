@@ -9,8 +9,8 @@ import {
   formatterLDContract,
   formatterDatasetContract,
 } from '../services/schemaHelper'
-import { saveToPod, getResourceBaseUrl } from '../services/podHelper'
-import { sign } from '../services/cryptoHelper'
+import { saveToPod, getResourceBaseUrl, getWebId } from '../services/podHelper'
+import { sign, getAndSaveKeyPair } from '../services/cryptoHelper'
 
 export interface ContractState {
   contracts: ContractTable[]
@@ -43,31 +43,36 @@ const ContractClass: Module<ContractState, StateInterface> = {
     },
   },
   actions: {
-    async addContract(context, contractTable: ContractTable) {
+    async addContract(context, { contractData, usePod = false }: { contractData: ContractTable, usePod: boolean }) {
       // Step 1: Save JS to Vuex
-      context.commit('addContract', contractTable)
+      context.commit('addContract', contractData)
 
       // Step 2: Save JSON-LD to IndexedDB
-      const jsldContract = formatterContract(contractTable)
-      await db.add(contractTable) // todo в Dexie записывать FormatContract
-
+      const jsldContract = formatterContract(contractData)
       // Step 3: Save Signed LD to IndexedDB
-      const credential = formatterLDContract(jsldContract)
-
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const keyPair = await getAndSaveKeyPair()
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      // если нет доступа к WebID используем для идентификации fingerprint от keyPair
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+      const webId = getWebId() ?? 'did:key:' + (keyPair.fingerprint() as string)
+      const credential = formatterLDContract(webId, jsldContract)
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const signedVC = await sign({
-        credential,
+        credential: credential,
       })
-      // await db.add(contractTable) // todo в Dexie записывать FormatContract
+      await db.add(contractData) // todo в Dexie записывать всю семантику от signedVC
 
       // Step 4: Save Solid Dataset to Pod
-      const resourceBaseUrl = await getResourceBaseUrl()
-      const solidDatasetContract = formatterDatasetContract(
-        resourceBaseUrl,
-        signedVC,
-      )
-
-      await saveToPod(resourceBaseUrl, solidDatasetContract)
+      if (usePod) {
+        const resourceBaseUrl = await getResourceBaseUrl()
+        const resourceName = resourceBaseUrl + contractData.startTime.toJSON() + '.ttl'
+        const solidDatasetContract = formatterDatasetContract(
+          resourceName,
+          signedVC,
+        )
+        await saveToPod(resourceName, solidDatasetContract)
+      }
     },
     async editContract(context, contract: FormatContract) {
       const id = Number(contract.identifier.value)
