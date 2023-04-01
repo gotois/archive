@@ -147,7 +147,7 @@
               :value="pin"
               input-classes="otp-input"
               separator="-"
-              :num-inputs="4"
+              :num-inputs="pinLength"
               :is-input-num="true"
               :conditional-class="['first', '', '', 'last']"
               :placeholder="['*', '*', '*', '*']"
@@ -207,6 +207,7 @@ const oidcIssuer = ref<string>(null)
 const consumer = ref('')
 const pin = ref('')
 const showForm = ref(false)
+const pinLength = ref(4)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 const isLoggedIn = computed(() => store.getters['Auth/isLoggedIn'] as boolean)
 
@@ -257,7 +258,7 @@ async function onOnlineAuthorize() {
 }
 
 async function onFinish() {
-  if (pin.value.length === 4) {
+  if (pin.value.length === pinLength.value) {
     if (window.confirm('Пин ' + pin.value + ' будет сохранен?')) {
       await store.dispatch('Auth/setCode', pin.value)
     }
