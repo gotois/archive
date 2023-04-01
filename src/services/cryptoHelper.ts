@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-
+import { uid } from 'quasar'
 // @ts-ignore
 import * as vc from '@digitalbazaar/vc'
 // @ts-ignore
@@ -71,7 +71,7 @@ export function sign({
 export function createAndSignPresentation({
   issue, // aka signedVC
   suite,
-  challenge = '12ec21',
+  challenge = uid(),
 }: {
   issue: any
   suite: any
