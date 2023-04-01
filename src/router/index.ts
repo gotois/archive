@@ -32,6 +32,7 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
   })
 
   void store.dispatch('loadContractNames')
+  const tutorialFinalStep = 3
 
   Router.beforeEach(async (to, from) => {
     switch (to.path) {
@@ -49,21 +50,20 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
             },
           }
         }
-        // если пользователь отменил вход через WebId
+        // Если пользователь отменил вход через WebId
         if (to.query.error === 'access_denied') {
           return {
             name: 'tutorial',
             query: {
-              step: 3,
+              step: tutorialFinalStep,
             },
           }
         }
-        // Если мы остановились на шаге три, то возвращаем аутентификацию
         if (
-          to.query.step === '3' &&
+          !to.query.error &&
+          to.query.step === String(tutorialFinalStep) &&
           to.query.code &&
-          to.query.state &&
-          !to.query.error
+          to.query.state
         ) {
           const redirectUrl = window.location.origin + window.location.pathname
           try {
@@ -72,11 +72,12 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
               loginCallback: () =>
                 void store.dispatch('Auth/openIdHandleIncoming'),
             })
-            return true
+            return
           } catch {
             /* empty */
           }
         }
+        // Если мы остановились на шаге три, то возвращаем аутентификацию
         break
       }
       default: {
@@ -84,6 +85,7 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
         if (!store.getters['Tutorial/tutorialCompleted']) {
           return {
             name: 'tutorial',
+            query: {},
           }
         }
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
@@ -111,18 +113,28 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
             },
           }
         }
-        if (!to.query.error && !from.name) {
+        if (to.query.code && to.query.state) {
+          return { name: to.name, query: {} }
+        }
+        if (
+          !from.name &&
+          !to.query.error &&
+          !to.query.code &&
+          !to.query.state
+        ) {
           try {
             await solidAuth({
+              redirectUrl: window.location.origin + to.path,
               sessionRestoreCallback: () =>
                 void store.dispatch('Auth/openIdHandleIncoming'),
               loginCallback: () =>
                 void store.dispatch('Auth/openIdHandleIncoming'),
               restorePreviousSession: true,
             })
-            return true
+            return
           } catch (e) {
             console.error(e)
+            return false
           }
         }
         break

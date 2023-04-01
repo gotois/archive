@@ -16,14 +16,9 @@
               <q-tooltip>Вы подключены к SOLID серверу</q-tooltip>
             </q-badge>
           </template>
-          <template v-else-if="isOnline">
-            <q-badge rounded color="yellow">
-              <q-tooltip>Вы онлайн</q-tooltip>
-            </q-badge>
-          </template>
           <template v-else>
-            <q-badge rounded color="red">
-              <q-tooltip>Вы офлайн</q-tooltip>
+            <q-badge rounded color="yellow">
+              <q-tooltip>Вы не подключены к SOLID серверу</q-tooltip>
             </q-badge>
           </template>
           {{ $t('header.title') }}
@@ -87,7 +82,7 @@
           group="backupgroup"
           icon="person"
           :dense="$q.platform.is.desktop"
-          class="column"
+          class="column non-selectable"
           :class="{
             'bg-grey-2': profileOpen,
           }"
@@ -138,7 +133,7 @@
           group="backupgroup"
           icon="vpn_key"
           :dense="$q.platform.is.desktop"
-          class="column"
+          class="column non-selectable"
           :class="{
             'bg-grey-2': otpOpen,
           }"
@@ -168,7 +163,7 @@
           group="backupgroup"
           icon="import_export"
           :dense="$q.platform.is.desktop"
-          class="column"
+          class="column non-selectable"
           :class="{
             'bg-grey-2': settingsOpen,
           }"
@@ -315,7 +310,6 @@ const navigatorVersion = ref(version)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 const consumer = ref(store.getters.consumer as string)
 
-const isOnline = ref(navigator.onLine)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 const isLoggedIn = computed(() => store.getters['Auth/isLoggedIn'] as boolean)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return

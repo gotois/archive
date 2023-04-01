@@ -15,10 +15,10 @@ import {
 import {
   getDefaultSession,
   fetch,
-  handleIncomingRedirect,
-  onLogin,
   login,
+  handleIncomingRedirect,
   onSessionRestore,
+  onLogin,
 } from '@inrupt/solid-client-authn-browser'
 import { FOAF, SCHEMA_INRUPT } from '@inrupt/vocab-common-rdf'
 import { FormatContract } from '../types/models'
