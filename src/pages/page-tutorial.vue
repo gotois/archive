@@ -72,7 +72,9 @@
           </p>
           <p class="text-body1">{{ $t('tutorial.data.body') }}</p>
           <q-space class="q-pa-xs"></q-space>
-          <p v-if="!showForm">Введите адрес своего oidc Issuer:</p>
+          <p v-if="!showForm"
+            >Введите адрес своего OIDC Issuer для получения Вашего WebID:</p
+          >
           <div v-if="!showForm" class="full-width">
             <q-select
               v-model="oidcIssuer"
@@ -214,7 +216,7 @@ const metaData = {
 }
 
 function checkUrl(value?: string) {
-  if (!value) {
+  if (value && value.length <= 3) {
     return 'Введите валидный URL Вашего провайдера.'
   }
   return true
