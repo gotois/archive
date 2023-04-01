@@ -163,6 +163,9 @@ export async function solidAuth({
   oidcIssuer?: string
   restorePreviousSession?: boolean
 }) {
+  if (!navigator.onLine) {
+    return
+  }
   onSessionRestore((url) => {
     sessionRestoreCallback(url)
   })

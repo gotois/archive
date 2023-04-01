@@ -33,7 +33,7 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
 
   void store.dispatch('loadContractNames')
 
-  Router.beforeEach(async (to) => {
+  Router.beforeEach(async (to, from) => {
     switch (to.path) {
       case '/privacy':
       case '/auth': {
@@ -58,9 +58,9 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
             },
           }
         }
-        // Если мы останвоились на шаге три, то возвращаем аутентификацию
+        // Если мы остановились на шаге три, то возвращаем аутентификацию
         if (
-          navigator.onLine &&
+          to.query.step === '3' &&
           to.query.code &&
           to.query.state &&
           !to.query.error
@@ -111,7 +111,7 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
             },
           }
         }
-        if (navigator.onLine && !to.query.error) {
+        if (!to.query.error && !from.name) {
           try {
             await solidAuth({
               sessionRestoreCallback: () =>
