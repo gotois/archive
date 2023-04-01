@@ -263,10 +263,6 @@ async function onFinish() {
     $q.platform.is.name === 'firefox',
   )
 
-  if (isLoggedIn.value) {
-    await initPod()
-  }
-
   const newContract: ContractTable = {
     agent_name: consumer.value,
     participant_name: productName + ' ' + version,
@@ -276,6 +272,9 @@ async function onFinish() {
     images: contractPDF,
   }
   try {
+    if (isLoggedIn.value) {
+      await initPod()
+    }
     await store.dispatch('addContract', {
       contractData: newContract,
       usePod: isLoggedIn.value,

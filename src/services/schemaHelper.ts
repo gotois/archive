@@ -108,6 +108,7 @@ type DeepPartial<T> = {
   [P in keyof T]?: DeepPartial<T[P]>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function deepMerge<T extends { [key: string]: any }>(
   target: T,
   source: DeepPartial<T>,

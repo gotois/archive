@@ -65,12 +65,17 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
           to.query.state &&
           !to.query.error
         ) {
-          await solidAuth({
-            sessionRestoreCallback: () =>
-              void store.dispatch('Auth/openIdHandleIncoming'),
-            loginCallback: () =>
-              void store.dispatch('Auth/openIdHandleIncoming'),
-          })
+          const redirectUrl = window.location.origin + window.location.pathname
+          try {
+            await solidAuth({
+              redirectUrl: redirectUrl,
+              loginCallback: () =>
+                void store.dispatch('Auth/openIdHandleIncoming'),
+            })
+            return true
+          } catch {
+            /* empty */
+          }
         }
         break
       }
@@ -113,6 +118,7 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
                 void store.dispatch('Auth/openIdHandleIncoming'),
               loginCallback: () =>
                 void store.dispatch('Auth/openIdHandleIncoming'),
+              restorePreviousSession: true,
             })
             return true
           } catch (e) {

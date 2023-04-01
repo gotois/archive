@@ -59,8 +59,8 @@ export function createAndSignPresentation({
   suite,
   challenge = uid(),
 }: {
-  issue: any
-  suite: any
+  issue: unknown
+  suite: unknown
   challenge: string
 }) {
   const presentation = vc.createPresentation({

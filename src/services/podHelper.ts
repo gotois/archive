@@ -153,13 +153,15 @@ export async function solidAuth({
   sessionRestoreCallback,
   loginCallback,
   oidcIssuer = LocalStorage.getItem('oidcIssuer'),
+  restorePreviousSession = false,
 }: {
   redirectUrl?: string
   // eslint-disable-next-line no-unused-vars
-  sessionRestoreCallback: (currentUrl: string) => unknown
+  sessionRestoreCallback?: (currentUrl: string) => unknown
   // eslint-disable-next-line no-unused-vars
-  loginCallback: () => unknown
+  loginCallback?: () => unknown
   oidcIssuer?: string
+  restorePreviousSession?: boolean
 }) {
   onSessionRestore((url) => {
     sessionRestoreCallback(url)
@@ -169,7 +171,7 @@ export async function solidAuth({
   })
   const defaultSession = getDefaultSession().info
   const sessionInfo = await handleIncomingRedirect({
-    restorePreviousSession: true,
+    restorePreviousSession,
   })
   if (!oidcIssuer) {
     return
@@ -190,16 +192,15 @@ export async function solidAuth({
     false
 
   if (
-    !(
-      sessionInfo.isLoggedIn ||
-      isExpirationAlive ||
-      defaultSession.sessionId === sessionInfo.sessionId
-    )
+    sessionInfo.isLoggedIn ||
+    isExpirationAlive ||
+    defaultSession.sessionId === sessionInfo.sessionId
   ) {
-    return login({
-      oidcIssuer,
-      redirectUrl,
-      clientName: CLIENT_NAME,
-    })
+    return
   }
+  return login({
+    oidcIssuer,
+    redirectUrl,
+    clientName: CLIENT_NAME,
+  })
 }
