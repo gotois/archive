@@ -39,9 +39,10 @@ export function formatterDatasetContract(resourceUrl: string, signedVC: ProofCre
   const endTime = buildThing(createThing({ url: resourceUrl + '#endTime' }))
   if (item.endTime) {
     endTime
-      .addDate(SCHEMA_INRUPT.endTime, item.endTime)
+      .addDate(SCHEMA_INRUPT.endTime, new Date(item.endTime))
       // @ts-ignore
-      .addUrl(RDF.type, new Date(item.endTime))
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      .addUrl(RDF.type, types.endTime)
   }
   const identifier = buildThing(
     createThing({ url: resourceUrl + '#identifier' }),
