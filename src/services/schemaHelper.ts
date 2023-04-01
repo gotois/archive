@@ -1,11 +1,17 @@
-/* eslint-disable */
-import { ContractTable, FormatContract, Credential, ProofCredential } from '../types/models'
-import { getWebId } from '../services/podHelper'
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+import {
+  setThing,
+  buildThing,
+  createThing,
+  createSolidDataset,
+} from '@inrupt/solid-client'
+import { RDF, SCHEMA_INRUPT } from '@inrupt/vocab-common-rdf'
+import { ContractTable, FormatContract, Credential, ProofCredential, BaseContract } from '../types/models'
 
 function createCredential(
   webId: string,
   issuanceDate?: string,
-): Credential<{ id: string }> {
+) {
   return {
     '@context': ['https://www.w3.org/2018/credentials/v1'],
     'type': ['VerifiableCredential'],
@@ -17,6 +23,70 @@ function createCredential(
       id: webId,
     },
   }
+}
+
+// todo переписать на TypeScript без ts-ignore
+export function formatterDatasetContract(resourceUrl: string, signedVC: ProofCredential<unknown>) {
+  // @ts-ignore
+  const types = signedVC['@context'][1]
+  const item = signedVC.credentialSubject as BaseContract
+
+  const agent = buildThing(createThing({ url: resourceUrl + '#agent' }))
+    .addStringNoLocale(SCHEMA_INRUPT.name, item.agent.name)
+    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    .addUrl(RDF.type, types.agent)
+  const endTime = buildThing(createThing({ url: resourceUrl + '#endTime' }))
+  if (item.endTime) {
+    endTime
+      .addDate(SCHEMA_INRUPT.endTime, item.endTime)
+      // @ts-ignore
+      .addUrl(RDF.type, new Date(item.endTime))
+  }
+  const identifier = buildThing(
+    createThing({ url: resourceUrl + '#identifier' }),
+  )
+    .addStringNoLocale(SCHEMA_INRUPT.identifier, item.identifier.value)
+    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    .addUrl(RDF.type, types.value)
+  const instrument = buildThing(
+    createThing({ url: resourceUrl + '#instrument' }),
+  )
+    .addStringNoLocale(SCHEMA_INRUPT.description, item.instrument.description)
+    .addStringNoLocale(SCHEMA_INRUPT.name, item.instrument.name)
+    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    .addUrl(RDF.type, types.instrument)
+  const objectThing = buildThing(createThing({ url: resourceUrl + '#object' }))
+  // @ts-ignore
+  item.object.forEach((object) => objectThing.addUrl(SCHEMA_INRUPT.image, object))
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  objectThing.addUrl(RDF.type, types.object)
+  const participant = buildThing(
+    createThing({ url: resourceUrl + '#participant' }),
+  )
+    .addStringNoLocale(SCHEMA_INRUPT.name, item.participant.name)
+    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    .addUrl(RDF.type, types.participant)
+  const startTime = buildThing(createThing({ url: resourceUrl + '#startTime' }))
+    .addDate(SCHEMA_INRUPT.startTime, new Date(item.startTime))
+    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    .addUrl(RDF.type, types.startTime)
+
+  let dataset = createSolidDataset()
+  dataset = setThing(dataset, agent.build())
+  dataset = setThing(dataset, endTime.build())
+  dataset = setThing(dataset, identifier.build())
+  dataset = setThing(dataset, instrument.build())
+  dataset = setThing(dataset, participant.build())
+  dataset = setThing(dataset, startTime.build())
+  dataset = setThing(dataset, objectThing.build())
+
+  return dataset
 }
 
 export function formatterContracts(
@@ -34,6 +104,7 @@ function deepMerge<T extends { [key: string]: any }>(target: T, source: DeepPart
     return (target.concat(source) as unknown) as T;
   }
   if (target && source && typeof target === 'object' && typeof source === 'object') {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return Object.assign(
       target,
       ...Object.keys(source).map((key) => ({ [key]: deepMerge(target[key as keyof T], source[key as keyof T] as DeepPartial<T[keyof T]> ) }))
@@ -67,7 +138,7 @@ export function formatterLDContract(webId: string, formatContract: FormatContrac
   context.set('startTime', 'https://schema.org/startTime')
   context.set('endTime', 'https://schema.org/endTime')
   context.set('propertyID', 'https://schema.org/propertyID')
-  context.set('value', 'https://schema.org/value')
+  context.set('value', 'https://schema.org/PropertyValue')
   context.set('object', 'https://schema.org/ImageObject')
 
   credentialSubject.set('agent', {
@@ -92,8 +163,10 @@ export function formatterLDContract(webId: string, formatContract: FormatContrac
     credentialSubject.set('object', object.map(({ contentUrl }) => contentUrl))
   }
   const credential = {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     '@context': Object.fromEntries(context),
     type: type,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     credentialSubject: Object.fromEntries(credentialSubject),
   }
 

@@ -34,7 +34,7 @@ export async function sign({
 }: {
   credential: Credential<unknown>
   verificationMethod?: string
-}): Promise<ProofCredential> {
+}): Promise<ProofCredential<unknown>> {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const keyPair = await getAndSaveKeyPair()
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call

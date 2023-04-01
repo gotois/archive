@@ -38,11 +38,12 @@ export interface Credential<T> {
   'credentialSubject': { id: string } | CredentialSubject<T>
 }
 
-export interface ProofCredential extends Credential<unknown> {
+export interface ProofCredential<T> extends Credential<T> {
   proof: Proof
 }
 
 export interface BaseContract {
+  id?: string
   agent: FormatContractAgent
   participant: FormatContractParticipant
   instrument: FormatContractInstrument

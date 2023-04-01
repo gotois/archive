@@ -1,5 +1,5 @@
 import { Module } from 'vuex'
-import { FormatContract, ContractTable } from '../types/models'
+import {FormatContract, ContractTable } from '../types/models'
 import { StateInterface } from './index'
 import { db } from '../services/databaseHelper'
 import { recommendationContractTypes } from '../services/recommendationContractTypes'
@@ -9,7 +9,7 @@ import {
   formatterLDContract,
   formatterDatasetContract,
 } from '../services/schemaHelper'
-import { saveToPod, getResourceBaseUrl, getWebId } from '../services/podHelper'
+import { saveToPod, getWebId, getResourceBaseUrl } from '../services/podHelper'
 import { sign, getAndSaveKeyPair } from '../services/cryptoHelper'
 
 export interface ContractState {
