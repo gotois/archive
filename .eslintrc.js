@@ -56,9 +56,8 @@ module.exports = {
     process: 'readonly',
   },
 
-  // add your custom rules here
   rules: {
-    'prettier/prettier': 'error',
+    'prettier/prettier': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     quotes: ['warn', 'single', {avoidEscape: true}],
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
   }

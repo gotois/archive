@@ -9,32 +9,32 @@ import { uid } from 'quasar'
 import * as vc from '@digitalbazaar/vc'
 // @ts-ignore
 import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020'
+// @ts-ignore
+import cred from 'credentials-context'
+// @ts-ignore
+import ed25519Ctx from 'ed25519-signature-2020-context'
 import {
   Ed25519Signature2020,
-  suiteContext,
   // @ts-ignore
 } from '@digitalbazaar/ed25519-signature-2020'
-import { Credential } from '../types/models'
+// @ts-ignore
+import { JsonLdDocumentLoader } from 'jsonld-document-loader'
+import { Credential, ProofCredential } from '../types/models'
 
-function getDocumentLoader(url: string) {
-  // hack - make sure the cryptosuite context can load too
-  if (url === suiteContext.constants.CONTEXT_URL) {
-    const document = suiteContext.CONTEXT
-    return {
-      documentUrl: suiteContext.constants.CONTEXT_URL,
-      document,
-    }
-  }
-  return vc.defaultDocumentLoader(url)
-}
+const jdl = new JsonLdDocumentLoader()
+jdl.addStatic(ed25519Ctx.CONTEXT_URL, ed25519Ctx.CONTEXT)
+jdl.addStatic(Ed25519Signature2020.CONTEXT_URL, Ed25519Signature2020.CONTEXT)
+jdl.addStatic(cred.CREDENTIALS_CONTEXT_V1_URL, cred.contexts.get(cred.constants.CREDENTIALS_CONTEXT_V1_URL))
+
+const documentLoader = jdl.build()
 
 export async function sign({
   credential,
   verificationMethod = 'https://gotointeractive.com',
 }: {
-  credential: Credential
+  credential: Credential<unknown>
   verificationMethod?: string
-}) {
+}): Promise<ProofCredential> {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const keyPair = await getAndSaveKeyPair()
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
@@ -47,7 +47,7 @@ export async function sign({
   return vc.issue({
     credential,
     suite,
-    documentLoader: getDocumentLoader,
+    documentLoader: documentLoader,
   })
 }
 
@@ -67,7 +67,7 @@ export function createAndSignPresentation({
     presentation,
     suite,
     challenge,
-    documentLoader: getDocumentLoader,
+    documentLoader: documentLoader,
   })
 }
 
