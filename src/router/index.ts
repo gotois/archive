@@ -42,7 +42,12 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
       case '/tutorial': {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         if (store.getters['Tutorial/tutorialCompleted']) {
-          return '/'
+          return {
+            name: 'archive',
+            query: {
+              page: 1,
+            },
+          }
         }
         // если пользователь отменил вход через WebId
         if (to.query.error === 'access_denied') {
@@ -87,7 +92,7 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
         }
         if (to.path === '/' && Object.keys(to.query).length === 0) {
           return {
-            name: '/',
+            name: 'archive',
             query: {
               page: 1,
             },
@@ -95,7 +100,7 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
         }
         if (to.query.error === 'access_denied') {
           return {
-            name: '/',
+            name: 'archive',
             query: {
               page: 1,
             },
@@ -108,6 +113,7 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
             loginCallback: () =>
               void store.dispatch('Auth/openIdHandleIncoming'),
           })
+          return true
         }
         break
       }
