@@ -181,19 +181,8 @@ import PrivacyComponent from 'components/PrivacyComponent.vue'
 import { useStore } from '../store'
 import pkg from '../../package.json'
 import { createContractPDF } from '../services/pdfHelper'
-import {
-  solidAuth,
-  getProfileName,
-  initPod,
-  saveToPod,
-  getWebId,
-} from '../services/podHelper'
-import { formatterContract } from '../services/schemaHelper'
-import {
-  sign,
-  getAndSaveKeyPair,
-  createCredential,
-} from '../services/cryptoHelper'
+import { solidAuth, getProfileName, initPod } from '../services/podHelper'
+import { ContractTable } from '../types/models'
 
 const { description, version, productName } = pkg
 const $q = useQuasar()
@@ -225,12 +214,14 @@ function checkUrl(value?: string) {
 
 async function onOnlineAuthorize() {
   if (!oidcIssuer.value) {
-    if (window.confirm('Провайдер не был введен. Вы хотите использовать Offline режим? Вы не сможете подписывать договоры цифровой подписью без WebId.')) {
+    const confirmMessage =
+      'Провайдер не был введен. Вы хотите использовать Offline режим? Вы не сможете подписывать договоры цифровой подписью без WebId.'
+    if (window.confirm(confirmMessage)) {
       showForm.value = true
-      return;
+      return
     }
     showForm.value = false
-    return;
+    return
   }
 
   $q.loading.show()
@@ -264,13 +255,18 @@ async function onFinish() {
     }
   }
   $q.loading.show()
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
   const html = PrivacyComponent.render().children[0].children as string
   const contractPDF = await createContractPDF(
     html,
     $q.platform.is.name === 'firefox',
   )
-  const newContract = {
+
+  if (isLoggedIn.value) {
+    await initPod()
+  }
+
+  const newContract: ContractTable = {
     agent_name: consumer.value,
     participant_name: productName + ' ' + version,
     instrument_name: 'Пользовательское соглашение',
@@ -279,19 +275,16 @@ async function onFinish() {
     images: contractPDF,
   }
   try {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const keyPair = await getAndSaveKeyPair()
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-
-    if (isLoggedIn.value) {
-      await initPod()
-    }
     await store.dispatch('addContract', newContract)
     await store.dispatch('consumerName', consumer.value)
     await store.dispatch('Tutorial/tutorialComplete')
-    if (isLoggedIn.value) {
-      await saveToPod(formatterContract(newContract))
-    }
+    await router.push({
+      name: 'filter',
+      query: {
+        filter: newContract.instrument_name,
+        page: 1,
+      },
+    })
   } catch (e) {
     console.error(e)
     $q.notify({
@@ -306,13 +299,6 @@ async function onFinish() {
   } finally {
     $q.loading.hide()
   }
-  await router.push({
-    name: 'filter',
-    query: {
-      filter: newContract.instrument_name,
-      page: 1,
-    },
-  })
 }
 
 const handleOnComplete = (value: string) => {

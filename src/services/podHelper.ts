@@ -3,7 +3,6 @@ import {
   getThing,
   setThing,
   buildThing,
-  createThing,
   getSolidDataset,
   createSolidDataset,
   saveSolidDatasetAt,
@@ -11,6 +10,7 @@ import {
   getThingAll,
   getStringNoLocale,
   deleteSolidDataset,
+  SolidDataset,
 } from '@inrupt/solid-client'
 import {
   getDefaultSession,
@@ -20,7 +20,7 @@ import {
   login,
   onSessionRestore,
 } from '@inrupt/solid-client-authn-browser'
-import { RDF, FOAF, SCHEMA_INRUPT } from '@inrupt/vocab-common-rdf'
+import { FOAF, SCHEMA_INRUPT } from '@inrupt/vocab-common-rdf'
 import { FormatContract } from '../types/models'
 import pkg from '../../package.json'
 
@@ -140,53 +140,7 @@ export async function updateIntoPod(item: FormatContract) {
   })
 }
 
-export async function saveToPod(item: FormatContract) {
-  const dogovorName = item.startTime.toJSON()
-  const resourceBaseUrl = await getResourceBaseUrl()
-  const resourceUrl = resourceBaseUrl + dogovorName + '.ttl'
-  const agent = buildThing(createThing({ url: resourceUrl + '#agent' }))
-    .addStringNoLocale(SCHEMA_INRUPT.name, item.agent.name)
-    .addUrl(RDF.type, 'https://schema.org/Person')
-  const endTime = buildThing(createThing({ url: resourceUrl + '#endTime' }))
-  if (item.endTime) {
-    endTime
-      .addDate(SCHEMA_INRUPT.endTime, item.endTime)
-      .addUrl(RDF.type, 'https://schema.org/endTime')
-  }
-  const identifier = buildThing(
-    createThing({ url: resourceUrl + '#identifier' }),
-  )
-    .addStringNoLocale(SCHEMA_INRUPT.identifier, item.identifier.value)
-    .addUrl(RDF.type, 'https://schema.org/PropertyValue')
-  const instrument = buildThing(
-    createThing({ url: resourceUrl + '#instrument' }),
-  )
-    .addStringNoLocale(SCHEMA_INRUPT.description, item.instrument.description)
-    .addStringNoLocale(SCHEMA_INRUPT.name, item.instrument.name)
-    .addUrl(RDF.type, 'https://schema.org/Thing')
-  const objectThing = buildThing(createThing({ url: resourceUrl + '#object' }))
-  item.object.forEach((object) => {
-    objectThing.addUrl(SCHEMA_INRUPT.image, object.contentUrl)
-  })
-  objectThing.addUrl(RDF.type, 'https://schema.org/ImageObject')
-  const participant = buildThing(
-    createThing({ url: resourceUrl + '#participant' }),
-  )
-    .addStringNoLocale(SCHEMA_INRUPT.name, item.participant.name)
-    .addUrl(RDF.type, 'https://schema.org/Person')
-  const startTime = buildThing(createThing({ url: resourceUrl + '#startTime' }))
-    .addDate(SCHEMA_INRUPT.startTime, item.startTime)
-    .addUrl(RDF.type, 'https://schema.org/startTime')
-
-  let dataset = createSolidDataset()
-  dataset = setThing(dataset, agent.build())
-  dataset = setThing(dataset, endTime.build())
-  dataset = setThing(dataset, identifier.build())
-  dataset = setThing(dataset, instrument.build())
-  dataset = setThing(dataset, participant.build())
-  dataset = setThing(dataset, startTime.build())
-  dataset = setThing(dataset, objectThing.build())
-
+export function saveToPod(resourceUrl: string, dataset: SolidDataset) {
   return saveSolidDatasetAt(resourceUrl, dataset, {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
