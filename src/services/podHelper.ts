@@ -167,11 +167,35 @@ export async function solidAuth({
   onLogin(() => {
     loginCallback()
   })
+  const defaultSession = getDefaultSession().info
   const sessionInfo = await handleIncomingRedirect({
     restorePreviousSession: true,
   })
-  if (oidcIssuer && sessionInfo && !sessionInfo.isLoggedIn) {
-    LocalStorage.set('oidcIssuer', oidcIssuer)
+  if (!oidcIssuer) {
+    return
+  }
+  LocalStorage.set('oidcIssuer', oidcIssuer)
+  if (!sessionInfo) {
+    return login({
+      oidcIssuer,
+      redirectUrl,
+      clientName: CLIENT_NAME,
+    })
+  }
+
+  const expiresDate = sessionInfo.expirationDate
+  const nowDate = new Date()
+  const isExpirationAlive =
+    (sessionInfo.expirationDate && expiresDate.valueOf() < nowDate.valueOf()) ??
+    false
+
+  if (
+    !(
+      sessionInfo.isLoggedIn ||
+      isExpirationAlive ||
+      defaultSession.sessionId === sessionInfo.sessionId
+    )
+  ) {
     return login({
       oidcIssuer,
       redirectUrl,
