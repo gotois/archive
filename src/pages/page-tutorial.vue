@@ -242,8 +242,9 @@ async function onOnlineAuthorize() {
     console.error(e)
     $q.notify({
       color: 'negative',
-      message: 'Ошибка входа',
+      message: 'Произошла ошибка входа через OIDC',
     })
+  } finally {
     $q.loading.hide()
   }
 }
