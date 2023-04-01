@@ -72,60 +72,47 @@
           </p>
           <p class="text-body1">{{ $t('tutorial.data.body') }}</p>
           <q-space class="q-pa-xs"></q-space>
-          <q-btn-group
-            v-if="!showForm"
-            outline
-            rounded
-            stretch
-            class="full-width"
-          >
-            <q-btn
-              color="accent"
-              type="button"
-              label="Использовать ФИО"
-              icon="login"
-              no-caps
-              @click="onOfflineAuthorize"
-            >
-              <q-tooltip
-                >Оффлайн режим. Данные необходимы для создания
-                документов</q-tooltip
-              >
-            </q-btn>
+          <p v-if="!showForm">Введите адрес своего oidc Issuer:</p>
+          <div v-if="!showForm" class="full-width">
             <q-select
               v-model="oidcIssuer"
-              label="Где постится Ваш Pod?"
+              class="full-width"
+              label="Адрес URL"
               use-input
               square
-              :options="[
-                'https://login.inrupt.com',
-                'https://login.inrupt.net',
-              ]"
+              :options="['login.inrupt.com', 'login.inrupt.net']"
+              autofocus
+              bottom-slots
+              prefix="https://"
+              :rules="[checkUrl]"
+              :hint="'URL Вашего SOLID провайдера'"
               hide-dropdown-icon
               input-debounce="0"
               clearable
               new-value-mode="add-unique"
-            >
-              <q-tooltip
-                >Используйте адрес своего Pod или используйте заранее
-                заведенные</q-tooltip
-              >
-            </q-select>
+            />
             <q-btn
               color="accent"
               type="button"
-              label="Использовать WebID"
+              label="Войти"
               icon="login"
+              class="q-mt-md"
+              :class="{
+                'full-width': $q.platform.is.mobile,
+              }"
               no-caps
               @click="onOnlineAuthorize"
             >
-              <q-tooltip
-                >Онлайн режим. Данные необходимы для создания
-                документов</q-tooltip
-              >
+              <q-tooltip>
+                <template v-if="oidcIssuer">
+                  Войдите через {{ oidcIssuer }}.
+                </template>
+                <template v-else>
+                  Данные необходимы для подписания договоров.
+                </template>
+              </q-tooltip>
             </q-btn>
-          </q-btn-group>
-
+          </div>
           <q-form
             v-if="showForm"
             ref="nameForm"
@@ -226,11 +213,23 @@ const metaData = {
   'og:title': 'Лицензионное соглашение',
 }
 
-function onOfflineAuthorize() {
-  showForm.value = true
+function checkUrl(value?: string) {
+  if (!value) {
+    return 'Введите валидный URL Вашего провайдера.'
+  }
+  return true
 }
 
 async function onOnlineAuthorize() {
+  if (!oidcIssuer.value) {
+    if (window.confirm('Провайдер не был введен. Вы хотите использовать Offline режим? Вы не сможете подписывать договоры цифровой подписью без WebId.')) {
+      showForm.value = true
+      return;
+    }
+    showForm.value = false
+    return;
+  }
+
   $q.loading.show()
   const redirectUrl =
     window.location.origin +
@@ -240,7 +239,7 @@ async function onOnlineAuthorize() {
   try {
     await solidAuth({
       redirectUrl,
-      oidcIssuer: oidcIssuer.value,
+      oidcIssuer: 'https://' + oidcIssuer.value,
       sessionRestoreCallback: () =>
         void store.dispatch('Auth/openIdHandleIncoming'),
       loginCallback: () => void store.dispatch('Auth/openIdHandleIncoming'),
