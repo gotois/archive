@@ -47,7 +47,7 @@ async function getResourceRootUrl() {
   return podsUrl[selectedPod]
 }
 
-async function getResourceBaseUrl() {
+export async function getResourceBaseUrl() {
   const url = (await getResourceRootUrl()) + name + '/'
   return url
 }
