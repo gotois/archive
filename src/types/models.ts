@@ -12,13 +12,30 @@ export interface ContractTable {
 export interface ContextCredential<T> {
   [key: string]: T
 }
+// eslint-disable-next-line no-unused-vars
+enum ProofTypes {
+  // eslint-disable-next-line
+  Ed25519Signature2020 = 'Ed25519Signature2020',
+}
+
+interface Proof {
+  type: ProofTypes
+  created: string
+  verificationMethod: string
+  proofPurpose: string
+  proofValue: string
+}
 
 export interface Credential {
-  '@context': string[] | ContextCredential<string>[]
+  '@context': [string, ContextCredential<string>] | string[]
   'type': string[]
   'issuer': { id: string }
   'issuanceDate': string
   'credentialSubject': { id: string }
+}
+
+export interface ProofCredential extends Credential {
+  proof: Proof
 }
 
 export interface FormatContract {
