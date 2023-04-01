@@ -216,9 +216,9 @@ export async function solidAuth({
   const sessionInfo = await handleIncomingRedirect({
     restorePreviousSession: true,
   })
-  if (sessionInfo && !sessionInfo.isLoggedIn) {
+  if (oidcIssuer && sessionInfo && !sessionInfo.isLoggedIn) {
     LocalStorage.set('oidcIssuer', oidcIssuer)
-    await login({
+    return login({
       oidcIssuer,
       redirectUrl,
       clientName: CLIENT_NAME,
