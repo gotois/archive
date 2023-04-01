@@ -180,7 +180,7 @@ import VOtpInput from 'vue3-otp-input'
 import PrivacyComponent from 'components/PrivacyComponent.vue'
 import { useStore } from '../store'
 import pkg from '../../package.json'
-import { createContract } from '../services/pdfHelper'
+import { createContractPDF } from '../services/pdfHelper'
 import {
   solidAuth,
   getProfileName,
@@ -264,9 +264,9 @@ async function onFinish() {
     }
   }
   $q.loading.show()
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const html = PrivacyComponent.render().children[0].children as string
-  const contractPDF = await createContract(
+  const contractPDF = await createContractPDF(
     html,
     $q.platform.is.name === 'firefox',
   )

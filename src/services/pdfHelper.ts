@@ -10,7 +10,7 @@ import privacyNotice from '../ui/templates/privacy-notice'
 
 const { productName } = pkg
 
-export async function createContract(html: string, useImage = false) {
+export async function createContractPDF(html: string, useImage = false) {
   const htmlObject = document.createElement('div')
   htmlObject.id = 'capture'
   htmlObject.style.width = String(1752 / 2) + 'px'
@@ -42,8 +42,8 @@ export async function createContract(html: string, useImage = false) {
     template: privacyNotice,
     inputs,
   })
-
   const blob = new Blob([pdf.buffer], { type: 'application/pdf' })
+
   return readFilesPromise([blob])
 }
 
