@@ -14,26 +14,7 @@ import {
   suiteContext,
   // @ts-ignore
 } from '@digitalbazaar/ed25519-signature-2020'
-
-export function createCredential(webId: string, issuanceDate?: string) {
-  const baseCredential = {
-    '@context': [
-      'https://www.w3.org/2018/credentials/v1',
-    ],
-    'type': [
-      'VerifiableCredential',
-    ],
-    'issuer': {
-      id: 'https://archive.gotointeractive.com',
-    },
-    'issuanceDate': issuanceDate ?? new Date().toISOString(),
-    'credentialSubject': {
-      id: webId,
-    },
-  }
-
-  return baseCredential
-}
+import { Credential } from '../types/models'
 
 function getDocumentLoader(url: string) {
   // hack - make sure the cryptosuite context can load too
@@ -47,15 +28,17 @@ function getDocumentLoader(url: string) {
   return vc.defaultDocumentLoader(url)
 }
 
-export function sign({
+export async function sign({
   credential,
-  keyPair,
   verificationMethod = 'https://gotointeractive.com',
 }: {
-  credential: any
-  keyPair: any
+  credential: Credential
   verificationMethod?: string
 }) {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const keyPair = await getAndSaveKeyPair()
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+
   const suite = new Ed25519Signature2020({
     key: keyPair,
   })

@@ -9,6 +9,14 @@ export interface ContractTable {
   images?: string[]
 }
 
+export interface Credential {
+  '@context': string[]
+  'type': string[]
+  'issuer': { id: string }
+  'issuanceDate': string
+  'credentialSubject': { id: string }
+}
+
 export interface FormatContract {
   '@context': string
   '@type': string

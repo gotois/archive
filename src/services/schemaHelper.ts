@@ -1,4 +1,23 @@
-import { ContractTable, FormatContract } from '../types/models'
+/* eslint-disable */
+import { ContractTable, FormatContract, Credential } from '../types/models'
+import { getWebId } from '../services/podHelper'
+
+function createCredential(
+  webId: string,
+  issuanceDate?: string,
+): Credential {
+  return {
+    '@context': ['https://www.w3.org/2018/credentials/v1'],
+    'type': ['VerifiableCredential'],
+    'issuer': {
+      id: 'https://archive.gotointeractive.com',
+    },
+    'issuanceDate': issuanceDate ?? new Date().toISOString(),
+    'credentialSubject': {
+      id: webId,
+    },
+  }
+}
 
 export function formatterContracts(
   contracts: ContractTable[],
