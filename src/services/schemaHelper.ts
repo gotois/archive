@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import {
   setThing,
   buildThing,
@@ -6,12 +5,15 @@ import {
   createSolidDataset,
 } from '@inrupt/solid-client'
 import { RDF, SCHEMA_INRUPT } from '@inrupt/vocab-common-rdf'
-import { ContractTable, FormatContract, Credential, ProofCredential, BaseContract } from '../types/models'
+import {
+  ContractTable,
+  FormatContract,
+  Credential,
+  ProofCredential,
+  BaseContract,
+} from '../types/models'
 
-function createCredential(
-  webId: string,
-  issuanceDate?: string,
-) {
+function createCredential(webId: string, issuanceDate?: string) {
   return {
     '@context': ['https://www.w3.org/2018/credentials/v1'],
     'type': ['VerifiableCredential'],
@@ -26,7 +28,11 @@ function createCredential(
 }
 
 // todo переписать на TypeScript без ts-ignore
-export function formatterDatasetContract(resourceUrl: string, signedVC: ProofCredential<unknown>) {
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+export function formatterDatasetContract(
+  resourceUrl: string,
+  signedVC: ProofCredential<unknown>,
+) {
   // @ts-ignore
   const types = signedVC['@context'][1]
   const item = signedVC.credentialSubject as BaseContract
@@ -60,8 +66,10 @@ export function formatterDatasetContract(resourceUrl: string, signedVC: ProofCre
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     .addUrl(RDF.type, types.instrument)
   const objectThing = buildThing(createThing({ url: resourceUrl + '#object' }))
-  // @ts-ignore
-  item.object.forEach((object) => objectThing.addUrl(SCHEMA_INRUPT.image, object))
+  item.object.forEach((object) =>
+    // @ts-ignore
+    objectThing.addUrl(SCHEMA_INRUPT.image, object),
+  )
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   objectThing.addUrl(RDF.type, types.object)
@@ -97,24 +105,40 @@ export function formatterContracts(
 }
 
 type DeepPartial<T> = {
-  [P in keyof T]?: DeepPartial<T[P]>;
-};
+  [P in keyof T]?: DeepPartial<T[P]>
+}
 
-function deepMerge<T extends { [key: string]: any }>(target: T, source: DeepPartial<T>): T {
+function deepMerge<T extends { [key: string]: any }>(
+  target: T,
+  source: DeepPartial<T>,
+): T {
   if (Array.isArray(target)) {
-    return (target.concat(source) as unknown) as T;
+    return target.concat(source) as unknown as T
   }
-  if (target && source && typeof target === 'object' && typeof source === 'object') {
+  if (
+    target &&
+    source &&
+    typeof target === 'object' &&
+    typeof source === 'object'
+  ) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return Object.assign(
       target,
-      ...Object.keys(source).map((key) => ({ [key]: deepMerge(target[key as keyof T], source[key as keyof T] as DeepPartial<T[keyof T]> ) }))
+      ...Object.keys(source).map((key) => ({
+        [key]: deepMerge(
+          target[key as keyof T],
+          source[key as keyof T] as DeepPartial<T[keyof T]>,
+        ),
+      })),
     )
   }
-  return source as T;
+  return source as T
 }
 
-export function formatterLDContract(webId: string, formatContract: FormatContract) {
+export function formatterLDContract(
+  webId: string,
+  formatContract: FormatContract,
+) {
   const context = new Map()
   const credentialSubject = new Map()
 
@@ -143,7 +167,7 @@ export function formatterLDContract(webId: string, formatContract: FormatContrac
   context.set('object', 'https://schema.org/ImageObject')
 
   credentialSubject.set('agent', {
-    name: formatContract.agent.name
+    name: formatContract.agent.name,
   })
   credentialSubject.set('instrument', {
     name: instrument.name,
@@ -151,24 +175,27 @@ export function formatterLDContract(webId: string, formatContract: FormatContrac
   })
   credentialSubject.set('startTime', startTime.toJSON())
   credentialSubject.set('participant', {
-    name: participant.name
+    name: participant.name,
   })
   credentialSubject.set('identifier', {
     propertyID: identifier.propertyID,
-    value: identifier.value
+    value: identifier.value,
   })
   if (endTime) {
     credentialSubject.set('endTime', endTime.toJSON())
   }
   if (object) {
-    credentialSubject.set('object', object.map(({ contentUrl }) => contentUrl))
+    credentialSubject.set(
+      'object',
+      object.map(({ contentUrl }) => contentUrl),
+    )
   }
   const credential = {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     '@context': Object.fromEntries(context),
-    type: type,
+    'type': type,
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    credentialSubject: Object.fromEntries(credentialSubject),
+    'credentialSubject': Object.fromEntries(credentialSubject),
   }
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment

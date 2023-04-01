@@ -57,7 +57,7 @@ module.exports = {
   },
 
   rules: {
-    'prettier/prettier': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'prettier/prettier': 'error',
     quotes: ['warn', 'single', {avoidEscape: true}],
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
   }

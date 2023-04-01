@@ -1,5 +1,5 @@
 import { Module } from 'vuex'
-import {FormatContract, ContractTable } from '../types/models'
+import { FormatContract, ContractTable } from '../types/models'
 import { StateInterface } from './index'
 import { db } from '../services/databaseHelper'
 import { recommendationContractTypes } from '../services/recommendationContractTypes'
@@ -43,7 +43,13 @@ const ContractClass: Module<ContractState, StateInterface> = {
     },
   },
   actions: {
-    async addContract(context, { contractData, usePod = false }: { contractData: ContractTable, usePod: boolean }) {
+    async addContract(
+      context,
+      {
+        contractData,
+        usePod = false,
+      }: { contractData: ContractTable; usePod: boolean },
+    ) {
       // Step 1: Save JS to Vuex
       context.commit('addContract', contractData)
 
@@ -66,7 +72,8 @@ const ContractClass: Module<ContractState, StateInterface> = {
       // Step 4: Save Solid Dataset to Pod
       if (usePod) {
         const resourceBaseUrl = await getResourceBaseUrl()
-        const resourceName = resourceBaseUrl + contractData.startTime.toJSON() + '.ttl'
+        const resourceName =
+          resourceBaseUrl + contractData.startTime.toJSON() + '.ttl'
         const solidDatasetContract = formatterDatasetContract(
           resourceName,
           signedVC,

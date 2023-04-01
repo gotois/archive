@@ -321,7 +321,10 @@ async function onSubmit() {
   }
 
   try {
-    await store.dispatch('addContract', { contractData: newContract, usePod: isLoggedIn.value  })
+    await store.dispatch('addContract', {
+      contractData: newContract,
+      usePod: isLoggedIn.value,
+    })
     $q.notify({
       message: `Запись "${newContract.instrument_name.toLocaleLowerCase()}" добавлена`,
       type: 'positive',

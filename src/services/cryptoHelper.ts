@@ -24,7 +24,10 @@ import { Credential, ProofCredential } from '../types/models'
 const jdl = new JsonLdDocumentLoader()
 jdl.addStatic(ed25519Ctx.CONTEXT_URL, ed25519Ctx.CONTEXT)
 jdl.addStatic(Ed25519Signature2020.CONTEXT_URL, Ed25519Signature2020.CONTEXT)
-jdl.addStatic(cred.CREDENTIALS_CONTEXT_V1_URL, cred.contexts.get(cred.constants.CREDENTIALS_CONTEXT_V1_URL))
+jdl.addStatic(
+  cred.CREDENTIALS_CONTEXT_V1_URL,
+  cred.contexts.get(cred.constants.CREDENTIALS_CONTEXT_V1_URL),
+)
 
 const documentLoader = jdl.build()
 

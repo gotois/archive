@@ -276,7 +276,10 @@ async function onFinish() {
     images: contractPDF,
   }
   try {
-    await store.dispatch('addContract', { contractData: newContract, usePod: isLoggedIn.value })
+    await store.dispatch('addContract', {
+      contractData: newContract,
+      usePod: isLoggedIn.value,
+    })
     await store.dispatch('consumerName', consumer.value)
     await store.dispatch('Tutorial/tutorialComplete')
     await router.push({
