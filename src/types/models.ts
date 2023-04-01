@@ -26,28 +26,35 @@ interface Proof {
   proofValue: string
 }
 
-export interface Credential {
+interface CredentialSubject<T> {
+  [key: string]: T
+}
+
+export interface Credential<T> {
   '@context': [string, ContextCredential<string>] | string[]
   'type': string[]
   'issuer': { id: string }
   'issuanceDate': string
-  'credentialSubject': { id: string }
+  'credentialSubject': { id: string } | CredentialSubject<T>
 }
 
-export interface ProofCredential extends Credential {
+export interface ProofCredential extends Credential<unknown> {
   proof: Proof
 }
 
-export interface FormatContract {
+export interface BaseContract {
+  agent: FormatContractAgent
+  participant: FormatContractParticipant
+  instrument: FormatContractInstrument
+  identifier: FormatContractIdentifier
+  startTime: Date
+  endTime?: Date
+  object: FormatContractObject[]
+}
+
+export interface FormatContract extends BaseContract {
   '@context': string
   '@type': string
-  'agent': FormatContractAgent
-  'participant': FormatContractParticipant
-  'instrument': FormatContractInstrument
-  'identifier': FormatContractIdentifier
-  'startTime': Date
-  'endTime': Date
-  'object': FormatContractObject[]
   '_currentSlide'?: number
 }
 
