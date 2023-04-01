@@ -72,60 +72,49 @@
           </p>
           <p class="text-body1">{{ $t('tutorial.data.body') }}</p>
           <q-space class="q-pa-xs"></q-space>
-          <q-btn-group
-            v-if="!showForm"
-            outline
-            rounded
-            stretch
-            class="full-width"
+          <p v-if="!showForm"
+            >Введите адрес своего OIDC Issuer для получения Вашего WebID:</p
           >
-            <q-btn
-              color="accent"
-              type="button"
-              label="Использовать ФИО"
-              icon="login"
-              no-caps
-              @click="onOfflineAuthorize"
-            >
-              <q-tooltip
-                >Оффлайн режим. Данные необходимы для создания
-                документов</q-tooltip
-              >
-            </q-btn>
+          <div v-if="!showForm" class="full-width">
             <q-select
               v-model="oidcIssuer"
-              label="Где постится Ваш Pod?"
+              class="full-width"
+              label="Адрес URL"
               use-input
               square
-              :options="[
-                'https://login.inrupt.com',
-                'https://login.inrupt.net',
-              ]"
+              :options="['login.inrupt.com', 'login.inrupt.net']"
+              autofocus
+              bottom-slots
+              prefix="https://"
+              :rules="[checkUrl]"
+              :hint="'URL Вашего SOLID провайдера'"
               hide-dropdown-icon
               input-debounce="0"
               clearable
               new-value-mode="add-unique"
-            >
-              <q-tooltip
-                >Используйте адрес своего Pod или используйте заранее
-                заведенные</q-tooltip
-              >
-            </q-select>
+            />
             <q-btn
               color="accent"
               type="button"
-              label="Использовать WebID"
+              label="Войти"
               icon="login"
+              class="q-mt-md"
+              :class="{
+                'full-width': $q.platform.is.mobile,
+              }"
               no-caps
               @click="onOnlineAuthorize"
             >
-              <q-tooltip
-                >Онлайн режим. Данные необходимы для создания
-                документов</q-tooltip
-              >
+              <q-tooltip>
+                <template v-if="oidcIssuer">
+                  Войдите через {{ oidcIssuer }}.
+                </template>
+                <template v-else>
+                  Данные необходимы для подписания договоров.
+                </template>
+              </q-tooltip>
             </q-btn>
-          </q-btn-group>
-
+          </div>
           <q-form
             v-if="showForm"
             ref="nameForm"
@@ -158,7 +147,7 @@
               :value="pin"
               input-classes="otp-input"
               separator="-"
-              :num-inputs="4"
+              :num-inputs="pinLength"
               :is-input-num="true"
               :conditional-class="['first', '', '', 'last']"
               :placeholder="['*', '*', '*', '*']"
@@ -191,14 +180,9 @@ import VOtpInput from 'vue3-otp-input'
 import PrivacyComponent from 'components/PrivacyComponent.vue'
 import { useStore } from '../store'
 import pkg from '../../package.json'
-import { createContract } from '../services/pdfHelper'
-import {
-  solidAuth,
-  getProfileName,
-  initPod,
-  saveToPod,
-} from '../services/podHelper'
-import { formatterContract } from '../services/schemaHelper'
+import { createContractPDF } from '../services/pdfHelper'
+import { solidAuth, getProfileName, initPod } from '../services/podHelper'
+import { ContractTable } from '../types/models'
 
 const { description, version, productName } = pkg
 const $q = useQuasar()
@@ -212,6 +196,7 @@ const oidcIssuer = ref<string>(null)
 const consumer = ref('')
 const pin = ref('')
 const showForm = ref(false)
+const pinLength = ref(4)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 const isLoggedIn = computed(() => store.getters['Auth/isLoggedIn'] as boolean)
 
@@ -220,11 +205,25 @@ const metaData = {
   'og:title': 'Лицензионное соглашение',
 }
 
-function onOfflineAuthorize() {
-  showForm.value = true
+function checkUrl(value?: string) {
+  if (value && value.length <= 3) {
+    return 'Введите валидный URL Вашего провайдера.'
+  }
+  return true
 }
 
 async function onOnlineAuthorize() {
+  if (!oidcIssuer.value) {
+    const confirmMessage =
+      'Провайдер не был введен. Вы хотите использовать Offline режим? Вы не сможете подписывать договоры цифровой подписью без WebId.'
+    if (window.confirm(confirmMessage)) {
+      showForm.value = true
+      return
+    }
+    showForm.value = false
+    return
+  }
+
   $q.loading.show()
   const redirectUrl =
     window.location.origin +
@@ -234,7 +233,7 @@ async function onOnlineAuthorize() {
   try {
     await solidAuth({
       redirectUrl,
-      oidcIssuer: oidcIssuer.value,
+      oidcIssuer: 'https://' + oidcIssuer.value,
       sessionRestoreCallback: () =>
         void store.dispatch('Auth/openIdHandleIncoming'),
       loginCallback: () => void store.dispatch('Auth/openIdHandleIncoming'),
@@ -243,14 +242,15 @@ async function onOnlineAuthorize() {
     console.error(e)
     $q.notify({
       color: 'negative',
-      message: 'Ошибка входа',
+      message: 'Произошла ошибка входа через OIDC',
     })
+  } finally {
     $q.loading.hide()
   }
 }
 
 async function onFinish() {
-  if (pin.value.length === 4) {
+  if (pin.value.length === pinLength.value) {
     if (window.confirm('Пин ' + pin.value + ' будет сохранен?')) {
       await store.dispatch('Auth/setCode', pin.value)
     }
@@ -258,11 +258,16 @@ async function onFinish() {
   $q.loading.show()
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
   const html = PrivacyComponent.render().children[0].children as string
-  const contractPDF = await createContract(
+  const contractPDF = await createContractPDF(
     html,
     $q.platform.is.name === 'firefox',
   )
-  const newContract = {
+
+  if (isLoggedIn.value) {
+    await initPod()
+  }
+
+  const newContract: ContractTable = {
     agent_name: consumer.value,
     participant_name: productName + ' ' + version,
     instrument_name: 'Пользовательское соглашение',
@@ -271,15 +276,19 @@ async function onFinish() {
     images: contractPDF,
   }
   try {
-    if (isLoggedIn.value) {
-      await initPod()
-    }
-    await store.dispatch('addContract', newContract)
+    await store.dispatch('addContract', {
+      contractData: newContract,
+      usePod: isLoggedIn.value,
+    })
     await store.dispatch('consumerName', consumer.value)
     await store.dispatch('Tutorial/tutorialComplete')
-    if (isLoggedIn.value) {
-      await saveToPod(formatterContract(newContract))
-    }
+    await router.push({
+      name: 'filter',
+      query: {
+        filter: newContract.instrument_name,
+        page: 1,
+      },
+    })
   } catch (e) {
     console.error(e)
     $q.notify({
@@ -294,13 +303,6 @@ async function onFinish() {
   } finally {
     $q.loading.hide()
   }
-  await router.push({
-    name: 'filter',
-    query: {
-      filter: newContract.instrument_name,
-      page: 1,
-    },
-  })
 }
 
 const handleOnComplete = (value: string) => {

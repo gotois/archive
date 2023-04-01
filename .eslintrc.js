@@ -56,7 +56,6 @@ module.exports = {
     process: 'readonly',
   },
 
-  // add your custom rules here
   rules: {
     'prettier/prettier': 'error',
     quotes: ['warn', 'single', {avoidEscape: true}],

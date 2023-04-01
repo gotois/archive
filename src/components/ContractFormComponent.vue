@@ -188,11 +188,10 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType, ref } from 'vue'
+import { PropType, ref, computed } from 'vue'
 import { useQuasar, date, QForm } from 'quasar'
 import { useStore } from '../store'
 import { ContractTable } from '../types/models'
-import { db } from '../services/databaseHelper'
 import { readFilesPromise } from '../services/fileHelper'
 import { isDateNotOk, formatDate } from '../services/dateHelper'
 import { contractTypes } from '../services/contractTypes'
@@ -223,6 +222,8 @@ const contractForm = ref<QForm>()
 const dateNoLimit = ref(false)
 const allContractTypes = [].concat(recommendationContractTypes, contractTypes)
 const contractOptions = ref(allContractTypes)
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+const isLoggedIn = computed(() => store.getters['Auth/isLoggedIn'] as boolean)
 
 // eslint-disable-next-line no-unused-vars
 function filterOptions(val: string, update: (callback: () => void) => void) {
@@ -282,24 +283,6 @@ function onFocusInput({ target }: { target: HTMLElement }) {
   target.scrollIntoView()
 }
 
-async function addNewContract(newContract: ContractTable) {
-  await store.dispatch('addContract', newContract)
-  $q.notify({
-    message: `Запись "${newContract.instrument_name.toLocaleLowerCase()}" добавлена`,
-    type: 'positive',
-    actions: [
-      {
-        label: 'Перейти',
-        color: 'white',
-        handler: () => {
-          emit('onCreate', newContract.instrument_name)
-        },
-      },
-    ],
-  })
-  await store.dispatch('loadContractNames')
-}
-
 async function onSubmit() {
   const startDate = new Date(duration.value.from)
   if (isDateNotOk(startDate)) {
@@ -337,15 +320,32 @@ async function onSubmit() {
     images: images,
   }
 
-  db.transaction('rw', db.contracts, async () => {
-    await addNewContract(newContract)
-  }).catch((error: Error) => {
-    console.error(error)
+  try {
+    await store.dispatch('addContract', {
+      contractData: newContract,
+      usePod: isLoggedIn.value,
+    })
+    $q.notify({
+      message: `Запись "${newContract.instrument_name.toLocaleLowerCase()}" добавлена`,
+      type: 'positive',
+      actions: [
+        {
+          label: 'Перейти',
+          color: 'white',
+          handler: () => {
+            emit('onCreate', newContract.instrument_name)
+          },
+        },
+      ],
+    })
+    await store.dispatch('loadContractNames')
+    onResetForm()
+  } catch (e) {
+    console.error(e)
     $q.notify({
       type: 'negative',
-      message: error.message,
+      message: 'Запись не удалась',
     })
-  })
-  onResetForm()
+  }
 }
 </script>
