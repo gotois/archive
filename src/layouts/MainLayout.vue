@@ -189,7 +189,6 @@
           </q-item-section>
         </q-expansion-item>
         <q-separator class="q-mb-md"></q-separator>
-
         <q-btn
           v-if="!isLoggedIn"
           square
@@ -198,7 +197,7 @@
           glossy
           push
           class="full-width"
-          label="Войти через Web Id"
+          label="Войти через WebId"
           @click="loginToPod"
         />
 
@@ -255,17 +254,24 @@
       />
     </q-drawer>
     <q-page-container>
-      <router-view />
-      <database-remove-component
-        v-if="confirm"
-        v-model="confirm"
-        @on-clear="confirm = false"
-      />
-      <archive-search-component
+      <RouterView />
+      <QDialog v-model="confirm" persistent square>
+        <DatabaseRemoveComponent v-if="confirm" @on-clear="confirm = false" />
+      </QDialog>
+      <ArchiveSearchComponent
         v-if="showSearch"
         v-model="showSearch"
         @on-search="onSearch"
       />
+      <QDialog v-model="dialogOIDCIssuer" persistent square>
+        <QCard class="q-pa-md">
+          <q-toolbar>
+            <q-toolbar-title>Введите адрес своего OIDC Issuer</q-toolbar-title>
+            <q-btn v-close-popup flat round dense icon="close" />
+          </q-toolbar>
+          <OIDCIssuerComponent @on-complete="onOnlineAuthorize" />
+        </QCard>
+      </QDialog>
     </q-page-container>
     <q-footer reveal bordered></q-footer>
   </q-layout>
@@ -273,12 +279,13 @@
 
 <script lang="ts" setup>
 import { ref, computed, defineAsyncComponent } from 'vue'
-import { openURL, useQuasar } from 'quasar'
+import { openURL, useQuasar, QCard, QDialog } from 'quasar'
 import { useRouter } from 'vue-router'
 import { useStore } from '../store'
 import pkg from '../../package.json'
 import twaManifest from '../../twa-manifest.json'
 import { solidAuth } from '../services/podHelper'
+import OIDCIssuerComponent from 'components/OIDCIssuerComponent.vue'
 
 const { version } = pkg
 const { packageId } = twaManifest
@@ -306,6 +313,7 @@ const profileOpen = ref(false)
 const otpOpen = ref(false)
 const confirm = ref(false)
 const showSearch = ref(false)
+const dialogOIDCIssuer = ref(false)
 const navigatorVersion = ref(version)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 const consumer = ref(store.getters.consumer as string)
@@ -331,15 +339,30 @@ async function onSearch(searchText: string) {
   showSearch.value = false
 }
 
-async function loginToPod() {
-  await solidAuth({
-    sessionRestoreCallback: () =>
-      void store.dispatch('Auth/openIdHandleIncoming'),
+function onOnlineAuthorize(oidcIssuer: string) {
+  $q.loading.show()
+
+  return solidAuth({
+    oidcIssuer: oidcIssuer,
+    sessionRestoreCallback: () => {
+      $q.localStorage.set('restorePreviousSession', true)
+      void store.dispatch('Auth/openIdHandleIncoming')
+      $q.loading.hide()
+    },
     loginCallback: () => {
       $q.localStorage.set('restorePreviousSession', true)
       void store.dispatch('Auth/openIdHandleIncoming')
+      $q.loading.hide()
     },
   })
+}
+
+function loginToPod() {
+  if (!$q.localStorage.has('oidcIssuer')) {
+    dialogOIDCIssuer.value = true
+    return
+  }
+  return onOnlineAuthorize($q.localStorage.getItem('oidcIssuer'))
 }
 
 function onOpenFeedback() {

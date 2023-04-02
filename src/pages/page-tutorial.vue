@@ -75,46 +75,10 @@
           <p v-if="!showForm"
             >Введите адрес своего OIDC Issuer для получения Вашего WebID:</p
           >
-          <div v-if="!showForm" class="full-width">
-            <q-select
-              v-model="oidcIssuer"
-              class="full-width"
-              label="Адрес URL"
-              use-input
-              square
-              :options="['login.inrupt.com', 'login.inrupt.net']"
-              autofocus
-              bottom-slots
-              prefix="https://"
-              :rules="[checkUrl]"
-              :hint="'URL Вашего SOLID провайдера'"
-              hide-dropdown-icon
-              input-debounce="0"
-              clearable
-              new-value-mode="add-unique"
-            />
-            <q-btn
-              color="accent"
-              type="button"
-              label="Войти"
-              icon="login"
-              class="q-mt-md"
-              :class="{
-                'full-width': $q.platform.is.mobile,
-              }"
-              no-caps
-              @click="onOnlineAuthorize"
-            >
-              <q-tooltip>
-                <template v-if="oidcIssuer">
-                  Войдите через {{ oidcIssuer }}.
-                </template>
-                <template v-else>
-                  Данные необходимы для подписания договоров.
-                </template>
-              </q-tooltip>
-            </q-btn>
-          </div>
+          <OIDCIssuerComponent
+            v-if="!showForm"
+            @on-complete="onOnlineAuthorize"
+          />
           <q-form
             v-if="showForm"
             ref="nameForm"
@@ -178,6 +142,7 @@ import { useRouter } from 'vue-router'
 import { useQuasar, useMeta } from 'quasar'
 import VOtpInput from 'vue3-otp-input'
 import PrivacyComponent from 'components/PrivacyComponent.vue'
+import OIDCIssuerComponent from 'components/OIDCIssuerComponent.vue'
 import { useStore } from '../store'
 import pkg from '../../package.json'
 import { createContractPDF } from '../services/pdfHelper'
@@ -192,7 +157,6 @@ const router = useRouter()
 const searchParams = new URLSearchParams(window.location.search)
 
 const step = ref(Number(searchParams.get('step') ?? 1))
-const oidcIssuer = ref<string>(null)
 const consumer = ref('')
 const pin = ref('')
 const showForm = ref(false)
@@ -205,15 +169,8 @@ const metaData = {
   'og:title': 'Лицензионное соглашение',
 }
 
-function checkUrl(value?: string) {
-  if (value && value.length <= 3) {
-    return 'Введите валидный URL Вашего провайдера.'
-  }
-  return true
-}
-
-async function onOnlineAuthorize() {
-  if (!oidcIssuer.value) {
+async function onOnlineAuthorize(oidcIssuer: string) {
+  if (!oidcIssuer) {
     const confirmMessage =
       'Провайдер не был введен. Вы хотите использовать Offline режим? Вы не сможете подписывать договоры цифровой подписью без WebId.'
     if (window.confirm(confirmMessage)) {
@@ -233,7 +190,7 @@ async function onOnlineAuthorize() {
   try {
     await solidAuth({
       redirectUrl,
-      oidcIssuer: 'https://' + oidcIssuer.value,
+      oidcIssuer: oidcIssuer,
       sessionRestoreCallback: () =>
         void store.dispatch('Auth/openIdHandleIncoming'),
       loginCallback: () => {
