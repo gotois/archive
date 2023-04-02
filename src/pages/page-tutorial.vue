@@ -279,7 +279,7 @@ async function onFinish() {
       contractData: newContract,
       usePod: isLoggedIn.value,
     })
-    await store.dispatch('consumerName', consumer.value)
+    await store.dispatch('consumerName', consumer.value.trim())
     await store.dispatch('Tutorial/tutorialComplete')
     await router.push({
       name: 'filter',

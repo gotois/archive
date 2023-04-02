@@ -360,7 +360,7 @@ function onOpenFeedback() {
 }
 
 async function onFinishProfile() {
-  await store.dispatch('consumerName', consumer.value)
+  await store.dispatch('consumerName', consumer.value.trim())
   $q.notify({
     message: 'ФИО сохранено',
     type: 'positive',
