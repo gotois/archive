@@ -120,7 +120,8 @@ export default {
   archiveList: {
     remove: 'Удалить',
     edit: 'Редактировать',
-    openFile: 'Открыть файл в полном размере',
+    openFile: 'Открыть окно документа',
+    closeFile: 'Закрыть окно документа',
     shareFile: 'Поделиться документом',
   },
   database: {

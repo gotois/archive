@@ -114,7 +114,7 @@
                 <q-img
                   class="col"
                   fit="contain"
-                  height="400px"
+                  :height="fullscreen ? '100vh' : '400px'"
                   alt="Document"
                   :ratio="1"
                   :src="object.contentUrl"
@@ -136,7 +136,10 @@
                 :icon="fullscreen ? 'fullscreen_exit' : 'fullscreen'"
                 @click="onShowFullImage(item)"
               >
-                <q-tooltip>
+                <q-tooltip v-if="fullscreen">
+                  {{ $t('archiveList.closeFile') }}
+                </q-tooltip>
+                <q-tooltip v-else>
                   {{ $t('archiveList.openFile') }}
                 </q-tooltip>
               </q-btn>
