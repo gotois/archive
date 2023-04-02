@@ -63,10 +63,12 @@
         <q-carousel
           v-if="item.object.length"
           v-model="item._currentSlide"
+          v-model:fullscreen="fullscreen"
           transition-prev="slide-right"
           transition-next="slide-left"
           control-color="secondary"
           :navigation="item.object.length > 1"
+          :arrows="$q.platform.is.desktop"
           animated
           swipeable
           infinite
@@ -99,13 +101,7 @@
           >
             <q-scroll-area class="absolute-full fit">
               <template
-                v-if="
-                  !(
-                    $q.platform.is.ios ||
-                    $q.platform.is.ipad ||
-                    $q.platform.is.safari
-                  ) && isContentPDF(object.contentUrl)
-                "
+                v-if="!$q.platform.is.safari && isContentPDF(object.contentUrl)"
               >
                 <q-icon
                   name="picture_as_pdf"
@@ -137,7 +133,7 @@
                 round
                 color="white"
                 text-color="primary"
-                icon="fullscreen"
+                :icon="fullscreen ? 'fullscreen_exit' : 'fullscreen'"
                 @click="onShowFullImage(item)"
               >
                 <q-tooltip>
@@ -201,7 +197,7 @@ import { PropType, ref, computed, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { useStore } from '../store'
 import { FormatContract } from '../types/models'
-import { showImageInPopup, showPDFInPopup } from '../services/popup'
+import { showPDFInPopup } from '../services/popup'
 import { isDateNotOk, formatterDate } from '../services/dateHelper'
 import { createPDF } from '../services/pdfHelper'
 import { saveToPod } from '../services/podHelper'
@@ -227,6 +223,7 @@ const props = defineProps({
 const emit = defineEmits(['onPaginate', 'onRemove', 'onEdit'])
 
 const items = ref(props.contracts ?? [])
+const fullscreen = ref(false)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 const isLoggedIn = computed(() => store.getters['Auth/isLoggedIn'] as boolean)
 const currentPage = ref(1)
@@ -276,8 +273,7 @@ async function onShowFullImage(object: FormatContract) {
     await showPDFInPopup(image)
     return
   }
-
-  showImageInPopup(image)
+  fullscreen.value = !fullscreen.value
 }
 
 const shareIcon = computed(() => {
