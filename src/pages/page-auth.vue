@@ -1,9 +1,9 @@
 <template>
-  <div class="fullscreen bg-white flex flex-center column">
+  <QPage class="bg-grey-1 flex flex-center column">
     <p class="text-caption text-center">
       {{ $t('auth.caption') }}
     </p>
-    <v-otp-input
+    <VOtpInput
       ref="otpInput"
       :value="pin"
       input-classes="otp-input"
@@ -16,12 +16,12 @@
       :placeholder="['', '', '', '']"
       @on-complete="onHandleComplete"
     />
-  </div>
+  </QPage>
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { useMeta, useQuasar } from 'quasar'
+import { useMeta, useQuasar, QPage } from 'quasar'
 import { useRouter } from 'vue-router'
 import VOtpInput from 'vue3-otp-input'
 import { useStore } from '../store'

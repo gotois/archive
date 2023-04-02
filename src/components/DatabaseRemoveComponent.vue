@@ -1,40 +1,45 @@
 <template>
-  <q-dialog persistent square transition-show="scale" transition-hide="scale">
-    <q-card class="bg-red text-white" style="width: 400px">
-      <q-card-section>
-        <div class="text-h6">{{ $t('settings.clean.submit') }}</div>
-      </q-card-section>
-      <q-card-section class="q-pt-none">
-        {{ $t('settings.clean.label') }}
-      </q-card-section>
-      <q-card-actions align="right" class="bg-white text-teal">
-        <q-btn
-          v-close-popup
-          flat
-          :label="$t('settings.clean.cancel')"
-          color="primary"
-        />
-        <q-btn
-          flat
-          :label="$t('settings.clean.ok')"
-          color="red"
-          @click="onClearDatabase"
-        />
-        <q-btn
-          v-if="isLoggedIn"
-          flat
-          :label="$t('settings.clean.okAll')"
-          color="red"
-          @click="onClearDatabasePlus"
-        />
-      </q-card-actions>
-    </q-card>
-  </q-dialog>
+  <QCard class="bg-red text-white" style="width: 400px">
+    <QCardSection>
+      <div class="text-h6">{{ $t('settings.clean.submit') }}</div>
+    </QCardSection>
+    <QCardSection class="q-pt-none">
+      {{ $t('settings.clean.label') }}
+    </QCardSection>
+    <QCardActions align="right" class="bg-white text-teal">
+      <QBtn
+        v-close-popup
+        flat
+        :label="$t('settings.clean.cancel')"
+        color="primary"
+      />
+      <QBtn
+        flat
+        :label="$t('settings.clean.ok')"
+        color="red"
+        @click="onClearDatabase"
+      />
+      <QBtn
+        v-if="isLoggedIn"
+        flat
+        :label="$t('settings.clean.okAll')"
+        color="red"
+        @click="onClearDatabasePlus"
+      />
+    </QCardActions>
+  </QCard>
 </template>
 
 <script lang="ts" setup>
 import { computed } from 'vue'
-import { LocalStorage, useQuasar } from 'quasar'
+import {
+  LocalStorage,
+  useQuasar,
+  QBtn,
+  QCardActions,
+  QCardSection,
+  QCard,
+} from 'quasar'
 import { BulkError } from 'dexie'
 import { useStore } from '../store'
 import { db } from '../services/databaseHelper'
