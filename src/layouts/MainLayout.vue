@@ -368,7 +368,8 @@ async function onFinishProfile() {
 }
 
 async function onOTPChange(value: string) {
-  if (value === '') {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  if (value === '' && store.getters['Auth/code']) {
     if (window.confirm('Действительно удалить пин?')) {
       await store.dispatch('Auth/removeCode')
       $q.notify({
