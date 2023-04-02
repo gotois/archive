@@ -68,7 +68,7 @@
           transition-next="slide-left"
           control-color="secondary"
           :navigation="item.object.length > 1"
-          :arrows="$q.platform.is.desktop"
+          :arrows="$q.platform.is.desktop && item.object.length > 1"
           animated
           swipeable
           infinite
