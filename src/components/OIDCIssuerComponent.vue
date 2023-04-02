@@ -27,7 +27,7 @@
         'full-width': $q.platform.is.mobile,
       }"
       no-caps
-      @click="emit('onComplete', prefix + oidcIssuer)"
+      @click="onComplete"
     >
       <QTooltip>
         <template v-if="oidcIssuer">Войдите через {{ oidcIssuer }}.</template>
@@ -47,6 +47,14 @@ const emit = defineEmits(['onComplete'])
 
 const oidcIssuer = ref<string>(null)
 const prefix = ref('https://')
+
+function onComplete() {
+  if (oidcIssuer.value && oidcIssuer.value.length) {
+    emit('onComplete', prefix.value + oidcIssuer.value)
+    return
+  }
+  emit('onComplete')
+}
 
 function checkUrl(value?: string) {
   if (value && value.length <= 3) {
