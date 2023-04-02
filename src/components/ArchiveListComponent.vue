@@ -79,19 +79,19 @@
                 width="64px"
                 :ratio="1"
                 class="q-ml-sm q-mr-sm non-selectable cursor-pointer"
-                img-class="rounded-borders"
+                img-class="rounded-borders bg-white"
                 :img-style="{
                   'border': navProps.active
-                    ? '1px solid white'
-                    : '1px solid transparent',
+                    ? '1px solid var(--q-secondary)'
+                    : '1px solid var(--q-dark)',
                   'image-rendering': 'optimizeSpeed',
                 }"
                 :src="item.object[navProps.index].contentUrl"
                 placeholder-src="/icons/icon-64x64.png"
                 decoding="async"
                 fetchpriority="low"
-                no-spinner
                 fit="scale-down"
+                no-spinner
                 no-transition
                 no-native-menu
                 @click="navProps.onClick"
@@ -120,7 +120,7 @@
                   <q-img
                     class="col"
                     fit="contain"
-                    :height="fullscreen ? '100vh' : '400px'"
+                    :height="fullscreen ? '100dvh' : '400px'"
                     alt="Document"
                     :ratio="1"
                     :src="object.contentUrl"
@@ -280,7 +280,14 @@ async function onShowFullImage(object: FormatContract) {
   const image = object.object[object._currentSlide - 1]
 
   if (isContentPDF(image.contentUrl)) {
-    await showPDFInPopup(image)
+    try {
+      await showPDFInPopup(image)
+    } catch {
+      $q.notify({
+        color: 'negative',
+        message: 'Невозможно открыть. Проверьте права доступа.',
+      })
+    }
     return
   }
   fullscreen.value = !fullscreen.value
