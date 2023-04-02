@@ -75,13 +75,14 @@
         >
           <template #navigation-icon="navProps">
             <q-img
+              v-ripple
               width="64px"
               :ratio="1"
               img-class="rounded-borders"
               :img-style="{
                 border: navProps.active ? '1px solid white' : '',
               }"
-              class="q-ml-sm q-mr-sm"
+              class="q-ml-sm q-mr-sm non-selectable cursor-pointer"
               :src="item.object[navProps.index].contentUrl"
               placeholder-src="/icons/icon-64x64.png"
               decoding="async"
