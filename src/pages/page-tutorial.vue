@@ -236,7 +236,10 @@ async function onOnlineAuthorize() {
       oidcIssuer: 'https://' + oidcIssuer.value,
       sessionRestoreCallback: () =>
         void store.dispatch('Auth/openIdHandleIncoming'),
-      loginCallback: () => void store.dispatch('Auth/openIdHandleIncoming'),
+      loginCallback: () => {
+        $q.localStorage.set('restorePreviousSession', true)
+        void store.dispatch('Auth/openIdHandleIncoming')
+      },
     })
   } catch (e) {
     console.error(e)

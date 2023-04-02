@@ -1,10 +1,10 @@
+import { uid, LocalStorage } from 'quasar'
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { uid } from 'quasar'
 // @ts-ignore
 import * as vc from '@digitalbazaar/vc'
 // @ts-ignore
@@ -75,15 +75,10 @@ export function createAndSignPresentation({
 }
 
 export async function getAndSaveKeyPair() {
-  if (
-    // eslint-disable-next-line no-prototype-builtins
-    localStorage.hasOwnProperty('publicKey') &&
-    // eslint-disable-next-line no-prototype-builtins
-    localStorage.hasOwnProperty('privateKey')
-  ) {
+  if (LocalStorage.has('publicKey') && LocalStorage.has('privateKey')) {
     return Ed25519VerificationKey2020.from({
-      ...JSON.parse(localStorage.getItem('publicKey')),
-      ...JSON.parse(localStorage.getItem('privateKey')),
+      ...JSON.parse(LocalStorage.getItem('publicKey')),
+      ...JSON.parse(LocalStorage.getItem('privateKey')),
     })
   }
 
@@ -91,11 +86,11 @@ export async function getAndSaveKeyPair() {
   const publicKey = await newKeyPair.export({
     publicKey: true,
   })
-  localStorage.setItem('publicKey', JSON.stringify(publicKey))
+  LocalStorage.set('publicKey', JSON.stringify(publicKey))
   const privateKey = await newKeyPair.export({
     privateKey: true,
   })
-  localStorage.setItem('privateKey', JSON.stringify(privateKey))
+  LocalStorage.set('privateKey', JSON.stringify(privateKey))
 
   return newKeyPair
 }

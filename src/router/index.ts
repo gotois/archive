@@ -1,3 +1,4 @@
+import { LocalStorage } from 'quasar'
 import { route } from 'quasar/wrappers'
 import {
   createMemoryHistory,
@@ -35,6 +36,19 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
   const tutorialFinalStep = 3
 
   Router.beforeEach(async (to, from) => {
+    if (to.query.error) {
+      switch (to.query.error) {
+        case 'interaction_required':
+        case 'access_denied': {
+          LocalStorage.remove('restorePreviousSession')
+          break
+        }
+        default: {
+          break
+        }
+      }
+    }
+
     switch (to.path) {
       case '/privacy':
       case '/auth': {
@@ -120,7 +134,8 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
           !from.name &&
           !to.query.error &&
           !to.query.code &&
-          !to.query.state
+          !to.query.state &&
+          LocalStorage.has('restorePreviousSession')
         ) {
           try {
             await solidAuth({

@@ -335,7 +335,10 @@ async function loginToPod() {
   await solidAuth({
     sessionRestoreCallback: () =>
       void store.dispatch('Auth/openIdHandleIncoming'),
-    loginCallback: () => void store.dispatch('Auth/openIdHandleIncoming'),
+    loginCallback: () => {
+      $q.localStorage.set('restorePreviousSession', true)
+      void store.dispatch('Auth/openIdHandleIncoming')
+    },
   })
 }
 
