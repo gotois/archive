@@ -190,6 +190,17 @@
         </QExpansionItem>
         <QSeparator class="q-mb-md" />
         <QBtn
+          v-if="isLoggedIn"
+          square
+          outline
+          color="primary"
+          glossy
+          push
+          class="full-width"
+          label="Выйти из Solid"
+          @click="logOutFromPod"
+        />
+        <QBtn
           v-if="!isLoggedIn"
           square
           outline
@@ -308,6 +319,7 @@ import { useRouter } from 'vue-router'
 import { useStore } from '../store'
 import pkg from '../../package.json'
 import twaManifest from '../../twa-manifest.json'
+import { logout } from '@inrupt/solid-client-authn-browser'
 import { solidAuth } from '../services/podHelper'
 import OIDCIssuerComponent from 'components/OIDCIssuerComponent.vue'
 
@@ -385,13 +397,21 @@ function onOnlineAuthorize(oidcIssuer: string) {
 }
 
 function loginToPod() {
-  console.log(111)
   if ($q.localStorage.has('oidcIssuer')) {
-    console.log(222, $q.localStorage.getItem('oidcIssuer'))
     return onOnlineAuthorize($q.localStorage.getItem('oidcIssuer'))
   }
-  console.log(333)
   dialogOIDCIssuer.value = true
+}
+
+async function logOutFromPod() {
+  await logout()
+  await store.dispatch('Auth/openIdHandleIncoming')
+  $q.localStorage.remove('oidcIssuer')
+  $q.localStorage.remove('restorePreviousSession')
+  $q.notify({
+    message: 'Вы успешно вышли из системы',
+    type: 'positive',
+  })
 }
 
 function onOpenFeedback() {

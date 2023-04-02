@@ -9,7 +9,12 @@ import {
   formatterLDContract,
   formatterDatasetContract,
 } from '../services/schemaHelper'
-import { saveToPod, getWebId, getResourceBaseUrl } from '../services/podHelper'
+import {
+  saveToPod,
+  removeFromPod,
+  getWebId,
+  getResourceBaseUrl,
+} from '../services/podHelper'
 import { sign, getAndSaveKeyPair } from '../services/cryptoHelper'
 
 export interface ContractState {
@@ -50,12 +55,13 @@ const ContractClass: Module<ContractState, StateInterface> = {
         usePod = false,
       }: { contractData: ContractTable; usePod: boolean },
     ) {
-      // Step 1: Save JS to Vuex
+      // Step 1: JS
       context.commit('addContract', contractData)
 
-      // Step 2: Save JSON-LD to IndexedDB
+      // Step 2: JSON-LD
       const jsldContract = formatterContract(contractData)
-      // Step 3: Save Signed LD to IndexedDB
+
+      // Step 3: Signed LD
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const keyPair = await getAndSaveKeyPair()
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call
@@ -67,19 +73,24 @@ const ContractClass: Module<ContractState, StateInterface> = {
       const signedVC = await sign({
         credential: credential,
       })
-      await db.add(contractData) // todo в Dexie записывать всю семантику от signedVC
-
-      // Step 4: Save Solid Dataset to Pod
-      if (usePod) {
-        const resourceBaseUrl = await getResourceBaseUrl()
-        const resourceName =
-          resourceBaseUrl + contractData.startTime.toJSON() + '.ttl'
-        const solidDatasetContract = formatterDatasetContract(
-          resourceName,
-          signedVC,
-        )
-        await saveToPod(resourceName, solidDatasetContract)
+      // Save to IndexedDb
+      if (!usePod) {
+        contractData.resource_url =
+          'https://storage.inrupt.com/1189569a-8a9f-41dd-9d48-e1b0bca02371/contracts/2023-04-01T21:00:00.000Z.ttl' // fixme test
+        return db.add(contractData)
       }
+
+      // Step 4: Solid Dataset to Pod
+      const resourceBaseUrl = await getResourceBaseUrl()
+      const resourceName =
+        resourceBaseUrl + contractData.startTime.toJSON() + '.ttl'
+      contractData.resource_url = resourceName
+      const solidDatasetContract = formatterDatasetContract(
+        resourceName,
+        signedVC,
+      )
+      await saveToPod(resourceName, solidDatasetContract)
+      return db.add(contractData)
     },
     async editContract(context, contract: FormatContract) {
       const id = Number(contract.identifier.value)
@@ -91,13 +102,29 @@ const ContractClass: Module<ContractState, StateInterface> = {
         return
       }
     },
-    async removeContract(context, contract: FormatContract) {
-      const id = Number(contract.identifier.value)
+    async removeContract(
+      context,
+      {
+        contractData,
+        usePod = false,
+      }: { contractData: FormatContract; usePod: boolean },
+    ) {
+      // Step 1: JS
+      const id = Number(contractData.identifier.value)
       context.commit('removeContract', id)
+
+      // Step 2: IndexedDB
       const count = await db.remove(id)
       if (count === 0) {
         console.error('Cannot remove this item')
+      }
+      if (!usePod) {
         return
+      }
+
+      // Step 3: Solid Pod
+      if (contractData.sameAs) {
+        await removeFromPod(contractData.sameAs)
       }
     },
     async filterFromContracts(context, { query }: { query: string }) {

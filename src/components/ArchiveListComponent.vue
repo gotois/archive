@@ -231,7 +231,7 @@ import { FormatContract } from '../types/models'
 import { showPDFInPopup } from '../services/popup'
 import { isDateNotOk, formatterDate } from '../services/dateHelper'
 import { createPDF } from '../services/pdfHelper'
-import { saveToPod } from '../services/podHelper'
+// import { saveToPod } from '../services/podHelper'
 
 const $q = useQuasar()
 const store = useStore()
@@ -327,12 +327,18 @@ async function onShareFullImage(object: FormatContract) {
   }
 }
 
-async function uploadArchive(item: FormatContract) {
-  await saveToPod(item)
-  $q.notify({
-    type: 'positive',
-    message: 'Данные записаны на Ваш Pod',
-  })
+function uploadArchive(item: FormatContract) {
+  console.warn('In progress...', item)
+  // const resourceName = item.sameAs ?? resourceBaseUrl + contractData.startTime.toJSON() + '.ttl'
+  // const solidDatasetContract = formatterDatasetContract(
+  //   resourceName,
+  //   signedVC,
+  // )
+  // await saveToPod(resourceName, solidDatasetContract)
+  // $q.notify({
+  //   type: 'positive',
+  //   message: 'Данные записаны на Ваш Pod',
+  // })
 }
 
 function editArchive(item: FormatContract) {

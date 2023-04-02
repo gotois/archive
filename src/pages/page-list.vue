@@ -187,8 +187,23 @@ async function onPaginate(page: number) {
 }
 
 async function onRemove(item: FormatContract) {
-  await store.dispatch('removeContract', item)
-  await store.dispatch('loadContractNames')
+  try {
+    await store.dispatch('removeContract', {
+      contractData: item,
+      usePod: isLoggedIn.value,
+    })
+    await store.dispatch('loadContractNames')
+    $q.notify({
+      type: 'positive',
+      message: 'Данные успешно удалены',
+    })
+  } catch (e) {
+    console.error(e)
+    $q.notify({
+      type: 'negative',
+      message: 'Произошла проблема с удалением данных',
+    })
+  }
 }
 
 async function onEdit(item: FormatContract) {

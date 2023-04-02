@@ -7,6 +7,7 @@ export interface ContractTable {
   startTime: Date
   endTime?: Date | null
   images?: string[]
+  resource_url?: string
 }
 
 export interface ContextCredential<T> {
@@ -56,6 +57,7 @@ export interface BaseContract {
 export interface FormatContract extends BaseContract {
   '@context': string
   '@type': string
+  'sameAs'?: string
   '_currentSlide'?: number
 }
 

@@ -208,6 +208,7 @@ export function formatterContract(contract: ContractTable): FormatContract {
   return {
     '@context': 'https://schema.org',
     '@type': 'OrganizeAction',
+    'sameAs': contract.resource_url,
     'agent': {
       '@type': 'Person',
       'name': contract.agent_name,

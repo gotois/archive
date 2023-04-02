@@ -94,6 +94,14 @@ export async function initPod() {
   }
 }
 
+export function removeFromPod(url: string) {
+  return deleteSolidDataset(url, {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    fetch: fetch,
+  })
+}
+
 export async function removeContractsDataset() {
   const resourceBaseUrl = await getResourceBaseUrl()
   const myDataset = await getSolidDataset(resourceBaseUrl, {

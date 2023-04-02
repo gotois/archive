@@ -182,6 +182,7 @@
         icon-right="save"
         type="submit"
         color="accent"
+        :disable="disableForm"
       />
     </div>
   </QForm>
@@ -237,6 +238,7 @@ const allContractTypes = [].concat(recommendationContractTypes, contractTypes)
 const contractOptions = ref(allContractTypes)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 const isLoggedIn = computed(() => store.getters['Auth/isLoggedIn'] as boolean)
+const disableForm = ref(false)
 
 // eslint-disable-next-line no-unused-vars
 function filterOptions(val: string, update: (callback: () => void) => void) {
@@ -316,24 +318,35 @@ async function onSubmit() {
 
   // Если дата совпадает с текущей, то считаем что договор подписан сегодняшним числом
   if (date.getDateDiff(startDate, new Date(), 'days') === 0) {
-    startDate.setHours(0)
-    startDate.setMinutes(0)
-    startDate.setSeconds(0)
-    startDate.setMilliseconds(0)
+    const now = new Date()
+    startDate.setHours(now.getHours())
+    startDate.setMinutes(now.getMinutes())
+    startDate.setSeconds(now.getSeconds())
+    startDate.setMilliseconds(now.getMilliseconds())
+  } else {
+    // todo если же договор подписан прошедшим числом, тогда как-то получить его часы, минуты, секунды...
+    // иначе упадет ошибка при создании на Pod, если таких договоров будет два
   }
-
-  const images = await readFilesPromise(files.value)
-  const newContract: ContractTable = {
-    agent_name: (store.getters as { consumer: string }).consumer,
-    participant_name: customer.value,
-    instrument_name: contractType.value,
-    instrument_description: description.value,
-    startTime: startDate,
-    endTime: dateNoLimit.value ? null : endDate,
-    images: images,
-  }
+  disableForm.value = true
 
   try {
+    $q.notify({
+      type: 'warning',
+      message: 'Происходит сохранение данных',
+      spinner: true,
+      group: false,
+      timeout: 3000,
+    })
+    const images = await readFilesPromise(files.value)
+    const newContract: ContractTable = {
+      agent_name: (store.getters as { consumer: string }).consumer,
+      participant_name: customer.value,
+      instrument_name: contractType.value,
+      instrument_description: description.value,
+      startTime: startDate,
+      endTime: dateNoLimit.value ? null : endDate,
+      images: images,
+    }
     await store.dispatch('addContract', {
       contractData: newContract,
       usePod: isLoggedIn.value,
@@ -359,6 +372,8 @@ async function onSubmit() {
       type: 'negative',
       message: 'Запись не удалась',
     })
+  } finally {
+    disableForm.value = false
   }
 }
 </script>
