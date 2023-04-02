@@ -59,111 +59,117 @@
             </q-menu>
           </q-btn>
         </div>
-        <q-separator v-if="item.object.length" />
-        <q-carousel
-          v-if="item.object.length"
-          v-model="item._currentSlide"
-          v-model:fullscreen="fullscreen"
-          transition-prev="slide-right"
-          transition-next="slide-left"
-          control-color="secondary"
-          :navigation="item.object.length > 1"
-          :arrows="$q.platform.is.desktop && item.object.length > 1"
-          animated
-          swipeable
-          infinite
-        >
-          <template #navigation-icon="navProps">
-            <q-img
-              v-ripple
-              width="64px"
-              :ratio="1"
-              img-class="rounded-borders"
-              :img-style="{
-                border: navProps.active ? '1px solid white' : '',
-              }"
-              class="q-ml-sm q-mr-sm non-selectable cursor-pointer"
-              :src="item.object[navProps.index].contentUrl"
-              placeholder-src="/icons/icon-64x64.png"
-              decoding="async"
-              fetchpriority="low"
-              no-spinner
-              fit="scale-down"
-              no-transition
-              no-native-menu
-              @click="navProps.onClick"
-            />
-          </template>
-          <q-carousel-slide
-            v-for="(object, objectIndex) in item.object"
-            :key="objectIndex"
-            class="no-margin no-padding"
-            :name="objectIndex + 1"
+        <template v-if="item.object.length">
+          <q-separator />
+          <q-carousel
+            v-model="item._currentSlide"
+            v-model:fullscreen="fullscreen"
+            transition-prev="slide-right"
+            transition-next="slide-left"
+            control-color="secondary"
+            :navigation="!fullscreen && item.object.length > 1"
+            :arrows="$q.platform.is.desktop && item.object.length > 1"
+            animated
+            swipeable
+            infinite
           >
-            <q-scroll-area class="absolute-full fit">
-              <template
-                v-if="!$q.platform.is.safari && isContentPDF(object.contentUrl)"
-              >
-                <q-icon
-                  name="picture_as_pdf"
-                  size="300px"
-                  class="absolute-center"
-                  color="info"
-                />
-              </template>
-              <template v-else>
-                <q-img
-                  class="col"
-                  fit="contain"
-                  :height="fullscreen ? '100vh' : '400px'"
-                  alt="Document"
-                  :ratio="1"
-                  :src="object.contentUrl"
-                  loading="lazy"
-                  decoding="async"
-                  fetchpriority="high"
-                  no-spinner
-                  no-native-menu
-                />
-              </template>
-            </q-scroll-area>
-          </q-carousel-slide>
-          <template #control>
-            <q-carousel-control position="top-right" :offset="[18, 18]">
-              <q-btn
-                round
-                color="white"
-                text-color="primary"
-                :icon="fullscreen ? 'fullscreen_exit' : 'fullscreen'"
-                @click="onShowFullImage(item)"
-              >
-                <q-tooltip v-if="fullscreen">
-                  {{ $t('archiveList.closeFile') }}
-                </q-tooltip>
-                <q-tooltip v-else>
-                  {{ $t('archiveList.openFile') }}
-                </q-tooltip>
-              </q-btn>
-            </q-carousel-control>
-            <q-carousel-control
-              v-if="nativeShareAvailable"
-              position="top-left"
-              :offset="[18, 18]"
+            <template #navigation-icon="navProps">
+              <q-img
+                v-ripple
+                width="64px"
+                :ratio="1"
+                class="q-ml-sm q-mr-sm non-selectable cursor-pointer"
+                img-class="rounded-borders"
+                :img-style="{
+                  'border': navProps.active
+                    ? '1px solid white'
+                    : '1px solid transparent',
+                  'image-rendering': 'optimizeSpeed',
+                }"
+                :src="item.object[navProps.index].contentUrl"
+                placeholder-src="/icons/icon-64x64.png"
+                decoding="async"
+                fetchpriority="low"
+                no-spinner
+                fit="scale-down"
+                no-transition
+                no-native-menu
+                @click="navProps.onClick"
+              />
+            </template>
+            <q-carousel-slide
+              v-for="(object, objectIndex) in item.object"
+              :key="objectIndex"
+              class="no-margin no-padding"
+              :name="objectIndex + 1"
             >
-              <q-btn
-                round
-                color="white"
-                text-color="primary"
-                :icon="shareIcon"
-                @click="onShareFullImage(item)"
+              <q-scroll-area class="absolute-full fit">
+                <template
+                  v-if="
+                    !$q.platform.is.safari && isContentPDF(object.contentUrl)
+                  "
+                >
+                  <q-icon
+                    name="picture_as_pdf"
+                    size="300px"
+                    class="absolute-center"
+                    color="info"
+                  />
+                </template>
+                <template v-else>
+                  <q-img
+                    class="col"
+                    fit="contain"
+                    :height="fullscreen ? '100vh' : '400px'"
+                    alt="Document"
+                    :ratio="1"
+                    :src="object.contentUrl"
+                    :loading="fullscreen ? 'eager' : 'lazy'"
+                    :decoding="fullscreen ? 'sync' : 'async'"
+                    fetchpriority="high"
+                    no-spinner
+                    no-native-menu
+                  />
+                </template>
+              </q-scroll-area>
+            </q-carousel-slide>
+            <template #control>
+              <q-carousel-control position="top-right" :offset="[18, 18]">
+                <q-btn
+                  round
+                  color="white"
+                  text-color="primary"
+                  :icon="fullscreen ? 'fullscreen_exit' : 'fullscreen'"
+                  @click="onShowFullImage(item)"
+                >
+                  <q-tooltip v-if="fullscreen">
+                    {{ $t('archiveList.closeFile') }}
+                  </q-tooltip>
+                  <q-tooltip v-else>
+                    {{ $t('archiveList.openFile') }}
+                  </q-tooltip>
+                </q-btn>
+              </q-carousel-control>
+              <q-carousel-control
+                v-if="nativeShareAvailable"
+                position="top-left"
+                :offset="[18, 18]"
               >
-                <q-tooltip>
-                  {{ $t('archiveList.shareFile') }}
-                </q-tooltip>
-              </q-btn>
-            </q-carousel-control>
-          </template>
-        </q-carousel>
+                <q-btn
+                  round
+                  color="white"
+                  text-color="primary"
+                  :icon="shareIcon"
+                  @click="onShareFullImage(item)"
+                >
+                  <q-tooltip>
+                    {{ $t('archiveList.shareFile') }}
+                  </q-tooltip>
+                </q-btn>
+              </q-carousel-control>
+            </template>
+          </q-carousel>
+        </template>
         <q-separator />
         <q-card-section>
           <p class="text-overline text-orange-9 no-margin">
