@@ -1,12 +1,12 @@
 <template>
-  <q-page class="bg-grey-1">
-    <q-scroll-area
+  <QPage class="bg-grey-1">
+    <QScrollArea
       ref="scrollAreaRef"
       :delay="500"
       :visible="$q.platform.is.desktop"
       class="absolute-full fit"
     >
-      <archive-list-component
+      <ArchiveListComponent
         :loading="loadingVisible"
         :contracts="contracts"
         class="q-mt-md q-mb-md q-ml-auto q-mr-auto"
@@ -21,9 +21,9 @@
         @on-remove="onRemove"
         @on-edit="onEdit"
       />
-    </q-scroll-area>
+    </QScrollArea>
     <template v-if="!loadingVisible && isContractsEmpty">
-      <q-banner
+      <QBanner
         :class="{
           'col-6': $q.platform.is.desktop,
           'full-width': $q.platform.is.mobile,
@@ -42,7 +42,7 @@
             >{{ $t('archive.empty') }}
             Например:
             <br />
-            <q-btn
+            <QBtn
               :to="{
                 name: 'create',
                 query: { contractTypeName: archiveEmptyText },
@@ -61,7 +61,7 @@
         </template>
         <template #action>
           <template v-if="isSearch">
-            <q-btn
+            <QBtn
               flat
               align="left"
               color="accent"
@@ -72,10 +72,10 @@
             />
           </template>
         </template>
-      </q-banner>
+      </QBanner>
     </template>
-    <q-page-sticky position="bottom-right" :offset="[18, 18]">
-      <q-fab
+    <QPageSticky position="bottom-right" :offset="[18, 18]">
+      <QFab
         hide-label
         glossy
         class="bg-white"
@@ -84,7 +84,7 @@
         vertical-actions-align="right"
         color="accent"
       >
-        <q-fab-action
+        <QFabAction
           push
           icon="create"
           square
@@ -94,15 +94,26 @@
           :label="$t('list.create')"
           :to="{ name: 'create' }"
         />
-      </q-fab>
-    </q-page-sticky>
-  </q-page>
+      </QFab>
+    </QPageSticky>
+  </QPage>
 </template>
 
 <script lang="ts" setup>
 import { ref, computed, getCurrentInstance, defineAsyncComponent, h } from 'vue'
 import { useRouter, LocationQuery } from 'vue-router'
-import { useMeta, useQuasar, QSkeleton, QScrollArea } from 'quasar'
+import {
+  useMeta,
+  useQuasar,
+  QSkeleton,
+  QScrollArea,
+  QPage,
+  QBanner,
+  QBtn,
+  QPageSticky,
+  QFab,
+  QFabAction,
+} from 'quasar'
 import { useStore } from '../store'
 import { contractTypes } from '../services/contractTypes'
 import { FormatContract } from '../types/models'

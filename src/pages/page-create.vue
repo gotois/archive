@@ -1,7 +1,7 @@
 <template>
-  <q-page class="bg-grey-1">
-    <q-scroll-area visible class="absolute-full fit non-selectable">
-      <q-card
+  <QPage class="bg-grey-1">
+    <QScrollArea visible class="absolute-full fit non-selectable">
+      <QCard
         flat
         square
         bordered
@@ -10,7 +10,7 @@
         }"
         class="q-pa-md q-ml-auto q-mr-auto q-mt-md q-mb-md"
       >
-        <contract-form-component
+        <ContractFormComponent
           :class="{
             'col-xs-6': $q.platform.is.desktop,
           }"
@@ -22,14 +22,14 @@
           "
           @on-create="onCreate"
         />
-      </q-card>
-    </q-scroll-area>
-  </q-page>
+      </QCard>
+    </QScrollArea>
+  </QPage>
 </template>
 
 <script lang="ts" setup>
 import { defineAsyncComponent, h } from 'vue'
-import { QSkeleton, useMeta } from 'quasar'
+import { QPage, QSkeleton, useMeta, QCard, QScrollArea } from 'quasar'
 import { useRouter } from 'vue-router'
 
 const ContractFormComponent = defineAsyncComponent({

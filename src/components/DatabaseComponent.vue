@@ -1,7 +1,7 @@
 <template>
   <div>
-    <q-form @submit="onImportDB">
-      <q-file
+    <QForm @submit="onImportDB">
+      <QFile
         v-model="file"
         accept=".json,.zip"
         :label="$t('settings.native.import')"
@@ -10,14 +10,14 @@
         outlined
         @rejected="rejectedEntries"
       >
-        <q-tooltip>
+        <QTooltip>
           {{ $t('database.fileSize') }}
-        </q-tooltip>
+        </QTooltip>
         <template #prepend>
-          <q-icon name="attach_file" />
+          <QIcon name="attach_file" />
         </template>
-      </q-file>
-      <q-btn
+      </QFile>
+      <QBtn
         :label="$t('settings.native.submit')"
         :disable="!file"
         type="submit"
@@ -26,12 +26,12 @@
         :outline="!file"
         class="full-width"
       >
-        <q-tooltip>
+        <QTooltip>
           {{ $t('database.fileImport') }}
-        </q-tooltip>
-      </q-btn>
-    </q-form>
-    <q-btn
+        </QTooltip>
+      </QBtn>
+    </QForm>
+    <QBtn
       color="secondary"
       icon="file_download"
       :label="$t('settings.native.export')"
@@ -40,16 +40,16 @@
       :outline="contractsCount === 0"
       @click="onExportDB"
     >
-      <q-tooltip>
+      <QTooltip>
         {{ $t('database.fileExport') }}
-      </q-tooltip>
-    </q-btn>
+      </QTooltip>
+    </QBtn>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
-import { useQuasar } from 'quasar'
+import { useQuasar, QBtn, QIcon, QForm, QFile, QTooltip } from 'quasar'
 import { exportDB, importInto } from 'dexie-export-import'
 import { saveAs } from 'file-saver'
 import { BulkError } from 'dexie'

@@ -1,8 +1,8 @@
 <template>
-  <q-layout view="lHr lpR lfr">
-    <q-header reveal bordered class="bg-white text-primary" height-hint="98">
-      <q-toolbar>
-        <q-btn
+  <QLayout view="lHr lpR lfr">
+    <QHeader reveal bordered class="bg-white text-primary" height-hint="98">
+      <QToolbar>
+        <QBtn
           flat
           dense
           round
@@ -10,19 +10,19 @@
           aria-label="Settings"
           @click="onToggleLeftDrawer"
         />
-        <q-toolbar-title class="text-black-9 text-center non-selectable">
+        <QToolbarTitle class="text-black-9 text-center non-selectable">
           <template v-if="isLoggedIn">
-            <q-badge rounded color="green">
-              <q-tooltip>Вы подключены к SOLID серверу</q-tooltip>
-            </q-badge>
+            <QBadge rounded color="green">
+              <QTooltip>Вы подключены к SOLID серверу</QTooltip>
+            </QBadge>
           </template>
           <template v-else>
-            <q-badge rounded color="yellow">
-              <q-tooltip>Вы не подключены к SOLID серверу</q-tooltip>
-            </q-badge>
+            <QBadge rounded color="yellow">
+              <QTooltip>Вы не подключены к SOLID серверу</QTooltip>
+            </QBadge>
           </template>
           {{ $t('header.title') }}
-          <q-badge
+          <QBadge
             outline
             rounded
             align="top"
@@ -30,9 +30,9 @@
             class="absolute q-ml-xs"
           >
             {{ $t('navigation.version') }}{{ navigatorVersion }}
-          </q-badge>
-        </q-toolbar-title>
-        <q-btn
+          </QBadge>
+        </QToolbarTitle>
+        <QBtn
           flat
           round
           dense
@@ -41,16 +41,16 @@
           icon="search"
           @click="showSearch = true"
         />
-        <q-btn
+        <QBtn
           flat
           dense
           round
           icon="menu"
           aria-label="Menu"
           @click="rightDrawerOpen = !rightDrawerOpen"
-        ></q-btn>
-      </q-toolbar>
-      <q-tabs
+        ></QBtn>
+      </QToolbar>
+      <QTabs
         shrink
         stretch
         inline-label
@@ -58,26 +58,26 @@
         mobile-arrows
         align="center"
       >
-        <q-route-tab
+        <QRouteTab
           :to="{ name: 'create' }"
           icon="create"
           :label="$t('header.create')"
         />
-        <q-route-tab
+        <QRouteTab
           :to="{ name: 'archive', query: { page: 1 } }"
           icon="archive"
           :label="$t('header.archive')"
         />
-      </q-tabs>
-    </q-header>
-    <q-drawer v-model="leftDrawerOpen" side="left" show-if-above bordered>
+      </QTabs>
+    </QHeader>
+    <QDrawer v-model="leftDrawerOpen" side="left" show-if-above bordered>
       <p
         class="full-width block text-h6 q-pl-md q-pr-md q-pt-md no-border-radius non-selectable no-pointer-events"
       >
         {{ $t('navigation.title') }}
       </p>
-      <q-list>
-        <q-expansion-item
+      <QList>
+        <QExpansionItem
           v-model="profileOpen"
           group="backupgroup"
           icon="person"
@@ -88,16 +88,16 @@
           }"
           :label="$t('settings.native.profile')"
         >
-          <q-item-section class="q-pa-md">
+          <QItemSection class="q-pa-md">
             <p>{{ $t('settings.consumer.description') }}</p>
-            <q-form
+            <QForm
               ref="nameForm"
               autocapitalize="off"
               autocomplete="off"
               greedy
               @submit="onFinishProfile"
             >
-              <q-input
+              <QInput
                 v-model="consumer"
                 bg-color="white"
                 color="secondary"
@@ -110,10 +110,10 @@
                 autocomplete="on"
               >
                 <template #prepend>
-                  <q-icon name="face" />
+                  <QIcon name="face" />
                 </template>
-              </q-input>
-              <q-btn
+              </QInput>
+              <QBtn
                 :label="$t('consumer.save')"
                 icon="save"
                 class="full-width"
@@ -124,11 +124,11 @@
                 type="submit"
                 color="accent"
               />
-            </q-form>
-          </q-item-section>
-        </q-expansion-item>
-        <q-separator />
-        <q-expansion-item
+            </QForm>
+          </QItemSection>
+        </QExpansionItem>
+        <QSeparator />
+        <QExpansionItem
           v-model="otpOpen"
           group="backupgroup"
           icon="vpn_key"
@@ -139,10 +139,10 @@
           }"
           :label="$t('settings.native.otp')"
         >
-          <q-item-section class="q-pa-md">
+          <QItemSection class="q-pa-md">
             <p>{{ $t('settings.otp.description') }}</p>
-            <q-tooltip>{{ $t('settings.otp.label') }}</q-tooltip>
-            <v-otp-input
+            <QTooltip>{{ $t('settings.otp.label') }}</QTooltip>
+            <VOtpInput
               :value="pin"
               input-classes="otp-input"
               class="flex flex-center"
@@ -155,10 +155,10 @@
               @on-change="onOTPChange"
               @on-complete="onOTPHandleComplete"
             />
-          </q-item-section>
-        </q-expansion-item>
-        <q-separator />
-        <q-expansion-item
+          </QItemSection>
+        </QExpansionItem>
+        <QSeparator />
+        <QExpansionItem
           v-model="settingsOpen"
           group="backupgroup"
           icon="import_export"
@@ -169,27 +169,27 @@
           }"
           :label="$t('settings.native.title')"
         >
-          <q-item-section class="q-pa-md">
+          <QItemSection class="q-pa-md">
             <p>{{ $t('settings.native.description') }}</p>
-            <database-component v-if="settingsOpen" />
-          </q-item-section>
-          <q-separator />
-          <q-item-section class="q-pa-md">
+            <DatabaseComponent v-if="settingsOpen" />
+          </QItemSection>
+          <QSeparator />
+          <QItemSection class="q-pa-md">
             <p>{{ $t('settings.clean.description') }}</p>
-            <q-btn
+            <QBtn
               :label="$t('settings.clean.submit')"
               color="negative"
               icon="delete_outline"
               @click="confirm = true"
             >
-              <q-tooltip>
+              <QTooltip>
                 {{ $t('database.removeDatabase') }}
-              </q-tooltip>
-            </q-btn>
-          </q-item-section>
-        </q-expansion-item>
-        <q-separator class="q-mb-md"></q-separator>
-        <q-btn
+              </QTooltip>
+            </QBtn>
+          </QItemSection>
+        </QExpansionItem>
+        <QSeparator class="q-mb-md" />
+        <QBtn
           v-if="!isLoggedIn"
           square
           outline
@@ -200,8 +200,7 @@
           label="Войти через WebId"
           @click="loginToPod"
         />
-
-        <q-chip
+        <QChip
           icon="link"
           class="cursor-pointer full-width q-pa-md self-end"
           color="white"
@@ -210,13 +209,13 @@
           :label="$t('navigation.feedback.label')"
           @click="onOpenFeedback"
         >
-          <q-tooltip>
+          <QTooltip>
             {{ $t('navigation.feedback.tooltip') }}
-          </q-tooltip>
-        </q-chip>
-      </q-list>
-    </q-drawer>
-    <q-drawer
+          </QTooltip>
+        </QChip>
+      </QList>
+    </QDrawer>
+    <QDrawer
       v-if="archiveNames.length"
       v-model="rightDrawerOpen"
       show-if-above
@@ -229,7 +228,7 @@
       >
         {{ $t('documentTypes.title') }}
       </p>
-      <q-chip
+      <QChip
         v-for="([name, value], objectKey) in archiveNames"
         :key="objectKey"
         dense
@@ -240,20 +239,20 @@
         :color="value.recommendation ? 'orange' : ''"
         @click="onSelectArchiveName(name, value)"
       >
-        <q-avatar v-if="value.count > 1" color="secondary" text-color="white">{{
+        <QAvatar v-if="value.count > 1" color="secondary" text-color="white">{{
           value.count
-        }}</q-avatar>
+        }}</QAvatar>
         <div class="ellipsis">{{ name }}</div>
-        <q-tooltip>{{ name }}</q-tooltip>
-      </q-chip>
-      <q-skeleton
+        <QTooltip>{{ name }}</QTooltip>
+      </QChip>
+      <QSkeleton
         v-show="archiveNames.length === 0"
         type="QChip"
         animation="blink"
         width="100%"
       />
-    </q-drawer>
-    <q-page-container>
+    </QDrawer>
+    <QPageContainer>
       <RouterView />
       <QDialog v-model="confirm" persistent square>
         <DatabaseRemoveComponent v-if="confirm" @on-clear="confirm = false" />
@@ -265,21 +264,46 @@
       />
       <QDialog v-model="dialogOIDCIssuer" persistent square>
         <QCard class="q-pa-md">
-          <q-toolbar>
-            <q-toolbar-title>Введите адрес своего OIDC Issuer</q-toolbar-title>
-            <q-btn v-close-popup flat round dense icon="close" />
-          </q-toolbar>
+          <QToolbar>
+            <QToolbarTitle>Введите адрес своего OIDC Issuer</QToolbarTitle>
+            <QBtn v-close-popup flat round dense icon="close" />
+          </QToolbar>
           <OIDCIssuerComponent @on-complete="onOnlineAuthorize" />
         </QCard>
       </QDialog>
-    </q-page-container>
-    <q-footer reveal bordered></q-footer>
-  </q-layout>
+    </QPageContainer>
+  </QLayout>
 </template>
 
 <script lang="ts" setup>
 import { ref, computed, defineAsyncComponent } from 'vue'
-import { openURL, useQuasar, QCard, QDialog } from 'quasar'
+import {
+  openURL,
+  useQuasar,
+  QCard,
+  QDialog,
+  QBtn,
+  QPageContainer,
+  QSkeleton,
+  QTooltip,
+  QAvatar,
+  QChip,
+  QSeparator,
+  QItemSection,
+  QExpansionItem,
+  QIcon,
+  QInput,
+  QForm,
+  QList,
+  QDrawer,
+  QBadge,
+  QTabs,
+  QRouteTab,
+  QToolbarTitle,
+  QToolbar,
+  QHeader,
+  QLayout,
+} from 'quasar'
 import { useRouter } from 'vue-router'
 import { useStore } from '../store'
 import pkg from '../../package.json'

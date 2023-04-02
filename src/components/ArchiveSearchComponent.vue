@@ -1,6 +1,6 @@
 <template>
-  <q-dialog square @show="indexAllDocuments">
-    <q-card
+  <QDialog square @show="indexAllDocuments">
+    <QCard
       :style="{
         'min-width': $q.platform.is.desktop ? '380px' : '',
       }"
@@ -9,15 +9,15 @@
         'fixed-top': $q.platform.is.mobile,
       }"
     >
-      <q-card-section>
+      <QCardSection>
         <div class="text-h6 non-selectable">{{ $t('archive.search') }}</div>
-      </q-card-section>
-      <q-card-section class="q-pt-none no-border">
-        <q-form greedy autofocus>
-          <q-tooltip>
+      </QCardSection>
+      <QCardSection class="q-pt-none no-border">
+        <QForm greedy autofocus>
+          <QTooltip>
             {{ $t('archive.tooltip') }}
-          </q-tooltip>
-          <q-select
+          </QTooltip>
+          <QSelect
             v-model="searchText"
             autocomplete="off"
             spellcheck="false"
@@ -40,23 +40,23 @@
             @filter="onFilterSelect"
           >
             <template #no-option>
-              <q-item>
-                <q-item-section class="text-grey">
+              <QItem>
+                <QItemSection class="text-grey">
                   {{ $t('archive.notfound') }}
-                </q-item-section>
-              </q-item>
+                </QItemSection>
+              </QItem>
             </template>
-          </q-select>
-        </q-form>
-      </q-card-section>
-      <q-card-actions align="right" class="text-primary">
-        <q-btn
+          </QSelect>
+        </QForm>
+      </QCardSection>
+      <QCardActions align="right" class="text-primary">
+        <QBtn
           v-close-popup
           flat
           :dense="$q.platform.is.desktop"
           :label="$t('searchDialog.cancel')"
         />
-        <q-btn
+        <QBtn
           v-close-popup
           color="accent"
           icon-right="search"
@@ -66,14 +66,26 @@
           :label="$t('searchDialog.search')"
           @click="onSearchText"
         />
-      </q-card-actions>
-    </q-card>
-  </q-dialog>
+      </QCardActions>
+    </QCard>
+  </QDialog>
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { QSelect, useQuasar } from 'quasar'
+import {
+  useQuasar,
+  QDialog,
+  QSelect,
+  QBtn,
+  QItem,
+  QCard,
+  QItemSection,
+  QCardSection,
+  QForm,
+  QTooltip,
+  QCardActions,
+} from 'quasar'
 import MiniSearch from 'minisearch'
 import { db } from '../services/databaseHelper'
 

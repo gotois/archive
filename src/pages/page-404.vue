@@ -9,7 +9,7 @@
       <div class="text-h2" style="opacity: 0.4">
         {{ $t('error404.description') }}
       </div>
-      <q-btn
+      <QBtn
         class="q-mt-xl"
         color="white"
         text-color="info"
@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useMeta } from 'quasar'
+import { useMeta, QBtn } from 'quasar'
 
 const metaData = {
   'title': 'Страница не найдена',

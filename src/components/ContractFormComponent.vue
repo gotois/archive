@@ -1,5 +1,5 @@
 <template>
-  <q-form
+  <QForm
     ref="contractForm"
     class="q-gutter-md"
     autocapitalize="off"
@@ -10,7 +10,7 @@
     @submit="onSubmit"
     @reset="onResetForm"
   >
-    <q-select
+    <QSelect
       v-model="contractType"
       :options="contractOptions"
       :label="$t('contract.type')"
@@ -33,10 +33,10 @@
       @filter="filterOptions"
     >
       <template #prepend>
-        <q-icon name="assignment" />
+        <QIcon name="assignment" />
       </template>
-    </q-select>
-    <q-input
+    </QSelect>
+    <QInput
       v-model="customer"
       :label="$t('customer.type')"
       :hint="$t('customer.hint')"
@@ -51,11 +51,11 @@
       @focus="onFocusInput"
     >
       <template #prepend>
-        <q-icon name="assignment_ind" />
+        <QIcon name="assignment_ind" />
       </template>
-    </q-input>
+    </QInput>
     <div class="row justify-center items-center">
-      <q-input
+      <QInput
         v-model="duration.from"
         :rules="['date']"
         :label="$t('duration.from')"
@@ -65,43 +65,43 @@
         square
         color="secondary"
       >
-        <q-tooltip>{{ $t('duration.fromHint') }}</q-tooltip>
-      </q-input>
+        <QTooltip>{{ $t('duration.fromHint') }}</QTooltip>
+      </QInput>
       <div>
-        <q-icon
+        <QIcon
           size="md"
           name="event"
           class="cursor-pointer"
           color="dark"
           style="padding: 0 6px"
         >
-          <q-tooltip>
+          <QTooltip>
             {{ $t('contractForm.date') }}
-          </q-tooltip>
-          <q-popup-proxy
+          </QTooltip>
+          <QPopupProxy
             ref="qDateProxy"
             transition-show="scale"
             transition-hide="scale"
           >
             <template v-if="dateNoLimit">
-              <q-date
+              <QDate
                 v-model="duration.from"
                 default-view="Months"
                 first-day-of-week="1"
                 @update:model-value="onSelectDate"
               >
                 <div class="row items-center justify-end">
-                  <q-btn
+                  <QBtn
                     v-close-popup
                     :label="$t('duration.close')"
                     color="primary"
                     flat
                   />
                 </div>
-              </q-date>
+              </QDate>
             </template>
             <template v-else>
-              <q-date
+              <QDate
                 v-model="duration"
                 default-view="Months"
                 range
@@ -109,19 +109,19 @@
                 @update:model-value="onSelectDate"
               >
                 <div class="row items-center justify-end">
-                  <q-btn
+                  <QBtn
                     v-close-popup
                     :label="$t('duration.close')"
                     color="primary"
                     flat
                   />
                 </div>
-              </q-date>
+              </QDate>
             </template>
-          </q-popup-proxy>
-        </q-icon>
+          </QPopupProxy>
+        </QIcon>
       </div>
-      <q-input
+      <QInput
         v-if="!dateNoLimit"
         v-model="duration.to"
         :label="$t('duration.to')"
@@ -132,11 +132,11 @@
         square
         color="secondary"
       >
-        <q-tooltip>{{ $t('duration.toHint') }}</q-tooltip>
-      </q-input>
-      <q-toggle v-model="dateNoLimit" :label="$t('duration.infinity')" />
+        <QTooltip>{{ $t('duration.toHint') }}</QTooltip>
+      </QInput>
+      <QToggle v-model="dateNoLimit" :label="$t('duration.infinity')" />
     </div>
-    <q-file
+    <QFile
       v-model="files"
       :label="$t('files.type')"
       :hint="$t('files.hint')"
@@ -148,13 +148,13 @@
       counter
     >
       <template #prepend>
-        <q-icon name="image" />
+        <QIcon name="image" />
       </template>
       <template #append>
-        <q-icon name="add" @click.stop />
+        <QIcon name="add" @click.stop />
       </template>
-    </q-file>
-    <q-input
+    </QFile>
+    <QInput
       v-model="description"
       :label="$t('description.type')"
       type="textarea"
@@ -166,11 +166,11 @@
       @focus="onFocusInput"
     >
       <template #prepend>
-        <q-icon name="sticky_note_2" />
+        <QIcon name="sticky_note_2" />
       </template>
-    </q-input>
+    </QInput>
     <div class="text-left">
-      <q-btn
+      <QBtn
         ripple
         square
         stretch
@@ -184,12 +184,25 @@
         color="accent"
       />
     </div>
-  </q-form>
+  </QForm>
 </template>
 
 <script lang="ts" setup>
 import { PropType, ref, computed } from 'vue'
-import { useQuasar, date, QForm } from 'quasar'
+import {
+  useQuasar,
+  date,
+  QForm,
+  QSelect,
+  QBtn,
+  QIcon,
+  QInput,
+  QDate,
+  QTooltip,
+  QPopupProxy,
+  QToggle,
+  QFile,
+} from 'quasar'
 import { useStore } from '../store'
 import { ContractTable } from '../types/models'
 import { readFilesPromise } from '../services/fileHelper'

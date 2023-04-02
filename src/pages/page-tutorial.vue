@@ -1,7 +1,7 @@
 <template>
-  <q-page class="bg-grey-1">
-    <q-scroll-area visible class="absolute-full fit">
-      <q-stepper
+  <QPage class="bg-grey-1">
+    <QScrollArea visible class="absolute-full fit">
+      <QStepper
         ref="stepper"
         v-model="step"
         color="primary"
@@ -20,7 +20,7 @@
         }"
         :transition-next="$q.platform.is.desktop ? 'slide-left' : 'slide-down'"
       >
-        <q-step
+        <QStep
           :name="1"
           :title="$t('tutorial.info.title')"
           icon="create_new_folder"
@@ -32,8 +32,8 @@
           <p class="text-body1" style="white-space: break-spaces">{{
             $t('tutorial.info.body')
           }}</p>
-          <q-stepper-navigation>
-            <q-btn
+          <QStepperNavigation>
+            <QBtn
               color="secondary"
               :label="$t('tutorial.info.ok')"
               :class="{
@@ -41,9 +41,9 @@
               }"
               @click="$refs.stepper.next()"
             />
-          </q-stepper-navigation>
-        </q-step>
-        <q-step
+          </QStepperNavigation>
+        </QStep>
+        <QStep
           :name="2"
           :title="$t('tutorial.agreement.title')"
           icon="article"
@@ -55,8 +55,8 @@
           <p class="text-body1" style="white-space: break-spaces">{{
             $t('tutorial.agreement.body')
           }}</p>
-          <q-stepper-navigation>
-            <q-btn
+          <QStepperNavigation>
+            <QBtn
               color="secondary"
               :label="$t('tutorial.agreement.ok')"
               :class="{
@@ -64,14 +64,14 @@
               }"
               @click="$refs.stepper.next()"
             />
-          </q-stepper-navigation>
-        </q-step>
-        <q-step :name="3" :title="$t('tutorial.data.title')" icon="assignment">
+          </QStepperNavigation>
+        </QStep>
+        <QStep :name="3" :title="$t('tutorial.data.title')" icon="assignment">
           <p v-show="$q.platform.is.desktop" class="text-h4">
             {{ $t('tutorial.data.title') }}
           </p>
           <p class="text-body1">{{ $t('tutorial.data.body') }}</p>
-          <q-space class="q-pa-xs"></q-space>
+          <QSpace class="q-pa-xs" />
           <p v-if="!showForm"
             >Введите адрес своего OIDC Issuer для получения Вашего WebID:</p
           >
@@ -79,7 +79,7 @@
             v-if="!showForm"
             @on-complete="onOnlineAuthorize"
           />
-          <q-form
+          <QForm
             v-if="showForm"
             ref="nameForm"
             class="q-gutter-md"
@@ -89,7 +89,7 @@
             greedy
             @submit="onFinish"
           >
-            <q-input
+            <QInput
               v-model="consumer"
               :label="$t('consumer.type')"
               :rules="[
@@ -101,13 +101,13 @@
               @focus="(e) => e.target.scrollIntoView()"
             >
               <template #prepend>
-                <q-icon name="face" />
+                <QIcon name="face" />
               </template>
-            </q-input>
+            </QInput>
             <p class="text-body2">
               {{ $t('tutorial.otp') }}
             </p>
-            <v-otp-input
+            <VOtpInput
               :value="pin"
               input-classes="otp-input"
               separator="-"
@@ -117,8 +117,8 @@
               :placeholder="['*', '*', '*', '*']"
               @on-complete="handleOnComplete"
             />
-            <q-stepper-navigation class="q-mb-md">
-              <q-btn
+            <QStepperNavigation class="q-mb-md">
+              <QBtn
                 color="accent"
                 type="submit"
                 :outline="consumer.length === 0"
@@ -128,18 +128,31 @@
                 }"
                 icon="login"
               />
-            </q-stepper-navigation>
-          </q-form>
-        </q-step>
-      </q-stepper>
-    </q-scroll-area>
-  </q-page>
+            </QStepperNavigation>
+          </QForm>
+        </QStep>
+      </QStepper>
+    </QScrollArea>
+  </QPage>
 </template>
 
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useQuasar, useMeta } from 'quasar'
+import {
+  useQuasar,
+  useMeta,
+  QPage,
+  QScrollArea,
+  QStepper,
+  QStep,
+  QStepperNavigation,
+  QBtn,
+  QSpace,
+  QForm,
+  QInput,
+  QIcon,
+} from 'quasar'
 import VOtpInput from 'vue3-otp-input'
 import PrivacyComponent from 'components/PrivacyComponent.vue'
 import OIDCIssuerComponent from 'components/OIDCIssuerComponent.vue'
