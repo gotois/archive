@@ -1,15 +1,15 @@
 <template>
-  <q-virtual-scroll :items="items as FormatContract[]" separator>
+  <QVirtualScroll :items="items as FormatContract[]" separator>
     <template #default="{ item, index }">
-      <q-space v-if="index > 0" style="height: 20px" />
-      <q-card v-show="loading" flat square bordered>
-        <q-skeleton type="text" height="80px" class="q-pa-md" />
-        <q-skeleton height="400px" class="full-width" square />
-        <q-card-section>
-          <q-skeleton type="rect" height="50px" />
-        </q-card-section>
-      </q-card>
-      <q-card v-show="!loading" :key="index" flat square bordered>
+      <QSpace v-if="index > 0" style="height: 20px" />
+      <QCard v-show="loading" flat square bordered>
+        <QSkeleton type="text" height="80px" class="q-pa-md" />
+        <QSkeleton height="400px" class="full-width" square />
+        <QCardSection>
+          <QSkeleton type="rect" height="50px" />
+        </QCardSection>
+      </QCard>
+      <QCard v-show="!loading" :key="index" flat square bordered>
         <div class="row">
           <div class="column wrap" style="max-width: calc(100% - 45px)">
             <p
@@ -24,8 +24,8 @@
               >{{ item.instrument.description }}</p
             >
           </div>
-          <q-space></q-space>
-          <q-btn
+          <QSpace />
+          <QBtn
             size="md"
             class="q-ml-auto q-mr-auto q-mt-none q-mb-none"
             round
@@ -33,35 +33,35 @@
             flat
             icon="more_vert"
           >
-            <q-menu transition-show="jump-down" transition-duration="200">
-              <q-list bordered separator padding>
-                <q-item v-close-popup clickable @click="editArchive(item)">
-                  <q-item-section side class="text-uppercase">{{
+            <QMenu transition-show="jump-down" transition-duration="200">
+              <QList bordered separator padding>
+                <QItem v-close-popup clickable @click="editArchive(item)">
+                  <QItemSection side class="text-uppercase">{{
                     $t('archiveList.edit')
-                  }}</q-item-section>
-                </q-item>
-                <q-item
+                  }}</QItemSection>
+                </QItem>
+                <QItem
                   v-if="isLoggedIn"
                   v-close-popup
                   clickable
                   @click="uploadArchive(item)"
                 >
-                  <q-item-section side class="text-uppercase">{{
+                  <QItemSection side class="text-uppercase">{{
                     'Загрузить на POD'
-                  }}</q-item-section>
-                </q-item>
-                <q-item v-close-popup clickable @click="removeArchive(item)">
-                  <q-item-section side class="text-negative text-uppercase">{{
+                  }}</QItemSection>
+                </QItem>
+                <QItem v-close-popup clickable @click="removeArchive(item)">
+                  <QItemSection side class="text-negative text-uppercase">{{
                     $t('archiveList.remove')
-                  }}</q-item-section>
-                </q-item>
-              </q-list>
-            </q-menu>
-          </q-btn>
+                  }}</QItemSection>
+                </QItem>
+              </QList>
+            </QMenu>
+          </QBtn>
         </div>
         <template v-if="item.object.length">
-          <q-separator />
-          <q-carousel
+          <QSeparator />
+          <QCarousel
             v-model="item._currentSlide"
             v-model:fullscreen="fullscreen"
             transition-prev="slide-right"
@@ -74,7 +74,7 @@
             infinite
           >
             <template #navigation-icon="navProps">
-              <q-img
+              <QImg
                 v-ripple
                 width="64px"
                 :ratio="1"
@@ -97,19 +97,19 @@
                 @click="navProps.onClick"
               />
             </template>
-            <q-carousel-slide
+            <QCarouselSlide
               v-for="(object, objectIndex) in item.object"
               :key="objectIndex"
               class="no-margin no-padding"
               :name="objectIndex + 1"
             >
-              <q-scroll-area class="absolute-full fit">
+              <QScrollArea class="absolute-full fit">
                 <template
                   v-if="
                     !$q.platform.is.safari && isContentPDF(object.contentUrl)
                   "
                 >
-                  <q-icon
+                  <QIcon
                     name="picture_as_pdf"
                     size="300px"
                     class="absolute-center"
@@ -117,7 +117,7 @@
                   />
                 </template>
                 <template v-else>
-                  <q-img
+                  <QImg
                     class="col"
                     fit="contain"
                     :height="fullscreen ? '100dvh' : '400px'"
@@ -131,47 +131,47 @@
                     no-native-menu
                   />
                 </template>
-              </q-scroll-area>
-            </q-carousel-slide>
+              </QScrollArea>
+            </QCarouselSlide>
             <template #control>
-              <q-carousel-control position="top-right" :offset="[18, 18]">
-                <q-btn
+              <QCarouselControl position="top-right" :offset="[18, 18]">
+                <QBtn
                   round
                   color="white"
                   text-color="primary"
                   :icon="fullscreen ? 'fullscreen_exit' : 'fullscreen'"
                   @click="onShowFullImage(item)"
                 >
-                  <q-tooltip v-if="fullscreen">
+                  <QTooltip v-if="fullscreen">
                     {{ $t('archiveList.closeFile') }}
-                  </q-tooltip>
-                  <q-tooltip v-else>
+                  </QTooltip>
+                  <QTooltip v-else>
                     {{ $t('archiveList.openFile') }}
-                  </q-tooltip>
-                </q-btn>
-              </q-carousel-control>
-              <q-carousel-control
+                  </QTooltip>
+                </QBtn>
+              </QCarouselControl>
+              <QCarouselControl
                 v-if="nativeShareAvailable"
                 position="top-left"
                 :offset="[18, 18]"
               >
-                <q-btn
+                <QBtn
                   round
                   color="white"
                   text-color="primary"
                   :icon="shareIcon"
                   @click="onShareFullImage(item)"
                 >
-                  <q-tooltip>
+                  <QTooltip>
                     {{ $t('archiveList.shareFile') }}
-                  </q-tooltip>
-                </q-btn>
-              </q-carousel-control>
+                  </QTooltip>
+                </QBtn>
+              </QCarouselControl>
             </template>
-          </q-carousel>
+          </QCarousel>
         </template>
-        <q-separator />
-        <q-card-section>
+        <QSeparator />
+        <QCardSection>
           <p class="text-overline text-orange-9 no-margin">
             {{ prettyDate(item) }}
           </p>
@@ -180,11 +180,11 @@
               {{ item.participant.name }}
             </p>
           </div>
-        </q-card-section>
-      </q-card>
+        </QCardSection>
+      </QCard>
     </template>
     <template v-if="paginationCount > 0" #after>
-      <q-pagination
+      <QPagination
         v-model="currentPage"
         :max="paginationCount"
         :max-pages="$q.platform.is.desktop ? 10 : 5"
@@ -199,12 +199,33 @@
         @update:model-value="$emit('onPaginate', currentPage)"
       />
     </template>
-  </q-virtual-scroll>
+  </QVirtualScroll>
 </template>
 
 <script lang="ts" setup>
 import { PropType, ref, computed, watch } from 'vue'
-import { useQuasar } from 'quasar'
+import {
+  useQuasar,
+  QSkeleton,
+  QBtn,
+  QSeparator,
+  QSpace,
+  QItemSection,
+  QIcon,
+  QList,
+  QTooltip,
+  QCardSection,
+  QCard,
+  QItem,
+  QMenu,
+  QImg,
+  QScrollArea,
+  QCarouselSlide,
+  QCarouselControl,
+  QCarousel,
+  QPagination,
+  QVirtualScroll,
+} from 'quasar'
 import { useStore } from '../store'
 import { FormatContract } from '../types/models'
 import { showPDFInPopup } from '../services/popup'
