@@ -27,12 +27,16 @@
             :options="searchOptions"
             :label="$t('searchDialog.searchText')"
             use-input
+            hide-dropdown-icon
             rounded
             hide-selected
             autofocus
             filled
             outlined
             square
+            new-value-mode="add-unique"
+            clearable
+            fill-input
             @filter="onFilterSelect"
           >
             <template #no-option>
