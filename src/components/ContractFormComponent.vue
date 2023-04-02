@@ -139,8 +139,8 @@
     <q-file
       v-model="files"
       :label="$t('files.type')"
+      :hint="$t('files.hint')"
       accept="image/*, .pdf"
-      hint="PDF, PNG, JPG"
       outlined
       multiple
       square
