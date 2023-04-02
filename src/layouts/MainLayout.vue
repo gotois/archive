@@ -364,17 +364,20 @@ async function onSearch(searchText: string) {
 }
 
 function onOnlineAuthorize(oidcIssuer: string) {
+  if (!oidcIssuer) {
+    return
+  }
   $q.loading.show()
+  $q.localStorage.set('restorePreviousSession', true)
 
   return solidAuth({
     oidcIssuer: oidcIssuer,
+    restorePreviousSession: true,
     sessionRestoreCallback: () => {
-      $q.localStorage.set('restorePreviousSession', true)
       void store.dispatch('Auth/openIdHandleIncoming')
       $q.loading.hide()
     },
     loginCallback: () => {
-      $q.localStorage.set('restorePreviousSession', true)
       void store.dispatch('Auth/openIdHandleIncoming')
       $q.loading.hide()
     },
@@ -382,11 +385,13 @@ function onOnlineAuthorize(oidcIssuer: string) {
 }
 
 function loginToPod() {
-  if (!$q.localStorage.has('oidcIssuer')) {
-    dialogOIDCIssuer.value = true
-    return
+  console.log(111)
+  if ($q.localStorage.has('oidcIssuer')) {
+    console.log(222, $q.localStorage.getItem('oidcIssuer'))
+    return onOnlineAuthorize($q.localStorage.getItem('oidcIssuer'))
   }
-  return onOnlineAuthorize($q.localStorage.getItem('oidcIssuer'))
+  console.log(333)
+  dialogOIDCIssuer.value = true
 }
 
 function onOpenFeedback() {
