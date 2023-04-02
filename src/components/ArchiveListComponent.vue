@@ -73,7 +73,7 @@
         >
           <template #navigation-icon="navProps">
             <q-img
-              width="32px"
+              width="64px"
               :ratio="1"
               img-class="rounded-borders"
               :img-style="{
@@ -81,7 +81,7 @@
               }"
               class="q-ml-sm q-mr-sm"
               :src="item.object[navProps.index].contentUrl"
-              placeholder-src="/icons/icon-32x32.png"
+              placeholder-src="/icons/icon-64x64.png"
               decoding="async"
               fetchpriority="low"
               no-spinner
