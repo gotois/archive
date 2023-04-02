@@ -71,6 +71,26 @@
           swipeable
           infinite
         >
+          <template #navigation-icon="navProps">
+            <q-img
+              width="32px"
+              :ratio="1"
+              img-class="rounded-borders"
+              :img-style="{
+                border: navProps.active ? '1px solid white' : '',
+              }"
+              class="q-ml-sm q-mr-sm"
+              :src="item.object[navProps.index].contentUrl"
+              placeholder-src="/icons/icon-32x32.png"
+              decoding="async"
+              fetchpriority="low"
+              no-spinner
+              fit="scale-down"
+              no-transition
+              no-native-menu
+              @click="navProps.onClick"
+            />
+          </template>
           <q-carousel-slide
             v-for="(object, objectIndex) in item.object"
             :key="objectIndex"
@@ -102,7 +122,6 @@
                   alt="Document"
                   :ratio="1"
                   :src="object.contentUrl"
-                  placeholder-src="/icons/icon-128x128.png"
                   loading="lazy"
                   decoding="async"
                   fetchpriority="high"
