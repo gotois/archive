@@ -95,6 +95,17 @@ export async function initPod() {
 }
 
 export function removeFromPod(url: string) {
+  const separator = '.'
+  const oidcIssuer: string = LocalStorage.getItem('oidcIssuer')
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars
+  const [_x, ...hostIssuerHost] = new URL(oidcIssuer).host.split(separator)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars
+  const [_y, ...hostUrlHost] = new URL(url).host.split(separator)
+
+  if (hostIssuerHost.join() !== hostUrlHost.join()) {
+    throw new Error('oidcIssuer not equals to current url')
+  }
+
   return deleteSolidDataset(url, {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -109,16 +120,16 @@ export async function removeContractsDataset() {
     // @ts-ignore
     fetch: fetch,
   })
-  const allThing = getThingAll(myDataset).filter((thing) => {
-    return thing.url !== myDataset.internal_resourceInfo.sourceIri
-  })
-  for (const thing of allThing) {
-    await deleteSolidDataset(thing.url, {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      fetch: fetch,
+
+  const allThing = getThingAll(myDataset)
+    .filter((thing) => {
+      return thing.url !== myDataset.internal_resourceInfo.sourceIri
     })
-  }
+    .map((thing) => {
+      return removeFromPod(thing.url)
+    })
+
+  return Promise.all(allThing)
 }
 
 export async function updateIntoPod(item: FormatContract) {
