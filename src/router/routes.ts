@@ -9,17 +9,17 @@ const routes: RouteRecordRaw[] = [
       {
         path: '',
         name: 'archive',
-        component: () => import('pages/page-list.vue'),
+        component: () => import('pages/ArchivePage.vue'),
       },
       {
         path: 'filter',
         name: 'filter',
-        component: () => import('pages/page-list.vue'),
+        component: () => import('pages/ArchivePage.vue'),
       },
       {
         path: 'search',
         name: 'search',
-        component: () => import('pages/page-list.vue'),
+        component: () => import('pages/ArchivePage.vue'),
       },
     ],
   },
@@ -34,7 +34,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: '',
         name: 'auth',
-        component: () => import('pages/page-auth.vue'),
+        component: () => import('pages/AuthPage.vue'),
       },
     ],
   },
@@ -45,7 +45,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: '',
         name: 'create',
-        component: () => import('pages/page-create.vue'),
+        component: () => import('pages/CreatePage.vue'),
       },
     ],
   },
@@ -56,7 +56,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: '',
         name: 'tutorial',
-        component: () => import('pages/page-tutorial.vue'),
+        component: () => import('pages/TutorialPage.vue'),
       },
     ],
   },
@@ -67,15 +67,13 @@ const routes: RouteRecordRaw[] = [
       {
         path: '',
         name: 'privacy',
-        component: () => import('pages/page-privacy.vue'),
+        component: () => import('pages/PrivacyPage.vue'),
       },
     ],
   },
-  // Always leave this as last one,
-  // but you can also remove it
   {
     path: '/:catchAll(.*)*',
-    component: () => import('pages/page-404.vue'),
+    component: () => import('pages/UnknownPage.vue'),
   },
 ]
 

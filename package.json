@@ -36,7 +36,7 @@
     "@inrupt/solid-client-authn-browser": "1.14.0",
     "@inrupt/vocab-common-rdf": "1.0.5",
     "@pdfme/generator": "1.1.9",
-    "@quasar/extras": "1.16.1",
+    "@quasar/extras": "1.16.2",
     "core-js": "3.29.1",
     "credentials-context": "2.0.0",
     "dexie": "3.2.3",
@@ -49,7 +49,7 @@
     "jszip": "3.10.1",
     "minisearch": "6.0.1",
     "openpgp": "5.7.0",
-    "quasar": "2.11.9",
+    "quasar": "2.11.10",
     "vue-i18n": "9.2.2",
     "vue3-otp-input": "0.4.1",
     "vuex": "4.1.0"

@@ -3,12 +3,37 @@ import { generate } from '@pdfme/generator'
 import html2canvas from 'html2canvas'
 import { convert } from 'html-to-text'
 import { FormatContract } from '../types/models'
-import { resizeImageA4 } from './imgHelper'
 import pkg from '../../package.json'
 import { readFilesPromise } from '../services/fileHelper'
 import privacyNotice from '../ui/templates/privacy-notice'
 
 const { productName } = pkg
+
+async function resizeImageA4(dataUrl: string) {
+  const MAX_WIDTH = 794
+  const MAX_HEIGHT = 1123
+
+  const img = new Image()
+  img.src = dataUrl
+  await img.decode()
+  let { width, height } = img
+
+  // resizing logic portrait
+  if (width > height) {
+    if (width > MAX_WIDTH) {
+      height *= MAX_WIDTH / width
+      width = MAX_WIDTH
+    }
+  } else if (height > MAX_HEIGHT) {
+    width *= MAX_HEIGHT / height
+    height = MAX_HEIGHT
+  }
+
+  return {
+    width: Number(Math.floor(width)),
+    height: Number(Math.floor(height)),
+  }
+}
 
 export async function createContractPDF(html: string, useImage = false) {
   const htmlObject = document.createElement('div')

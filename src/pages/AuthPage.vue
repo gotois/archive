@@ -23,7 +23,6 @@ const $q = useQuasar()
 const router = useRouter()
 const store = useStore()
 
-const timeout = 2000
 const metaData = {
   'title': 'Авторизация',
   'og:title': 'Авторизация',
@@ -34,6 +33,7 @@ const otp = ref(null)
 const otpDisabled = ref(false)
 
 async function onHandleComplete(value: string) {
+  const timeout = 2000
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const codeValid = await store.dispatch('Auth/checkCode', value)
   if (codeValid) {
