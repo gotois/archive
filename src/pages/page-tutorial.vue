@@ -185,7 +185,7 @@ const metaData = {
 async function onOnlineAuthorize(oidcIssuer: string) {
   if (!oidcIssuer) {
     const confirmMessage =
-      'Провайдер не был введен. Вы хотите использовать Offline режим? Вы не сможете подписывать договоры цифровой подписью без WebId.'
+      'Вы не сможете подписывать договоры цифровой подписью без WebId.\nПродолжить использование в режиме Offline?'
     if (window.confirm(confirmMessage)) {
       showForm.value = true
       return

@@ -1,33 +1,18 @@
 import { LocalStorage } from 'quasar'
 import { route } from 'quasar/wrappers'
-import {
-  createMemoryHistory,
-  createRouter,
-  createWebHashHistory,
-  createWebHistory,
-} from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import { StateInterface } from '../store'
 import routes from './routes'
 import { solidAuth } from '../services/podHelper'
 
 export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
-  const createHistory = process.env.SERVER
-    ? createMemoryHistory
-    : process.env.VUE_ROUTER_MODE === 'history'
-    ? createWebHistory
-    : createWebHashHistory
-
   const Router = createRouter({
     scrollBehavior: () => ({
       left: 0,
       top: 0,
     }),
     routes,
-
-    // Leave this as is and make changes in quasar.conf.js instead!
-    // quasar.conf.js -> build -> vueRouterMode
-    // quasar.conf.js -> build -> publicPath
-    history: createHistory(
+    history: createWebHistory(
       process.env.MODE === 'ssr' ? void 0 : process.env.VUE_ROUTER_BASE,
     ),
   })
@@ -36,23 +21,40 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
   const tutorialFinalStep = 3
 
   Router.beforeEach(async (to, from) => {
-    if (to.query.error) {
-      switch (to.query.error) {
-        case 'interaction_required':
-        case 'access_denied': {
-          LocalStorage.remove('restorePreviousSession')
-          break
+    switch (to.query.error) {
+      case 'access_denied': {
+        return {
+          name: 'main',
+          query: {},
         }
-        default: {
-          break
-        }
+      }
+      case 'interaction_required': {
+        LocalStorage.remove('restorePreviousSession')
+        break
+      }
+      default: {
+        break
       }
     }
 
     switch (to.path) {
-      case '/privacy':
-      case '/auth': {
+      // hack - специальная страница для сброса состояния приложения
+      case '/reset': {
+        localStorage.clear()
+        return {
+          name: 'main',
+          query: {},
+        }
+      }
+      case '/privacy': {
         return true
+      }
+      case '/auth': {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        if (store.getters['Auth/hasCode']) {
+          return true
+        }
+        break
       }
       case '/tutorial': {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -86,7 +88,7 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
               loginCallback: () =>
                 void store.dispatch('Auth/openIdHandleIncoming'),
             })
-            return
+            return true
           } catch {
             /* empty */
           }
@@ -112,23 +114,10 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
           }
         }
         if (to.path === '/' && Object.keys(to.query).length === 0) {
-          return {
-            name: 'archive',
-            query: {
-              page: 1,
-            },
-          }
-        }
-        if (to.query.error === 'access_denied') {
-          return {
-            name: 'archive',
-            query: {
-              page: 1,
-            },
-          }
+          return true
         }
         if (to.query.code && to.query.state) {
-          return { name: to.name, query: {} }
+          return true
         }
         if (
           !from.name &&
@@ -146,18 +135,16 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
                 void store.dispatch('Auth/openIdHandleIncoming'),
               restorePreviousSession: true,
             })
-            return
+            return true
           } catch (e) {
             console.error(e)
+            // explicitly return false to cancel the navigation
             return false
           }
         }
         break
       }
     }
-
-    // explicitly return false to cancel the navigation
-    // return false
   })
 
   return Router

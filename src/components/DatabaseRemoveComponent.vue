@@ -16,14 +16,14 @@
       <QBtn
         flat
         :label="$t('settings.clean.ok')"
-        color="red"
+        color="negative"
         @click="onClearDatabase"
       />
       <QBtn
         v-if="isLoggedIn"
         flat
         :label="$t('settings.clean.okAll')"
-        color="red"
+        color="negative"
         @click="onClearDatabasePlus"
       />
     </QCardActions>

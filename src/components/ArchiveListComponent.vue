@@ -74,28 +74,32 @@
             infinite
           >
             <template #navigation-icon="navProps">
-              <QImg
-                v-ripple
-                width="64px"
-                :ratio="1"
-                class="q-ml-sm q-mr-sm non-selectable cursor-pointer"
-                img-class="rounded-borders bg-white"
-                :img-style="{
-                  'border': navProps.active
-                    ? '1px solid var(--q-secondary)'
-                    : '1px solid var(--q-dark)',
-                  'image-rendering': 'optimizeSpeed',
-                }"
-                :src="item.object[navProps.index].contentUrl"
-                placeholder-src="/icons/icon-64x64.png"
-                decoding="async"
-                fetchpriority="low"
-                fit="scale-down"
-                no-spinner
-                no-transition
-                no-native-menu
-                @click="navProps.onClick"
-              />
+              <div class="q-pa-md non-selectable">
+                <QImg
+                  v-ripple
+                  width="64px"
+                  :ratio="1"
+                  class="bg-white rounded-borders cursor-pointer shadow-box shadow-4"
+                  :class="{
+                    'inset-shadow-down': navProps.active,
+                  }"
+                  :img-style="{
+                    'border': navProps.active
+                      ? '1px solid var(--q-secondary)'
+                      : 'none',
+                    'image-rendering': 'optimizeSpeed',
+                  }"
+                  :src="item.object[navProps.index].contentUrl"
+                  placeholder-src="/icons/icon-128x128.png"
+                  decoding="async"
+                  fetchpriority="low"
+                  fit="scale-down"
+                  no-spinner
+                  no-transition
+                  no-native-menu
+                  @click="navProps.onClick"
+                />
+              </div>
             </template>
             <QCarouselSlide
               v-for="(object, objectIndex) in item.object"

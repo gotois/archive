@@ -79,7 +79,7 @@
         hide-label
         glossy
         push
-        class="bg-white"
+        class="bg-white shadow-2"
         icon="add"
         direction="up"
         vertical-actions-align="right"

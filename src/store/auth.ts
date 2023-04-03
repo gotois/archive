@@ -11,14 +11,14 @@ export interface AuthState {
   openIdExpirationDate: number
   openIdSessionId: string
   openIdIsLoggedIn: boolean
-  code: string | null
+  code: string
   webId: string
 }
 
 const Auth: Module<AuthState, StateInterface> = {
   namespaced: true,
   state: () => ({
-    code: null,
+    code: '',
 
     openIdSessionId: '',
     openIdExpirationDate: null,
@@ -61,7 +61,13 @@ const Auth: Module<AuthState, StateInterface> = {
   },
   getters: {
     checkAuth(state) {
+      if (!LocalStorage.has('code')) {
+        return true
+      }
       return state.code === LocalStorage.getItem('code')
+    },
+    hasCode(state) {
+      return Boolean(state.code)
     },
     code(state) {
       return state.code

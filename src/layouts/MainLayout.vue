@@ -93,6 +93,7 @@
           square
           glossy
           push
+          unelevated
           class="full-width q-mb-md"
           label="Войти через WebId"
           @click="loginToPod"
@@ -137,6 +138,7 @@
                 :label="$t('consumer.save')"
                 icon="save"
                 class="full-width"
+                square
                 :class="{
                   'q-mt-md': consumer.length === 0,
                 }"
@@ -160,21 +162,33 @@
           :label="$t('settings.native.otp')"
         >
           <QItemSection class="q-pa-md">
-            <p>{{ $t('settings.otp.description') }}</p>
-            <QTooltip>{{ $t('settings.otp.label') }}</QTooltip>
-            <VOtpInput
-              :value="pin"
-              input-classes="otp-input"
-              class="flex flex-center"
-              separator="-"
-              :num-inputs="4"
-              :should-auto-focus="true"
-              :is-input-num="true"
-              :conditional-class="['', '', '', '']"
-              :placeholder="['*', '*', '*', '*']"
-              @on-change="onOTPChange"
-              @on-complete="onOTPHandleComplete"
-            />
+            <template v-if="hasCode">
+              <QBtn
+                dense
+                square
+                color="negative"
+                icon="remove"
+                label="Удалить PIN"
+                @click="onOTPChange('')"
+              />
+            </template>
+            <template v-else>
+              <p>{{ $t('settings.otp.description') }}</p>
+              <VOtpInput
+                :value="pin"
+                input-classes="otp-input"
+                class="flex flex-center"
+                separator="-"
+                :num-inputs="4"
+                :should-auto-focus="true"
+                :is-input-num="true"
+                :conditional-class="['', '', '', '']"
+                :placeholder="['*', '*', '*', '*']"
+                @on-change="onOTPChange"
+                @on-complete="onOTPHandleComplete"
+              />
+              <QTooltip>{{ $t('settings.otp.label') }}</QTooltip>
+            </template>
           </QItemSection>
         </QExpansionItem>
         <QSeparator />
@@ -199,6 +213,7 @@
             <QBtn
               :label="$t('settings.clean.submit')"
               color="negative"
+              square
               icon="delete_outline"
               @click="confirm = true"
             >
@@ -351,7 +366,8 @@ const dialogOIDCIssuer = ref(false)
 const navigatorVersion = ref(version)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 const consumer = ref(store.getters.consumer as string)
-
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+const hasCode = computed(() => store.getters['Auth/hasCode'] as boolean)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 const isLoggedIn = computed(() => store.getters['Auth/isLoggedIn'] as boolean)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return
@@ -441,8 +457,7 @@ async function onFinishProfile() {
 }
 
 async function onOTPChange(value: string) {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  if (value === '' && store.getters['Auth/code']) {
+  if (value === '') {
     if (window.confirm('Действительно удалить пин?')) {
       await store.dispatch('Auth/removeCode')
       $q.notify({
@@ -453,9 +468,9 @@ async function onOTPChange(value: string) {
   }
 }
 
-async function onOTPHandleComplete(value: string) {
+async function onOTPHandleComplete(code: string) {
   if (window.confirm('Действительно сохранить пин?')) {
-    await store.dispatch('Auth/setCode', value)
+    await store.dispatch('Auth/setCode', code)
     $q.notify({
       type: 'positive',
       message: 'Ключ изменен',

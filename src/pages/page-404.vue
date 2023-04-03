@@ -11,13 +11,14 @@
       </div>
       <QBtn
         class="q-mt-xl"
-        color="white"
-        text-color="info"
+        color="accent"
+        square
+        glossy
+        push
+        unelevated
         :to="{ name: 'archive', query: { page: 1 } }"
         :label="$t('error404.submit')"
-        unelevated
         no-caps
-        push
       />
     </div>
   </div>

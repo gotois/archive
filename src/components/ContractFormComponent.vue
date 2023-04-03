@@ -68,56 +68,54 @@
       >
         <QTooltip>{{ $t('duration.fromHint') }}</QTooltip>
       </QInput>
-      <QIcon
-        v-ripple.center
+      <QBtnDropdown
+        square
+        outline
+        split
+        text-color="grey-5"
         size="md"
-        name="event"
-        left
-        right
-        class="cursor-pointer"
-        color="dark"
+        icon="event"
+        class="q-ml-xs q-mr-xs no-padding q-field__control"
       >
         <QTooltip>
           {{ $t('contractForm.date') }}
         </QTooltip>
-        <QPopupProxy>
-          <template v-if="dateNoLimit">
-            <QDate
-              v-model="duration.from"
-              default-view="Months"
-              first-day-of-week="1"
-              @update:model-value="onSelectDate"
-            >
-              <div class="row items-center justify-end">
-                <QBtn
-                  v-close-popup
-                  :label="$t('duration.close')"
-                  color="primary"
-                  flat
-                />
-              </div>
-            </QDate>
-          </template>
-          <template v-else>
-            <QDate
-              v-model="duration"
-              default-view="Months"
-              range
-              first-day-of-week="1"
-              @update:model-value="onSelectDate"
-            >
-              <div class="row items-center justify-end">
-                <QBtn
-                  v-close-popup
-                  :label="$t('duration.close')"
-                  color="primary"
-                  flat
-                />
-              </div>
-            </QDate>
-          </template>
-        </QPopupProxy>
-      </QIcon>
+        <template v-if="dateNoLimit">
+          <QDate
+            v-model="duration.from"
+            default-view="Months"
+            first-day-of-week="1"
+            @update:model-value="onSelectDate"
+          >
+            <div class="row items-center justify-end">
+              <QBtn
+                v-close-popup
+                :label="$t('duration.close')"
+                color="primary"
+                flat
+              />
+            </div>
+          </QDate>
+        </template>
+        <template v-else>
+          <QDate
+            v-model="duration"
+            default-view="Months"
+            range
+            first-day-of-week="1"
+            @update:model-value="onSelectDate"
+          >
+            <div class="row items-center justify-end">
+              <QBtn
+                v-close-popup
+                :label="$t('duration.close')"
+                color="primary"
+                flat
+              />
+            </div>
+          </QDate>
+        </template>
+      </QBtnDropdown>
       <QInput
         v-if="!dateNoLimit"
         v-model="duration.to"
@@ -194,13 +192,13 @@ import {
   useQuasar,
   date,
   QForm,
+  QBtnDropdown,
   QSelect,
   QBtn,
   QIcon,
   QInput,
   QDate,
   QTooltip,
-  QPopupProxy,
   QToggle,
   QFile,
 } from 'quasar'

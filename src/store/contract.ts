@@ -196,6 +196,10 @@ const ContractClass: Module<ContractState, StateInterface> = {
       context.commit('setContracts', contracts)
     },
     async loadContractNames(context) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      if (!context.getters.consumer) {
+        return
+      }
       const map = new Map()
       for (const names of await db.getContractNames()) {
         map.set(...names)

@@ -9,6 +9,10 @@
   outline: none;
   transition: border-color 0.36s cubic-bezier(0.4, 0, 0.2, 1);
 
+  &:focus-visible {
+    outline: none;
+  }
+
   &:active,
   &:hover {
     border-color: rgba(black, 0.87);
