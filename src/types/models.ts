@@ -10,7 +10,7 @@ export interface ContractTable {
   resource_url?: string
 }
 
-export interface ContextCredential<T> {
+interface ContextCredential<T> {
   [key: string]: T
 }
 // eslint-disable-next-line no-unused-vars
@@ -27,21 +27,30 @@ interface Proof {
   proofValue: string
 }
 
-interface CredentialSubject<T> {
-  [key: string]: T
+interface BaseCredentialSubject {
+  id: string
 }
 
-export interface Credential<T> {
-  '@context': [string, ContextCredential<string>] | string[]
+interface Issuer {
+  id: string
+}
+
+export interface Credential {
+  '@context': credentialContextType
   'type': string[]
-  'issuer': { id: string }
+  'issuer': Issuer
   'issuanceDate': string
-  'credentialSubject': { id: string } | CredentialSubject<T>
+  'credentialSubject': credentialSubjectType
 }
 
-export interface ProofCredential<T> extends Credential<T> {
+export interface ProofCredential extends Credential {
   proof: Proof
 }
+
+export type credentialSubjectType = BaseCredentialSubject | CredentialSubject
+export type credentialContextType =
+  | [string, ContextCredential<string>]
+  | string[]
 
 export interface BaseContract {
   id?: string
@@ -51,39 +60,70 @@ export interface BaseContract {
   identifier: FormatContractIdentifier
   startTime: Date
   endTime?: Date
-  object: FormatContractObject[]
+  object: string[]
 }
 
-export interface FormatContract extends BaseContract {
-  '@context': string
+export interface CredentialTypes {
+  agent: string
+  endTime: string
+  value: string
+  instrument: string
+  object: string
+  participant: string
+  startTime: string
+}
+
+interface ContractAgent {
+  name: string
+}
+
+interface ContractParticipant {
+  name: string
+}
+
+interface ContractIdentifier {
+  propertyID: string
+  value: string
+}
+
+interface ContractInstrument {
+  name: string
+  description: string
+}
+
+interface BaseSchemaType {
   '@type': string
+}
+
+export interface FormatContract extends BaseSchemaType {
+  '@context': string
   'sameAs'?: string
   '_currentSlide'?: number
+  'agent': FormatContractAgent
+  'participant': FormatContractParticipant
+  'instrument': FormatContractInstrument
+  'identifier': FormatContractIdentifier
+  'startTime': Date
+  'endTime'?: Date
+  'object': {
+    '@type': string
+    'contentUrl': string
+  }[]
 }
+interface FormatContractAgent extends BaseSchemaType, ContractAgent {}
+interface FormatContractParticipant
+  extends BaseSchemaType,
+    ContractParticipant {}
+interface FormatContractIdentifier extends BaseSchemaType, ContractIdentifier {}
+interface FormatContractInstrument extends BaseSchemaType, ContractInstrument {}
 
-interface FormatContractAgent {
-  '@type': string
-  'name': string
-}
-
-interface FormatContractParticipant {
-  '@type': string
-  'name': string
-}
-
-interface FormatContractIdentifier {
-  '@type': string
-  'propertyID': string
-  'value': string
-}
-
-interface FormatContractInstrument {
-  '@type': string
-  'name': string
-  'description': string
-}
-
-export interface FormatContractObject {
-  '@type': string
-  'contentUrl': string
+export interface CredentialSubject {
+  id: string
+  agent: ContractAgent
+  participant: ContractParticipant
+  instrument: ContractInstrument
+  identifier: ContractIdentifier
+  startTime: Date
+  endTime?: Date
+  object: string[]
 }

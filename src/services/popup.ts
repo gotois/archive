@@ -1,8 +1,6 @@
 import { Platform, openURL } from 'quasar'
-import { FormatContractObject } from '../types/models'
 
-export async function showPDFInPopup(image: FormatContractObject) {
-  const { contentUrl } = image
+export async function showPDFInPopup(contentUrl: string) {
   const res = await fetch(contentUrl)
   const blob = await res.blob()
   const url = URL.createObjectURL(blob)

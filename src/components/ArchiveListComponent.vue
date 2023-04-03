@@ -102,16 +102,14 @@
               </div>
             </template>
             <QCarouselSlide
-              v-for="(object, objectIndex) in item.object"
+              v-for="({ contentUrl }, objectIndex) in item.object"
               :key="objectIndex"
               class="no-margin no-padding"
               :name="objectIndex + 1"
             >
               <QScrollArea class="absolute-full fit">
                 <template
-                  v-if="
-                    !$q.platform.is.safari && isContentPDF(object.contentUrl)
-                  "
+                  v-if="!$q.platform.is.safari && isContentPDF(contentUrl)"
                 >
                   <QIcon
                     name="picture_as_pdf"
@@ -120,7 +118,7 @@
                     color="info"
                   />
                 </template>
-                <template v-else-if="isContentHeic(object.contentUrl)">
+                <template v-else-if="isContentHeic(contentUrl)">
                   <QIcon
                     name="perm_media"
                     size="240px"
@@ -135,7 +133,7 @@
                     :height="fullscreen ? '100dvh' : '400px'"
                     alt="Document"
                     :ratio="1"
-                    :src="object.contentUrl"
+                    :src="contentUrl"
                     :loading="fullscreen ? 'eager' : 'lazy'"
                     :decoding="fullscreen ? 'sync' : 'async'"
                     fetchpriority="high"
@@ -314,11 +312,11 @@ function isContentHeic(contentUrl: string) {
 }
 
 async function onShowFullImage(object: FormatContract) {
-  const image = object.object[object._currentSlide - 1]
+  const { contentUrl } = object.object[object._currentSlide - 1]
 
-  if (isContentPDF(image.contentUrl)) {
+  if (isContentPDF(contentUrl)) {
     try {
-      await showPDFInPopup(image)
+      await showPDFInPopup(contentUrl)
     } catch {
       $q.notify({
         color: 'negative',

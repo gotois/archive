@@ -10,10 +10,13 @@ import {
   FormatContract,
   Credential,
   ProofCredential,
-  BaseContract,
+  CredentialSubject,
+  CredentialTypes,
+  credentialContextType,
+  credentialSubjectType,
 } from '../types/models'
 
-function createCredential(webId: string, issuanceDate?: string) {
+function createCredential(webId: string, issuanceDate?: string): Credential {
   return {
     '@context': ['https://www.w3.org/2018/credentials/v1'],
     'type': ['VerifiableCredential'],
@@ -27,63 +30,45 @@ function createCredential(webId: string, issuanceDate?: string) {
   }
 }
 
-// todo переписать на TypeScript без ts-ignore
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 export function formatterDatasetContract(
   resourceUrl: string,
-  signedVC: ProofCredential<unknown>,
+  signedVC: ProofCredential,
 ) {
-  // @ts-ignore
-  const types = signedVC['@context'][1]
-  const item = signedVC.credentialSubject as BaseContract
+  const types = signedVC['@context'][1] as unknown as CredentialTypes
+  const item = signedVC.credentialSubject as CredentialSubject
 
   const agent = buildThing(createThing({ url: resourceUrl + '#agent' }))
     .addStringNoLocale(SCHEMA_INRUPT.name, item.agent.name)
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     .addUrl(RDF.type, types.agent)
   const endTime = buildThing(createThing({ url: resourceUrl + '#endTime' }))
   if (item.endTime) {
     endTime
       .addDate(SCHEMA_INRUPT.endTime, new Date(item.endTime))
-      // @ts-ignore
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       .addUrl(RDF.type, types.endTime)
   }
   const identifier = buildThing(
     createThing({ url: resourceUrl + '#identifier' }),
   )
     .addStringNoLocale(SCHEMA_INRUPT.identifier, item.identifier.value)
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     .addUrl(RDF.type, types.value)
   const instrument = buildThing(
     createThing({ url: resourceUrl + '#instrument' }),
   )
     .addStringNoLocale(SCHEMA_INRUPT.description, item.instrument.description)
     .addStringNoLocale(SCHEMA_INRUPT.name, item.instrument.name)
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     .addUrl(RDF.type, types.instrument)
   const objectThing = buildThing(createThing({ url: resourceUrl + '#object' }))
-  item.object.forEach((object) =>
-    // @ts-ignore
-    objectThing.addUrl(SCHEMA_INRUPT.image, object),
+  item.object.forEach((contentUrl) =>
+    objectThing.addUrl(SCHEMA_INRUPT.image, contentUrl),
   )
-  // @ts-ignore
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   objectThing.addUrl(RDF.type, types.object)
   const participant = buildThing(
     createThing({ url: resourceUrl + '#participant' }),
   )
     .addStringNoLocale(SCHEMA_INRUPT.name, item.participant.name)
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     .addUrl(RDF.type, types.participant)
   const startTime = buildThing(createThing({ url: resourceUrl + '#startTime' }))
     .addDate(SCHEMA_INRUPT.startTime, new Date(item.startTime))
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     .addUrl(RDF.type, types.startTime)
 
   let dataset = createSolidDataset()
@@ -192,16 +177,16 @@ export function formatterLDContract(
     )
   }
   const credential = {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    '@context': Object.fromEntries(context),
+    '@context': Object.fromEntries(context) as credentialContextType,
     'type': type,
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    'credentialSubject': Object.fromEntries(credentialSubject),
+    'credentialSubject': Object.fromEntries(
+      credentialSubject,
+    ) as credentialSubjectType,
   }
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  return deepMerge(baseCredential, credential) as Credential<unknown>
+  return deepMerge(baseCredential, credential)
 }
 
 export function formatterContract(contract: ContractTable): FormatContract {

@@ -57,6 +57,7 @@
     </QInput>
     <div class="row justify-center items-center">
       <QInput
+        v-if="!$q.platform.is.mobile"
         v-model="duration.from"
         :rules="['date']"
         :label="$t('duration.from')"
@@ -71,19 +72,25 @@
       <QBtnDropdown
         square
         outline
-        split
+        cover
         text-color="grey-5"
         size="md"
-        icon="event"
-        class="q-ml-xs q-mr-xs no-padding q-field__control"
+        :icon="$q.platform.is.mobile ? '' : 'event'"
+        class="q-ml-xs q-mr-xs q-field__control"
+        :class="{
+          col: $q.platform.is.mobile,
+        }"
       >
-        <QTooltip>
-          {{ $t('contractForm.date') }}
-        </QTooltip>
+        <template v-if="$q.platform.is.mobile" #label>
+          <div class="row items-center">{{ duration.from }}</div>
+        </template>
         <template v-if="dateNoLimit">
           <QDate
             v-model="duration.from"
             default-view="Months"
+            :class="
+              $q.platform.is.mobile ? 'fullscreen full-width full-height' : ''
+            "
             first-day-of-week="1"
             @update:model-value="onSelectDate"
           >
@@ -103,6 +110,9 @@
             default-view="Months"
             range
             first-day-of-week="1"
+            :class="
+              $q.platform.is.mobile ? 'fullscreen full-width full-height' : ''
+            "
             @update:model-value="onSelectDate"
           >
             <div class="row items-center justify-end">
@@ -117,7 +127,7 @@
         </template>
       </QBtnDropdown>
       <QInput
-        v-if="!dateNoLimit"
+        v-if="!$q.platform.is.mobile && !dateNoLimit"
         v-model="duration.to"
         :label="$t('duration.to')"
         :rules="['date']"
