@@ -1,4 +1,5 @@
 import Dexie from 'dexie'
+import { Platform } from 'quasar'
 import { ContractTable } from '../types/models'
 
 export class ContractDatabase extends Dexie {
@@ -42,10 +43,16 @@ export class ContractDatabase extends Dexie {
   }
 
   public add(contract: ContractTable) {
+    if (!Platform.has.webStorage) {
+      throw new Error('webStorage not supported')
+    }
     return db.contracts.add(contract)
   }
 
   public remove(id: number) {
+    if (!Platform.has.webStorage) {
+      throw new Error('webStorage not supported')
+    }
     return db.contracts.where('id').equals(id).delete()
   }
 

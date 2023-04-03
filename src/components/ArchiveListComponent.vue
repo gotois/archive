@@ -111,7 +111,15 @@
                 >
                   <QIcon
                     name="picture_as_pdf"
-                    size="300px"
+                    size="240px"
+                    class="absolute-center"
+                    color="info"
+                  />
+                </template>
+                <template v-else-if="isContentHeic(object.contentUrl)">
+                  <QIcon
+                    name="perm_media"
+                    size="240px"
                     class="absolute-center"
                     color="info"
                   />
@@ -295,6 +303,10 @@ function checkItemEndTime(item: FormatContract) {
 
 function isContentPDF(contentUrl: string) {
   return contentUrl.startsWith('data:application/pdf;', 0)
+}
+
+function isContentHeic(contentUrl: string) {
+  return contentUrl.startsWith('data:image/heic;', 0)
 }
 
 async function onShowFullImage(object: FormatContract) {

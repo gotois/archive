@@ -78,6 +78,7 @@
       <QFab
         hide-label
         glossy
+        push
         class="bg-white"
         icon="add"
         direction="up"

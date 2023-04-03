@@ -16,6 +16,7 @@
       :label="$t('contract.type')"
       :hint="$t('contract.hint')"
       :rules="[(val) => (val && val.length > 0) || $t('contract.rules')]"
+      popup-content-class="q-pt-sm"
       new-value-mode="add-unique"
       input-debounce="50"
       name="contractType"
@@ -67,60 +68,56 @@
       >
         <QTooltip>{{ $t('duration.fromHint') }}</QTooltip>
       </QInput>
-      <div>
-        <QIcon
-          size="md"
-          name="event"
-          class="cursor-pointer"
-          color="dark"
-          style="padding: 0 6px"
-        >
-          <QTooltip>
-            {{ $t('contractForm.date') }}
-          </QTooltip>
-          <QPopupProxy
-            ref="qDateProxy"
-            transition-show="scale"
-            transition-hide="scale"
-          >
-            <template v-if="dateNoLimit">
-              <QDate
-                v-model="duration.from"
-                default-view="Months"
-                first-day-of-week="1"
-                @update:model-value="onSelectDate"
-              >
-                <div class="row items-center justify-end">
-                  <QBtn
-                    v-close-popup
-                    :label="$t('duration.close')"
-                    color="primary"
-                    flat
-                  />
-                </div>
-              </QDate>
-            </template>
-            <template v-else>
-              <QDate
-                v-model="duration"
-                default-view="Months"
-                range
-                first-day-of-week="1"
-                @update:model-value="onSelectDate"
-              >
-                <div class="row items-center justify-end">
-                  <QBtn
-                    v-close-popup
-                    :label="$t('duration.close')"
-                    color="primary"
-                    flat
-                  />
-                </div>
-              </QDate>
-            </template>
-          </QPopupProxy>
-        </QIcon>
-      </div>
+      <QIcon
+        v-ripple.center
+        size="md"
+        name="event"
+        left
+        right
+        class="cursor-pointer"
+        color="dark"
+      >
+        <QTooltip>
+          {{ $t('contractForm.date') }}
+        </QTooltip>
+        <QPopupProxy>
+          <template v-if="dateNoLimit">
+            <QDate
+              v-model="duration.from"
+              default-view="Months"
+              first-day-of-week="1"
+              @update:model-value="onSelectDate"
+            >
+              <div class="row items-center justify-end">
+                <QBtn
+                  v-close-popup
+                  :label="$t('duration.close')"
+                  color="primary"
+                  flat
+                />
+              </div>
+            </QDate>
+          </template>
+          <template v-else>
+            <QDate
+              v-model="duration"
+              default-view="Months"
+              range
+              first-day-of-week="1"
+              @update:model-value="onSelectDate"
+            >
+              <div class="row items-center justify-end">
+                <QBtn
+                  v-close-popup
+                  :label="$t('duration.close')"
+                  color="primary"
+                  flat
+                />
+              </div>
+            </QDate>
+          </template>
+        </QPopupProxy>
+      </QIcon>
       <QInput
         v-if="!dateNoLimit"
         v-model="duration.to"
@@ -134,7 +131,9 @@
       >
         <QTooltip>{{ $t('duration.toHint') }}</QTooltip>
       </QInput>
-      <QToggle v-model="dateNoLimit" :label="$t('duration.infinity')" />
+      <QToggle v-model="dateNoLimit" :label="$t('duration.infinity')">
+        <QTooltip>Не имеет срока завершения</QTooltip>
+      </QToggle>
     </div>
     <QFile
       v-model="files"
@@ -182,7 +181,8 @@
         icon-right="save"
         type="submit"
         color="accent"
-        :disable="disableForm"
+        :loading="loadingForm"
+        :disable="loadingForm"
       />
     </div>
   </QForm>
@@ -238,7 +238,7 @@ const allContractTypes = [].concat(recommendationContractTypes, contractTypes)
 const contractOptions = ref(allContractTypes)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 const isLoggedIn = computed(() => store.getters['Auth/isLoggedIn'] as boolean)
-const disableForm = ref(false)
+const loadingForm = ref(false)
 
 // eslint-disable-next-line no-unused-vars
 function filterOptions(val: string, update: (callback: () => void) => void) {
@@ -315,6 +315,7 @@ async function onSubmit() {
     })
     return
   }
+  loadingForm.value = true
 
   // Если дата совпадает с текущей, то считаем что договор подписан сегодняшним числом
   if (date.getDateDiff(startDate, new Date(), 'days') === 0) {
@@ -327,16 +328,8 @@ async function onSubmit() {
     // todo если же договор подписан прошедшим числом, тогда как-то получить его часы, минуты, секунды...
     // иначе упадет ошибка при создании на Pod, если таких договоров будет два
   }
-  disableForm.value = true
 
   try {
-    $q.notify({
-      type: 'warning',
-      message: 'Происходит сохранение данных',
-      spinner: true,
-      group: false,
-      timeout: 3000,
-    })
     const images = await readFilesPromise(files.value)
     const newContract: ContractTable = {
       agent_name: (store.getters as { consumer: string }).consumer,
@@ -373,7 +366,7 @@ async function onSubmit() {
       message: 'Запись не удалась',
     })
   } finally {
-    disableForm.value = false
+    loadingForm.value = false
   }
 }
 </script>

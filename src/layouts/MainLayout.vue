@@ -77,6 +77,26 @@
         {{ $t('navigation.title') }}
       </p>
       <QList>
+        <QBtn
+          v-if="isLoggedIn"
+          color="primary"
+          square
+          glossy
+          push
+          class="full-width q-mb-md"
+          label="Выйти из Solid"
+          @click="logOutFromPod"
+        />
+        <QBtn
+          v-if="!isLoggedIn"
+          color="primary"
+          square
+          glossy
+          push
+          class="full-width q-mb-md"
+          label="Войти через WebId"
+          @click="loginToPod"
+        />
         <QExpansionItem
           v-model="profileOpen"
           group="backupgroup"
@@ -189,28 +209,6 @@
           </QItemSection>
         </QExpansionItem>
         <QSeparator class="q-mb-md" />
-        <QBtn
-          v-if="isLoggedIn"
-          square
-          outline
-          color="primary"
-          glossy
-          push
-          class="full-width"
-          label="Выйти из Solid"
-          @click="logOutFromPod"
-        />
-        <QBtn
-          v-if="!isLoggedIn"
-          square
-          outline
-          color="primary"
-          glossy
-          push
-          class="full-width"
-          label="Войти через WebId"
-          @click="loginToPod"
-        />
         <QChip
           icon="link"
           class="cursor-pointer full-width q-pa-md self-end"

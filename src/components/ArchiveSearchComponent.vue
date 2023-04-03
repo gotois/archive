@@ -41,7 +41,7 @@
           >
             <template #no-option>
               <QItem>
-                <QItemSection class="text-grey">
+                <QItemSection class="text-grey non-selectable">
                   {{ $t('archive.notfound') }}
                 </QItemSection>
               </QItem>
