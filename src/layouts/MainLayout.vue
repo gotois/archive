@@ -174,16 +174,10 @@
             </template>
             <template v-else>
               <p>{{ $t('settings.otp.description') }}</p>
-              <VOtpInput
-                :value="pin"
-                input-classes="otp-input"
+              <OTPComponent
+                ref="otp"
+                autofocus
                 class="flex flex-center"
-                separator="-"
-                :num-inputs="4"
-                :should-auto-focus="true"
-                :is-input-num="true"
-                :conditional-class="['', '', '', '']"
-                :placeholder="['*', '*', '*', '*']"
                 @on-change="onOTPChange"
                 @on-complete="onOTPHandleComplete"
               />
@@ -348,13 +342,14 @@ const DatabaseComponent = defineAsyncComponent(
 const ArchiveSearchComponent = defineAsyncComponent(
   () => import('components/ArchiveSearchComponent.vue'),
 )
-const VOtpInput = defineAsyncComponent(() => import('vue3-otp-input'))
+const OTPComponent = defineAsyncComponent(
+  () => import('components/OTPComponent.vue'),
+)
 
 const store = useStore()
 const $q = useQuasar()
 const router = useRouter()
 
-const pin = ref('')
 const leftDrawerOpen = ref(false)
 const rightDrawerOpen = ref(false)
 const settingsOpen = ref(false)
@@ -364,6 +359,8 @@ const confirm = ref(false)
 const showSearch = ref(false)
 const dialogOIDCIssuer = ref(false)
 const navigatorVersion = ref(version)
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+const otp = ref(null)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 const consumer = ref(store.getters.consumer as string)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -451,15 +448,21 @@ function onOpenFeedback() {
 async function onFinishProfile() {
   await store.dispatch('consumerName', consumer.value.trim())
   $q.notify({
-    message: 'ФИО сохранено',
+    message: 'Профиль обновлен',
     type: 'positive',
   })
 }
 
 async function onOTPChange(value: string) {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+  if (!hasCode.value) {
+    return
+  }
   if (value === '') {
     if (window.confirm('Действительно удалить пин?')) {
       await store.dispatch('Auth/removeCode')
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+      otp.value.clear()
       $q.notify({
         type: 'positive',
         message: 'Ключ отключен',
@@ -475,6 +478,9 @@ async function onOTPHandleComplete(code: string) {
       type: 'positive',
       message: 'Ключ изменен',
     })
+  } else {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+    otp.value.clear()
   }
 }
 

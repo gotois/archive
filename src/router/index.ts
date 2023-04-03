@@ -42,8 +42,7 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
       case '/reset': {
         localStorage.clear()
         return {
-          name: 'main',
-          query: {},
+          name: 'tutorial',
         }
       }
       case '/privacy': {

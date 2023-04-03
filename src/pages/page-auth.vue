@@ -3,17 +3,10 @@
     <p class="text-caption text-center">
       {{ $t('auth.caption') }}
     </p>
-    <VOtpInput
-      ref="otpInput"
-      :value="pin"
-      input-classes="otp-input"
-      separator="-"
-      :num-inputs="4"
-      :is-disabled="otpDisabled"
-      :should-auto-focus="true"
-      :is-input-num="true"
-      :conditional-class="['first', '', '', 'last']"
-      :placeholder="['', '', '', '']"
+    <OTPComponent
+      ref="otp"
+      autofocus
+      :disabled="otpDisabled"
       @on-complete="onHandleComplete"
     />
   </QPage>
@@ -23,7 +16,7 @@
 import { ref } from 'vue'
 import { useMeta, useQuasar, QPage } from 'quasar'
 import { useRouter } from 'vue-router'
-import VOtpInput from 'vue3-otp-input'
+import OTPComponent from 'components/OTPComponent.vue'
 import { useStore } from '../store'
 
 const $q = useQuasar()
@@ -36,19 +29,9 @@ const metaData = {
   'og:title': 'Авторизация',
 }
 
-const otpDisabled = ref(false)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-const otpInput = ref(null)
-const pin = ref('')
-
-function clearOTP() {
-  otpDisabled.value = false
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-  otpInput.value.clearInput()
-  document
-    .querySelectorAll('.otp-input')
-    .forEach((element) => (element as HTMLElement).blur())
-}
+const otp = ref(null)
+const otpDisabled = ref(false)
 
 async function onHandleComplete(value: string) {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -69,7 +52,11 @@ async function onHandleComplete(value: string) {
       progress: true,
       timeout: timeout,
     })
-    setTimeout(() => clearOTP(), timeout)
+    setTimeout(() => {
+      otpDisabled.value = false
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return
+      otp.value.clear()
+    }, timeout)
   }
 }
 

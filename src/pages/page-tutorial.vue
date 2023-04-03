@@ -107,16 +107,7 @@
             <p class="text-body2">
               {{ $t('tutorial.otp') }}
             </p>
-            <VOtpInput
-              :value="pin"
-              input-classes="otp-input"
-              separator="-"
-              :num-inputs="pinLength"
-              :is-input-num="true"
-              :conditional-class="['first', '', '', 'last']"
-              :placeholder="['*', '*', '*', '*']"
-              @on-complete="handleOnComplete"
-            />
+            <OTPComponent ref="pin" />
             <QStepperNavigation class="q-mb-md">
               <QBtn
                 color="accent"
@@ -137,7 +128,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import { ref, computed, defineAsyncComponent } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   useQuasar,
@@ -153,14 +144,19 @@ import {
   QInput,
   QIcon,
 } from 'quasar'
-import VOtpInput from 'vue3-otp-input'
 import PrivacyComponent from 'components/PrivacyComponent.vue'
-import OIDCIssuerComponent from 'components/OIDCIssuerComponent.vue'
 import { useStore } from '../store'
 import pkg from '../../package.json'
 import { createContractPDF } from '../services/pdfHelper'
 import { solidAuth, getProfileName, initPod } from '../services/podHelper'
 import { ContractTable } from '../types/models'
+
+const OTPComponent = defineAsyncComponent(
+  () => import('components/OTPComponent.vue'),
+)
+const OIDCIssuerComponent = defineAsyncComponent(
+  () => import('components/OIDCIssuerComponent.vue'),
+)
 
 const { description, version, productName } = pkg
 const $q = useQuasar()
@@ -171,9 +167,9 @@ const searchParams = new URLSearchParams(window.location.search)
 
 const step = ref(Number(searchParams.get('step') ?? 1))
 const consumer = ref('')
-const pin = ref('')
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+const pin = ref(null)
 const showForm = ref(false)
-const pinLength = ref(4)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 const isLoggedIn = computed(() => store.getters['Auth/isLoggedIn'] as boolean)
 
@@ -223,10 +219,16 @@ async function onOnlineAuthorize(oidcIssuer: string) {
 }
 
 async function onFinish() {
-  if (pin.value.length === pinLength.value) {
-    if (window.confirm('Пин ' + pin.value + ' будет сохранен?')) {
-      await store.dispatch('Auth/setCode', pin.value)
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  const code = pin.value.code as string
+  if (code) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const num = pin.value.num as number
+    if (code.length !== num) {
+      window.alert('Введите PIN полностью')
+      return
     }
+    await store.dispatch('Auth/setCode', code)
   }
   $q.loading.show()
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
@@ -275,10 +277,6 @@ async function onFinish() {
   } finally {
     $q.loading.hide()
   }
-}
-
-const handleOnComplete = (value: string) => {
-  pin.value = value
 }
 
 useMeta(metaData)
