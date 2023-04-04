@@ -250,8 +250,8 @@ import {
   QVirtualScroll,
   copyToClipboard,
 } from 'quasar'
-import AuthStore from '../store/auth'
-import ContractStore from '../store/contract'
+import AuthStore from 'stores/auth'
+import ContractStore from 'stores/contract'
 import { FormatContract, ContractTable } from '../types/models'
 import { showPDFInPopup } from '../services/popup'
 import { isDateNotOk, formatterDate } from '../services/dateHelper'

@@ -5,9 +5,19 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { configure } = require('quasar/wrappers')
 const pkg = require('./package.json')
+const path = require('path')
 
 module.exports = configure((ctx) => {
   return {
+    eslint: {
+      // fix: true,
+      // include = [],
+      // exclude = [],
+      // rawOptions = {},
+      warnings: true,
+      errors: true,
+    },
+
     // https://v2.quasar.dev/quasar-cli/supporting-ts
     supportTS: {
       tsCheckerConfig: {
@@ -37,9 +47,14 @@ module.exports = configure((ctx) => {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
+      target: {
+        browser: ['es2021', 'edge100', 'firefox100', 'chrome100', 'safari14'],
+      },
+
       vueRouterMode: 'history',
       publicPath: '/',
 
+      // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
       // transpile: false,
 
       // Add dependencies for transpiling with Babel (Array of string/regex)
@@ -56,11 +71,18 @@ module.exports = configure((ctx) => {
       // Options below are automatically set depending on the env, set them if you want to override
       // extractCSS: false,
 
-      // https://v2.quasar.dev/quasar-cli/handling-webpack
-      // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain
-      chainWebpack(/* chain */) {
-        //
-      },
+      vitePlugins: [
+        [
+          '@intlify/vite-plugin-vue-i18n',
+          {
+            // if you want to use Vue I18n Legacy API, you need to set `compositionOnly: false`
+            // compositionOnly: false,
+
+            // you need to set i18n resource including paths !
+            include: path.resolve(__dirname, './src/i18n/**'),
+          },
+        ],
+      ],
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
@@ -122,12 +144,6 @@ module.exports = configure((ctx) => {
     pwa: {
       workboxPluginMode: 'InjectManifest',
       workboxOptions: {},
-
-      // for the custom service worker ONLY (/src-pwa/custom-service-worker.[js|ts])
-      // if using workbox in InjectManifest mode
-      chainWebpackCustomSW(/* chain */) {
-        //
-      },
 
       manifest: {
         name: pkg.name,

@@ -10,9 +10,6 @@ module.exports = {
   // Must use parserOptions instead of "parser" to allow vue-eslint-parser to keep working
   // `parser: 'vue-eslint-parser'` is already included with any 'plugin:vue/**' config and should be omitted
   parserOptions: {
-    // https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/parser#configuration
-    // https://github.com/TypeStrong/fork-ts-checker-webpack-plugin#eslint
-    // Needed to make the parser take into account 'vue' files
     extraFileExtensions: ['.vue'],
     parser: '@typescript-eslint/parser',
     project: resolve(__dirname, './tsconfig.json'),
@@ -23,6 +20,8 @@ module.exports = {
 
   env: {
     browser: true,
+    es2021: true,
+    'vue/setup-compiler-macros': true
   },
 
   // Rules order is important, please avoid shuffling them
@@ -38,11 +37,11 @@ module.exports = {
     'plugin:quasar/standard',
 
     'eslint:recommended',
+    'prettier',
   ],
 
   plugins: [
     '@typescript-eslint',
-    'prettier',
     'vue',
     'quasar',
   ],

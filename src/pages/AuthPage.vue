@@ -17,7 +17,7 @@ import { ref } from 'vue'
 import { useMeta, useQuasar, QPage } from 'quasar'
 import { useRouter } from 'vue-router'
 import OTPComponent from 'components/OTPComponent.vue'
-import AuthStore from '../store/auth'
+import AuthStore from 'stores/auth'
 
 const $q = useQuasar()
 const router = useRouter()
