@@ -5,7 +5,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { configure } = require('quasar/wrappers')
 const pkg = require('./package.json')
-const path = require('path')
 
 module.exports = configure((ctx) => {
   return {
@@ -63,23 +62,6 @@ module.exports = configure((ctx) => {
       preloadChunks: true,
       showProgress: true,
       gzip: true,
-      // analyze: true,
-
-      // Options below are automatically set depending on the env, set them if you want to override
-      // extractCSS: false,
-
-      vitePlugins: [
-        [
-          '@intlify/vite-plugin-vue-i18n',
-          {
-            // if you want to use Vue I18n Legacy API, you need to set `compositionOnly: false`
-            // compositionOnly: false,
-
-            // you need to set i18n resource including paths !
-            include: path.resolve(__dirname, './src/i18n/**'),
-          },
-        ],
-      ],
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
@@ -134,7 +116,7 @@ module.exports = configure((ctx) => {
 
     // https://v2.quasar.dev/quasar-cli/developing-pwa/configuring-pwa
     pwa: {
-      workboxPluginMode: 'InjectManifest',
+      workboxMode: 'injectManifest',
       workboxOptions: {},
 
       manifest: {
@@ -195,11 +177,11 @@ module.exports = configure((ctx) => {
         msapplicationTileImage: 'icons/ms-icon-144x144.png',
         msapplicationTileColor: '#027be3',
       },
-    },
-    sourceFiles: {
-      pwaRegisterServiceWorker: 'src-pwa/register-service-worker',
-      pwaServiceWorker: 'src-pwa/custom-service-worker',
-      pwaManifestFile: 'src-pwa/manifest.json',
+      sourceFiles: {
+        pwaRegisterServiceWorker: 'src-pwa/register-service-worker',
+        pwaServiceWorker: 'src-pwa/custom-service-worker',
+        pwaManifestFile: 'src-pwa/manifest.json',
+      },
     },
   }
 })

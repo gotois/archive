@@ -11,9 +11,7 @@ export default route(() => {
       top: 0,
     }),
     routes,
-    history: createWebHistory(
-      process.env.MODE === 'ssr' ? void 0 : process.env.VUE_ROUTER_BASE,
-    ),
+    history: createWebHistory(process.env.VUE_ROUTER_BASE),
   })
 
   Router.beforeEach(async (to, from) => {
