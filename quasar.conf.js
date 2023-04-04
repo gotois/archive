@@ -124,12 +124,7 @@ module.exports = configure((ctx) => {
 
       prodPort: 3000,
 
-      maxAge: 1000 * 60 * 60 * 24 * 30,
-      // Tell browser when a file from the server should expire from cache (in ms)
-
-      chainWebpackWebserver(/* chain */) {
-        //
-      },
+      maxAge: 1000 * 60 * 60 * 24 * 30, // Tell browser when a file from the server should expire from cache (in ms)
 
       middlewares: [
         ctx.prod ? 'compression' : '',
