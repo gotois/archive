@@ -218,6 +218,10 @@ async function onEdit(item: FormatContract) {
   if (isLoggedIn.value) {
     await updateIntoPod(item)
   }
+  $q.notify({
+    type: 'positive',
+    message: 'Данные обновлены',
+  })
 }
 
 async function updateContracts({

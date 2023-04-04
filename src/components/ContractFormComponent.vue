@@ -323,6 +323,13 @@ async function onSubmit() {
     })
     return
   }
+  if (startDate.valueOf() >= endDate.valueOf()) {
+    $q.notify({
+      type: 'negative',
+      message: 'Начальная дата не может быть старше конечной даты',
+    })
+    return
+  }
   loadingForm.value = true
 
   // Если дата совпадает с текущей, то считаем что договор подписан сегодняшним числом

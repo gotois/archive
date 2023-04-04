@@ -11,18 +11,18 @@
       </QCard>
       <QCard v-show="!loading" :key="index" flat square bordered>
         <div class="row">
-          <div class="column wrap" style="max-width: calc(100% - 45px)">
+          <div class="column q-pl-md" style="max-width: calc(100% - 45px)">
             <p
-              class="text-h6 q-pt-md q-pl-md q-pr-md text-uppercase text-weight-bold no-margin"
+              class="full-width q-pt-md text-subtitle1 text-uppercase ellipsis text-weight-bold no-margin"
               :style="checkItemEndTime(item)"
               :class="item.instrument.description ? '' : 'q-pb-md'"
-              >{{ item.instrument.name }}</p
-            >
+              >{{ item.instrument.name }}
+            </p>
             <p
               v-if="item.instrument.description"
-              class="text-caption q-pl-md q-pb-md text-grey no-margin"
-              >{{ item.instrument.description }}</p
-            >
+              class="full-width text-caption q-pb-md text-grey no-margin"
+              >{{ item.instrument.description }}
+            </p>
           </div>
           <QSpace />
           <QBtn
@@ -35,9 +35,21 @@
           >
             <QMenu transition-show="jump-down" transition-duration="200">
               <QList bordered separator padding>
+                <QItem
+                  v-if="item.sameAs"
+                  v-close-popup
+                  clickable
+                  @click="shareURl(item)"
+                >
+                  <QItemSection side class="text-uppercase"
+                    >{{ 'Получить ссылку' }}
+                  </QItemSection>
+                </QItem>
                 <QItem v-close-popup clickable @click="editArchive(item)">
                   <QItemSection side class="text-uppercase">{{
-                    $t('archiveList.edit')
+                    isLoggedIn
+                      ? $t('archiveList.editPod')
+                      : $t('archiveList.edit')
                   }}</QItemSection>
                 </QItem>
                 <QItem
@@ -194,18 +206,19 @@
       </QCard>
     </template>
     <template v-if="paginationCount > 0" #after>
+      <QSeparator class="q-ma-md" />
       <QPagination
         v-model="currentPage"
         :max="paginationCount"
         :max-pages="$q.platform.is.desktop ? 10 : 5"
         :direction-links="paginationCount > 10"
+        :boundary-links="$q.platform.is.desktop && paginationCount > 1"
         boundary-numbers
         ellipses
         flat
-        :boundary-links="$q.platform.is.desktop"
         active-design="outline"
         color="secondary"
-        class="q-pa-lg flex flex-center self-end"
+        class="flex flex-center self-end"
         @update:model-value="$emit('onPaginate', currentPage)"
       />
     </template>
@@ -235,6 +248,7 @@ import {
   QCarousel,
   QPagination,
   QVirtualScroll,
+  copyToClipboard,
 } from 'quasar'
 import { useStore } from '../store'
 import { FormatContract } from '../types/models'
@@ -265,10 +279,13 @@ const emit = defineEmits(['onPaginate', 'onRemove', 'onEdit'])
 
 const items = ref(props.contracts ?? [])
 const fullscreen = ref(false)
-// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-const isLoggedIn = computed(() => store.getters['Auth/isLoggedIn'] as boolean)
 const currentPage = ref(1)
 const nativeShareAvailable = ref(typeof navigator.share === 'function')
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+const isLoggedIn = computed(() => store.getters['Auth/isLoggedIn'] as boolean)
+const shareIcon = computed(() =>
+  $q.platform.is.android ? 'share' : 'ios_share',
+)
 
 watch(
   () => props.contracts,
@@ -328,9 +345,13 @@ async function onShowFullImage(object: FormatContract) {
   fullscreen.value = !fullscreen.value
 }
 
-const shareIcon = computed(() => {
-  return $q.platform.is.android ? 'share' : 'ios_share'
-})
+async function shareURl(item: FormatContract) {
+  await copyToClipboard(item.sameAs)
+  $q.notify({
+    type: 'positive',
+    message: 'Ссылка скопирована в буфер обмена',
+  })
+}
 
 async function onShareFullImage(object: FormatContract) {
   const shareData = await createPDF(object)

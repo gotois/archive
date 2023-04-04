@@ -75,8 +75,6 @@ const ContractClass: Module<ContractState, StateInterface> = {
       })
       // Save to IndexedDb
       if (!usePod) {
-        contractData.resource_url =
-          'https://storage.inrupt.com/1189569a-8a9f-41dd-9d48-e1b0bca02371/contracts/2023-04-01T21:00:00.000Z.ttl' // fixme test
         return db.add(contractData)
       }
 

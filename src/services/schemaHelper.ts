@@ -1,3 +1,4 @@
+import { uid } from 'quasar'
 import {
   setThing,
   buildThing,
@@ -15,6 +16,12 @@ import {
   credentialContextType,
   credentialSubjectType,
 } from '../types/models'
+
+// eslint-disable-next-line no-unused-vars
+enum BaseContext {
+  // eslint-disable-next-line no-unused-vars
+  schemaOrg = 'https://schema.org',
+}
 
 function createCredential(webId: string, issuanceDate?: string): Credential {
   return {
@@ -141,16 +148,16 @@ export function formatterLDContract(
   const schemaUrl = formatContract['@context'] + '/'
   context.set(formatContract['@type'], schemaUrl + formatContract['@type'])
   context.set('agent', schemaUrl + agent['@type'])
-  context.set('name', 'https://schema.org/name')
-  context.set('instrument', 'https://schema.org/instrument')
-  context.set('description', 'https://schema.org/description')
-  context.set('participant', 'https://schema.org/participant')
-  context.set('identifier', 'https://schema.org/identifier')
-  context.set('startTime', 'https://schema.org/startTime')
-  context.set('endTime', 'https://schema.org/endTime')
-  context.set('propertyID', 'https://schema.org/propertyID')
-  context.set('value', 'https://schema.org/PropertyValue')
-  context.set('object', 'https://schema.org/ImageObject')
+  context.set('name', BaseContext.schemaOrg + '/name')
+  context.set('instrument', BaseContext.schemaOrg + '/instrument')
+  context.set('description', BaseContext.schemaOrg + '/description')
+  context.set('participant', BaseContext.schemaOrg + '/participant')
+  context.set('identifier', BaseContext.schemaOrg + '/identifier')
+  context.set('startTime', BaseContext.schemaOrg + '/startTime')
+  context.set('endTime', BaseContext.schemaOrg + '/endTime')
+  context.set('propertyID', BaseContext.schemaOrg + '/propertyID')
+  context.set('value', BaseContext.schemaOrg + '/PropertyValue')
+  context.set('object', BaseContext.schemaOrg + '/ImageObject')
 
   credentialSubject.set('agent', {
     name: formatContract.agent.name,
@@ -190,34 +197,39 @@ export function formatterLDContract(
 }
 
 export function formatterContract(contract: ContractTable): FormatContract {
+  const agent = {
+    '@type': 'Person',
+    'name': contract.agent_name,
+  }
+  const participant = {
+    '@type': 'Person',
+    'name': contract.participant_name,
+  }
+  const instrument = {
+    '@type': 'Thing',
+    'name': contract.instrument_name,
+    'description': contract.instrument_description,
+  }
+  const identifier = {
+    '@type': 'PropertyValue',
+    'propertyID': 'Database ID',
+    'value': contract.id ? String(contract.id) : uid(),
+  }
+  const object = contract.images.map((image) => ({
+    '@type': 'ImageObject',
+    'contentUrl': image,
+  }))
   return {
-    '@context': 'https://schema.org',
+    '@context': BaseContext.schemaOrg,
     '@type': 'OrganizeAction',
     'sameAs': contract.resource_url,
-    'agent': {
-      '@type': 'Person',
-      'name': contract.agent_name,
-    },
-    'participant': {
-      '@type': 'Person',
-      'name': contract.participant_name,
-    },
-    'instrument': {
-      '@type': 'Thing',
-      'name': contract.instrument_name,
-      'description': contract.instrument_description,
-    },
-    'identifier': {
-      '@type': 'PropertyValue',
-      'propertyID': 'Database ID',
-      'value': String(contract.id), // todo сделать проверку на пустоту
-    },
+    'agent': agent,
+    'participant': participant,
+    'instrument': instrument,
+    'identifier': identifier,
     'startTime': contract.startTime,
     'endTime': contract.endTime,
-    'object': contract.images.map((image) => ({
-      '@type': 'ImageObject',
-      'contentUrl': image,
-    })),
+    'object': object,
     '_currentSlide': 1,
   }
 }

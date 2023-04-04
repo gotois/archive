@@ -120,6 +120,7 @@ export default {
   archiveList: {
     remove: 'Удалить',
     edit: 'Редактировать',
+    editPod: 'Редактировать + Pod',
     openFile: 'Открыть окно документа',
     closeFile: 'Закрыть окно документа',
     shareFile: 'Поделиться документом',

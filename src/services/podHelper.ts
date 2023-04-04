@@ -133,18 +133,13 @@ export async function removeContractsDataset() {
 }
 
 export async function updateIntoPod(item: FormatContract) {
-  const dogovorName = item.startTime.toJSON()
-  const resourceBaseUrl = await getResourceBaseUrl()
-  const resourceUrl = resourceBaseUrl + dogovorName
+  const resourceUrl = item.sameAs
   let dataset = await getSolidDataset(resourceUrl, {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     fetch,
   })
   const instrument = getThing(dataset, resourceUrl + '#instrument')
-
-  // const example = getStringNoLocale(instrument, SCHEMA_INRUPT.description)
-  // console.log('description variable: ', example)
 
   const modify = buildThing(instrument).addStringNoLocale(
     SCHEMA_INRUPT.description,
