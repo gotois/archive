@@ -1,6 +1,5 @@
-import { Module } from 'vuex'
 import { FormatContract, ContractTable } from '../types/models'
-import { StateInterface } from './index'
+import { defineStore } from 'pinia'
 import { db } from '../services/databaseHelper'
 import { recommendationContractTypes } from '../services/recommendationContractTypes'
 import {
@@ -17,46 +16,49 @@ import {
 } from '../services/podHelper'
 import { sign, getAndSaveKeyPair } from '../services/cryptoHelper'
 
-export interface ContractState {
-  contracts: ContractTable[]
-  contractsCount: number
-  contractNames: Map<string, { count: number }>
-}
-
-const ContractClass: Module<ContractState, StateInterface> = {
+export default defineStore('contracts', {
   state: () => ({
-    contracts: [],
-    contractNames: new Map(),
+    contracts: [] as ContractTable[],
+    contractNames: new Map<string, { count: number }>(),
     contractsCount: 0,
   }),
-  mutations: {
-    setContractNames(state, contractNames: Map<string, { count: number }>) {
-      state.contractNames = contractNames
-    },
-    setContractsCount(state, count: number) {
-      state.contractsCount = count
-    },
-    setContracts(state, contracts: ContractTable[]) {
-      state.contracts = contracts
-    },
-    addContract(state, contract: ContractTable) {
-      state.contracts.push(contract)
-    },
-    removeContract(state, id: number) {
-      const i = state.contracts.map((item) => item.id).indexOf(id)
-      state.contracts.splice(i, 1)
-    },
-  },
   actions: {
-    async addContract(
-      context,
-      {
-        contractData,
-        usePod = false,
-      }: { contractData: ContractTable; usePod: boolean },
-    ) {
+    async uploadContract(contractData: ContractTable) {
       // Step 1: JS
-      context.commit('addContract', contractData)
+      const resourceBaseUrl = await getResourceBaseUrl()
+      const resourceName =
+        resourceBaseUrl + contractData.startTime.toJSON() + '.ttl'
+      contractData.resource_url = resourceName
+      // todo update for Store
+      // context.commit('updateContract', contractData)
+
+      // Step 2: JSON-LD
+      const jsldContract = formatterContract(contractData)
+
+      // Step 3: Signed LD
+      const webId = getWebId()
+      const credential = formatterLDContract(webId, jsldContract)
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const signedVC = await sign({
+        credential: credential,
+      })
+
+      const solidDatasetContract = formatterDatasetContract(
+        resourceName,
+        signedVC,
+      )
+      await saveToPod(resourceName, solidDatasetContract)
+      return db.add(contractData)
+    },
+    async addContract({
+      contractData,
+      usePod = false,
+    }: {
+      contractData: ContractTable
+      usePod: boolean
+    }) {
+      // Step 1: JS
+      this.contracts.push(contractData)
 
       // Step 2: JSON-LD
       const jsldContract = formatterContract(contractData)
@@ -90,7 +92,7 @@ const ContractClass: Module<ContractState, StateInterface> = {
       await saveToPod(resourceName, solidDatasetContract)
       return db.add(contractData)
     },
-    async editContract(context, contract: FormatContract) {
+    async editContract(contract: FormatContract) {
       const id = Number(contract.identifier.value)
       const count = await db.contracts.where('id').equals(id).modify({
         instrument_description: contract.instrument.description,
@@ -100,16 +102,17 @@ const ContractClass: Module<ContractState, StateInterface> = {
         return
       }
     },
-    async removeContract(
-      context,
-      {
-        contractData,
-        usePod = false,
-      }: { contractData: FormatContract; usePod: boolean },
-    ) {
+    async removeContract({
+      contractData,
+      usePod = false,
+    }: {
+      contractData: FormatContract
+      usePod: boolean
+    }) {
       // Step 1: JS
       const id = Number(contractData.identifier.value)
-      context.commit('removeContract', id)
+      const i = this.contracts.map((item) => item.id).indexOf(id)
+      this.contracts.splice(i, 1)
 
       // Step 2: IndexedDB
       const count = await db.remove(id)
@@ -119,32 +122,34 @@ const ContractClass: Module<ContractState, StateInterface> = {
       if (!usePod) {
         return
       }
-
       // Step 3: Solid Pod
-      if (contractData.sameAs) {
-        await removeFromPod(contractData.sameAs)
+      if (!contractData.sameAs) {
+        return
       }
+      return removeFromPod(contractData.sameAs)
     },
-    async filterFromContracts(context, { query }: { query: string }) {
+    async filterFromContracts({ query }: { query: string }) {
       const contracts = await db.contracts
         .where('instrument_name')
         .equals(query)
         .reverse()
         .toArray()
-      context.commit('setContractsCount', contracts.length)
-      context.commit('setContracts', contracts)
+      this.contractsCount = contracts.length
+      this.contracts = contracts
     },
-    async searchFromContracts(
-      context,
-      {
-        query,
-        offset,
-        limit,
-        scoreRate = 0.5,
-      }: { query: string; offset: number; limit: number; scoreRate: number },
-    ) {
+    async searchFromContracts({
+      query,
+      offset,
+      limit,
+      scoreRate = 0.5,
+    }: {
+      query: string
+      offset: number
+      limit: number
+      scoreRate?: number
+    }) {
       if (query.length <= 0) {
-        context.commit('setContracts', [])
+        this.contracts = []
         return
       }
       const MiniSearch = await import('minisearch')
@@ -163,9 +168,9 @@ const ContractClass: Module<ContractState, StateInterface> = {
         return searchResults.some((result) => result.id === id)
       })
       const count = await cursor.count()
-      context.commit('setContractsCount', count)
+      this.contractsCount = count
       if (!count) {
-        context.commit('setContracts', [])
+        this.contracts = []
         return
       }
       const contracts = await cursor
@@ -173,16 +178,19 @@ const ContractClass: Module<ContractState, StateInterface> = {
         .offset(offset)
         .limit(limit)
         .toArray()
-      context.commit('setContracts', contracts)
+      this.contracts = contracts
     },
-    async loadAllContracts(
-      context,
-      { offset = 0, limit = 10 }: { offset: number; limit: number },
-    ) {
+    async loadAllContracts({
+      offset = 0,
+      limit = 10,
+    }: {
+      offset: number
+      limit: number
+    }) {
       const count: number = await db.contracts.count()
-      context.commit('setContractsCount', count)
+      this.contractsCount = count
       if (!count) {
-        context.commit('setContracts', [])
+        this.contracts = []
         return
       }
       const contracts = await db.contracts
@@ -191,18 +199,19 @@ const ContractClass: Module<ContractState, StateInterface> = {
         .offset(offset)
         .limit(limit)
         .toArray()
-      context.commit('setContracts', contracts)
+      this.contracts = contracts
     },
-    async loadContractNames(context) {
+    async loadContractNames() {
+      // fixme
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      if (!context.getters.consumer) {
-        return
-      }
-      const map = new Map()
+      // if (!context.getters.consumer) {
+      //   return
+      // }
+      const map = new Map<string, { count: number }>()
       for (const names of await db.getContractNames()) {
         map.set(...names)
       }
-      context.commit('setContractNames', map)
+      this.contractNames = map
     },
   },
   getters: {
@@ -215,6 +224,7 @@ const ContractClass: Module<ContractState, StateInterface> = {
 
       state.contractNames.forEach((contractName, name) => {
         map.set(name, {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
           count: contractName.count,
           recommendation: false,
         })
@@ -222,13 +232,8 @@ const ContractClass: Module<ContractState, StateInterface> = {
 
       return Array.from(map)
     },
-    contracts(state): FormatContract[] {
-      return formatterContracts(state.contracts)
-    },
-    contractsCount(state) {
-      return state.contractsCount ?? 0
+    formatContracts(): FormatContract[] {
+      return formatterContracts(this.contracts)
     },
   },
-}
-
-export default ContractClass
+})

@@ -145,7 +145,10 @@ import {
   QIcon,
 } from 'quasar'
 import PrivacyComponent from 'components/PrivacyComponent.vue'
-import { useStore } from '../store'
+import AuthStore from '../store/auth'
+import TutorialStore from '../store/tutorial'
+import ContractStore from '../store/contract'
+import ProfileStore from '../store/profile'
 import pkg from '../../package.json'
 import { createContractPDF } from '../services/pdfHelper'
 import { solidAuth, getProfileName, initPod } from '../services/podHelper'
@@ -160,7 +163,11 @@ const OIDCIssuerComponent = defineAsyncComponent(
 
 const { description, version, productName } = pkg
 const $q = useQuasar()
-const store = useStore()
+const authStore = AuthStore()
+const tutorialStore = TutorialStore()
+const contractStore = ContractStore()
+const pontractStore = ProfileStore()
+
 const router = useRouter()
 
 const searchParams = new URLSearchParams(window.location.search)
@@ -170,8 +177,8 @@ const consumer = ref('')
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 const pin = ref(null)
 const showForm = ref(false)
-// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-const isLoggedIn = computed(() => store.getters['Auth/isLoggedIn'] as boolean)
+
+const isLoggedIn = computed(() => authStore.isLoggedIn)
 
 const metaData = {
   'title': 'Примите лицензионное соглашение',
@@ -200,11 +207,10 @@ async function onOnlineAuthorize(oidcIssuer: string) {
     await solidAuth({
       redirectUrl,
       oidcIssuer: oidcIssuer,
-      sessionRestoreCallback: () =>
-        void store.dispatch('Auth/openIdHandleIncoming'),
+      sessionRestoreCallback: () => authStore.openIdHandleIncoming(),
       loginCallback: () => {
         $q.localStorage.set('restorePreviousSession', true)
-        void store.dispatch('Auth/openIdHandleIncoming')
+        authStore.openIdHandleIncoming()
       },
     })
   } catch (e) {
@@ -228,7 +234,7 @@ async function onFinish() {
       window.alert('Введите PIN полностью')
       return
     }
-    await store.dispatch('Auth/setCode', code)
+    await authStore.setCode(code)
   }
   $q.loading.show()
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
@@ -250,12 +256,12 @@ async function onFinish() {
     if (isLoggedIn.value) {
       await initPod()
     }
-    await store.dispatch('addContract', {
+    await contractStore.addContract({
       contractData: newContract,
       usePod: isLoggedIn.value,
     })
-    await store.dispatch('consumerName', consumer.value.trim())
-    await store.dispatch('Tutorial/tutorialComplete')
+    pontractStore.consumerName(consumer.value)
+    tutorialStore.tutorialComplete()
     await router.push({
       name: 'filter',
       query: {

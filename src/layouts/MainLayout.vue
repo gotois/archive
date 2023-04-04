@@ -323,7 +323,9 @@ import {
   QLayout,
 } from 'quasar'
 import { useRouter } from 'vue-router'
-import { useStore } from '../store'
+import AuthStore from '../store/auth'
+import ContractStore from '../store/contract'
+import ProfileStore from '../store/profile'
 import pkg from '../../package.json'
 import twaManifest from '../../twa-manifest.json'
 import { logout } from '@inrupt/solid-client-authn-browser'
@@ -346,9 +348,11 @@ const OTPComponent = defineAsyncComponent(
   () => import('components/OTPComponent.vue'),
 )
 
-const store = useStore()
 const $q = useQuasar()
 const router = useRouter()
+const authStore = AuthStore()
+const contractStore = ContractStore()
+const profileStore = ProfileStore()
 
 const leftDrawerOpen = ref(false)
 const rightDrawerOpen = ref(false)
@@ -361,14 +365,11 @@ const dialogOIDCIssuer = ref(false)
 const navigatorVersion = ref(version)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 const otp = ref(null)
-// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-const consumer = ref(store.getters.consumer as string)
-// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-const hasCode = computed(() => store.getters['Auth/hasCode'] as boolean)
-// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-const isLoggedIn = computed(() => store.getters['Auth/isLoggedIn'] as boolean)
-// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return
-const archiveNames = computed(() => store.getters.archiveNames)
+const consumer = ref(profileStore.consumer as string)
+
+const hasCode = computed(() => authStore.hasCode)
+const isLoggedIn = computed(() => authStore.isLoggedIn)
+const archiveNames = computed(() => contractStore.archiveNames)
 
 function onToggleLeftDrawer(): void {
   leftDrawerOpen.value = !leftDrawerOpen.value
@@ -397,11 +398,11 @@ function onOnlineAuthorize(oidcIssuer: string) {
     oidcIssuer: oidcIssuer,
     restorePreviousSession: true,
     sessionRestoreCallback: () => {
-      void store.dispatch('Auth/openIdHandleIncoming')
+      authStore.openIdHandleIncoming()
       $q.loading.hide()
     },
     loginCallback: () => {
-      void store.dispatch('Auth/openIdHandleIncoming')
+      authStore.openIdHandleIncoming()
       $q.loading.hide()
     },
   })
@@ -416,7 +417,7 @@ function loginToPod() {
 
 async function logOutFromPod() {
   await logout()
-  await store.dispatch('Auth/openIdHandleIncoming')
+  authStore.openIdHandleIncoming()
   $q.localStorage.remove('oidcIssuer')
   $q.localStorage.remove('restorePreviousSession')
   $q.notify({
@@ -445,22 +446,22 @@ function onOpenFeedback() {
   })
 }
 
-async function onFinishProfile() {
-  await store.dispatch('consumerName', consumer.value.trim())
+function onFinishProfile() {
+  profileStore.consumerName(consumer.value)
   $q.notify({
     message: 'Профиль обновлен',
     type: 'positive',
   })
 }
 
-async function onOTPChange(value: string) {
+function onOTPChange(value: string) {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
   if (!hasCode.value) {
     return
   }
   if (value === '') {
     if (window.confirm('Действительно удалить пин?')) {
-      await store.dispatch('Auth/removeCode')
+      authStore.removeCode()
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
       otp.value.clear()
       $q.notify({
@@ -473,7 +474,7 @@ async function onOTPChange(value: string) {
 
 async function onOTPHandleComplete(code: string) {
   if (window.confirm('Действительно сохранить пин?')) {
-    await store.dispatch('Auth/setCode', code)
+    await authStore.setCode(code)
     $q.notify({
       type: 'positive',
       message: 'Ключ изменен',

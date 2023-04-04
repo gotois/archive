@@ -53,7 +53,7 @@
                   }}</QItemSection>
                 </QItem>
                 <QItem
-                  v-if="isLoggedIn"
+                  v-if="isLoggedIn && !item.saveAs"
                   v-close-popup
                   clickable
                   @click="uploadArchive(item)"
@@ -250,15 +250,16 @@ import {
   QVirtualScroll,
   copyToClipboard,
 } from 'quasar'
-import { useStore } from '../store'
-import { FormatContract } from '../types/models'
+import AuthStore from '../store/auth'
+import ContractStore from '../store/contract'
+import { FormatContract, ContractTable } from '../types/models'
 import { showPDFInPopup } from '../services/popup'
 import { isDateNotOk, formatterDate } from '../services/dateHelper'
 import { createPDF } from '../services/pdfHelper'
-// import { saveToPod } from '../services/podHelper'
 
 const $q = useQuasar()
-const store = useStore()
+const authStore = AuthStore()
+const contractStore = ContractStore()
 
 const props = defineProps({
   paginationCount: {
@@ -281,8 +282,8 @@ const items = ref(props.contracts ?? [])
 const fullscreen = ref(false)
 const currentPage = ref(1)
 const nativeShareAvailable = ref(typeof navigator.share === 'function')
-// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-const isLoggedIn = computed(() => store.getters['Auth/isLoggedIn'] as boolean)
+
+const isLoggedIn = computed(() => authStore.isLoggedIn)
 const shareIcon = computed(() =>
   $q.platform.is.android ? 'share' : 'ios_share',
 )
@@ -362,18 +363,20 @@ async function onShareFullImage(object: FormatContract) {
   }
 }
 
-function uploadArchive(item: FormatContract) {
-  console.warn('In progress...', item)
-  // const resourceName = item.sameAs ?? resourceBaseUrl + contractData.startTime.toJSON() + '.ttl'
-  // const solidDatasetContract = formatterDatasetContract(
-  //   resourceName,
-  //   signedVC,
-  // )
-  // await saveToPod(resourceName, solidDatasetContract)
-  // $q.notify({
-  //   type: 'positive',
-  //   message: 'Данные записаны на Ваш Pod',
-  // })
+async function uploadArchive(item: FormatContract) {
+  const currentContract = contractStore.contracts.find(
+    (c: ContractTable) => String(c.id) === String(item.identifier.value),
+  ) as ContractTable
+
+  try {
+    await contractStore.uploadContract(currentContract)
+    $q.notify({
+      type: 'positive',
+      message: 'Данные записаны на Ваш Pod',
+    })
+  } catch (e) {
+    console.error(e)
+  }
 }
 
 function editArchive(item: FormatContract) {

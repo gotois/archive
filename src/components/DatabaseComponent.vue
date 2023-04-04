@@ -53,16 +53,15 @@ import { useQuasar, QBtn, QIcon, QForm, QFile, QTooltip } from 'quasar'
 import { exportDB, importInto } from 'dexie-export-import'
 import { saveAs } from 'file-saver'
 import { BulkError } from 'dexie'
-import { useStore } from '../store'
+import ContractStore from '../store/contract'
 import { db } from '../services/databaseHelper'
 import { getContent, generate } from '../services/zipHelper'
 
 const $q = useQuasar()
-const store = useStore()
+const contractStore = ContractStore()
 
 const file = ref<File>()
-// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-const contractsCount = computed(() => store.getters.contractsCount as number)
+const contractsCount = computed(() => contractStore.contractsCount)
 
 function rejectedEntries() {
   $q.notify({

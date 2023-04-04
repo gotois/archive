@@ -33,11 +33,18 @@ export const getWebId = (): string => {
 }
 
 async function getResourceRootUrl() {
-  const podsUrl = await getPodUrlAll(getWebId(), {
+  const { webId } = getDefaultSession().info
+  if (!webId) {
+    throw new Error('WebId is empty')
+  }
+  const podsUrl = await getPodUrlAll(webId, {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     fetch,
   })
+  if (podsUrl.length === 0) {
+    throw new Error('Pods is empty')
+  }
   const selectedPod = 0
   if (podsUrl.length > 1) {
     // todo здесь пользователь должен бы самостоятельно выбирать какой Pod будет использовать

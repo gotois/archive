@@ -115,7 +115,8 @@ import {
   QFab,
   QFabAction,
 } from 'quasar'
-import { useStore } from '../store'
+import AuthStore from '../store/auth'
+import ContractStore from '../store/contract'
 import { contractTypes } from '../services/contractTypes'
 import { FormatContract } from '../types/models'
 import { updateIntoPod } from '../services/podHelper'
@@ -131,44 +132,32 @@ const ArchiveListComponent = defineAsyncComponent({
 // eslint-disable-next-line @typescript-eslint/unbound-method
 const { $t } = getCurrentInstance().appContext.config.globalProperties
 const $q = useQuasar()
+const authStore = AuthStore()
+const contractStore = ContractStore()
 
 const metaData = {
   'title': 'Архив договоров',
   'og:title': 'Архив договоров',
 }
-const store = useStore()
 const router = useRouter()
 
 const limit = ref(5)
 const loadingVisible = ref(true)
 const scrollAreaRef = ref<QScrollArea>(null)
-// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-const isLoggedIn = computed(() => store.getters['Auth/isLoggedIn'] as boolean)
+const isLoggedIn = computed(() => authStore.isLoggedIn)
 
-const isSearch = computed(() => {
-  return Boolean(router.currentRoute.value.query.filter)
-})
-
+const isSearch = computed(() => Boolean(router.currentRoute.value.query.filter))
 const archiveEmptyText = computed(() => {
   const randomContractType = Math.floor(
     Math.random() * (contractTypes.length - 1),
   )
   return contractTypes[randomContractType]
 })
-
-const contracts = computed(() => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
-  return Array.from(store.getters.contracts)
-})
-
-const paginationCount = computed(() => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  return Math.ceil(store.getters.contractsCount / limit.value)
-})
-
-const isContractsEmpty = computed(() => {
-  return contracts.value.length === 0
-})
+const contracts = computed(() => contractStore.formatContracts)
+const paginationCount = computed(() =>
+  Math.ceil(contractStore.contractsCount / limit.value),
+)
+const isContractsEmpty = computed(() => contracts.value.length === 0)
 
 useMeta(metaData)
 
@@ -189,11 +178,11 @@ async function onPaginate(page: number) {
 
 async function onRemove(item: FormatContract) {
   try {
-    await store.dispatch('removeContract', {
+    await contractStore.removeContract({
       contractData: item,
       usePod: isLoggedIn.value,
     })
-    await store.dispatch('loadContractNames')
+    await contractStore.loadContractNames()
     $q.notify({
       type: 'positive',
       message: 'Данные успешно удалены',
@@ -213,7 +202,7 @@ async function onEdit(item: FormatContract) {
     return
   }
   item.instrument.description = value
-  await store.dispatch('editContract', item)
+  await contractStore.editContract(item)
 
   if (isLoggedIn.value) {
     await updateIntoPod(item)
@@ -234,7 +223,7 @@ async function updateContracts({
 
   switch (router.currentRoute.value.name) {
     case 'search': {
-      await store.dispatch('searchFromContracts', {
+      await contractStore.searchFromContracts({
         query,
         offset,
         limit: limit.value,
@@ -242,11 +231,16 @@ async function updateContracts({
       break
     }
     case 'filter': {
-      await store.dispatch('filterFromContracts', { query })
+      await contractStore.filterFromContracts({
+        query,
+      })
       break
     }
     default: {
-      await store.dispatch('loadAllContracts', { offset, limit: limit.value })
+      await contractStore.loadAllContracts({
+        offset,
+        limit: limit.value,
+      })
       break
     }
   }

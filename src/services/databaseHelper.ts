@@ -49,6 +49,13 @@ export class ContractDatabase extends Dexie {
     return db.contracts.add(contract)
   }
 
+  public update(id: number, contract: ContractTable) {
+    if (!Platform.has.webStorage) {
+      throw new Error('webStorage not supported')
+    }
+    return db.contracts.update(id, contract)
+  }
+
   public remove(id: number) {
     if (!Platform.has.webStorage) {
       throw new Error('webStorage not supported')

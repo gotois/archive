@@ -17,11 +17,11 @@ import { ref } from 'vue'
 import { useMeta, useQuasar, QPage } from 'quasar'
 import { useRouter } from 'vue-router'
 import OTPComponent from 'components/OTPComponent.vue'
-import { useStore } from '../store'
+import AuthStore from '../store/auth'
 
 const $q = useQuasar()
 const router = useRouter()
-const store = useStore()
+const authStore = AuthStore()
 
 const metaData = {
   'title': 'Авторизация',
@@ -34,10 +34,9 @@ const otpDisabled = ref(false)
 
 async function onHandleComplete(value: string) {
   const timeout = 2000
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const codeValid = await store.dispatch('Auth/checkCode', value)
+  const codeValid = await authStore.checkCode(value)
   if (codeValid) {
-    await store.dispatch('Auth/setCode', value)
+    await authStore.setCode(value)
     const prevPath = String(router.currentRoute.value.query.fullPath)
     await router.replace(
       prevPath || {

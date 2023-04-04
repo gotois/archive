@@ -1,62 +1,40 @@
 import { LocalStorage } from 'quasar'
-import { Module } from 'vuex'
-import {
-  getDefaultSession,
-  ISessionInfo,
-} from '@inrupt/solid-client-authn-browser'
-import { StateInterface } from './index'
+import { defineStore } from 'pinia'
+import { getDefaultSession } from '@inrupt/solid-client-authn-browser'
 import { getHash } from '../services/cryptoHelper'
 
-export interface AuthState {
-  openIdExpirationDate: number
-  openIdSessionId: string
-  openIdIsLoggedIn: boolean
-  code: string
-  webId: string
-}
-
-const Auth: Module<AuthState, StateInterface> = {
-  namespaced: true,
+export default defineStore('auth', {
   state: () => ({
     code: '',
-
     openIdSessionId: '',
     openIdExpirationDate: null,
     openIdIsLoggedIn: false,
     webId: null,
   }),
-  mutations: {
-    setCode(state, code: string) {
-      state.code = code
-    },
-    setSessionInfo(state, sessionInfo: ISessionInfo) {
-      state.openIdSessionId = sessionInfo.sessionId
-      if (sessionInfo.webId) {
-        state.webId = sessionInfo.webId
-      }
-      state.openIdIsLoggedIn = sessionInfo?.isLoggedIn ?? false
-      if (sessionInfo.expirationDate) {
-        state.openIdExpirationDate = sessionInfo?.expirationDate
-      }
-    },
-  },
   actions: {
-    async setCode(context, value: string) {
+    async setCode(value: string) {
       const cryptoCode = await getHash(value)
       LocalStorage.set('code', cryptoCode)
-      context.commit('setCode', cryptoCode)
+      this.code = cryptoCode
     },
-    removeCode(context) {
+    removeCode() {
       LocalStorage.remove('code')
-      context.commit('setCode', '')
+      this.code = ''
     },
-    async checkCode(context, value: string) {
+    async checkCode(value: string) {
       const cryptoCode = await getHash(value)
       return cryptoCode === LocalStorage.getItem('code')
     },
-    openIdHandleIncoming(context) {
+    openIdHandleIncoming() {
       const { info } = getDefaultSession()
-      context.commit('setSessionInfo', info)
+      this.openIdSessionId = info.sessionId
+      if (info.webId) {
+        this.webId = info.webId
+      }
+      this.openIdIsLoggedIn = info?.isLoggedIn ?? false
+      if (info.expirationDate) {
+        this.openIdExpirationDate = info?.expirationDate
+      }
     },
   },
   getters: {
@@ -69,13 +47,8 @@ const Auth: Module<AuthState, StateInterface> = {
     hasCode(state) {
       return Boolean(state.code)
     },
-    code(state) {
-      return state.code
-    },
     isLoggedIn(state) {
       return state.openIdIsLoggedIn
     },
   },
-}
-
-export default Auth
+})

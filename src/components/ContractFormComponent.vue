@@ -212,12 +212,19 @@ import {
   QToggle,
   QFile,
 } from 'quasar'
-import { useStore } from '../store'
+import AuthStore from '../store/auth'
+import ContractStore from '../store/contract'
+import ProfileStore from '../store/profile'
 import { ContractTable } from '../types/models'
 import { readFilesPromise } from '../services/fileHelper'
 import { isDateNotOk, formatDate } from '../services/dateHelper'
 import { contractTypes } from '../services/contractTypes'
 import { recommendationContractTypes } from '../services/recommendationContractTypes'
+
+const $q = useQuasar()
+const authStore = AuthStore()
+const contractStore = ContractStore()
+const profileStore = ProfileStore()
 
 const now = new Date()
 const currentDate = formatDate(now)
@@ -225,8 +232,6 @@ const afterYearDate = formatDate(
   new Date(now.setFullYear(now.getFullYear() + 1)),
 )
 
-const $q = useQuasar()
-const store = useStore()
 const emit = defineEmits(['onCreate'])
 const props = defineProps({
   contractTypeName: {
@@ -244,9 +249,9 @@ const contractForm = ref<QForm>()
 const dateNoLimit = ref(false)
 const allContractTypes = [].concat(recommendationContractTypes, contractTypes)
 const contractOptions = ref(allContractTypes)
-// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-const isLoggedIn = computed(() => store.getters['Auth/isLoggedIn'] as boolean)
 const loadingForm = ref(false)
+
+const isLoggedIn = computed(() => authStore.isLoggedIn)
 
 // eslint-disable-next-line no-unused-vars
 function filterOptions(val: string, update: (callback: () => void) => void) {
@@ -347,7 +352,7 @@ async function onSubmit() {
   try {
     const images = await readFilesPromise(files.value)
     const newContract: ContractTable = {
-      agent_name: (store.getters as { consumer: string }).consumer,
+      agent_name: profileStore.consumer as string,
       participant_name: customer.value,
       instrument_name: contractType.value,
       instrument_description: description.value,
@@ -355,7 +360,8 @@ async function onSubmit() {
       endTime: dateNoLimit.value ? null : endDate,
       images: images,
     }
-    await store.dispatch('addContract', {
+
+    await contractStore.addContract({
       contractData: newContract,
       usePod: isLoggedIn.value,
     })
@@ -372,7 +378,7 @@ async function onSubmit() {
         },
       ],
     })
-    await store.dispatch('loadContractNames')
+    await contractStore.loadContractNames()
     onResetForm()
   } catch (e) {
     console.error(e)

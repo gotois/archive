@@ -1,11 +1,17 @@
 import { LocalStorage } from 'quasar'
 import { route } from 'quasar/wrappers'
 import { createRouter, createWebHistory } from 'vue-router'
-import { StateInterface } from '../store'
 import routes from './routes'
+import ContractStore from '../store/contract'
+import AuthStore from '../store/auth'
+import TutorialStore from '../store/tutorial'
 import { solidAuth } from '../services/podHelper'
 
-export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
+const contractStore = ContractStore()
+const authStore = AuthStore()
+const tutorialStore = TutorialStore()
+
+export default route(async function () {
   const Router = createRouter({
     scrollBehavior: () => ({
       left: 0,
@@ -17,7 +23,7 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
     ),
   })
 
-  void store.dispatch('loadContractNames')
+  await contractStore.loadContractNames()
   const tutorialFinalStep = 3
 
   Router.beforeEach(async (to, from) => {
@@ -49,15 +55,13 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
         return true
       }
       case '/auth': {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        if (store.getters['Auth/hasCode']) {
+        if (authStore.hasCode) {
           return true
         }
         break
       }
       case '/tutorial': {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        if (store.getters['Tutorial/tutorialCompleted']) {
+        if (tutorialStore.tutorialCompleted) {
           return {
             name: 'archive',
             query: {
@@ -84,8 +88,7 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
           try {
             await solidAuth({
               redirectUrl: redirectUrl,
-              loginCallback: () =>
-                void store.dispatch('Auth/openIdHandleIncoming'),
+              loginCallback: () => void authStore.openIdHandleIncoming(),
             })
             return true
           } catch {
@@ -96,15 +99,13 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
         break
       }
       default: {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        if (!store.getters['Tutorial/tutorialCompleted']) {
+        if (!tutorialStore.tutorialCompleted) {
           return {
             name: 'tutorial',
             query: {},
           }
         }
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
-        if (!store.getters['Auth/checkAuth']) {
+        if (!authStore.checkAuth) {
           return {
             name: 'auth',
             query: {
@@ -129,9 +130,8 @@ export default route<StateInterface>(function ({ store /* , ssrContext */ }) {
             await solidAuth({
               redirectUrl: window.location.origin + to.path,
               sessionRestoreCallback: () =>
-                void store.dispatch('Auth/openIdHandleIncoming'),
-              loginCallback: () =>
-                void store.dispatch('Auth/openIdHandleIncoming'),
+                void authStore.openIdHandleIncoming(),
+              loginCallback: () => void authStore.openIdHandleIncoming(),
               restorePreviousSession: true,
             })
             return true

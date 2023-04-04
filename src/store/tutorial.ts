@@ -1,32 +1,15 @@
 import { LocalStorage } from 'quasar'
-import { Module } from 'vuex'
-import { StateInterface } from './index'
+import { defineStore } from 'pinia'
 
-export interface TutorialState {
-  tutorialCompleted: boolean
-}
-
-const Tutorial: Module<TutorialState, StateInterface> = {
-  namespaced: true,
-  state: {
+export default defineStore('tutorial', {
+  state: () => ({
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     tutorialCompleted: LocalStorage.getItem('tutorialCompleted') ?? false,
-  },
-  mutations: {
-    tutorialComplete(state) {
-      state.tutorialCompleted = true
-    },
-  },
+  }),
   actions: {
-    tutorialComplete(context) {
+    tutorialComplete() {
       LocalStorage.set('tutorialCompleted', true)
-      context.commit('tutorialComplete')
+      this.tutorialCompleted = true
     },
   },
-  getters: {
-    tutorialCompleted(state) {
-      return state.tutorialCompleted
-    },
-  },
-}
-
-export default Tutorial
+})

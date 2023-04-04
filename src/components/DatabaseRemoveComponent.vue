@@ -41,16 +41,15 @@ import {
   QCard,
 } from 'quasar'
 import { BulkError } from 'dexie'
-import { useStore } from '../store'
+import AuthStore from 'stores/auth'
 import { db } from '../services/databaseHelper'
 import { removeContractsDataset } from '../services/podHelper'
 
 const emit = defineEmits(['onClear'])
 const $q = useQuasar()
-const store = useStore()
+const authStore = AuthStore()
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-const isLoggedIn = computed(() => store.getters['Auth/isLoggedIn'] as boolean)
+const isLoggedIn = computed(() => authStore.isLoggedIn)
 
 async function onClearDatabasePlus() {
   emit('onClear')
