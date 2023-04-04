@@ -196,5 +196,10 @@ module.exports = configure((ctx) => {
         msapplicationTileColor: '#027be3',
       },
     },
+    sourceFiles: {
+      pwaRegisterServiceWorker: 'src-pwa/register-service-worker',
+      pwaServiceWorker: 'src-pwa/custom-service-worker',
+      pwaManifestFile: 'src-pwa/manifest.json',
+    },
   }
 })

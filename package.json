@@ -21,7 +21,7 @@
   "author": "Denis Baskovsky <baskovsky@yandex.ru> (https://baskovsky.ru/)",
   "private": false,
   "scripts": {
-    "dev": "quasar dev",
+    "dev": "quasar dev -m pwa",
     "dev:apk": "bubblewrap install",
     "build": "quasar build -m pwa && cp public/_redirects dist/pwa/ && cp public/_headers dist/pwa/ && cp public/.well-known/assetlinks.json dist/pwa/.well-known/",
     "build:apk": "bubblewrap build",
