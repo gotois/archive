@@ -1,10 +1,10 @@
 import { LocalStorage } from 'quasar'
 import { route } from 'quasar/wrappers'
 import { createRouter, createWebHistory } from 'vue-router'
+import ContractStore from 'stores/contract'
+import AuthStore from 'stores/auth'
+import TutorialStore from 'stores/tutorial'
 import routes from './routes'
-import ContractStore from '../store/contract'
-import AuthStore from '../store/auth'
-import TutorialStore from '../store/tutorial'
 import { solidAuth } from '../services/podHelper'
 
 const contractStore = ContractStore()

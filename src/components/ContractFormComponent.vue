@@ -212,9 +212,9 @@ import {
   QToggle,
   QFile,
 } from 'quasar'
-import AuthStore from '../store/auth'
-import ContractStore from '../store/contract'
-import ProfileStore from '../store/profile'
+import AuthStore from 'stores/auth'
+import ContractStore from 'stores/contract'
+import ProfileStore from 'stores/profile'
 import { ContractTable } from '../types/models'
 import { readFilesPromise } from '../services/fileHelper'
 import { isDateNotOk, formatDate } from '../services/dateHelper'

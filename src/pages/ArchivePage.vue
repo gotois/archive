@@ -115,8 +115,8 @@ import {
   QFab,
   QFabAction,
 } from 'quasar'
-import AuthStore from '../store/auth'
-import ContractStore from '../store/contract'
+import AuthStore from 'stores/auth'
+import ContractStore from 'stores/contract'
 import { contractTypes } from '../services/contractTypes'
 import { FormatContract } from '../types/models'
 import { updateIntoPod } from '../services/podHelper'

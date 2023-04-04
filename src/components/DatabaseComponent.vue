@@ -53,7 +53,7 @@ import { useQuasar, QBtn, QIcon, QForm, QFile, QTooltip } from 'quasar'
 import { exportDB, importInto } from 'dexie-export-import'
 import { saveAs } from 'file-saver'
 import { BulkError } from 'dexie'
-import ContractStore from '../store/contract'
+import ContractStore from 'stores/contract'
 import { db } from '../services/databaseHelper'
 import { getContent, generate } from '../services/zipHelper'
 

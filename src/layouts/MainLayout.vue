@@ -323,9 +323,9 @@ import {
   QLayout,
 } from 'quasar'
 import { useRouter } from 'vue-router'
-import AuthStore from '../store/auth'
-import ContractStore from '../store/contract'
-import ProfileStore from '../store/profile'
+import AuthStore from 'stores/auth'
+import ContractStore from 'stores/contract'
+import ProfileStore from 'stores/profile'
 import pkg from '../../package.json'
 import twaManifest from '../../twa-manifest.json'
 import { logout } from '@inrupt/solid-client-authn-browser'
