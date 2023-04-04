@@ -36,18 +36,18 @@ async function resizeImageA4(dataUrl: string) {
 }
 
 export async function createContractPDF(html: string, useImage = false) {
-  const htmlObject = document.createElement('div')
-  htmlObject.id = 'capture'
-  htmlObject.style.width = String(1752 / 2) + 'px'
-  htmlObject.innerHTML = html
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  htmlObject.style.webkitHyphens = 'auto'
-  htmlObject.style.hyphens = 'auto'
-
   let inputs
+
   // генерируем изображение вместо текста
   if (useImage) {
+    const htmlObject = document.createElement('div')
+    htmlObject.id = 'capture'
+    htmlObject.style.width = String(1752 / 2) + 'px'
+    htmlObject.innerHTML = html
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    htmlObject.style.webkitHyphens = 'auto'
+    htmlObject.style.hyphens = 'auto'
     document.body.appendChild(htmlObject)
     const canvas = await html2canvas(htmlObject, {
       x: 0,
@@ -58,7 +58,7 @@ export async function createContractPDF(html: string, useImage = false) {
     document.body.removeChild(htmlObject)
   } else {
     const text = convert(html, {
-      wordwrap: 130,
+      wordwrap: 80,
     })
     inputs = [{ text: text }]
   }

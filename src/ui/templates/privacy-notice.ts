@@ -12,7 +12,7 @@ export default {
     {
       text: {
         type: 'text',
-        position: { x: 0, y: 0 },
+        position: { x: 8, y: 8 },
         ...A4,
         fontSize: 12,
         lineHeight: 1,
