@@ -101,7 +101,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, getCurrentInstance, defineAsyncComponent, h } from 'vue'
+import {
+  ref,
+  computed,
+  getCurrentInstance,
+  defineAsyncComponent,
+  h,
+  nextTick,
+} from 'vue'
 import { useRouter, LocationQuery } from 'vue-router'
 import {
   useMeta,
@@ -117,6 +124,7 @@ import {
 } from 'quasar'
 import AuthStore from 'stores/auth'
 import ContractStore from 'stores/contract'
+import ProfileStore from 'stores/profile'
 import { contractTypes } from '../services/contractTypes'
 import { FormatContract } from '../types/models'
 import { updateIntoPod } from '../services/podHelper'
@@ -134,6 +142,7 @@ const { $t } = getCurrentInstance().appContext.config.globalProperties
 const $q = useQuasar()
 const authStore = AuthStore()
 const contractStore = ContractStore()
+const profileStore = ProfileStore()
 
 const metaData = {
   'title': 'Архив договоров',
@@ -161,8 +170,14 @@ const isContractsEmpty = computed(() => contracts.value.length === 0)
 
 useMeta(metaData)
 
-router.afterEach((to) => updateContracts(to.query))
-void updateContracts(router.currentRoute.value.query)
+void nextTick(() => {
+  router.afterEach((to) => updateContracts(to.query))
+  void updateContracts(router.currentRoute.value.query)
+
+  if (profileStore.consumer) {
+    void contractStore.loadContractNames().then(() => ({}))
+  }
+})
 
 async function onPaginate(page: number) {
   loadingVisible.value = true

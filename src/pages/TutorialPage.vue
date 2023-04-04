@@ -66,61 +66,75 @@
             />
           </QStepperNavigation>
         </QStep>
-        <QStep :name="3" :title="$t('tutorial.data.title')" icon="assignment">
+        <QStep
+          :name="tutorialFinalStep"
+          :title="$t('tutorial.data.title')"
+          icon="assignment"
+        >
           <p v-show="$q.platform.is.desktop" class="text-h4">
             {{ $t('tutorial.data.title') }}
           </p>
           <p class="text-body1">{{ $t('tutorial.data.body') }}</p>
           <QSpace class="q-pa-xs" />
-          <p v-if="!showForm"
-            >Введите адрес своего OIDC Issuer для получения Вашего WebID:</p
-          >
-          <OIDCIssuerComponent
-            v-if="!showForm"
-            @on-complete="onOnlineAuthorize"
-          />
-          <QForm
-            v-if="showForm"
-            ref="nameForm"
-            class="q-gutter-md"
-            autocapitalize="off"
-            autocomplete="off"
-            autofocus
-            greedy
-            @submit="onFinish"
-          >
-            <QInput
-              v-model="consumer"
-              :label="$t('consumer.type')"
-              :rules="[
-                (val) => (val && val.length > 0) || $t('consumer.rules'),
-              ]"
-              name="consumer"
-              autocomplete="on"
-              outlined
-              @focus="(e) => e.target.scrollIntoView()"
+          <template v-if="!userComplete && !isLoggedIn">
+            <p
+              >Введите адрес своего
+              <span
+                >OIDC Issuer
+                <QTooltip
+                  >OIDC Issuer это адрес Вашего SOLID сервера</QTooltip
+                ></span
+              >
+              получения Вашего WebID:</p
             >
-              <template #prepend>
-                <QIcon name="face" />
-              </template>
-            </QInput>
-            <p class="text-body2">
-              {{ $t('tutorial.otp') }}
-            </p>
-            <OTPComponent ref="pin" />
-            <QStepperNavigation class="q-mb-md">
-              <QBtn
-                color="accent"
-                type="submit"
-                :outline="consumer.length === 0"
-                :label="$t('tutorial.complete')"
-                :class="{
-                  'full-width': !$q.platform.is.desktop,
-                }"
-                icon="login"
-              />
-            </QStepperNavigation>
-          </QForm>
+            <OIDCIssuerComponent @on-complete="onOnlineAuthorize" />
+          </template>
+          <template v-else>
+            <!-- todo: нужен способ выгрузить ключи в файл -->
+            <!--            <p class="text-body1"-->
+            <!--              >Ключи сгенерированы и хранятся в памяти Вашего устройства.</p-->
+            <!--            >-->
+            <p class="text-body1"
+              >Для подписания первого договора используйте свое имя.</p
+            >
+            <QForm
+              ref="nameForm"
+              class="q-gutter-md q-mt-md"
+              autocapitalize="off"
+              autocomplete="off"
+              autofocus
+              greedy
+              @submit="onFinish"
+            >
+              <QInput
+                v-model="consumer"
+                :label="$t('consumer.type')"
+                :rules="[
+                  (val) => (val && val.length > 0) || $t('consumer.rules'),
+                ]"
+                name="consumer"
+                autocomplete="on"
+                outlined
+                @focus="(e) => e.target.scrollIntoView()"
+              >
+                <template #prepend>
+                  <QIcon name="face" />
+                </template>
+              </QInput>
+              <QStepperNavigation class="q-pa-md no-margin">
+                <QBtn
+                  color="accent"
+                  type="submit"
+                  :outline="consumer.length === 0"
+                  :label="$t('tutorial.complete')"
+                  :class="{
+                    'full-width': !$q.platform.is.desktop,
+                  }"
+                  icon="login"
+                />
+              </QStepperNavigation>
+            </QForm>
+          </template>
         </QStep>
       </QStepper>
     </QScrollArea>
@@ -128,7 +142,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, defineAsyncComponent } from 'vue'
+import { ref, computed, defineAsyncComponent, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   useQuasar,
@@ -143,6 +157,7 @@ import {
   QForm,
   QInput,
   QIcon,
+  QTooltip,
 } from 'quasar'
 import PrivacyComponent from 'components/PrivacyComponent.vue'
 import AuthStore from 'stores/auth'
@@ -151,12 +166,9 @@ import ContractStore from 'stores/contract'
 import ProfileStore from 'stores/profile'
 import pkg from '../../package.json'
 import { createContractPDF } from '../services/pdfHelper'
-import { solidAuth, getProfileName, initPod } from '../services/podHelper'
+import { solidAuth, initPod, getProfileName } from '../services/podHelper'
 import { ContractTable } from '../types/models'
 
-const OTPComponent = defineAsyncComponent(
-  () => import('components/OTPComponent.vue'),
-)
 const OIDCIssuerComponent = defineAsyncComponent(
   () => import('components/OIDCIssuerComponent.vue'),
 )
@@ -166,17 +178,16 @@ const $q = useQuasar()
 const authStore = AuthStore()
 const tutorialStore = TutorialStore()
 const contractStore = ContractStore()
-const pontractStore = ProfileStore()
+const profileStore = ProfileStore()
 
 const router = useRouter()
 
 const searchParams = new URLSearchParams(window.location.search)
+const tutorialFinalStep = 3
 
 const step = ref(Number(searchParams.get('step') ?? 1))
 const consumer = ref('')
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-const pin = ref(null)
-const showForm = ref(false)
+const userComplete = ref(false)
 
 const isLoggedIn = computed(() => authStore.isLoggedIn)
 
@@ -190,10 +201,10 @@ async function onOnlineAuthorize(oidcIssuer: string) {
     const confirmMessage =
       'Вы не сможете подписывать договоры цифровой подписью без WebId.\nПродолжить использование в режиме Offline?'
     if (window.confirm(confirmMessage)) {
-      showForm.value = true
+      userComplete.value = true
       return
     }
-    showForm.value = false
+    userComplete.value = false
     return
   }
 
@@ -225,17 +236,6 @@ async function onOnlineAuthorize(oidcIssuer: string) {
 }
 
 async function onFinish() {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  const code = pin.value.code as string
-  if (code) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const num = pin.value.num as number
-    if (code.length !== num) {
-      window.alert('Введите PIN полностью')
-      return
-    }
-    await authStore.setCode(code)
-  }
   $q.loading.show()
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
   const html = PrivacyComponent.render().children[0].children as string
@@ -260,7 +260,7 @@ async function onFinish() {
       contractData: newContract,
       usePod: isLoggedIn.value,
     })
-    pontractStore.consumerName(consumer.value)
+    profileStore.consumerName(consumer.value)
     tutorialStore.tutorialComplete()
     await router.push({
       name: 'filter',
@@ -287,10 +287,29 @@ async function onFinish() {
 
 useMeta(metaData)
 
-void (async () => {
-  if (isLoggedIn.value) {
-    showForm.value = true
-    consumer.value = await getProfileName()
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
+void nextTick(async () => {
+  const { query } = router.currentRoute.value
+
+  // Если пользователь отменил вход через WebId, возвращаем его на страницу подтверждения
+  if (query.error === 'access_denied') {
+    step.value = tutorialFinalStep
+    return
   }
-})()
+  // Если пользователь вошел через WebId, авторизуем
+  if (query.code && query.state) {
+    $q.loading.show()
+    await solidAuth({
+      restorePreviousSession: true,
+      async loginCallback() {
+        if (!profileStore.consumer) {
+          const profileName = await getProfileName()
+          profileStore.consumerName(profileName)
+        }
+      },
+    })
+    authStore.openIdHandleIncoming()
+    $q.loading.hide()
+  }
+})
 </script>

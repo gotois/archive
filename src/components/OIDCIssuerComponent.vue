@@ -45,7 +45,7 @@ import { QSelect, QBtn, QTooltip } from 'quasar'
 
 const emit = defineEmits(['onComplete'])
 
-const oidcIssuer = ref<string>(null)
+const oidcIssuer = ref('')
 const prefix = ref('https://')
 
 function onComplete() {

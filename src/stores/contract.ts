@@ -202,11 +202,6 @@ export default defineStore('contracts', {
       this.contracts = contracts
     },
     async loadContractNames() {
-      // fixme
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      // if (!context.getters.consumer) {
-      //   return
-      // }
       const map = new Map<string, { count: number }>()
       for (const names of await db.getContractNames()) {
         map.set(...names)
