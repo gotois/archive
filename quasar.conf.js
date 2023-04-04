@@ -6,7 +6,7 @@
 const { configure } = require('quasar/wrappers')
 const pkg = require('./package.json')
 
-module.exports = configure((ctx) => {
+module.exports = configure(() => {
   return {
     eslint: {
       // fix: true,
@@ -22,13 +22,13 @@ module.exports = configure((ctx) => {
       tsCheckerConfig: {
         eslint: {
           enabled: true,
-          files: './src/**/*.{ts,tsx,js,jsx,vue}',
+          files: './src/**/*.{ts,js,vue}',
         },
       },
     },
 
     // https://v2.quasar.dev/quasar-cli/prefetch-feature
-    // preFetch: true,
+    preFetch: true,
 
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
@@ -44,7 +44,7 @@ module.exports = configure((ctx) => {
     // Full list of options: https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       target: {
-        browser: ['es2021', 'edge100', 'firefox100', 'chrome100', 'safari14'],
+        browser: ['es2020'],
       },
 
       vueRouterMode: 'history',
@@ -59,7 +59,6 @@ module.exports = configure((ctx) => {
       // transpileDependencies: [],
 
       rtl: false, // https://v2.quasar.dev/options/rtl-support
-      preloadChunks: true,
       showProgress: true,
       gzip: true,
     },
@@ -90,27 +89,6 @@ module.exports = configure((ctx) => {
         'Meta',
         'LocalStorage',
         'AddressbarColor',
-      ],
-    },
-
-    // animations: 'all', // --- includes all animations
-    // https://v2.quasar.dev/options/animations
-    animations: [],
-
-    // https://v2.quasar.dev/quasar-cli/developing-ssr/configuring-ssr
-    ssr: {
-      pwa: true,
-
-      // manualStoreHydration: true,
-      // manualPostHydrationTrigger: true,
-
-      prodPort: 3000,
-
-      maxAge: 1000 * 60 * 60 * 24 * 30, // Tell browser when a file from the server should expire from cache (in ms)
-
-      middlewares: [
-        ctx.prod ? 'compression' : '',
-        'render', // keep this as last one
       ],
     },
 
