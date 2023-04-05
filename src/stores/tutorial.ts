@@ -1,9 +1,12 @@
 import { LocalStorage } from 'quasar'
 import { defineStore } from 'pinia'
 
+interface State {
+  tutorialCompleted: boolean
+}
+
 export default defineStore('tutorial', {
-  state: () => ({
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  state: (): State => ({
     tutorialCompleted: LocalStorage.getItem('tutorialCompleted') ?? false,
   }),
   actions: {

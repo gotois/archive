@@ -117,7 +117,7 @@ export default defineStore('contracts', {
       // Step 2: IndexedDB
       const count = await db.remove(id)
       if (count === 0) {
-        console.error('Cannot remove this item')
+        return Promise.reject('Cannot remove this item')
       }
       if (!usePod) {
         return
@@ -227,8 +227,8 @@ export default defineStore('contracts', {
 
       return Array.from(map)
     },
-    formatContracts(): FormatContract[] {
-      return formatterContracts(this.contracts)
+    formatContracts(state): FormatContract[] {
+      return formatterContracts(state.contracts)
     },
   },
 })

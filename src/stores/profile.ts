@@ -1,9 +1,12 @@
 import { LocalStorage } from 'quasar'
 import { defineStore } from 'pinia'
 
+interface State {
+  consumer: string
+}
+
 export default defineStore('profile', {
-  state: () => ({
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  state: (): State => ({
     consumer: LocalStorage.getItem('consumer') ?? '',
   }),
   actions: {

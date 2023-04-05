@@ -3,8 +3,16 @@ import { defineStore } from 'pinia'
 import { getDefaultSession } from '@inrupt/solid-client-authn-browser'
 import { getHash } from '../services/cryptoHelper'
 
+interface Store {
+  code: string
+  openIdSessionId: string
+  openIdExpirationDate: null | number
+  openIdIsLoggedIn: boolean
+  webId: null | string
+}
+
 export default defineStore('auth', {
-  state: () => ({
+  state: (): Store => ({
     code: '',
     openIdSessionId: '',
     openIdExpirationDate: null,

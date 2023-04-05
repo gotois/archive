@@ -184,8 +184,9 @@ const router = useRouter()
 
 const searchParams = new URLSearchParams(window.location.search)
 const tutorialFinalStep = 3
+const stepParam = 'step'
 
-const step = ref(Number(searchParams.get('step') ?? 1))
+const step = ref(Number(searchParams.get(stepParam) ?? 1))
 const consumer = ref('')
 const userComplete = ref(false)
 
@@ -212,7 +213,7 @@ async function onOnlineAuthorize(oidcIssuer: string) {
   const redirectUrl =
     window.location.origin +
     window.location.pathname +
-    '?step=' +
+    `?${stepParam}=` +
     String(step.value)
   try {
     await solidAuth({
@@ -243,8 +244,7 @@ async function onFinish() {
     html,
     $q.platform.is.name === 'firefox',
   )
-
-  const newContract: ContractTable = {
+  const newContract = {
     agent_name: consumer.value,
     participant_name: productName + ' ' + version,
     instrument_name: 'Пользовательское соглашение',
@@ -279,7 +279,6 @@ async function onFinish() {
       progress: false,
       timeout: 99999999999,
     })
-    return
   } finally {
     $q.loading.hide()
   }

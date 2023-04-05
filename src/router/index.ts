@@ -43,8 +43,7 @@ export default route(() => {
             },
           }
         }
-        // Если мы остановились на шаге три, то возвращаем аутентификацию
-        break
+        return true
       }
       default: {
         switch (to.query.error) {
