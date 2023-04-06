@@ -323,14 +323,16 @@ import {
   QLayout,
 } from 'quasar'
 import { useRouter } from 'vue-router'
-import AuthStore from 'stores/auth'
-import ContractStore from 'stores/contract'
-import ProfileStore from 'stores/profile'
+import { storeToRefs } from 'pinia'
+import { logout } from '@inrupt/solid-client-authn-browser'
+import useAuthStore from 'stores/auth'
+import useContractStore from 'stores/contract'
+import usePodStore from 'stores/pod'
+import useProfileStore from 'stores/profile'
+import OIDCIssuerComponent from 'components/OIDCIssuerComponent.vue'
 import pkg from '../../package.json'
 import twaManifest from '../../twa-manifest.json'
-import { logout } from '@inrupt/solid-client-authn-browser'
-import { solidAuth } from '../services/podHelper'
-import OIDCIssuerComponent from 'components/OIDCIssuerComponent.vue'
+import solidAuth from '../services/authHelper'
 
 const { version } = pkg
 const { packageId } = twaManifest
@@ -350,9 +352,8 @@ const OTPComponent = defineAsyncComponent(
 
 const $q = useQuasar()
 const router = useRouter()
-const authStore = AuthStore()
-const contractStore = ContractStore()
-const profileStore = ProfileStore()
+const authStore = useAuthStore()
+const contractStore = useContractStore()
 
 const leftDrawerOpen = ref(false)
 const rightDrawerOpen = ref(false)
@@ -365,7 +366,8 @@ const dialogOIDCIssuer = ref(false)
 const navigatorVersion = ref(version)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 const otp = ref(null)
-const consumer = ref(profileStore.consumer as string)
+
+const { consumer } = storeToRefs(useProfileStore())
 
 const hasCode = computed(() => authStore.hasCode)
 const isLoggedIn = computed(() => authStore.isLoggedIn)
@@ -387,25 +389,19 @@ async function onSearch(searchText: string) {
   showSearch.value = false
 }
 
-function onOnlineAuthorize(oidcIssuer: string) {
+async function onOnlineAuthorize(oidcIssuer: string) {
   if (!oidcIssuer) {
     return
   }
   $q.loading.show()
   $q.localStorage.set('restorePreviousSession', true)
 
-  return solidAuth({
+  await solidAuth({
     oidcIssuer: oidcIssuer,
-    restorePreviousSession: true,
-    sessionRestoreCallback: () => {
-      authStore.openIdHandleIncoming()
-      $q.loading.hide()
-    },
-    loginCallback: () => {
-      authStore.openIdHandleIncoming()
-      $q.loading.hide()
-    },
+    restorePreviousSession: false,
   })
+  await authStore.openIdHandleIncoming()
+  await usePodStore().setResourceRootUrl()
 }
 
 function loginToPod() {
@@ -417,11 +413,11 @@ function loginToPod() {
 
 async function logOutFromPod() {
   await logout()
-  authStore.openIdHandleIncoming()
+  await authStore.openIdHandleIncoming()
   $q.localStorage.remove('oidcIssuer')
   $q.localStorage.remove('restorePreviousSession')
   $q.notify({
-    message: 'Вы успешно вышли из системы',
+    message: 'Вы отключили привязку к вашему Pod',
     type: 'positive',
   })
 }
@@ -447,7 +443,7 @@ function onOpenFeedback() {
 }
 
 function onFinishProfile() {
-  profileStore.consumerName(consumer.value)
+  useProfileStore().consumerName(consumer.value)
   $q.notify({
     message: 'Профиль обновлен',
     type: 'positive',

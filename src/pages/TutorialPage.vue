@@ -142,7 +142,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, defineAsyncComponent, nextTick } from 'vue'
+import { ref, computed, defineAsyncComponent, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   useQuasar,
@@ -159,15 +159,16 @@ import {
   QIcon,
   QTooltip,
 } from 'quasar'
-import PrivacyComponent from 'components/PrivacyComponent.vue'
-import AuthStore from 'stores/auth'
-import TutorialStore from 'stores/tutorial'
-import ContractStore from 'stores/contract'
-import ProfileStore from 'stores/profile'
+import { marked } from 'marked'
+import useAuthStore from 'stores/auth'
+import tutorialStore from 'stores/tutorial'
+import useContractStore from 'stores/contract'
+import useProfileStore from 'stores/profile'
+import usePodStore from 'stores/pod'
 import pkg from '../../package.json'
 import { createContractPDF } from '../services/pdfHelper'
-import { solidAuth, initPod, getProfileName } from '../services/podHelper'
-import { ContractTable } from '../types/models'
+import solidAuth from '../services/authHelper'
+const { parse } = marked
 
 const OIDCIssuerComponent = defineAsyncComponent(
   () => import('components/OIDCIssuerComponent.vue'),
@@ -175,12 +176,8 @@ const OIDCIssuerComponent = defineAsyncComponent(
 
 const { description, version, productName } = pkg
 const $q = useQuasar()
-const authStore = AuthStore()
-const tutorialStore = TutorialStore()
-const contractStore = ContractStore()
-const profileStore = ProfileStore()
-
 const router = useRouter()
+const podStore = usePodStore()
 
 const searchParams = new URLSearchParams(window.location.search)
 const tutorialFinalStep = 3
@@ -189,6 +186,9 @@ const stepParam = 'step'
 const step = ref(Number(searchParams.get(stepParam) ?? 1))
 const consumer = ref('')
 const userComplete = ref(false)
+
+const authStore = useAuthStore()
+const contractStore = useContractStore()
 
 const isLoggedIn = computed(() => authStore.isLoggedIn)
 
@@ -217,13 +217,8 @@ async function onOnlineAuthorize(oidcIssuer: string) {
     String(step.value)
   try {
     await solidAuth({
-      redirectUrl,
+      redirectUrl: redirectUrl,
       oidcIssuer: oidcIssuer,
-      sessionRestoreCallback: () => authStore.openIdHandleIncoming(),
-      loginCallback: () => {
-        $q.localStorage.set('restorePreviousSession', true)
-        authStore.openIdHandleIncoming()
-      },
     })
   } catch (e) {
     console.error(e)
@@ -238,12 +233,11 @@ async function onOnlineAuthorize(oidcIssuer: string) {
 
 async function onFinish() {
   $q.loading.show()
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
-  const html = PrivacyComponent.render().children[0].children as string
-  const contractPDF = await createContractPDF(
-    html,
-    $q.platform.is.name === 'firefox',
-  )
+  const response = await fetch('docs/privacy.md')
+  const md = await response.text()
+
+  const html = parse(md)
+  const contractPDF = await createContractPDF(html)
   const newContract = {
     agent_name: consumer.value,
     participant_name: productName + ' ' + version,
@@ -254,14 +248,14 @@ async function onFinish() {
   }
   try {
     if (isLoggedIn.value) {
-      await initPod()
+      await podStore.initPod()
     }
     await contractStore.addContract({
       contractData: newContract,
       usePod: isLoggedIn.value,
     })
-    profileStore.consumerName(consumer.value)
-    tutorialStore.tutorialComplete()
+    useProfileStore().consumerName(consumer.value)
+    tutorialStore().tutorialComplete()
     await router.push({
       name: 'filter',
       query: {
@@ -286,9 +280,9 @@ async function onFinish() {
 
 useMeta(metaData)
 
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
-void nextTick(async () => {
+onMounted(async () => {
   const { query } = router.currentRoute.value
+  const profileStore = useProfileStore()
 
   // Если пользователь отменил вход через WebId, возвращаем его на страницу подтверждения
   if (query.error === 'access_denied') {
@@ -300,14 +294,13 @@ void nextTick(async () => {
     $q.loading.show()
     await solidAuth({
       restorePreviousSession: true,
-      async loginCallback() {
-        if (!profileStore.consumer) {
-          const profileName = await getProfileName()
-          profileStore.consumerName(profileName)
-        }
-      },
     })
-    authStore.openIdHandleIncoming()
+    await authStore.openIdHandleIncoming()
+    await podStore.setResourceRootUrl()
+    if (!profileStore.getConsumer) {
+      const profileName = await podStore.getProfileName()
+      profileStore.consumerName(profileName)
+    }
     $q.loading.hide()
   }
 })

@@ -2,7 +2,7 @@ import { LocalStorage } from 'quasar'
 import { route } from 'quasar/wrappers'
 import { createRouter, createWebHistory } from 'vue-router'
 import routes from './routes'
-import { solidAuth } from '../services/podHelper'
+import solidAuth from '../services/authHelper'
 
 export default route(() => {
   const Router = createRouter({
@@ -75,33 +75,26 @@ export default route(() => {
             },
           }
         }
-        if (to.path === '/' && Object.keys(to.query).length === 0) {
-          return true
-        }
-        // todo логику с автоматической авторизацией перенести в другое место
         if (
           !from.name &&
           !to.query.error &&
-          !to.query.code &&
-          !to.query.state &&
+          to.query.code &&
+          to.query.state &&
           LocalStorage.has('restorePreviousSession')
         ) {
           try {
             await solidAuth({
               redirectUrl: window.location.origin + to.path,
               restorePreviousSession: true,
-              // sessionRestoreCallback: () => {
-              //   authStore.openIdHandleIncoming()
-              // },
-              // loginCallback: () => {
-              //   authStore.openIdHandleIncoming()
-              // },
             })
             return true
           } catch (e) {
             console.error(e)
             // explicitly return false to cancel the navigation
-            return false
+            return {
+              name: 'main',
+              query: {},
+            }
           }
         }
         break

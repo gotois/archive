@@ -212,9 +212,9 @@ import {
   QToggle,
   QFile,
 } from 'quasar'
-import AuthStore from 'stores/auth'
-import ContractStore from 'stores/contract'
-import ProfileStore from 'stores/profile'
+import useAuthStore from 'stores/auth'
+import useContractStore from 'stores/contract'
+import profileStore from 'stores/profile'
 import { ContractTable } from '../types/models'
 import { readFilesPromise } from '../services/fileHelper'
 import { isDateNotOk, formatDate } from '../services/dateHelper'
@@ -222,9 +222,6 @@ import { contractTypes } from '../services/contractTypes'
 import { recommendationContractTypes } from '../services/recommendationContractTypes'
 
 const $q = useQuasar()
-const authStore = AuthStore()
-const contractStore = ContractStore()
-const profileStore = ProfileStore()
 
 const now = new Date()
 const currentDate = formatDate(now)
@@ -239,6 +236,9 @@ const props = defineProps({
     default: '',
   },
 })
+
+const authStore = useAuthStore()
+const contractStore = useContractStore()
 
 const contractType = ref(props.contractTypeName)
 const customer = ref('')
@@ -352,7 +352,7 @@ async function onSubmit() {
   try {
     const images = await readFilesPromise(files.value)
     const newContract: ContractTable = {
-      agent_name: profileStore.consumer as string,
+      agent_name: profileStore().consumer,
       participant_name: customer.value,
       instrument_name: contractType.value,
       instrument_description: description.value,

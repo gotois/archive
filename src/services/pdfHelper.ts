@@ -1,6 +1,5 @@
 import { ImageFormat, jsPDF } from 'jspdf'
 import { generate } from '@pdfme/generator'
-import html2canvas from 'html2canvas'
 import { convert } from 'html-to-text'
 import { FormatContract } from '../types/models'
 import pkg from '../../package.json'
@@ -35,34 +34,11 @@ async function resizeImageA4(dataUrl: string) {
   }
 }
 
-export async function createContractPDF(html: string, useImage = false) {
-  let inputs
-
-  // генерируем изображение вместо текста
-  if (useImage) {
-    const htmlObject = document.createElement('div')
-    htmlObject.id = 'capture'
-    htmlObject.style.width = String(1752 / 2) + 'px'
-    htmlObject.innerHTML = html
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    htmlObject.style.webkitHyphens = 'auto'
-    htmlObject.style.hyphens = 'auto'
-    document.body.appendChild(htmlObject)
-    const canvas = await html2canvas(htmlObject, {
-      x: 0,
-      y: 0,
-      scale: 1,
-    })
-    inputs = [{ image: canvas.toDataURL('image/png') }]
-    document.body.removeChild(htmlObject)
-  } else {
-    const text = convert(html, {
-      wordwrap: 80,
-    })
-    inputs = [{ text: text }]
-  }
-
+export async function createContractPDF(html: string) {
+  const text = convert(html, {
+    wordwrap: 80,
+  })
+  const inputs = [{ text: text }]
   const pdf = await generate({
     template: privacyNotice,
     inputs,

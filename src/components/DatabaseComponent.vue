@@ -53,12 +53,12 @@ import { useQuasar, QBtn, QIcon, QForm, QFile, QTooltip } from 'quasar'
 import { exportDB, importInto } from 'dexie-export-import'
 import { saveAs } from 'file-saver'
 import { BulkError } from 'dexie'
-import ContractStore from 'stores/contract'
+import useContractStore from 'stores/contract'
 import { db } from '../services/databaseHelper'
 import { getContent, generate } from '../services/zipHelper'
 
 const $q = useQuasar()
-const contractStore = ContractStore()
+const contractStore = useContractStore()
 
 const file = ref<File>()
 const contractsCount = computed(() => contractStore.contractsCount)

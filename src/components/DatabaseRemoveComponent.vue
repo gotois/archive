@@ -41,13 +41,14 @@ import {
   QCard,
 } from 'quasar'
 import { BulkError } from 'dexie'
-import AuthStore from 'stores/auth'
+import useAuthStore from 'stores/auth'
+import usePodStore from 'stores/pod'
 import { db } from '../services/databaseHelper'
-import { removeContractsDataset } from '../services/podHelper'
 
 const emit = defineEmits(['onClear'])
 const $q = useQuasar()
-const authStore = AuthStore()
+const podStore = usePodStore()
+const authStore = useAuthStore()
 
 const isLoggedIn = computed(() => authStore.isLoggedIn)
 
@@ -55,7 +56,7 @@ async function onClearDatabasePlus() {
   emit('onClear')
   $q.loading.show()
   try {
-    await removeContractsDataset()
+    await podStore.removeContractsDataset()
     await db.delete()
     LocalStorage.clear()
     $q.loading.hide()

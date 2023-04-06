@@ -1,55 +1,23 @@
-import { FormatContract, ContractTable } from '../types/models'
 import { defineStore } from 'pinia'
+import usePodStore from './pod'
 import { db } from '../services/databaseHelper'
 import { recommendationContractTypes } from '../services/recommendationContractTypes'
-import {
-  formatterContracts,
-  formatterContract,
-  formatterLDContract,
-  formatterDatasetContract,
-} from '../services/schemaHelper'
-import {
-  saveToPod,
-  removeFromPod,
-  getWebId,
-  getResourceBaseUrl,
-} from '../services/podHelper'
-import { sign, getAndSaveKeyPair } from '../services/cryptoHelper'
+import { formatterContracts } from '../services/schemaHelper'
+import { FormatContract, ContractTable } from '../types/models'
+
+interface Store {
+  contracts: ContractTable[]
+  contractNames: Map<string, { count: number }>
+  contractsCount: number
+}
 
 export default defineStore('contracts', {
-  state: () => ({
-    contracts: [] as ContractTable[],
-    contractNames: new Map<string, { count: number }>(),
+  state: (): Store => ({
+    contracts: [],
+    contractNames: new Map(),
     contractsCount: 0,
   }),
   actions: {
-    async uploadContract(contractData: ContractTable) {
-      // Step 1: JS
-      const resourceBaseUrl = await getResourceBaseUrl()
-      const resourceName =
-        resourceBaseUrl + contractData.startTime.toJSON() + '.ttl'
-      contractData.resource_url = resourceName
-      // todo update for Store
-      // context.commit('updateContract', contractData)
-
-      // Step 2: JSON-LD
-      const jsldContract = formatterContract(contractData)
-
-      // Step 3: Signed LD
-      const webId = getWebId()
-      const credential = formatterLDContract(webId, jsldContract)
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const signedVC = await sign({
-        credential: credential,
-      })
-
-      const solidDatasetContract = formatterDatasetContract(
-        resourceName,
-        signedVC,
-      )
-      await saveToPod(resourceName, solidDatasetContract)
-      return db.add(contractData)
-    },
     async addContract({
       contractData,
       usePod = false,
@@ -57,40 +25,18 @@ export default defineStore('contracts', {
       contractData: ContractTable
       usePod: boolean
     }) {
-      // Step 1: JS
       this.contracts.push(contractData)
 
-      // Step 2: JSON-LD
-      const jsldContract = formatterContract(contractData)
-
-      // Step 3: Signed LD
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const keyPair = await getAndSaveKeyPair()
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      // если нет доступа к WebID используем для идентификации fingerprint от keyPair
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-      const webId = getWebId() ?? 'did:key:' + (keyPair.fingerprint() as string)
-      const credential = formatterLDContract(webId, jsldContract)
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const signedVC = await sign({
-        credential: credential,
-      })
       // Save to IndexedDb
+      await db.add(contractData)
+
       if (!usePod) {
-        return db.add(contractData)
+        return
       }
 
-      // Step 4: Solid Dataset to Pod
-      const resourceBaseUrl = await getResourceBaseUrl()
-      const resourceName =
-        resourceBaseUrl + contractData.startTime.toJSON() + '.ttl'
-      contractData.resource_url = resourceName
-      const solidDatasetContract = formatterDatasetContract(
-        resourceName,
-        signedVC,
-      )
-      await saveToPod(resourceName, solidDatasetContract)
-      return db.add(contractData)
+      // Or Save to Pod
+      const podStore = usePodStore()
+      await podStore.uploadContract(contractData)
     },
     async editContract(contract: FormatContract) {
       const id = Number(contract.identifier.value)
@@ -98,8 +44,7 @@ export default defineStore('contracts', {
         instrument_description: contract.instrument.description,
       })
       if (count === 0) {
-        console.error('Cannot edit this item')
-        return
+        return Promise.reject('Cannot edit this item')
       }
     },
     async removeContract({
@@ -124,11 +69,11 @@ export default defineStore('contracts', {
       }
       // Step 3: Solid Pod
       if (!contractData.sameAs) {
-        return
+        return Promise.reject('Not exist sameAs')
       }
-      return removeFromPod(contractData.sameAs)
+      return usePodStore().removeFromPod(contractData.sameAs)
     },
-    async filterFromContracts({ query }: { query: string }) {
+    async filterFromContracts(query: string) {
       const contracts = await db.contracts
         .where('instrument_name')
         .equals(query)

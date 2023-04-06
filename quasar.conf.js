@@ -28,7 +28,7 @@ module.exports = configure(() => {
     },
 
     // https://v2.quasar.dev/quasar-cli/prefetch-feature
-    preFetch: true,
+    preFetch: false,
 
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
@@ -44,20 +44,16 @@ module.exports = configure(() => {
     // Full list of options: https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       target: {
-        browser: ['es2020'],
+        browser: 'esnext',
       },
-
+      modulePreload: false,
+      polyfillModulePreload: false,
+      cssCodeSplit: false,
+      lib: 'es',
+      reportCompressedSize: false,
       vueRouterMode: 'history',
       publicPath: '/',
-
-      // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
-      // transpile: false,
-
-      // Add dependencies for transpiling with Babel (Array of string/regex)
-      // (from node_modules, which are by default not transpiled).
-      // Applies only if "transpile" is set to true.
-      // transpileDependencies: [],
-
+      rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
       rtl: false, // https://v2.quasar.dev/options/rtl-support
       showProgress: true,
       gzip: true,

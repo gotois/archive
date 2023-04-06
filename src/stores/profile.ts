@@ -16,4 +16,9 @@ export default defineStore('profile', {
       this.consumer = consumer
     },
   },
+  getters: {
+    getConsumer(state) {
+      return state.consumer
+    },
+  },
 })

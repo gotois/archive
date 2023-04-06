@@ -45,15 +45,28 @@
                     >{{ 'Получить ссылку' }}
                   </QItemSection>
                 </QItem>
-                <QItem v-close-popup clickable @click="editArchive(item)">
+                <QItem
+                  v-if="isLoggedIn && item.sameAs"
+                  v-close-popup
+                  clickable
+                  @click="editArchive(item)"
+                >
                   <QItemSection side class="text-uppercase">{{
-                    isLoggedIn
-                      ? $t('archiveList.editPod')
-                      : $t('archiveList.edit')
+                    $t('archiveList.editPod')
                   }}</QItemSection>
                 </QItem>
                 <QItem
-                  v-if="isLoggedIn && !item.saveAs"
+                  v-else
+                  v-close-popup
+                  clickable
+                  @click="editArchive(item)"
+                >
+                  <QItemSection side class="text-uppercase">{{
+                    $t('archiveList.edit')
+                  }}</QItemSection>
+                </QItem>
+                <QItem
+                  v-if="isLoggedIn && !item.sameAs"
                   v-close-popup
                   clickable
                   @click="uploadArchive(item)"
@@ -250,16 +263,15 @@ import {
   QVirtualScroll,
   copyToClipboard,
 } from 'quasar'
-import AuthStore from 'stores/auth'
-import ContractStore from 'stores/contract'
+import useAuthStore from 'stores/auth'
+import useContractStore from 'stores/contract'
+import usePodStore from 'stores/pod'
 import { FormatContract, ContractTable } from '../types/models'
 import { showPDFInPopup } from '../services/popup'
 import { isDateNotOk, formatterDate } from '../services/dateHelper'
 import { createPDF } from '../services/pdfHelper'
 
 const $q = useQuasar()
-const authStore = AuthStore()
-const contractStore = ContractStore()
 
 const props = defineProps({
   paginationCount: {
@@ -276,6 +288,9 @@ const props = defineProps({
   },
 })
 
+const authStore = useAuthStore()
+const contractStore = useContractStore()
+const podStore = usePodStore()
 const emit = defineEmits(['onPaginate', 'onRemove', 'onEdit'])
 
 const items = ref(props.contracts ?? [])
@@ -369,7 +384,7 @@ async function uploadArchive(item: FormatContract) {
   ) as ContractTable
 
   try {
-    await contractStore.uploadContract(currentContract)
+    await podStore.uploadContract(currentContract)
     $q.notify({
       type: 'positive',
       message: 'Данные записаны на Ваш Pod',
@@ -384,8 +399,12 @@ function editArchive(item: FormatContract) {
 }
 
 function removeArchive(item: FormatContract) {
+  let message = 'Действительно удалить? Отменить изменения будет невозможно.'
+  if (!isLoggedIn.value && item.sameAs) {
+    message += '\nДанные не будут удалены с вашего Pod.'
+  }
   $q.notify({
-    message: 'Действительно удалить? Отменить изменения будет невозможно.',
+    message: message,
     type: 'negative',
     position: 'center',
     group: false,

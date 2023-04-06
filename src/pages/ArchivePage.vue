@@ -107,7 +107,7 @@ import {
   getCurrentInstance,
   defineAsyncComponent,
   h,
-  nextTick,
+  onMounted,
 } from 'vue'
 import { useRouter, LocationQuery } from 'vue-router'
 import {
@@ -122,12 +122,12 @@ import {
   QFab,
   QFabAction,
 } from 'quasar'
-import AuthStore from 'stores/auth'
-import ContractStore from 'stores/contract'
-import ProfileStore from 'stores/profile'
+import useAuthStore from 'stores/auth'
+import useContractStore from 'stores/contract'
+import useProfileStore from 'stores/profile'
+import usePodStore from 'stores/pod'
 import { contractTypes } from '../services/contractTypes'
 import { FormatContract } from '../types/models'
-import { updateIntoPod } from '../services/podHelper'
 
 const ArchiveListComponent = defineAsyncComponent({
   loader: () => import('components/ArchiveListComponent.vue'),
@@ -140,15 +140,16 @@ const ArchiveListComponent = defineAsyncComponent({
 // eslint-disable-next-line @typescript-eslint/unbound-method
 const { $t } = getCurrentInstance().appContext.config.globalProperties
 const $q = useQuasar()
-const authStore = AuthStore()
-const contractStore = ContractStore()
-const profileStore = ProfileStore()
+const contractStore = useContractStore()
+const podStore = usePodStore()
+const profileStore = useProfileStore()
 
 const metaData = {
   'title': 'Архив договоров',
   'og:title': 'Архив договоров',
 }
 const router = useRouter()
+const authStore = useAuthStore()
 
 const limit = ref(5)
 const loadingVisible = ref(true)
@@ -169,15 +170,6 @@ const paginationCount = computed(() =>
 const isContractsEmpty = computed(() => contracts.value.length === 0)
 
 useMeta(metaData)
-
-void nextTick(() => {
-  router.afterEach((to) => updateContracts(to.query))
-  void updateContracts(router.currentRoute.value.query)
-
-  if (profileStore.consumer) {
-    void contractStore.loadContractNames().then(() => ({}))
-  }
-})
 
 async function onPaginate(page: number) {
   loadingVisible.value = true
@@ -220,7 +212,7 @@ async function onEdit(item: FormatContract) {
   await contractStore.editContract(item)
 
   if (isLoggedIn.value) {
-    await updateIntoPod(item)
+    await podStore.updateIntoPod(item)
   }
   $q.notify({
     type: 'positive',
@@ -246,9 +238,7 @@ async function updateContracts({
       break
     }
     case 'filter': {
-      await contractStore.filterFromContracts({
-        query,
-      })
+      await contractStore.filterFromContracts(query)
       break
     }
     default: {
@@ -264,4 +254,13 @@ async function updateContracts({
   }
   loadingVisible.value = false
 }
+
+onMounted(async () => {
+  router.afterEach((to) => updateContracts(to.query))
+  void updateContracts(router.currentRoute.value.query)
+
+  if (profileStore.consumer) {
+    await contractStore.loadContractNames()
+  }
+})
 </script>

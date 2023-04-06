@@ -20,3 +20,17 @@ const metaData = {
 
 useMeta(metaData)
 </script>
+<style scoped>
+::v-deep(h1) {
+  font-size: large;
+  line-height: 1rem;
+}
+::v-deep(h2) {
+  font-size: larger;
+  line-height: 1rem;
+}
+::v-deep(h3) {
+  font-size: medium;
+  line-height: 1rem;
+}
+</style>
