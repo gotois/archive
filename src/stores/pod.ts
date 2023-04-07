@@ -104,7 +104,11 @@ export default defineStore('pod', {
       if (!authStore.webId) {
         throw new Error('WebId is empty')
       }
-      const podsUrl = await getPodUrlAll(authStore.webId)
+      const podsUrl = await getPodUrlAll(authStore.webId, {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        fetch,
+      })
       if (podsUrl.length === 0) {
         throw new Error('Pods is empty')
       }
