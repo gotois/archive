@@ -4,11 +4,10 @@
   "description": "Офлайн база договоров",
   "keywords": [
     "archive",
-    "архив",
-    "договоры",
-    "мои договоры",
+    "my archive",
     "архив договоров",
-    "my archive"
+    "мои договоры",
+    "договоры оффлайн"
   ],
   "publisher": "goto Interactive Software",
   "homepage": "https://baskovsky.ru/2021/09/my-archive/",
@@ -23,7 +22,7 @@
   "scripts": {
     "dev": "quasar dev -m pwa",
     "dev:apk": "bubblewrap install",
-    "build": "quasar c && quasar build -m pwa -P && cp public/_redirects dist/pwa/ && cp public/_headers dist/pwa/ && cp public/.well-known/assetlinks.json dist/pwa/.well-known/",
+    "build": "quasar c && quasar build -m pwa --debug -P && cp public/_redirects dist/pwa/ && cp public/_headers dist/pwa/ && cp public/.well-known/assetlinks.json dist/pwa/.well-known/",
     "build:apk": "bubblewrap build",
     "fingerprint": "bubblewrap fingerprint generateAssetLinks --output=\"public/.well-known/assetlinks.json\"",
     "lint": "eslint --ext .js,.ts,.vue ./",
@@ -49,7 +48,7 @@
     "jszip": "3.10.1",
     "marked": "4.3.0",
     "minisearch": "6.0.1",
-    "pinia": "2.0.33",
+    "pinia": "2.0.34",
     "quasar": "2.11.10",
     "vue": "3.2.47",
     "vue-i18n": "9.2.2",
@@ -72,7 +71,7 @@
     "eslint-plugin-prettier": "~4.2.1",
     "eslint-plugin-quasar": "~1.1.0",
     "eslint-plugin-vue": "~9.10.0",
-    "typescript": "~5.0.3",
+    "typescript": "~5.0.4",
     "workbox-build": "~6.5.4",
     "workbox-cacheable-response": "~6.5.4",
     "workbox-core": "~6.5.4",
