@@ -99,6 +99,7 @@ export interface FormatContract extends BaseSchemaType {
   '@context': string
   'sameAs'?: string
   '_currentSlide'?: number
+  '_fullscreen'?: boolean
   'agent': FormatContractAgent
   'participant': FormatContractParticipant
   'instrument': FormatContractInstrument

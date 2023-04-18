@@ -10,7 +10,7 @@
     "договоры оффлайн"
   ],
   "publisher": "goto Interactive Software",
-  "homepage": "https://baskovsky.ru/2021/09/my-archive/",
+  "homepage": "https://archive.gotointeractive.com/",
   "bugs": {
     "url": "https://github.com/gotois/archive/issues",
     "email": "baskovsky@yandex.ru"
@@ -32,8 +32,8 @@
     "@digitalbazaar/ed25519-signature-2020": "5.2.0",
     "@digitalbazaar/ed25519-verification-key-2020": "4.1.0",
     "@digitalbazaar/vc": "6.0.1",
-    "@inrupt/solid-client": "1.26.0",
-    "@inrupt/solid-client-authn-browser": "1.14.0",
+    "@inrupt/solid-client": "1.27.0",
+    "@inrupt/solid-client-authn-browser": "1.15.0",
     "@inrupt/vocab-common-rdf": "1.0.5",
     "@pdfme/generator": "1.1.9",
     "@quasar/extras": "1.16.2",
@@ -63,14 +63,14 @@
     "@types/html-to-text": "~9.0.0",
     "@types/marked": "~4.0.8",
     "@types/node": "~18.15.11",
-    "@typescript-eslint/eslint-plugin": "~5.57.0",
-    "@typescript-eslint/parser": "~5.57.0",
+    "@typescript-eslint/eslint-plugin": "~5.59.0",
+    "@typescript-eslint/parser": "~5.59.0",
     "autoprefixer": "~10.4.14",
-    "eslint": "~8.37.0",
+    "eslint": "~8.38.0",
     "eslint-config-prettier": "~8.8.0",
     "eslint-plugin-prettier": "~4.2.1",
     "eslint-plugin-quasar": "~1.1.0",
-    "eslint-plugin-vue": "~9.10.0",
+    "eslint-plugin-vue": "~9.11.0",
     "typescript": "~5.0.4",
     "workbox-build": "~6.5.4",
     "workbox-cacheable-response": "~6.5.4",
@@ -81,7 +81,7 @@
     "workbox-strategies": "~6.5.4"
   },
   "engines": {
-    "node": "^18 || ^16",
+    "node": "^19 || ^18 || ^16",
     "npm": ">= 8.x"
   }
 }

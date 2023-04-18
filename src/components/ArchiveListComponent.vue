@@ -88,11 +88,11 @@
           <QSeparator />
           <QCarousel
             v-model="item._currentSlide"
-            v-model:fullscreen="fullscreen"
+            v-model:fullscreen="item._fullscreen"
             transition-prev="slide-right"
             transition-next="slide-left"
             control-color="secondary"
-            :navigation="!fullscreen && item.object.length > 1"
+            :navigation="!item._fullscreen && item.object.length > 1"
             :arrows="$q.platform.is.desktop && item.object.length > 1"
             animated
             swipeable
@@ -155,12 +155,12 @@
                   <QImg
                     class="col"
                     fit="contain"
-                    :height="fullscreen ? '100dvh' : '400px'"
+                    :height="item._fullscreen ? '100dvh' : '400px'"
                     alt="Document"
                     :ratio="1"
                     :src="contentUrl"
-                    :loading="fullscreen ? 'eager' : 'lazy'"
-                    :decoding="fullscreen ? 'sync' : 'async'"
+                    :loading="item._fullscreen ? 'eager' : 'lazy'"
+                    :decoding="item._fullscreen ? 'sync' : 'async'"
                     fetchpriority="high"
                     no-spinner
                     no-native-menu
@@ -174,10 +174,10 @@
                   round
                   color="white"
                   text-color="primary"
-                  :icon="fullscreen ? 'fullscreen_exit' : 'fullscreen'"
+                  :icon="item._fullscreen ? 'fullscreen_exit' : 'fullscreen'"
                   @click="onShowFullImage(item)"
                 >
-                  <QTooltip v-if="fullscreen">
+                  <QTooltip v-if="item._fullscreen">
                     {{ $t('archiveList.closeFile') }}
                   </QTooltip>
                   <QTooltip v-else>
@@ -294,7 +294,6 @@ const podStore = usePodStore()
 const emit = defineEmits(['onPaginate', 'onRemove', 'onEdit'])
 
 const items = ref(props.contracts ?? [])
-const fullscreen = ref(false)
 const currentPage = ref(1)
 const nativeShareAvailable = ref(typeof navigator.share === 'function')
 
@@ -358,7 +357,7 @@ async function onShowFullImage(object: FormatContract) {
     }
     return
   }
-  fullscreen.value = !fullscreen.value
+  object._fullscreen = !object._fullscreen
 }
 
 async function shareURl(item: FormatContract) {

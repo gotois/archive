@@ -7,10 +7,14 @@ export class ContractDatabase extends Dexie {
 
   public constructor() {
     super('ContractDatabase')
-    this.version(2).stores({
-      contracts:
-        '++id, agent_name, participant_name, instrument_name, instrument_description, startTime, endTime, *images, *resource_url',
-    })
+    this.version(2)
+      .stores({
+        contracts:
+          '++id, agent_name, participant_name, instrument_name, instrument_description, startTime, endTime, *images, *resource_url',
+      })
+      .upgrade((/* trans */) => {
+        return
+      })
     this.contracts = this.table('contracts')
   }
 

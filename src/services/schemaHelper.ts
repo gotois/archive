@@ -231,5 +231,6 @@ export function formatterContract(contract: ContractTable): FormatContract {
     'endTime': contract.endTime,
     'object': object,
     '_currentSlide': 1,
+    '_fullscreen': false,
   }
 }

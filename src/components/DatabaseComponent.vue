@@ -92,7 +92,9 @@ async function onImportDB() {
     await importInto(db, content, {
       noTransaction: true,
       acceptChangedPrimaryKey: true,
+      acceptVersionDiff: true,
       overwriteValues: true,
+      clearTablesBeforeImport: false,
     })
     location.reload()
   } catch (error) {
