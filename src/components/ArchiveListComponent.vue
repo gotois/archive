@@ -289,6 +289,7 @@ import {
   openURL,
   uid,
 } from 'quasar'
+import { event as createEvent, default as icalendar } from 'ical-browser'
 import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
 import usePodStore from 'stores/pod'
@@ -296,6 +297,8 @@ import { FormatContract, ContractTable } from '../types/models'
 import { showPDFInPopup } from '../services/popup'
 import { isDateNotOk, formatterDate } from '../services/dateHelper'
 import { createPDF } from '../services/pdfHelper'
+import { readFilesPromise } from '../services/fileHelper'
+import pkg from '../../package.json'
 
 const $q = useQuasar()
 
@@ -396,13 +399,52 @@ async function shareURl(item: FormatContract) {
 
 async function onShareItem(object: FormatContract) {
   const files = await createPDF(object)
+  let attach = []
+  for (const base64 of await readFilesPromise(files)) {
+    attach.push(base64)
+  }
+
+  const event = createEvent({
+    uid: uid(), // todo нужен идентификатор транзакции на блокчейн
+    url: object.sameAs ? new URL(object.sameAs) : null,
+    summary: object.instrument.name,
+    description: object.instrument.description,
+    stamp: new Date(),
+    start: object.startTime,
+    end: object.endTime,
+    attach: attach,
+    organizer: [
+      {
+        name: object.agent.name,
+        email: 'john.smith@example.com',
+      },
+    ],
+    attendee: [
+      {
+        name: object.participant.name,
+        email: 'example@ggg.com',
+      },
+    ],
+  })
+  const file = icalendar(
+    '-//' + pkg.publisher + '//NONSGML ' + pkg.productName + '//EN',
+    'my calendar',
+    event,
+  )
   try {
     await navigator.share({
       title: object.instrument.name,
-      files: files,
+      files: [file],
     })
   } catch (error) {
-    console.warn('Sharing failed', error)
+    if (error.name === 'AbortError') {
+      return
+    }
+    console.error('Sharing failed', error)
+    $q.notify({
+      type: 'negative',
+      message: 'Произошла ошибка шеринга файла',
+    })
   }
 }
 

@@ -22,7 +22,9 @@
         @on-edit="onEdit"
       />
     </QScrollArea>
-    <template v-if="!loadingVisible && isContractsEmpty">
+    <template
+      v-if="!loadingVisible && isContractsEmpty && paginationCount === 0"
+    >
       <QBanner
         :class="{
           'col-6': $q.platform.is.desktop,

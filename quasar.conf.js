@@ -6,15 +6,12 @@
 const { configure } = require('quasar/wrappers')
 const pkg = require('./package.json')
 
-module.exports = configure(() => {
+module.exports = configure((ctx) => {
   return {
     eslint: {
-      // fix: true,
-      // include = [],
-      // exclude = [],
-      // rawOptions = {},
-      warnings: true,
-      errors: true,
+      fix: !ctx.prod,
+      warnings: ctx.prod,
+      errors: ctx.prod,
     },
 
     // https://v2.quasar.dev/quasar-cli/supporting-ts
@@ -92,7 +89,6 @@ module.exports = configure(() => {
     pwa: {
       workboxMode: 'injectManifest',
       workboxOptions: {},
-
       manifest: {
         name: pkg.name,
         short_name: pkg.productName,
