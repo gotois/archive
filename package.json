@@ -20,9 +20,9 @@
   "author": "Denis Baskovsky <baskovsky@yandex.ru> (https://baskovsky.ru/)",
   "private": false,
   "scripts": {
-    "dev": "quasar dev -m pwa",
+    "dev": "quasar dev -m pwa --debug",
     "dev:apk": "bubblewrap install",
-    "build": "quasar c && quasar build -m pwa --debug -P && cp public/_redirects dist/pwa/ && cp public/_headers dist/pwa/ && cp public/.well-known/assetlinks.json dist/pwa/.well-known/",
+    "build": "quasar c && quasar build -m pwa -P && cp public/_redirects dist/pwa/ && cp public/_headers dist/pwa/ && cp public/.well-known/assetlinks.json dist/pwa/.well-known/",
     "build:apk": "bubblewrap build",
     "fingerprint": "bubblewrap fingerprint generateAssetLinks --output=\"public/.well-known/assetlinks.json\"",
     "lint": "eslint --ext .js,.ts,.vue ./",
@@ -43,6 +43,7 @@
     "ed25519-signature-2020-context": "1.1.0",
     "file-saver": "2.0.5",
     "html-to-text": "9.0.5",
+    "ical-browser": "0.0.1",
     "jsonld-document-loader": "2.0.0",
     "jspdf": "2.5.1",
     "jszip": "3.10.1",
@@ -57,7 +58,7 @@
   },
   "devDependencies": {
     "@babel/eslint-parser": "~7.21.3",
-    "@bubblewrap/cli": "~1.20.0",
+    "@bubblewrap/cli": "1.20.0",
     "@quasar/app-vite": "~1.2.2",
     "@types/file-saver": "~2.0.5",
     "@types/html-to-text": "~9.0.0",
@@ -72,6 +73,7 @@
     "eslint-plugin-quasar": "~1.1.0",
     "eslint-plugin-vue": "~9.11.0",
     "typescript": "~5.0.4",
+    "vite": ">=3.2.6",
     "workbox-build": "~6.5.4",
     "workbox-cacheable-response": "~6.5.4",
     "workbox-core": "~6.5.4",
@@ -79,6 +81,9 @@
     "workbox-precaching": "~6.5.4",
     "workbox-routing": "~6.5.4",
     "workbox-strategies": "~6.5.4"
+  },
+  "overrides": {
+    "vite": "$vite"
   },
   "engines": {
     "node": ">= 16",
