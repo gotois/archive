@@ -164,7 +164,31 @@
                     fetchpriority="high"
                     no-spinner
                     no-native-menu
-                  />
+                  >
+                    <QMenu touch-position context-menu>
+                      <QList dense style="min-width: 100px">
+                        <QItem
+                          v-close-popup
+                          clickable
+                          @click="onWindowOpenImage(contentUrl)"
+                        >
+                          <QItemSection
+                            >Открыть документ в новой вкладке</QItemSection
+                          >
+                        </QItem>
+                        <QSeparator />
+                        <QItem
+                          v-close-popup
+                          clickable
+                          @click="onCopy(contentUrl)"
+                        >
+                          <QItemSection
+                            >Скопировать документ в буфер обмена</QItemSection
+                          >
+                        </QItem>
+                      </QList>
+                    </QMenu>
+                  </QImg>
                 </template>
               </QScrollArea>
             </QCarouselSlide>
@@ -195,7 +219,7 @@
                   color="white"
                   text-color="primary"
                   :icon="shareIcon"
-                  @click="onShareFullImage(item)"
+                  @click="onShareItem(item)"
                 >
                   <QTooltip>
                     {{ $t('archiveList.shareFile') }}
@@ -262,6 +286,8 @@ import {
   QPagination,
   QVirtualScroll,
   copyToClipboard,
+  openURL,
+  uid,
 } from 'quasar'
 import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
@@ -368,10 +394,13 @@ async function shareURl(item: FormatContract) {
   })
 }
 
-async function onShareFullImage(object: FormatContract) {
-  const shareData = await createPDF(object)
+async function onShareItem(object: FormatContract) {
+  const files = await createPDF(object)
   try {
-    await navigator.share(shareData)
+    await navigator.share({
+      title: object.instrument.name,
+      files: files,
+    })
   } catch (error) {
     console.warn('Sharing failed', error)
   }
@@ -395,6 +424,34 @@ async function uploadArchive(item: FormatContract) {
 
 function editArchive(item: FormatContract) {
   emit('onEdit', item)
+}
+
+async function onCopy(contentUrl: string) {
+  const base64Response = await fetch(contentUrl)
+  const blob = await base64Response.blob()
+  const clipboardItem = new ClipboardItem({ [blob.type]: blob })
+  try {
+    await navigator.clipboard.write([clipboardItem])
+    $q.notify({
+      type: 'positive',
+      message: 'Данные сохранены в буфер обмена',
+    })
+  } catch (e) {
+    console.error(e)
+    $q.notify({
+      type: 'negative',
+      message: 'Произошла ошибка',
+    })
+  }
+}
+
+function onWindowOpenImage(contentUrl: string) {
+  openURL(contentUrl, undefined, {
+    noopener: true,
+    noreferrer: true,
+    toolbar: false,
+    popup: 1,
+  })
 }
 
 function removeArchive(item: FormatContract) {

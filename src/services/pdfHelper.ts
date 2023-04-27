@@ -97,12 +97,11 @@ export async function createPDF(object: FormatContract) {
   if (docLength > 0) {
     const blob = doc.output('blob')
     doc.close()
-    const file = new File([blob], object.instrument.name + '.pdf')
+    const file = new File([blob], object.instrument.name + '.pdf', {
+      type: 'application/pdf',
+    })
     files.push(file)
   }
 
-  return {
-    title: object.instrument.name,
-    files,
-  }
+  return files
 }
