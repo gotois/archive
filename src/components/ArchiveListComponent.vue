@@ -301,6 +301,7 @@ import { readFilesPromise } from '../services/fileHelper'
 import pkg from '../../package.json'
 
 const $q = useQuasar()
+const { publisher, productName } = pkg
 
 const props = defineProps({
   paginationCount: {
@@ -435,7 +436,7 @@ async function onShareItem(object: FormatContract) {
     ],
   })
   const file = icalendar(
-    '-//' + pkg.publisher + '//NONSGML ' + pkg.productName + '//EN',
+    '-//' + publisher + '//NONSGML ' + productName + '//EN',
     object.instrument.name,
     event,
   )

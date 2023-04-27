@@ -16,6 +16,9 @@ export default async ({
   oidcIssuer?: string
   restorePreviousSession?: boolean
 }) => {
+  if (!oidcIssuer) {
+    throw new Error('oidcIssuer empty')
+  }
   if (!navigator.onLine) {
     return Promise.reject('Not onLine')
   }
@@ -23,9 +26,6 @@ export default async ({
   const sessionInfo = await handleIncomingRedirect({
     restorePreviousSession,
   })
-  if (!oidcIssuer) {
-    return Promise.reject('oidcIssuer not exist')
-  }
   LocalStorage.set('oidcIssuer', oidcIssuer)
   if (!sessionInfo) {
     return login({
