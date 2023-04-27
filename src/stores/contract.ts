@@ -78,7 +78,7 @@ export default defineStore('contracts', {
         .where('instrument_name')
         .equals(query)
         .reverse()
-        .toArray()
+        .sortBy('startTime')
       this.contractsCount = contracts.length
       this.contracts = contracts
     },
