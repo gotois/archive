@@ -10,6 +10,13 @@ export interface ContractTable {
   resource_url?: string
 }
 
+export interface KeysTable {
+  id?: number
+  publicKey: string
+  privateKey: string
+  type: string
+}
+
 interface ContextCredential<T> {
   [key: string]: T
 }

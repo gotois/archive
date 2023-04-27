@@ -2,7 +2,7 @@ import { LocalStorage } from 'quasar'
 import { defineStore } from 'pinia'
 import { WebId } from '@inrupt/solid-client'
 import { getDefaultSession } from '@inrupt/solid-client-authn-browser'
-import { getHash, getAndSaveKeyPair } from '../services/cryptoHelper'
+import { getHash } from '../services/cryptoHelper'
 
 interface Store {
   code: string
@@ -34,17 +34,13 @@ export default defineStore('auth', {
       const cryptoCode = await getHash(value)
       return cryptoCode === LocalStorage.getItem('code')
     },
-    async openIdHandleIncoming() {
+    openIdHandleIncoming() {
       const { info } = getDefaultSession()
       this.openIdSessionId = info.sessionId
       if (info.webId) {
         this.webId = info.webId
       } else {
-        // если нет доступа к WebID используем для идентификации fingerprint от keyPair
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const keyPair = await getAndSaveKeyPair()
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-        this.webId = 'did:key:' + (keyPair.fingerprint() as string)
+        console.warn('Your WebId empty')
       }
       this.openIdIsLoggedIn = info?.isLoggedIn ?? false
       if (info.expirationDate) {

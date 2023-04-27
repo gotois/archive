@@ -168,6 +168,9 @@ import usePodStore from 'stores/pod'
 import pkg from '../../package.json'
 import { createContractPDF } from '../services/pdfHelper'
 import solidAuth from '../services/authHelper'
+import { generateKeyPair } from '../services/cryptoHelper'
+import { keys } from '../services/databaseHelper'
+
 const { parse } = marked
 
 const OIDCIssuerComponent = defineAsyncComponent(
@@ -203,6 +206,7 @@ async function onOnlineAuthorize(oidcIssuer: string) {
       'Вы не сможете подписывать договоры цифровой подписью без WebId.\nПродолжить использование в режиме Offline?'
     if (window.confirm(confirmMessage)) {
       userComplete.value = true
+      await keys.destroy()
       return
     }
     userComplete.value = false
@@ -233,6 +237,14 @@ async function onOnlineAuthorize(oidcIssuer: string) {
 
 async function onFinish() {
   $q.loading.show()
+
+  const keyPair = await generateKeyPair()
+  // если нет доступа к WebID, используем для идентификации fingerprint от keyPair
+  if (!authStore.webId) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    authStore.webId = 'did:key:' + (keyPair.fingerprint() as string)
+  }
+
   const response = await fetch('docs/privacy.md')
   const md = await response.text()
 
@@ -295,7 +307,7 @@ onMounted(async () => {
     await solidAuth({
       restorePreviousSession: true,
     })
-    await authStore.openIdHandleIncoming()
+    authStore.openIdHandleIncoming()
     await podStore.setResourceRootUrl()
     if (!profileStore.getConsumer) {
       const profileName = await podStore.getProfileName()

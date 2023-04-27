@@ -1,12 +1,74 @@
 import Dexie from 'dexie'
 import { Platform } from 'quasar'
-import { ContractTable } from '../types/models'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020'
+import { ContractTable, KeysTable } from '../types/models'
 
-export class ContractDatabase extends Dexie {
+class KeysDatabase extends Dexie {
+  public keys: Dexie.Table<KeysTable, number> // id is number in this case
+
+  public constructor() {
+    super('KeysDatabase')
+
+    if (!Platform.has.webStorage) {
+      throw new Error('webStorage not supported')
+    }
+
+    this.version(1).stores({
+      keys: '++id, publicKey, privateKey, type',
+    })
+    this.keys = this.table('keys')
+  }
+
+  public async last() {
+    const keysTable = await keys.keys.reverse().last()
+    if (!keysTable) {
+      throw new Error('KeyPair not found')
+    }
+    switch (keysTable.type) {
+      case 'Ed25519VerificationKey2020': {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-return
+        return Ed25519VerificationKey2020.from({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          publicKeyMultibase: keysTable.publicKey,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          privateKeyMultibase: keysTable.privateKey,
+        })
+      }
+      default: {
+        throw new Error(`Unknown type: ${String(keysTable.type)}`)
+      }
+    }
+  }
+
+  public add(keyPair: {
+    type: string
+    privateKeyMultibase: string
+    publicKeyMultibase: string
+  }) {
+    return keys.keys.add({
+      publicKey: keyPair.publicKeyMultibase,
+      privateKey: keyPair.privateKeyMultibase,
+      type: keyPair.type,
+    })
+  }
+
+  public destroy() {
+    return this.keys.clear()
+  }
+}
+
+class ContractDatabase extends Dexie {
   public contracts: Dexie.Table<ContractTable, number> // id is number in this case
 
   public constructor() {
     super('ContractDatabase')
+
+    if (!Platform.has.webStorage) {
+      throw new Error('webStorage not supported')
+    }
+
     this.version(2)
       .stores({
         contracts:
@@ -47,23 +109,14 @@ export class ContractDatabase extends Dexie {
   }
 
   public add(contract: ContractTable) {
-    if (!Platform.has.webStorage) {
-      throw new Error('webStorage not supported')
-    }
     return db.contracts.add(contract)
   }
 
   public update(id: number, contract: ContractTable) {
-    if (!Platform.has.webStorage) {
-      throw new Error('webStorage not supported')
-    }
     return db.contracts.update(id, contract)
   }
 
   public remove(id: number) {
-    if (!Platform.has.webStorage) {
-      throw new Error('webStorage not supported')
-    }
     return db.contracts.where('id').equals(id).delete()
   }
 
@@ -73,3 +126,4 @@ export class ContractDatabase extends Dexie {
 }
 
 export const db = new ContractDatabase()
+export const keys = new KeysDatabase()

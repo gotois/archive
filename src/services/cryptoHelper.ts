@@ -1,8 +1,9 @@
-import { uid, LocalStorage } from 'quasar'
+import { uid } from 'quasar'
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
+import { keys } from '../services/databaseHelper'
 // @ts-ignore
 import * as vc from '@digitalbazaar/vc'
 // @ts-ignore
@@ -18,6 +19,7 @@ import {
 // @ts-ignore
 import { JsonLdDocumentLoader } from 'jsonld-document-loader'
 import { Credential, ProofCredential } from '../types/models'
+import { KeysTable } from '../types/models'
 
 const jdl = new JsonLdDocumentLoader()
 jdl.addStatic(ed25519Ctx.CONTEXT_URL, ed25519Ctx.CONTEXT)
@@ -36,9 +38,7 @@ export async function sign({
   credential: Credential
   verificationMethod?: string
 }): Promise<ProofCredential> {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const keyPair = await getAndSaveKeyPair()
-
+  const keyPair = await keys.last()
   const suite = new Ed25519Signature2020({
     key: keyPair,
   })
@@ -73,25 +73,10 @@ export function createAndSignPresentation({
   })
 }
 
-export async function getAndSaveKeyPair() {
-  if (LocalStorage.has('publicKey') && LocalStorage.has('privateKey')) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return Ed25519VerificationKey2020.from({
-      ...JSON.parse(LocalStorage.getItem('publicKey')),
-      ...JSON.parse(LocalStorage.getItem('privateKey')),
-    })
-  }
-
+export async function generateKeyPair(): Promise<KeysTable> {
   const newKeyPair = await Ed25519VerificationKey2020.generate()
-  const publicKey = await newKeyPair.export({
-    publicKey: true,
-  })
-  LocalStorage.set('publicKey', JSON.stringify(publicKey))
-  const privateKey = await newKeyPair.export({
-    privateKey: true,
-  })
-  LocalStorage.set('privateKey', JSON.stringify(privateKey))
-
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  await keys.add(newKeyPair)
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return newKeyPair
 }

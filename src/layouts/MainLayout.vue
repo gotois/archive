@@ -400,7 +400,7 @@ async function onOnlineAuthorize(oidcIssuer: string) {
     oidcIssuer: oidcIssuer,
     restorePreviousSession: false,
   })
-  await authStore.openIdHandleIncoming()
+  authStore.openIdHandleIncoming()
   await usePodStore().setResourceRootUrl()
 }
 
@@ -413,7 +413,7 @@ function loginToPod() {
 
 async function logOutFromPod() {
   await logout()
-  await authStore.openIdHandleIncoming()
+  authStore.openIdHandleIncoming()
   $q.localStorage.remove('oidcIssuer')
   $q.localStorage.remove('restorePreviousSession')
   $q.notify({
