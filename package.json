@@ -35,8 +35,8 @@
     "@inrupt/solid-client": "1.27.0",
     "@inrupt/solid-client-authn-browser": "1.15.0",
     "@inrupt/vocab-common-rdf": "1.0.5",
-    "@pdfme/generator": "1.1.9",
-    "@quasar/extras": "1.16.2",
+    "@pdfme/generator": "1.1.10",
+    "@quasar/extras": "1.16.3",
     "credentials-context": "2.0.0",
     "dexie": "3.2.3",
     "dexie-export-import": "4.0.7",
@@ -48,7 +48,7 @@
     "jszip": "3.10.1",
     "marked": "4.3.0",
     "minisearch": "6.0.1",
-    "pinia": "2.0.34",
+    "pinia": "2.0.35",
     "quasar": "2.11.10",
     "vue": "3.2.47",
     "vue-i18n": "9.2.2",
@@ -57,16 +57,16 @@
   },
   "devDependencies": {
     "@babel/eslint-parser": "~7.21.3",
-    "@bubblewrap/cli": "~1.19.1",
-    "@quasar/app-vite": "~1.2.1",
+    "@bubblewrap/cli": "~1.20.0",
+    "@quasar/app-vite": "~1.2.2",
     "@types/file-saver": "~2.0.5",
     "@types/html-to-text": "~9.0.0",
     "@types/marked": "~4.0.8",
-    "@types/node": "~18.15.11",
-    "@typescript-eslint/eslint-plugin": "~5.59.0",
-    "@typescript-eslint/parser": "~5.59.0",
+    "@types/node": "~18.16.1",
+    "@typescript-eslint/eslint-plugin": "~5.59.1",
+    "@typescript-eslint/parser": "~5.59.1",
     "autoprefixer": "~10.4.14",
-    "eslint": "~8.38.0",
+    "eslint": "~8.39.0",
     "eslint-config-prettier": "~8.8.0",
     "eslint-plugin-prettier": "~4.2.1",
     "eslint-plugin-quasar": "~1.1.0",
@@ -81,7 +81,7 @@
     "workbox-strategies": "~6.5.4"
   },
   "engines": {
-    "node": "^19 || ^18 || ^16",
+    "node": ">= 16",
     "npm": ">= 8.x"
   }
 }
