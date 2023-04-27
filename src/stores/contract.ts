@@ -93,8 +93,8 @@ export default defineStore('contracts', {
       limit: number
       scoreRate?: number
     }) {
+      this.contracts = []
       if (query.length <= 0) {
-        this.contracts = []
         return
       }
       const MiniSearch = await import('minisearch')
@@ -109,21 +109,13 @@ export default defineStore('contracts', {
           return score >= scoreRate
         },
       })
-      const cursor = db.contracts.orderBy('startTime').filter(({ id }) => {
-        return searchResults.some((result) => result.id === id)
-      })
-      const count = await cursor.count()
-      this.contractsCount = count
-      if (!count) {
-        this.contracts = []
+      this.contractsCount = searchResults.length
+      const ids = searchResults.map((results) => results.id as number)
+      if (!ids) {
         return
       }
-      const contracts = await cursor
-        .reverse()
-        .offset(offset)
-        .limit(limit)
-        .toArray()
-      this.contracts = contracts
+      const contracts = await db.contracts.bulkGet(ids)
+      this.contracts = contracts.slice(offset, offset + limit)
     },
     async loadAllContracts({
       offset = 0,
