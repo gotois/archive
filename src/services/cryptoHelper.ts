@@ -3,7 +3,6 @@ import { uid } from 'quasar'
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { keys } from '../services/databaseHelper'
 // @ts-ignore
 import * as vc from '@digitalbazaar/vc'
 // @ts-ignore
@@ -18,6 +17,7 @@ import {
 } from '@digitalbazaar/ed25519-signature-2020'
 // @ts-ignore
 import { JsonLdDocumentLoader } from 'jsonld-document-loader'
+import { keys } from '../services/databaseHelper'
 import { Credential, ProofCredential } from '../types/models'
 import { KeysTable } from '../types/models'
 
@@ -92,4 +92,14 @@ export async function getHash(str: string, algo = 'SHA-256') {
     result += ('00000000' + view.getUint32(i).toString(16)).slice(-8)
   }
   return result
+}
+
+export async function exportKeyPair() {
+  const keyPair = await keys.last()
+  const exportKeys = await keyPair.export({
+    publicKey: true,
+    privateKey: true,
+  })
+  const jsonKeys = JSON.stringify(exportKeys, null, 2)
+  return jsonKeys
 }

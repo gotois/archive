@@ -158,6 +158,7 @@ import {
   QInput,
   QIcon,
   QTooltip,
+  exportFile,
 } from 'quasar'
 import { marked } from 'marked'
 import useAuthStore from 'stores/auth'
@@ -168,7 +169,7 @@ import usePodStore from 'stores/pod'
 import pkg from '../../package.json'
 import { createContractPDF } from '../services/pdfHelper'
 import solidAuth from '../services/authHelper'
-import { generateKeyPair } from '../services/cryptoHelper'
+import { generateKeyPair, exportKeyPair } from '../services/cryptoHelper'
 import { keys } from '../services/databaseHelper'
 
 const { parse } = marked
@@ -243,6 +244,15 @@ async function onFinish() {
   if (!authStore.webId) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     authStore.webId = 'did:key:' + (keyPair.fingerprint() as string)
+  }
+  const keysJSON = await exportKeyPair()
+  const status = exportFile('keys.json', keysJSON)
+  if (status !== true) {
+    // browser allowed it
+    $q.notify({
+      type: 'warning',
+      message: 'Ваш ключ сохранен в вашем браузере.',
+    })
   }
 
   const response = await fetch('docs/privacy.md')
