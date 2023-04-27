@@ -39,7 +39,7 @@
                   v-if="item.sameAs"
                   v-close-popup
                   clickable
-                  @click="shareURl(item)"
+                  @click="shareURl(item.sameAs)"
                 >
                   <QItemSection side class="text-uppercase"
                     >{{ 'Получить ссылку' }}
@@ -389,12 +389,20 @@ async function onShowFullImage(object: FormatContract) {
   object._fullscreen = !object._fullscreen
 }
 
-async function shareURl(item: FormatContract) {
-  await copyToClipboard(item.sameAs)
-  $q.notify({
-    type: 'positive',
-    message: 'Ссылка скопирована в буфер обмена',
-  })
+async function shareURl(url: string) {
+  try {
+    await copyToClipboard(url)
+    $q.notify({
+      type: 'positive',
+      message: 'Ссылка скопирована в буфер обмена',
+    })
+  } catch (e) {
+    console.error(e)
+    $q.notify({
+      type: 'negative',
+      message: 'Ошибка копирования',
+    })
+  }
 }
 
 async function onShareItem(object: FormatContract) {
@@ -416,19 +424,19 @@ async function onShareItem(object: FormatContract) {
     organizer: [
       {
         name: object.agent.name,
-        email: 'john.smith@example.com',
+        email: 'john.smith@example.com', // fixme заменить
       },
     ],
     attendee: [
       {
         name: object.participant.name,
-        email: 'example@ggg.com',
+        email: 'example@ggg.com', // fixme заменить
       },
     ],
   })
   const file = icalendar(
     '-//' + pkg.publisher + '//NONSGML ' + pkg.productName + '//EN',
-    'my calendar',
+    object.instrument.name,
     event,
   )
   try {

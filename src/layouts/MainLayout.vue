@@ -76,7 +76,7 @@
       >
         {{ $t('navigation.title') }}
       </p>
-      <QList>
+      <QList style="max-height: calc(100% - 64px)" class="fit column no-wrap">
         <QBtn
           v-if="isLoggedIn"
           color="primary"
@@ -218,6 +218,7 @@
           </QItemSection>
         </QExpansionItem>
         <QSeparator class="q-mb-md" />
+        <QSpace class="col" />
         <QChip
           icon="link"
           class="cursor-pointer full-width q-pa-md self-end"
