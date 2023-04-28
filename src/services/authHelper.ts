@@ -6,6 +6,7 @@ import {
 } from '@inrupt/solid-client-authn-browser'
 
 const CLIENT_NAME = 'Contracts'
+const TOKEN_TYPE = 'DPoP'
 
 interface AuthData {
   redirectUrl?: string
@@ -38,6 +39,7 @@ export default async ({
     return login({
       oidcIssuer,
       redirectUrl,
+      tokenType: TOKEN_TYPE,
       clientName: CLIENT_NAME,
     })
   }
@@ -56,6 +58,7 @@ export default async ({
   return login({
     oidcIssuer,
     redirectUrl,
+    tokenType: TOKEN_TYPE,
     clientName: CLIENT_NAME,
   })
 }
