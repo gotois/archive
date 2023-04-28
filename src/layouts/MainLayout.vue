@@ -79,7 +79,7 @@
       <QList style="max-height: calc(100% - 64px)" class="fit column no-wrap">
         <QBtn
           v-if="isLoggedIn"
-          color="primary"
+          color="negative"
           square
           glossy
           push
@@ -297,6 +297,8 @@
 <script lang="ts" setup>
 import { ref, computed, defineAsyncComponent } from 'vue'
 import {
+  LocalStorage,
+  SessionStorage,
   openURL,
   useQuasar,
   QCard,
@@ -392,23 +394,23 @@ async function onSearch(searchText: string) {
 }
 
 async function onOnlineAuthorize(oidcIssuer: string) {
-  if (!oidcIssuer) {
-    return
-  }
   $q.loading.show()
-  $q.localStorage.set('restorePreviousSession', true)
-
-  await solidAuth({
-    oidcIssuer: oidcIssuer,
-    restorePreviousSession: false,
-  })
-  authStore.openIdHandleIncoming()
-  await usePodStore().setResourceRootUrl()
+  LocalStorage.set('restorePreviousSession', true)
+  SessionStorage.remove('connect')
+  try {
+    await solidAuth({
+      oidcIssuer: oidcIssuer,
+    })
+    authStore.openIdHandleIncoming()
+    await usePodStore().setResourceRootUrl()
+  } finally {
+    $q.loading.hide()
+  }
 }
 
-function loginToPod() {
-  if ($q.localStorage.has('oidcIssuer')) {
-    return onOnlineAuthorize($q.localStorage.getItem('oidcIssuer'))
+async function loginToPod() {
+  if (LocalStorage.has('oidcIssuer')) {
+    return onOnlineAuthorize(LocalStorage.getItem('oidcIssuer'))
   }
   dialogOIDCIssuer.value = true
 }
@@ -416,8 +418,9 @@ function loginToPod() {
 async function logOutFromPod() {
   await logout()
   authStore.openIdHandleIncoming()
-  $q.localStorage.remove('oidcIssuer')
-  $q.localStorage.remove('restorePreviousSession')
+  LocalStorage.remove('oidcIssuer')
+  LocalStorage.remove('restorePreviousSession')
+  SessionStorage.remove('connect')
   $q.notify({
     message: 'Вы отключили привязку к вашему Pod',
     type: 'positive',
