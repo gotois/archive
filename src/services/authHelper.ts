@@ -1,4 +1,4 @@
-import { LocalStorage } from 'quasar'
+import { LocalStorage, SessionStorage } from 'quasar'
 import {
   getDefaultSession,
   handleIncomingRedirect,
@@ -10,7 +10,7 @@ const CLIENT_NAME = 'Contracts'
 export default async ({
   redirectUrl = window.location.href,
   oidcIssuer = LocalStorage.getItem('oidcIssuer'),
-  restorePreviousSession = false,
+  restorePreviousSession = LocalStorage.has('restorePreviousSession'),
 }: {
   redirectUrl?: string
   oidcIssuer?: string
@@ -21,6 +21,11 @@ export default async ({
   }
   if (!navigator.onLine) {
     return Promise.reject('Not onLine')
+  }
+  let currentConnect = Number(SessionStorage.getItem('connect')) ?? 0
+  SessionStorage.set('connect', ++currentConnect)
+  if (currentConnect > 3) {
+    return Promise.reject('Cannot connect: ' + String(currentConnect))
   }
   const defaultSession = getDefaultSession().info
   const sessionInfo = await handleIncomingRedirect({
@@ -44,7 +49,7 @@ export default async ({
     isExpirationAlive ||
     defaultSession.sessionId === sessionInfo.sessionId
   ) {
-    return Promise.resolve('ok')
+    return Promise.resolve('Session alive')
   }
   return login({
     oidcIssuer,

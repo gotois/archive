@@ -314,14 +314,15 @@ onMounted(async () => {
   // Если пользователь вошел через WebId, авторизуем
   if (query.code && query.state) {
     $q.loading.show()
-    await solidAuth({
-      restorePreviousSession: true,
-    })
-    authStore.openIdHandleIncoming()
-    await podStore.setResourceRootUrl()
-    if (!profileStore.getConsumer) {
-      const profileName = await podStore.getProfileName()
-      profileStore.consumerName(profileName)
+    try {
+      authStore.openIdHandleIncoming()
+      await podStore.setResourceRootUrl()
+      if (!profileStore.getConsumer) {
+        const profileName = await podStore.getProfileName()
+        profileStore.consumerName(profileName)
+      }
+    } catch (e) {
+      console.error(e)
     }
     $q.loading.hide()
   }

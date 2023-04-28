@@ -15,6 +15,16 @@ export default route(() => {
   })
 
   Router.beforeEach(async (to, from) => {
+    if (!from.name && !to.query.error && to.query.code && to.query.state) {
+      try {
+        await solidAuth({
+          redirectUrl: window.location.origin + to.path,
+          restorePreviousSession: false,
+        })
+      } catch (e) {
+        console.error(e)
+      }
+    }
     switch (to.path) {
       // hack - специальная страница для сброса состояния приложения
       case '/reset': {
@@ -75,27 +85,14 @@ export default route(() => {
             },
           }
         }
-        if (
-          !from.name &&
-          !to.query.error &&
-          to.query.code &&
-          to.query.state &&
-          LocalStorage.has('restorePreviousSession')
-        ) {
-          try {
-            await solidAuth({
-              redirectUrl: window.location.origin + to.path,
-              restorePreviousSession: true,
-            })
-            return true
-          } catch (e) {
-            console.error(e)
-            // explicitly return false to cancel the navigation
-            return {
-              name: 'main',
-              query: {},
-            }
-          }
+        try {
+          await solidAuth({
+            redirectUrl: window.location.origin + to.path,
+            restorePreviousSession: true,
+          })
+        } catch (e) {
+          console.error(e)
+          LocalStorage.remove('restorePreviousSession')
         }
         break
       }

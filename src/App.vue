@@ -11,7 +11,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import { useMeta, Loading, LocalStorage } from 'quasar'
+import { useMeta, Loading, LocalStorage, SessionStorage } from 'quasar'
 import { onLogin, onSessionRestore } from '@inrupt/solid-client-authn-browser'
 import usePodStore from 'stores/pod'
 import useAuthStore from 'stores/auth'
@@ -35,6 +35,7 @@ onSessionRestore(async (urlString) => {
   const url = new URL(urlString)
   authStore.openIdHandleIncoming()
   await podStore.setResourceRootUrl()
+  SessionStorage.remove('connect')
   await router.push({ path: url.pathname, replace: true })
   Loading.hide()
 })
@@ -42,6 +43,7 @@ onSessionRestore(async (urlString) => {
 onLogin(async () => {
   authStore.openIdHandleIncoming()
   await podStore.setResourceRootUrl()
+  SessionStorage.remove('connect')
   LocalStorage.set('restorePreviousSession', true)
 })
 
