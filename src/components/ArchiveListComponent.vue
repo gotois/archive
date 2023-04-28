@@ -13,9 +13,19 @@
         <div class="row">
           <div class="column q-pl-md" style="max-width: calc(100% - 45px)">
             <p
-              class="full-width q-pt-md text-subtitle1 text-uppercase ellipsis text-weight-bold no-margin"
-              :style="checkItemEndTime(item)"
-              :class="item.instrument.description ? '' : 'q-pb-md'"
+              class="full-width q-pt-md text-subtitle1 text-uppercase text-weight-bold no-margin"
+              :style="{
+                'text-decoration':
+                  item.endTime !== null && item.endTime < new Date()
+                    ? 'line-through'
+                    : '',
+              }"
+              :class="{
+                'q-pb-md': !item.instrument.description,
+                'q-pb-none':
+                  item.instrument.description && !$q.platform.is.desktop,
+                'ellipsis': $q.platform.is.desktop,
+              }"
               >{{ item.instrument.name }}
             </p>
             <p
@@ -354,15 +364,6 @@ function prettyDate(item: FormatContract) {
     ' — ' +
     formatterDate.format(item.endTime)
   )
-}
-
-function checkItemEndTime(item: FormatContract) {
-  if (item.endTime !== null && item.endTime < new Date()) {
-    return {
-      'text-decoration': 'line-through',
-    }
-  }
-  return {}
 }
 
 function isContentPDF(contentUrl: string) {

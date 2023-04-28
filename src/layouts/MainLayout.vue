@@ -322,6 +322,7 @@ import {
   QToolbar,
   QHeader,
   QLayout,
+  QSpace,
 } from 'quasar'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
