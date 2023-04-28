@@ -1,6 +1,7 @@
 import { LocalStorage } from 'quasar'
 import { route } from 'quasar/wrappers'
 import { createRouter, createWebHistory } from 'vue-router'
+import useAuthStore from 'stores/auth'
 import routes from './routes'
 import solidAuth from '../services/authHelper'
 
@@ -15,6 +16,7 @@ export default route(() => {
   })
 
   Router.beforeEach(async (to, from) => {
+    const authStore = useAuthStore()
     if (!from.name && !to.query.error && to.query.code && to.query.state) {
       try {
         await solidAuth({
@@ -37,9 +39,14 @@ export default route(() => {
         return true
       }
       case '/auth': {
-        if (!LocalStorage.has('code')) {
+        if (
+          !LocalStorage.has('code') ||
+          (LocalStorage.has('code') && authStore.pinIsLoggedIn)
+        ) {
+          console.log('to archive')
           return {
-            name: 'main',
+            name: 'archive',
+            query: { page: 1 },
           }
         }
         return true
@@ -77,7 +84,7 @@ export default route(() => {
             query: {},
           }
         }
-        if (LocalStorage.has('code')) {
+        if (LocalStorage.has('code') && !authStore.pinIsLoggedIn) {
           return {
             name: 'auth',
             query: {

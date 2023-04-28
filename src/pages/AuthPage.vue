@@ -34,10 +34,15 @@ const otpDisabled = ref(false)
 
 async function onHandleComplete(value: string) {
   const timeout = 2000
-  const codeValid = await authStore.checkCode(value)
-  if (codeValid) {
+  await authStore.validate(value)
+  if (authStore.pinIsLoggedIn) {
     await authStore.setCode(value)
     const prevPath = String(router.currentRoute.value.query.fullPath)
+    $q.notify({
+      color: 'positive',
+      message: 'Пожалуйста, подождите...',
+      spinner: true,
+    })
     await router.replace(
       prevPath || {
         name: 'archive',

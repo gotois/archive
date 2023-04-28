@@ -1,10 +1,11 @@
-import { LocalStorage } from 'quasar'
+import { LocalStorage, SessionStorage} from 'quasar'
 import { defineStore } from 'pinia'
 import { WebId } from '@inrupt/solid-client'
 import { getDefaultSession } from '@inrupt/solid-client-authn-browser'
 import { getHash } from '../services/cryptoHelper'
 
 interface Store {
+  pinIsLoggedIn: boolean
   code: string
   openIdSessionId: string
   openIdExpirationDate: null | number
@@ -14,6 +15,7 @@ interface Store {
 
 export default defineStore('auth', {
   state: (): Store => ({
+    pinIsLoggedIn: SessionStorage.getItem('isLoggedIn') ?? false,
     code: LocalStorage.getItem('code'),
     openIdSessionId: '',
     openIdExpirationDate: null,
@@ -30,9 +32,11 @@ export default defineStore('auth', {
       LocalStorage.remove('code')
       this.code = ''
     },
-    async checkCode(value: string) {
+    async validate(value: string) {
       const cryptoCode = await getHash(value)
-      return cryptoCode === LocalStorage.getItem('code')
+      this.pinIsLoggedIn = cryptoCode === LocalStorage.getItem('code')
+      console.log('this.pinIsLoggedIn', this.pinIsLoggedIn)
+      SessionStorage.set('isLoggedIn', this.pinIsLoggedIn)
     },
     openIdHandleIncoming() {
       const { info } = getDefaultSession()
@@ -49,12 +53,6 @@ export default defineStore('auth', {
     },
   },
   getters: {
-    checkAuth(state) {
-      if (!LocalStorage.has('code')) {
-        return true
-      }
-      return state.code === LocalStorage.getItem('code')
-    },
     hasCode(state) {
       return Boolean(state.code)
     },
