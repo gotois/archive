@@ -12,14 +12,10 @@ export default {
 </script>
 <script lang="ts" setup>
 import { useMeta, Loading, SessionStorage } from 'quasar'
-import {
-  onLogin,
-  onSessionRestore,
-  onLogout,
-} from '@inrupt/solid-client-authn-browser'
+import { EVENTS, events } from '@inrupt/solid-client-authn-browser'
+import { useRouter } from 'vue-router'
 import usePodStore from 'stores/pod'
 import useAuthStore from 'stores/auth'
-import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const podStore = usePodStore()
@@ -35,7 +31,8 @@ const metaData = {
   },
 }
 
-onSessionRestore(async (urlString) => {
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
+events().on(EVENTS.SESSION_RESTORED, async (urlString) => {
   SessionStorage.remove('connect')
   const url = new URL(urlString)
   authStore.openIdHandleIncoming()
@@ -47,16 +44,21 @@ onSessionRestore(async (urlString) => {
   Loading.hide()
 })
 
-onLogin(async () => {
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
+events().on(EVENTS.LOGIN, async () => {
   authStore.openIdHandleIncoming()
   await podStore.setResourceRootUrl()
   SessionStorage.remove('connect')
   SessionStorage.set('restorePreviousSession', true)
 })
 
-onLogout(() => {
+events().on(EVENTS.LOGOUT, () => {
   SessionStorage.remove('connect')
   SessionStorage.remove('restorePreviousSession')
+})
+
+events().on(EVENTS.ERROR, (error) => {
+  console.log('authn error: ', error)
 })
 
 useMeta(metaData)
