@@ -155,6 +155,7 @@ import {
   QIcon,
   QTooltip,
   exportFile,
+  SessionStorage,
 } from 'quasar'
 import { marked } from 'marked'
 import useAuthStore from 'stores/auth'
@@ -211,6 +212,7 @@ async function onOnlineAuthorize(oidcIssuer: string) {
   }
 
   $q.loading.show()
+  SessionStorage.remove('connect')
   const redirectUrl =
     window.location.origin +
     window.location.pathname +
