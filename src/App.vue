@@ -11,8 +11,12 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import { useMeta, Loading, LocalStorage, SessionStorage } from 'quasar'
-import { onLogin, onSessionRestore } from '@inrupt/solid-client-authn-browser'
+import { useMeta, Loading, SessionStorage } from 'quasar'
+import {
+  onLogin,
+  onSessionRestore,
+  onLogout,
+} from '@inrupt/solid-client-authn-browser'
 import usePodStore from 'stores/pod'
 import useAuthStore from 'stores/auth'
 import { useRouter } from 'vue-router'
@@ -32,11 +36,14 @@ const metaData = {
 }
 
 onSessionRestore(async (urlString) => {
+  SessionStorage.remove('connect')
   const url = new URL(urlString)
   authStore.openIdHandleIncoming()
   await podStore.setResourceRootUrl()
-  SessionStorage.remove('connect')
-  await router.push({ path: url.pathname, replace: true })
+  await router.push({
+    path: url.pathname,
+    replace: true,
+  })
   Loading.hide()
 })
 
@@ -44,7 +51,12 @@ onLogin(async () => {
   authStore.openIdHandleIncoming()
   await podStore.setResourceRootUrl()
   SessionStorage.remove('connect')
-  LocalStorage.set('restorePreviousSession', true)
+  SessionStorage.set('restorePreviousSession', true)
+})
+
+onLogout(() => {
+  SessionStorage.remove('connect')
+  SessionStorage.remove('restorePreviousSession')
 })
 
 useMeta(metaData)

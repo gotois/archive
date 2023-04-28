@@ -37,17 +37,16 @@ async function onHandleComplete(value: string) {
   await authStore.validate(value)
   if (authStore.pinIsLoggedIn) {
     await authStore.setCode(value)
-    const prevPath = String(router.currentRoute.value.query.fullPath)
     $q.notify({
       color: 'positive',
       message: 'Пожалуйста, подождите...',
       spinner: true,
     })
-    await router.replace(
-      prevPath || {
-        name: 'archive',
-      },
-    )
+    await router.push({
+      name: router.currentRoute.value.name || 'archive',
+      query: router.currentRoute.value.query,
+      replace: true,
+    })
   } else {
     otpDisabled.value = true
     $q.notify({

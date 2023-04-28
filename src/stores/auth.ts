@@ -1,4 +1,4 @@
-import { LocalStorage, SessionStorage} from 'quasar'
+import { LocalStorage, SessionStorage } from 'quasar'
 import { defineStore } from 'pinia'
 import { WebId } from '@inrupt/solid-client'
 import { getDefaultSession } from '@inrupt/solid-client-authn-browser'
@@ -30,12 +30,12 @@ export default defineStore('auth', {
     },
     removeCode() {
       LocalStorage.remove('code')
+      SessionStorage.remove('isLoggedIn')
       this.code = ''
     },
     async validate(value: string) {
       const cryptoCode = await getHash(value)
       this.pinIsLoggedIn = cryptoCode === LocalStorage.getItem('code')
-      console.log('this.pinIsLoggedIn', this.pinIsLoggedIn)
       SessionStorage.set('isLoggedIn', this.pinIsLoggedIn)
     },
     openIdHandleIncoming() {

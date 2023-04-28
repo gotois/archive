@@ -395,7 +395,7 @@ async function onSearch(searchText: string) {
 
 async function onOnlineAuthorize(oidcIssuer: string) {
   $q.loading.show()
-  LocalStorage.set('restorePreviousSession', true)
+  SessionStorage.set('restorePreviousSession', true)
   SessionStorage.remove('connect')
   try {
     await solidAuth({
@@ -419,7 +419,7 @@ async function logOutFromPod() {
   await logout()
   authStore.openIdHandleIncoming()
   LocalStorage.remove('oidcIssuer')
-  LocalStorage.remove('restorePreviousSession')
+  SessionStorage.remove('restorePreviousSession')
   SessionStorage.remove('connect')
   $q.notify({
     message: 'Вы отключили привязку к вашему Pod',

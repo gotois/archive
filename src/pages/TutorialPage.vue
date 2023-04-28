@@ -222,6 +222,7 @@ async function onOnlineAuthorize(oidcIssuer: string) {
     await solidAuth({
       redirectUrl: redirectUrl,
       oidcIssuer: oidcIssuer,
+      restorePreviousSession: false,
     })
   } catch (e) {
     console.error(e)

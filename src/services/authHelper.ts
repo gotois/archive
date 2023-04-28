@@ -7,15 +7,17 @@ import {
 
 const CLIENT_NAME = 'Contracts'
 
-export default async ({
-  redirectUrl = window.location.href,
-  oidcIssuer = LocalStorage.getItem('oidcIssuer'),
-  restorePreviousSession = LocalStorage.has('restorePreviousSession'),
-}: {
+interface AuthData {
   redirectUrl?: string
   oidcIssuer?: string
   restorePreviousSession?: boolean
-}) => {
+}
+
+export default async ({
+  redirectUrl = window.location.href,
+  oidcIssuer = LocalStorage.getItem('oidcIssuer'),
+  restorePreviousSession = SessionStorage.has('restorePreviousSession'),
+}: AuthData) => {
   if (!oidcIssuer) {
     throw new Error('oidcIssuer empty')
   }
