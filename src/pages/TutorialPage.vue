@@ -90,10 +90,6 @@
             <OIDCIssuerComponent @on-complete="onOnlineAuthorize" />
           </template>
           <template v-else>
-            <!-- todo: нужен способ выгрузить ключи в файл -->
-            <!--            <p class="text-body1"-->
-            <!--              >Ключи сгенерированы и хранятся в памяти Вашего устройства.</p-->
-            <!--            >-->
             <p class="text-body1"
               >Для подписания первого договора используйте свое имя.</p
             >
@@ -247,8 +243,12 @@ async function onFinish() {
   }
   const keysJSON = await exportKeyPair()
   const status = exportFile('keys.json', keysJSON)
-  if (status !== true) {
-    // browser allowed it
+  if (status) {
+    $q.notify({
+      type: 'positive',
+      message: 'Ключи сгенерированы и хранятся в памяти Вашего устройства.',
+    })
+  } else {
     $q.notify({
       type: 'warning',
       message: 'Ваш ключ сохранен в вашем браузере.',

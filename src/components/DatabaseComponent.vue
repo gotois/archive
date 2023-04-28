@@ -49,9 +49,16 @@
 
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
-import { useQuasar, QBtn, QIcon, QForm, QFile, QTooltip } from 'quasar'
+import {
+  useQuasar,
+  QBtn,
+  QIcon,
+  QForm,
+  QFile,
+  QTooltip,
+  exportFile,
+} from 'quasar'
 import { exportDB, importInto } from 'dexie-export-import'
-import { saveAs } from 'file-saver'
 import { BulkError } from 'dexie'
 import useContractStore from 'stores/contract'
 import { db } from '../services/databaseHelper'
@@ -134,6 +141,6 @@ async function onExportDB() {
   })
   const filename = exportName.replace(/\.zip$/, '') + '.zip'
 
-  return saveAs(content, filename)
+  return exportFile(filename, content)
 }
 </script>
