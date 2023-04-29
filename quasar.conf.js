@@ -43,8 +43,9 @@ module.exports = configure((ctx) => {
       target: {
         browser: 'esnext',
       },
-      modulePreload: false,
-      polyfillModulePreload: false,
+      modulePreload: {
+        polyfill: false,
+      },
       cssCodeSplit: false,
       lib: 'es',
       reportCompressedSize: false,

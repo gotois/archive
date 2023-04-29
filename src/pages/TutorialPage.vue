@@ -241,8 +241,10 @@ async function onFinish() {
   const keyPair = await generateKeyPair()
   // если нет доступа к WebID, используем для идентификации fingerprint от keyPair
   if (!authStore.webId) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    /* eslint-disable @typescript-eslint/no-unsafe-call,@typescript-eslint/ban-ts-comment */
+    // @ts-ignore
     authStore.webId = 'did:key:' + (keyPair.fingerprint() as string)
+    /* eslint-enable @typescript-eslint/no-unsafe-call */
   }
   const keysJSON = await exportKeyPair()
   const status = exportFile('keys.json', keysJSON)

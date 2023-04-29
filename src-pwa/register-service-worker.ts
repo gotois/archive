@@ -8,7 +8,7 @@ register(process.env.SERVICE_WORKER_FILE, {
   // to ServiceWorkerContainer.register()
   // https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register#Parameter
 
-  // registrationOptions: { scope: './' },
+  registrationOptions: { scope: './' },
 
   ready(/* registration */) {
     console.log('Service worker is active.')
@@ -20,10 +20,30 @@ register(process.env.SERVICE_WORKER_FILE, {
     console.log('Content has been cached for offline use.')
   },
   updatefound(/* registration */) {
-    console.log('New content is downloading.')
+    Notify.create({
+      spinner: true,
+      message: 'New content is downloading',
+      timeout: 2000,
+    })
   },
-  updated(/* registration */) {
-    Notify.create('New content is available; please refresh.')
+  updated(registration) {
+    Notify.create({
+      message: 'New content is available',
+      icon: 'announcement',
+      actions: [
+        {
+          label: 'Refresh',
+          color: 'white',
+          // eslint-disable-next-line @typescript-eslint/no-misused-promises
+          handler: async () => {
+            await registration.unregister()
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            window.location.reload()
+          },
+        },
+      ],
+    })
   },
   offline() {
     Notify.create(
