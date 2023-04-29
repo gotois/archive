@@ -34,11 +34,14 @@
             filled
             outlined
             square
-            new-value-mode="add-unique"
-            clearable
             fill-input
+            new-value-mode="add-unique"
+            @update:model-value="onSearchText"
             @filter="onFilterSelect"
           >
+            <template #append>
+              <QIcon name="search" />
+            </template>
             <template #no-option>
               <QItem>
                 <QItemSection class="text-grey non-selectable">
@@ -53,18 +56,9 @@
         <QBtn
           v-close-popup
           flat
+          color="accent"
           :dense="$q.platform.is.desktop"
           :label="$t('searchDialog.cancel')"
-        />
-        <QBtn
-          v-close-popup
-          color="accent"
-          icon-right="search"
-          :outline="searchOptions.length === 0"
-          :disable="searchOptions.length === 0"
-          :dense="$q.platform.is.desktop"
-          :label="$t('searchDialog.search')"
-          @click="onSearchText"
         />
       </QCardActions>
     </QCard>
@@ -83,6 +77,7 @@ import {
   QItemSection,
   QCardSection,
   QForm,
+  QIcon,
   QTooltip,
   QCardActions,
 } from 'quasar'
@@ -101,11 +96,11 @@ const miniSearch: MiniSearch = new MiniSearch({
   storeFields: ['instrument_name', 'instrument_description'],
 })
 
-function onSearchText() {
-  if (!searchText.value.length) {
+function onSearchText(value: string) {
+  if (!value.length) {
     return
   }
-  emit('onSearch', searchText.value)
+  emit('onSearch', value)
   searchText.value = ''
 }
 

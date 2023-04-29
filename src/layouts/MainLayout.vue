@@ -122,7 +122,9 @@
                 v-model="consumer"
                 bg-color="white"
                 color="secondary"
+                type="text"
                 outlined
+                clearable
                 :label="$t('consumer.type')"
                 :rules="[
                   (val) => (val && val.length > 0) || $t('consumer.rules'),
@@ -134,15 +136,31 @@
                   <QIcon name="face" />
                 </template>
               </QInput>
+              <QInput
+                v-model="email"
+                bg-color="white"
+                color="secondary"
+                type="email"
+                outlined
+                clearable
+                :label="$t('consumer.email')"
+                :rules="['email']"
+                name="email"
+                autocomplete="off"
+              >
+                <template #prepend>
+                  <QIcon name="email" />
+                </template>
+              </QInput>
               <QBtn
                 :label="$t('consumer.save')"
                 icon="save"
                 class="full-width"
                 square
                 :class="{
-                  'q-mt-md': consumer.length === 0,
+                  'q-mt-md': consumer?.length === 0,
                 }"
-                :outline="consumer.length === 0"
+                :outline="!consumer?.length && !email?.length"
                 type="submit"
                 color="accent"
               />
@@ -358,6 +376,7 @@ const $q = useQuasar()
 const router = useRouter()
 const authStore = useAuthStore()
 const contractStore = useContractStore()
+const profileStore = useProfileStore()
 
 const leftDrawerOpen = ref(false)
 const rightDrawerOpen = ref(false)
@@ -370,8 +389,7 @@ const dialogOIDCIssuer = ref(false)
 const navigatorVersion = ref(version)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 const otp = ref(null)
-
-const { consumer } = storeToRefs(useProfileStore())
+const { consumer, email } = storeToRefs(profileStore)
 
 const hasCode = computed(() => authStore.hasCode)
 const isLoggedIn = computed(() => authStore.isLoggedIn)
@@ -448,7 +466,8 @@ function onOpenFeedback() {
 }
 
 function onFinishProfile() {
-  useProfileStore().consumerName(consumer.value)
+  profileStore.consumerName(consumer.value)
+  profileStore.consumerEmail(email.value)
   $q.notify({
     message: 'Профиль обновлен',
     type: 'positive',

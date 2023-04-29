@@ -72,7 +72,7 @@ class ContractDatabase extends Dexie {
     this.version(2)
       .stores({
         contracts:
-          '++id, agent_name, participant_name, instrument_name, instrument_description, startTime, endTime, *images, *resource_url',
+          '++id, agent_name, agent_email, participant_name, participant_email, instrument_name, instrument_description, startTime, endTime, *images, *resource_url',
       })
       .upgrade((/* trans */) => {
         return

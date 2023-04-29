@@ -7,6 +7,7 @@ import {
 } from '@inrupt/solid-client'
 import { RDF, SCHEMA_INRUPT } from '@inrupt/vocab-common-rdf'
 import {
+  FormatContractAgent,
   ContractTable,
   FormatContract,
   Credential,
@@ -15,6 +16,7 @@ import {
   CredentialTypes,
   credentialContextType,
   credentialSubjectType,
+  FormatContractParticipant,
 } from '../types/models'
 
 // eslint-disable-next-line no-unused-vars
@@ -197,13 +199,19 @@ export function formatterLDContract(
 }
 
 export function formatterContract(contract: ContractTable): FormatContract {
-  const agent = {
+  const agent: FormatContractAgent = {
     '@type': 'Person',
     'name': contract.agent_name,
   }
-  const participant = {
+  if (contract.agent_email) {
+    agent.email = 'mailto:' + contract.agent_email
+  }
+  const participant: FormatContractParticipant = {
     '@type': 'Person',
     'name': contract.participant_name,
+  }
+  if (contract.participant_email) {
+    participant.email = 'mailto:' + contract.participant_email
   }
   const instrument = {
     '@type': 'Thing',

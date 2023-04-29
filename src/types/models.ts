@@ -1,7 +1,9 @@
 export interface ContractTable {
   id?: number
   agent_name: string
+  agent_email: string
   participant_name: string
+  participant_email: string
   instrument_name: string
   instrument_description?: string
   startTime: Date
@@ -80,12 +82,9 @@ export interface CredentialTypes {
   startTime: string
 }
 
-interface ContractAgent {
+interface Person {
   name: string
-}
-
-interface ContractParticipant {
-  name: string
+  email?: string
 }
 
 interface ContractIdentifier {
@@ -118,17 +117,15 @@ export interface FormatContract extends BaseSchemaType {
     'contentUrl': string
   }[]
 }
-interface FormatContractAgent extends BaseSchemaType, ContractAgent {}
-interface FormatContractParticipant
-  extends BaseSchemaType,
-    ContractParticipant {}
+export interface FormatContractAgent extends BaseSchemaType, Person {}
+export interface FormatContractParticipant extends BaseSchemaType, Person {}
 interface FormatContractIdentifier extends BaseSchemaType, ContractIdentifier {}
 interface FormatContractInstrument extends BaseSchemaType, ContractInstrument {}
 
 export interface CredentialSubject {
   id: string
-  agent: ContractAgent
-  participant: ContractParticipant
+  agent: Person
+  participant: Person
   instrument: ContractInstrument
   identifier: ContractIdentifier
   startTime: Date

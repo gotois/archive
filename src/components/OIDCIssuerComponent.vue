@@ -4,6 +4,7 @@
       v-model="oidcIssuer"
       class="full-width"
       label="Адрес URL"
+      type="url"
       use-input
       square
       :options="['login.inrupt.com', 'login.inrupt.net']"

@@ -44,6 +44,7 @@
       :rules="[(val) => (val && val.length > 0) || $t('customer.rules')]"
       autocomplete="on"
       name="customer"
+      type="text"
       spellcheck="true"
       outlined
       lazy-rules
@@ -55,13 +56,33 @@
         <QIcon name="assignment_ind" />
       </template>
     </QInput>
+    <QInput
+      v-model="email"
+      :label="$t('customer.email')"
+      :hint="$t('customer.hintEmail')"
+      :rules="['email']"
+      autocomplete="off"
+      type="email"
+      name="email"
+      spellcheck="false"
+      lazy-rules
+      outlined
+      square
+      color="secondary"
+      @focus="onFocusInput"
+    >
+      <template #prepend>
+        <QIcon name="email" />
+      </template>
+    </QInput>
     <div class="row justify-center items-center">
       <QInput
         v-if="!$q.platform.is.mobile"
         v-model="duration.from"
-        :rules="['date']"
         :label="$t('duration.from')"
         class="col no-padding"
+        :type="typeof duration.from === 'string' ? 'text' : 'date'"
+        :rules="typeof duration.from === 'string' ? ['date'] : []"
         mask="date"
         outlined
         square
@@ -70,24 +91,27 @@
         <QTooltip>{{ $t('duration.fromHint') }}</QTooltip>
       </QInput>
       <QBtnDropdown
+        v-if="$q.platform.is.mobile"
         square
         outline
         cover
         text-color="grey-5"
         size="md"
-        :icon="$q.platform.is.mobile ? '' : 'event'"
-        class="q-ml-xs q-mr-xs q-field__control"
-        :class="{
-          col: $q.platform.is.mobile,
-        }"
+        icon="event"
+        class="q-ml-xs q-mr-xs q-field__control col"
       >
         <template v-if="$q.platform.is.mobile" #label>
-          <div class="row items-center">{{ duration.from }}</div>
+          <div class="row q-ml-md items-center text-caption">
+            {{ duration.from }}
+            <template v-if="!dateNoLimit && duration.from !== duration.to">
+              - {{ duration.to }}
+            </template>
+          </div>
         </template>
         <template v-if="dateNoLimit">
           <QDate
             v-model="duration.from"
-            default-view="Months"
+            default-view="Calendar"
             :class="
               $q.platform.is.mobile ? 'fullscreen full-width full-height' : ''
             "
@@ -108,11 +132,11 @@
           <QDate
             v-model="duration"
             default-view="Months"
-            range
             first-day-of-week="1"
             :class="
               $q.platform.is.mobile ? 'fullscreen full-width full-height' : ''
             "
+            range
             @update:model-value="onSelectDate"
           >
             <div class="row items-center justify-end">
@@ -129,8 +153,9 @@
       <QInput
         v-if="!$q.platform.is.mobile && !dateNoLimit"
         v-model="duration.to"
+        :type="typeof duration.to === 'string' ? 'text' : 'date'"
+        :rules="typeof duration.to === 'string' ? ['date'] : []"
         :label="$t('duration.to')"
-        :rules="['date']"
         class="col no-padding"
         mask="date"
         outlined
@@ -214,20 +239,22 @@ import {
 } from 'quasar'
 import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
-import profileStore from 'stores/profile'
+import useProfileStore from 'stores/profile'
 import { ContractTable } from '../types/models'
 import { readFilesPromise } from '../services/fileHelper'
-import { isDateNotOk, formatDate } from '../services/dateHelper'
+import { formatDate } from '../services/dateHelper'
 import { contractTypes } from '../services/contractTypes'
 import { recommendationContractTypes } from '../services/recommendationContractTypes'
+
+interface Duration {
+  from: Date | string
+  to: Date | string
+}
 
 const $q = useQuasar()
 
 const now = new Date()
-const currentDate = formatDate(now)
-const afterYearDate = formatDate(
-  new Date(now.setFullYear(now.getFullYear() + 1)),
-)
+const afterYearDate = new Date(now.setFullYear(now.getFullYear() + 1))
 
 const emit = defineEmits(['onCreate'])
 const props = defineProps({
@@ -239,11 +266,16 @@ const props = defineProps({
 
 const authStore = useAuthStore()
 const contractStore = useContractStore()
+const profileStore = useProfileStore()
 
 const contractType = ref(props.contractTypeName)
 const customer = ref('')
+const email = ref('')
 const description = ref('')
-const duration = ref({ from: currentDate, to: afterYearDate })
+const duration = ref<Duration>({
+  from: $q.platform.is.mobile ? formatDate(new Date()) : new Date(),
+  to: $q.platform.is.mobile ? formatDate(afterYearDate) : afterYearDate,
+})
 const files = ref([])
 const contractForm = ref<QForm>()
 const dateNoLimit = ref(false)
@@ -269,41 +301,50 @@ function onResetForm() {
   contractType.value = ''
   customer.value = ''
   description.value = ''
-  duration.value = { from: currentDate, to: afterYearDate }
+  email.value = ''
+  duration.value = {
+    from: $q.platform.is.mobile ? formatDate(new Date()) : new Date(),
+    to: $q.platform.is.mobile ? formatDate(afterYearDate) : afterYearDate,
+  }
   files.value = []
   dateNoLimit.value = false
 }
 
-function onSelectDate(value: string | { from: string; to: string } | null) {
+function onSelectDate(value: string | Duration) {
   if (value === null) {
     $q.notify({
       type: 'warning',
       message: 'Начало даты не может быть позже сегодняшней',
     })
-    duration.value = { from: currentDate, to: afterYearDate }
+    duration.value = { from: new Date(), to: afterYearDate }
     return
   }
   switch (typeof value) {
     case 'string': {
       duration.value = {
-        from: value,
-        to: value,
+        from: date.isValid(value) ? formatDate(new Date(value)) : null,
+        to: date.isValid(value) ? formatDate(new Date(value)) : null,
       }
       break
     }
     case 'object': {
       duration.value = {
-        from: value?.from,
-        to: value?.to,
+        from: date.isValid(String(value.from))
+          ? formatDate(new Date(value.from))
+          : null,
+        to: date.isValid(String(value.to))
+          ? formatDate(new Date(value.to))
+          : null,
       }
       break
     }
-    default:
+    default: {
       $q.notify({
         type: 'warning',
         message: 'Неизвестный тип даты',
       })
       break
+    }
   }
 }
 
@@ -312,22 +353,28 @@ function onFocusInput({ target }: { target: HTMLElement }) {
 }
 
 async function onSubmit() {
-  const startDate = new Date(duration.value.from)
-  if (isDateNotOk(startDate)) {
+  if (!date.isValid(String(duration.value.from))) {
     $q.notify({
       type: 'negative',
       message: 'Неверная дата подачи заявления',
     })
     return
   }
-  const endDate = new Date(duration.value.to)
-  if (!dateNoLimit.value && isDateNotOk(endDate)) {
+  if (!dateNoLimit.value && !date.isValid(String(duration.value.to))) {
     $q.notify({
       type: 'negative',
       message: 'Неверная дата окончания заявления',
     })
     return
   }
+  const startDate: Date =
+    typeof duration.value.from === 'string'
+      ? new Date(duration.value.from)
+      : duration.value.from
+  const endDate: Date =
+    typeof duration.value.to === 'string'
+      ? new Date(duration.value.to)
+      : duration.value.to
   if (startDate.valueOf() >= endDate.valueOf()) {
     $q.notify({
       type: 'negative',
@@ -352,8 +399,10 @@ async function onSubmit() {
   try {
     const images = await readFilesPromise(files.value)
     const newContract: ContractTable = {
-      agent_name: profileStore().consumer,
+      agent_name: profileStore.getConsumer,
+      agent_email: profileStore.getEmail,
       participant_name: customer.value,
+      participant_email: email.value,
       instrument_name: contractType.value,
       instrument_description: description.value,
       startTime: startDate,

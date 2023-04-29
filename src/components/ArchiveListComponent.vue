@@ -426,13 +426,13 @@ async function onShareItem(object: FormatContract) {
     organizer: [
       {
         name: object.agent.name,
-        email: 'john.smith@example.com', // fixme заменить
+        email: object.agent.email,
       },
     ],
     attendee: [
       {
         name: object.participant.name,
-        email: 'example@ggg.com', // fixme заменить
+        email: object.participant.email,
       },
     ],
   })

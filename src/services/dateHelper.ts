@@ -1,9 +1,12 @@
+import { date } from 'quasar'
+
 export function isDateNotOk(value: Date) {
   return Number.isNaN(Date.parse(String(value)))
 }
 
-export function formatDate(date: Date): string {
-  return date.toJSON().substring(0, 10).replace(/-/g, '/')
+// Специальный формат для календаря Quasar
+export function formatDate(x: Date): string {
+  return date.formatDate(x, 'YYYY/MM/DD')
 }
 
 export const formatterDate = new Intl.DateTimeFormat('ru', {

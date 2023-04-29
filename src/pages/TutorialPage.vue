@@ -109,7 +109,9 @@
                   (val) => (val && val.length > 0) || $t('consumer.rules'),
                 ]"
                 name="consumer"
+                type="text"
                 autocomplete="on"
+                clearable
                 outlined
                 @focus="(e) => e.target.scrollIntoView()"
               >
@@ -117,11 +119,26 @@
                   <QIcon name="face" />
                 </template>
               </QInput>
+              <QInput
+                v-model="email"
+                :label="$t('consumer.email')"
+                name="email"
+                type="email"
+                :rules="['email']"
+                autocomplete="off"
+                clearable
+                outlined
+              >
+                <template #prepend>
+                  <QIcon name="email" />
+                </template>
+              </QInput>
               <QStepperNavigation class="q-pa-md no-margin">
                 <QBtn
                   color="accent"
                   type="submit"
-                  :outline="consumer.length === 0"
+                  square
+                  :outline="!consumer?.length && !email?.length"
                   :label="$t('tutorial.complete')"
                   :class="{
                     'full-width': !$q.platform.is.desktop,
@@ -168,6 +185,7 @@ import { createContractPDF } from '../services/pdfHelper'
 import solidAuth from '../services/authHelper'
 import { generateKeyPair, exportKeyPair } from '../services/cryptoHelper'
 import { keys } from '../services/databaseHelper'
+import { ContractTable } from '../types/models'
 
 const { parse } = marked
 
@@ -175,7 +193,7 @@ const OIDCIssuerComponent = defineAsyncComponent(
   () => import('components/OIDCIssuerComponent.vue'),
 )
 
-const { description, version, productName } = pkg
+const { description, version, productName, bugs } = pkg
 const $q = useQuasar()
 const router = useRouter()
 const podStore = usePodStore()
@@ -186,6 +204,7 @@ const stepParam = 'step'
 
 const step = ref(Number(searchParams.get(stepParam) ?? 1))
 const consumer = ref('')
+const email = ref('')
 const userComplete = ref(false)
 
 const authStore = useAuthStore()
@@ -265,9 +284,11 @@ async function onFinish() {
 
   const html = parse(md)
   const contractPDF = await createContractPDF(html)
-  const newContract = {
+  const newContract: ContractTable = {
     agent_name: consumer.value,
+    agent_email: email.value,
     participant_name: productName + ' ' + version,
+    participant_email: bugs.email,
     instrument_name: 'Пользовательское соглашение',
     instrument_description: description,
     startTime: new Date(),
@@ -281,7 +302,9 @@ async function onFinish() {
       contractData: newContract,
       usePod: isLoggedIn.value,
     })
-    useProfileStore().consumerName(consumer.value)
+    const profileStore = useProfileStore()
+    profileStore.consumerName(consumer.value)
+    profileStore.consumerEmail(email.value)
     tutorialStore().tutorialComplete()
     await router.push({
       name: 'filter',
