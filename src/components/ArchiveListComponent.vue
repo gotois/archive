@@ -219,28 +219,25 @@
                   </QTooltip>
                 </QBtn>
               </QCarouselControl>
-              <QCarouselControl
-                v-if="nativeShareAvailable"
-                position="top-left"
-                :offset="[18, 18]"
-              >
-                <QBtn
-                  round
-                  color="white"
-                  text-color="primary"
-                  :icon="shareIcon"
-                  @click="onShareItem(item)"
-                >
-                  <QTooltip>
-                    {{ $t('archiveList.shareFile') }}
-                  </QTooltip>
-                </QBtn>
-              </QCarouselControl>
             </template>
           </QCarousel>
         </template>
         <QSeparator />
         <QCardSection>
+          <QBtn
+            v-if="nativeShareAvailable"
+            fab-mini
+            color="white"
+            text-color="primary"
+            :icon="shareIcon"
+            class="absolute"
+            style="top: 0px; left: 18px; transform: translateY(-50%)"
+            @click="onShareItem(item)"
+          >
+            <QTooltip>
+              {{ $t('archiveList.shareFile') }}
+            </QTooltip>
+          </QBtn>
           <p class="text-overline text-orange-9 no-margin">
             {{ prettyDate(item) }}
           </p>
