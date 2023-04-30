@@ -1,56 +1,50 @@
 <template>
   <QDialog square @show="indexAllDocuments">
     <QCard
-      :style="{
-        'min-width': $q.platform.is.desktop ? '380px' : '',
-      }"
+      class="full-width"
       :class="{
-        'full-width': $q.platform.is.mobile,
-        'fixed-top': $q.platform.is.mobile,
+        'absolute-top': $q.platform.is.mobile,
       }"
     >
-      <QCardSection>
+      <QCardSection class="no-border">
         <div class="text-h6 non-selectable">{{ $t('archive.search') }}</div>
-      </QCardSection>
-      <QCardSection class="q-pt-none no-border">
-        <QForm greedy autofocus>
-          <QTooltip>
-            {{ $t('archive.tooltip') }}
-          </QTooltip>
-          <QSelect
-            v-model="searchText"
-            autocomplete="off"
-            spellcheck="false"
-            color="secondary"
-            bg-color="white"
-            input-debounce="50"
-            :options="searchOptions"
-            :label="$t('searchDialog.searchText')"
-            use-input
-            hide-dropdown-icon
-            rounded
-            hide-selected
-            autofocus
-            filled
-            outlined
-            square
-            fill-input
-            new-value-mode="add-unique"
-            @update:model-value="onSearchText"
-            @filter="onFilterSelect"
-          >
-            <template #append>
-              <QIcon name="search" />
-            </template>
-            <template #no-option>
-              <QItem>
-                <QItemSection class="text-grey non-selectable">
-                  {{ $t('archive.notfound') }}
-                </QItemSection>
-              </QItem>
-            </template>
-          </QSelect>
-        </QForm>
+        <QTooltip>
+          {{ $t('archive.tooltip') }}
+        </QTooltip>
+        <QSelect
+          ref="select"
+          v-model="searchText"
+          autocomplete="off"
+          spellcheck="false"
+          color="secondary"
+          bg-color="white"
+          input-debounce="50"
+          :options="searchOptions"
+          :label="$t('searchDialog.searchText')"
+          use-input
+          hide-dropdown-icon
+          rounded
+          hide-selected
+          autofocus
+          filled
+          outlined
+          square
+          fill-input
+          new-value-mode="add-unique"
+          @update:model-value="onSearchText"
+          @filter="onFilterSelect"
+        >
+          <template #append>
+            <QIcon name="search" />
+          </template>
+          <template #no-option>
+            <QItem>
+              <QItemSection class="text-grey non-selectable">
+                {{ $t('archive.notfound') }}
+              </QItemSection>
+            </QItem>
+          </template>
+        </QSelect>
       </QCardSection>
       <QCardActions align="right" class="text-primary">
         <QBtn
@@ -76,7 +70,6 @@ import {
   QCard,
   QItemSection,
   QCardSection,
-  QForm,
   QIcon,
   QTooltip,
   QCardActions,
@@ -88,6 +81,8 @@ const emit = defineEmits(['onSearch'])
 
 const $q = useQuasar()
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+const select = ref(null)
 const searchText = ref('')
 const searchOptions = ref([])
 
@@ -108,6 +103,10 @@ async function indexAllDocuments() {
   if (miniSearch.documentCount === 0) {
     const documents = await db.getFulltextDocument()
     await miniSearch.addAllAsync(documents)
+  }
+  if ($q.platform.is.mobile) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+    select.value.showPopup()
   }
 }
 
