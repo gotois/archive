@@ -12,7 +12,7 @@
       bottom-slots
       :prefix="prefix"
       :rules="[checkUrl]"
-      :hint="'URL Вашего SOLID провайдера'"
+      :hint="$t('oidc.issuerHint')"
       hide-dropdown-icon
       input-debounce="0"
       clearable
@@ -21,7 +21,7 @@
     <QBtn
       color="accent"
       type="button"
-      label="Войти"
+      :label="$t('oidc.login')"
       icon="login"
       class="q-mt-md"
       :class="{
@@ -31,10 +31,10 @@
       @click="onComplete"
     >
       <QTooltip>
-        <template v-if="oidcIssuer">Войдите через {{ oidcIssuer }}.</template>
-        <template v-else>
-          Данные необходимы для подписания договоров.
+        <template v-if="oidcIssuer">
+          {{ $t('oidc.issuerTooltipLogin', { oidcIssuer }) }}
         </template>
+        <template v-else>{{ $t('oidc.issuerTooltipEmpty') }}</template>
       </QTooltip>
     </QBtn>
   </div>

@@ -51,8 +51,8 @@
                   clickable
                   @click="shareURl(item.sameAs)"
                 >
-                  <QItemSection side class="text-uppercase"
-                    >{{ 'Получить ссылку' }}
+                  <QItemSection side class="text-uppercase">
+                    {{ $t('archiveList.getLink') }}
                   </QItemSection>
                 </QItem>
                 <QItem
@@ -61,9 +61,9 @@
                   clickable
                   @click="editArchive(item)"
                 >
-                  <QItemSection side class="text-uppercase">{{
-                    $t('archiveList.editPod')
-                  }}</QItemSection>
+                  <QItemSection side class="text-uppercase">
+                    {{ $t('archiveList.editPod') }}
+                  </QItemSection>
                 </QItem>
                 <QItem
                   v-else
@@ -71,9 +71,9 @@
                   clickable
                   @click="editArchive(item)"
                 >
-                  <QItemSection side class="text-uppercase">{{
-                    $t('archiveList.edit')
-                  }}</QItemSection>
+                  <QItemSection side class="text-uppercase">
+                    {{ $t('archiveList.edit') }}
+                  </QItemSection>
                 </QItem>
                 <QItem
                   v-if="isLoggedIn && !item.sameAs"
@@ -81,14 +81,14 @@
                   clickable
                   @click="uploadArchive(item)"
                 >
-                  <QItemSection side class="text-uppercase">{{
-                    'Загрузить на POD'
-                  }}</QItemSection>
+                  <QItemSection side class="text-uppercase">
+                    {{ $t('archiveList.upload') }}
+                  </QItemSection>
                 </QItem>
                 <QItem v-close-popup clickable @click="removeArchive(item)">
-                  <QItemSection side class="text-negative text-uppercase">{{
-                    $t('archiveList.remove')
-                  }}</QItemSection>
+                  <QItemSection side class="text-negative text-uppercase">
+                    {{ $t('archiveList.remove') }}
+                  </QItemSection>
                 </QItem>
               </QList>
             </QMenu>
@@ -182,9 +182,9 @@
                           clickable
                           @click="onWindowOpenImage(contentUrl)"
                         >
-                          <QItemSection
-                            >Открыть документ в новой вкладке</QItemSection
-                          >
+                          <QItemSection>
+                            {{ $t('archiveList.openFile') }}
+                          </QItemSection>
                         </QItem>
                         <QSeparator />
                         <QItem
@@ -192,9 +192,9 @@
                           clickable
                           @click="onCopy(contentUrl)"
                         >
-                          <QItemSection
-                            >Скопировать документ в буфер обмена</QItemSection
-                          >
+                          <QItemSection>
+                            {{ $t('archiveList.copyFile') }}
+                          </QItemSection>
                         </QItem>
                       </QList>
                     </QMenu>

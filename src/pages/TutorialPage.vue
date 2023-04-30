@@ -52,9 +52,9 @@
           <p v-show="$q.platform.is.desktop" class="text-h4">
             {{ $t('tutorial.agreement.title') }}
           </p>
-          <p class="text-body1" style="white-space: break-spaces">{{
-            $t('tutorial.agreement.body')
-          }}</p>
+          <p class="text-body1" style="white-space: break-spaces">
+            {{ $t('tutorial.agreement.body') }}
+          </p>
           <QStepperNavigation>
             <QBtn
               color="secondary"
@@ -77,22 +77,20 @@
           <p class="text-body1">{{ $t('tutorial.data.body') }}</p>
           <QSpace class="q-pa-xs" />
           <template v-if="!userComplete && !isLoggedIn">
-            <p
-              >Введите адрес своего
-              <span
-                >OIDC Issuer
-                <QTooltip
-                  >OIDC Issuer это адрес Вашего SOLID сервера</QTooltip
-                ></span
-              >
-              получения Вашего WebID:</p
-            >
+            <p>
+              {{ $t('oidc.linkNameStart') }}
+              <span>
+                {{ $t('oidc.name') }}
+                <QTooltip>{{ $t('oidc.tutorialHint') }}</QTooltip>
+              </span>
+              {{ $t('oidc.linkNameEnd') }}
+            </p>
             <OIDCIssuerComponent @on-complete="onOnlineAuthorize" />
           </template>
           <template v-else>
-            <p class="text-body1"
-              >Для подписания первого договора используйте свое имя.</p
-            >
+            <p class="text-body1">
+              {{ $t('tutorial.signHint') }}
+            </p>
             <QForm
               ref="nameForm"
               class="q-gutter-md q-mt-md"

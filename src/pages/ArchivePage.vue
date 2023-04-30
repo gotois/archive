@@ -40,9 +40,9 @@
       >
         <template #default>
           <template v-if="isSearch">{{ $t('archive.searchEmpty') }}</template>
-          <template v-else
-            >{{ $t('archive.empty') }}
-            Например:
+          <template v-else>
+            {{ $t('archive.empty') }}
+            {{ $t('archive.example') }}
             <br />
             <QBtn
               :to="{

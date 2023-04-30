@@ -133,9 +133,9 @@
             v-model="duration"
             default-view="Months"
             first-day-of-week="1"
-            :class="
-              $q.platform.is.mobile ? 'fullscreen full-width full-height' : ''
-            "
+            :class="{
+              'fullscreen full-width full-height': $q.platform.is.mobile,
+            }"
             range
             @update:model-value="onSelectDate"
           >
@@ -165,7 +165,7 @@
         <QTooltip>{{ $t('duration.toHint') }}</QTooltip>
       </QInput>
       <QToggle v-model="dateNoLimit" :label="$t('duration.infinity')">
-        <QTooltip>Не имеет срока завершения</QTooltip>
+        <QTooltip>{{ $t('duration.noLimit') }}</QTooltip>
       </QToggle>
     </div>
     <QFile
@@ -173,10 +173,10 @@
       :label="$t('files.type')"
       :hint="$t('files.hint')"
       accept="image/*, .pdf"
+      color="secondary"
       outlined
       multiple
       square
-      color="secondary"
       counter
     >
       <template #prepend>
@@ -191,10 +191,10 @@
       :label="$t('description.type')"
       type="textarea"
       class="no-padding"
+      color="secondary"
       outlined
       square
       autogrow
-      color="secondary"
       @focus="onFocusInput"
     >
       <template #prepend>

@@ -19,6 +19,7 @@ export default {
     search: 'Поиск договора',
     tooltip: 'Начните вводить текст',
     empty: 'Добавьте свой первый договор.',
+    example: 'Например:',
     searchEmpty: 'Ничего не найдено. Попробуйте изменить параметры поиска.',
     notfound: 'Нет результатов',
   },
@@ -64,6 +65,16 @@ export default {
       submit: 'Произвести очистку',
     },
   },
+  oidc: {
+    name: 'OIDC Issuer',
+    linkNameStart: 'Введите адрес',
+    linkNameEnd: 'для получения Вашего WebID',
+    issuerHint: 'URL Вашего SOLID провайдера',
+    tutorialHint: 'OIDC Issuer это адрес Вашего SOLID сервера',
+    login: 'Войти',
+    issuerTooltipEmpty: 'Данные необходимы для подписания договоров.',
+    issuerTooltipLogin: 'Войдите через {oidcIssuer}.',
+  },
   contract: {
     rules: 'Пожалуйста, введите тип договора',
     type: 'Тип договора',
@@ -87,6 +98,7 @@ export default {
     type: 'Примечание',
   },
   duration: {
+    noLimit: 'Не имеет срока завершения',
     from: 'Дата начала договора',
     fromHint: 'Дата подачи заявления',
     to: 'Дата окончания договора',
@@ -117,15 +129,19 @@ export default {
       title: 'Договор на использование',
       body: '',
     },
+    signHint: 'Для подписания первого договора используйте свое имя.',
     complete: 'Создать первый договор',
   },
   archiveList: {
     remove: 'Удалить',
+    getLink: 'Получить ссылку',
+    upload: 'Загрузить на POD',
     edit: 'Редактировать',
     editPod: 'Редактировать + Pod',
     openFile: 'Открыть окно документа',
     closeFile: 'Закрыть окно документа',
     shareFile: 'Поделиться документом',
+    copyFile: 'Скопировать в буфер обмена',
   },
   database: {
     fileSize:
