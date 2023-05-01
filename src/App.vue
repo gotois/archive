@@ -1,5 +1,5 @@
 <template>
-  <router-view />
+  <RouterView />
 </template>
 <script lang="ts">
 import useAuth from 'stores/auth'
@@ -11,6 +11,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
+import { RouterView } from 'vue-router'
 import { useMeta, Loading, SessionStorage } from 'quasar'
 import { EVENTS, events } from '@inrupt/solid-client-authn-browser'
 import { useRouter } from 'vue-router'
@@ -58,7 +59,7 @@ events().on(EVENTS.LOGOUT, () => {
 })
 
 events().on(EVENTS.ERROR, (error) => {
-  console.log('authn error: ', error)
+  console.log('Login error: ', error)
 })
 
 useMeta(metaData)

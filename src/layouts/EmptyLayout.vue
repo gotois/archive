@@ -8,7 +8,7 @@
       </QToolbar>
     </QHeader>
     <QPageContainer>
-      <router-view />
+      <RouterView />
     </QPageContainer>
   </QLayout>
 </template>
@@ -20,4 +20,5 @@ import {
   QToolbarTitle,
   QPageContainer,
 } from 'quasar'
+import { RouterView } from 'vue-router'
 </script>
