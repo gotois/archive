@@ -3,7 +3,6 @@ import { route } from 'quasar/wrappers'
 import { createRouter, createWebHistory } from 'vue-router'
 import useAuthStore from 'stores/auth'
 import routes from './routes'
-import solidAuth from '../services/authHelper'
 
 export default route(() => {
   const Router = createRouter({
@@ -15,7 +14,10 @@ export default route(() => {
     history: createWebHistory(process.env.VUE_ROUTER_BASE),
   })
 
-  Router.beforeEach(async (to, from) => {
+  Router.beforeEach((to, from) => {
+    if (to.name === 'login') {
+      return true
+    }
     const authStore = useAuthStore()
     if (
       !from.name &&
@@ -24,18 +26,9 @@ export default route(() => {
       to.query.state &&
       !authStore.isLoggedIn
     ) {
-      try {
-        await solidAuth({
-          redirectUrl: window.location.origin + to.path,
-        })
-        delete to.query.code
-        delete to.query.state
-        return {
-          name: to.name,
-          query: to.query,
-        }
-      } catch (e) {
-        console.error(e)
+      return {
+        ...to,
+        name: 'login',
       }
     }
     switch (to.path) {
@@ -104,13 +97,9 @@ export default route(() => {
           }
         }
         if (SessionStorage.has('restorePreviousSession')) {
-          try {
-            await solidAuth({
-              redirectUrl: window.location.origin + to.path,
-            })
-          } catch (e) {
-            console.error(e)
-            SessionStorage.remove('restorePreviousSession')
+          return {
+            ...to,
+            name: 'login',
           }
         }
         break
