@@ -27,6 +27,8 @@
       use-input
       lazy-rules
       hide-selected
+      hide-hint
+      hide-bottom-space
       fill-input
       rounded
       outlined
@@ -46,6 +48,8 @@
       name="customer"
       type="text"
       spellcheck="true"
+      hide-bottom-space
+      hide-hint
       outlined
       lazy-rules
       square
@@ -66,6 +70,8 @@
       name="email"
       spellcheck="false"
       lazy-rules
+      hide-hint
+      hide-bottom-space
       outlined
       square
       color="secondary"
@@ -171,13 +177,14 @@
     <QFile
       v-model="files"
       :label="$t('files.type')"
-      :hint="$t('files.hint')"
+      :counter="files.length ? true : false"
       accept="image/*, .pdf"
       color="secondary"
+      hide-hint
+      hide-bottom-space
       outlined
       multiple
       square
-      counter
     >
       <template #prepend>
         <QIcon name="image" />
@@ -185,13 +192,17 @@
       <template #append>
         <QIcon name="add" @click.stop />
       </template>
+      <QTooltip>{{ $t('files.hint') }}</QTooltip>
     </QFile>
     <QInput
       v-model="description"
       :label="$t('description.type')"
+      :hint="$t('description.hint')"
       type="textarea"
       class="no-padding"
       color="secondary"
+      hide-hint
+      hide-bottom-space
       outlined
       square
       autogrow
