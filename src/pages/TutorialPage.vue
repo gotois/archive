@@ -30,9 +30,9 @@
             {{ $t('tutorial.info.title') }}
           </p>
           <div
-            v-html="parse($t('tutorial.info.body'))"
             class="text-body1"
             style="white-space: break-spaces"
+            v-html="parse($t('tutorial.info.body'))"
           ></div>
           <QStepperNavigation>
             <QBtn
@@ -55,9 +55,9 @@
             {{ $t('tutorial.agreement.title') }}
           </p>
           <div
-            v-html="parse($t('tutorial.agreement.body'))"
             class="text-body1"
             style="white-space: break-spaces"
+            v-html="parse($t('tutorial.agreement.body'))"
           >
           </div>
           <QStepperNavigation>
@@ -196,11 +196,14 @@ const OIDCIssuerComponent = defineAsyncComponent(
   () => import('components/OIDCIssuerComponent.vue'),
 )
 
-const { description, version, productName, bugs } = pkg
 const $q = useQuasar()
 const router = useRouter()
 const podStore = usePodStore()
+const authStore = useAuthStore()
+const contractStore = useContractStore()
+const profileStore = useProfileStore()
 
+const { description, version, productName, bugs } = pkg
 const searchParams = new URLSearchParams(window.location.search)
 const tutorialFinalStep = 3
 const stepParam = 'step'
@@ -209,9 +212,6 @@ const step = ref(Number(searchParams.get(stepParam) ?? 1))
 const consumer = ref('')
 const email = ref('')
 const userComplete = ref(false)
-
-const authStore = useAuthStore()
-const contractStore = useContractStore()
 
 const isLoggedIn = computed(() => authStore.isLoggedIn)
 
@@ -305,7 +305,6 @@ async function onFinish() {
       contractData: newContract,
       usePod: isLoggedIn.value,
     })
-    const profileStore = useProfileStore()
     profileStore.consumerName(consumer.value)
     profileStore.consumerEmail(email.value)
     tutorialStore().tutorialComplete()
@@ -333,29 +332,13 @@ async function onFinish() {
 
 useMeta(metaData)
 
-onMounted(async () => {
+onMounted(() => {
   const { query } = router.currentRoute.value
-  const profileStore = useProfileStore()
 
   // Если пользователь отменил вход через WebId, возвращаем его на страницу подтверждения
   if (query.error === 'access_denied') {
     step.value = tutorialFinalStep
     return
-  }
-  // Если пользователь вошел через WebId, авторизуем
-  if (query.code && query.state) {
-    $q.loading.show()
-    try {
-      authStore.openIdHandleIncoming()
-      await podStore.setResourceRootUrl()
-      if (!profileStore.getConsumer) {
-        const profileName = await podStore.getProfileName()
-        profileStore.consumerName(profileName)
-      }
-    } catch (e) {
-      console.error(e)
-    }
-    $q.loading.hide()
   }
 })
 </script>

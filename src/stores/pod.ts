@@ -1,6 +1,6 @@
 import { LocalStorage } from 'quasar'
 import { defineStore } from 'pinia'
-import { fetch } from '@inrupt/solid-client-authn-browser'
+import { fetch } from '@inrupt/solid-client-authn-browser/src/defaultSession'
 import {
   buildThing,
   createSolidDataset,
@@ -13,8 +13,8 @@ import {
   saveSolidDatasetAt,
   setThing,
 } from '@inrupt/solid-client'
-import useAuthStore from 'stores/auth'
 import { FOAF, SCHEMA_INRUPT } from '@inrupt/vocab-common-rdf'
+import useAuthStore from 'stores/auth'
 import { sign } from '../services/cryptoHelper'
 import {
   formatterContract,
@@ -22,8 +22,8 @@ import {
   formatterDatasetContract,
 } from '../services/schemaHelper'
 import { db } from '../services/databaseHelper'
-import pkg from '../../package.json'
 import { ContractTable, FormatContract } from '../types/models'
+import pkg from '../../package.json'
 
 const { name } = pkg
 
@@ -42,14 +42,10 @@ export default defineStore('pod', {
       if (!resourceBaseUrl.includes('inrupt.com')) {
         const dataset = createSolidDataset()
         return saveSolidDatasetAt(resourceBaseUrl, dataset, {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
           fetch,
         })
       }
       const myBaseDataset = await getSolidDataset(resourceBaseUrl, {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         fetch,
       })
       const hasAnyContracts = getThingAll(myBaseDataset).some(({ url }) =>
@@ -57,15 +53,13 @@ export default defineStore('pod', {
       )
       if (!hasAnyContracts) {
         return saveSolidDatasetAt(resourceBaseUrl, myBaseDataset, {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
           fetch,
         })
       }
     },
     removeFromPod(url: string) {
       const separator = '.'
-      const oidcIssuer: string = LocalStorage.getItem('oidcIssuer')
+      const oidcIssuer: string = this.getOidcIssuer
       // eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars
       const [_x, ...hostIssuerHost] = new URL(oidcIssuer).host.split(separator)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars
@@ -76,17 +70,13 @@ export default defineStore('pod', {
       }
 
       return deleteSolidDataset(url, {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        fetch: fetch,
+        fetch,
       })
     },
     async removeContractsDataset() {
       const resourceBaseUrl = this.getResourceBaseUrl
       const myDataset = await getSolidDataset(resourceBaseUrl, {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        fetch: fetch,
+        fetch,
       })
 
       const allThing = getThingAll(myDataset)
@@ -105,8 +95,6 @@ export default defineStore('pod', {
         throw new Error('WebId is empty')
       }
       const podsUrl = await getPodUrlAll(authStore.webId, {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         fetch,
       })
       if (podsUrl.length === 0) {
@@ -121,10 +109,11 @@ export default defineStore('pod', {
       this.resourceRootUrl = podsUrl[selectedPod]
     },
     async getProfileName() {
+      if (!this.resourceRootUrl) {
+        throw new Error('Empty resourceRootUrl')
+      }
       const resourceProfileUrl = this.resourceRootUrl + 'profile'
       const profileDataset = await getSolidDataset(resourceProfileUrl, {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         fetch,
       })
       const authStore = useAuthStore()
@@ -137,8 +126,6 @@ export default defineStore('pod', {
     async updateIntoPod(item: FormatContract) {
       const resourceUrl = item.sameAs
       let dataset = await getSolidDataset(resourceUrl, {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         fetch,
       })
       const instrument = getThing(dataset, resourceUrl + '#instrument')
@@ -150,8 +137,6 @@ export default defineStore('pod', {
       dataset = setThing(dataset, modify.build())
 
       return saveSolidDatasetAt(resourceUrl, dataset, {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         fetch,
       })
     },
@@ -182,8 +167,6 @@ export default defineStore('pod', {
       )
 
       return saveSolidDatasetAt(resourceName, solidDatasetContract, {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         fetch,
       })
     },
@@ -194,6 +177,9 @@ export default defineStore('pod', {
         throw new Error('resourceRootUrl is empty')
       }
       return state.resourceRootUrl + name + '/'
+    },
+    getOidcIssuer(): string {
+      return LocalStorage.getItem('oidcIssuer')
     },
   },
 })

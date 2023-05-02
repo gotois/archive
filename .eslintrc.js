@@ -46,5 +46,6 @@ module.exports = {
     'prettier/prettier': 'error',
     quotes: ['warn', 'single', {avoidEscape: true}],
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'vue/no-v-html': 'off',
   },
 }

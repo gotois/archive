@@ -346,15 +346,13 @@ import {
 } from 'quasar'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { logout } from '@inrupt/solid-client-authn-browser'
+import { logout } from '@inrupt/solid-client-authn-browser/src/defaultSession'
 import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
-import usePodStore from 'stores/pod'
 import useProfileStore from 'stores/profile'
 import OIDCIssuerComponent from 'components/OIDCIssuerComponent.vue'
 import pkg from '../../package.json'
 import twaManifest from '../../twa-manifest.json'
-import solidAuth from '../services/authHelper'
 
 const { version } = pkg
 const { packageId } = twaManifest
@@ -414,16 +412,10 @@ async function onSearch(searchText: string) {
 async function onOnlineAuthorize(oidcIssuer: string) {
   $q.loading.show()
   SessionStorage.set('restorePreviousSession', true)
-  SessionStorage.remove('connect')
-  try {
-    await solidAuth({
-      oidcIssuer: oidcIssuer,
-    })
-    authStore.openIdHandleIncoming()
-    await usePodStore().setResourceRootUrl()
-  } finally {
-    $q.loading.hide()
-  }
+  LocalStorage.set('oidcIssuer', oidcIssuer)
+  await router.push({
+    name: 'login',
+  })
 }
 
 async function loginToPod() {

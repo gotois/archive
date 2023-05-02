@@ -157,7 +157,6 @@ const limit = ref(5)
 const loadingVisible = ref(true)
 const scrollAreaRef = ref<QScrollArea>(null)
 const isLoggedIn = computed(() => authStore.isLoggedIn)
-
 const isSearch = computed(() => Boolean(router.currentRoute.value.query.filter))
 const archiveEmptyText = computed(() => {
   const randomContractType = Math.floor(

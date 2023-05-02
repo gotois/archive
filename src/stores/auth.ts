@@ -1,7 +1,7 @@
 import { LocalStorage, SessionStorage } from 'quasar'
 import { defineStore } from 'pinia'
 import { WebId } from '@inrupt/solid-client'
-import { getDefaultSession } from '@inrupt/solid-client-authn-browser'
+import { getDefaultSession } from '@inrupt/solid-client-authn-browser/src/defaultSession'
 import { getHash } from '../services/cryptoHelper'
 
 interface Store {

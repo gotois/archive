@@ -3,7 +3,7 @@ import {
   getDefaultSession,
   handleIncomingRedirect,
   login,
-} from '@inrupt/solid-client-authn-browser'
+} from '@inrupt/solid-client-authn-browser/src/defaultSession'
 
 const CLIENT_NAME = 'Contracts'
 const TOKEN_TYPE = 'DPoP'
@@ -17,7 +17,7 @@ interface AuthData {
 export default async ({
   redirectUrl = window.location.href,
   oidcIssuer = LocalStorage.getItem('oidcIssuer'),
-  restorePreviousSession = SessionStorage.has('restorePreviousSession'),
+  restorePreviousSession,
 }: AuthData) => {
   if (!oidcIssuer) {
     throw new Error('oidcIssuer empty')

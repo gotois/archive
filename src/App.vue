@@ -13,14 +13,18 @@ export default {
 <script lang="ts" setup>
 import { RouterView } from 'vue-router'
 import { useMeta, Loading, SessionStorage } from 'quasar'
-import { EVENTS, events } from '@inrupt/solid-client-authn-browser'
+import { EVENTS } from '@inrupt/solid-client-authn-core'
+import { getDefaultSession } from '@inrupt/solid-client-authn-browser/src/defaultSession'
 import { useRouter } from 'vue-router'
 import usePodStore from 'stores/pod'
 import useAuthStore from 'stores/auth'
+import useProfileStore from 'stores/profile'
 
 const router = useRouter()
 const podStore = usePodStore()
 const authStore = useAuthStore()
+const profileStore = useProfileStore()
+const events = getDefaultSession().events
 
 const metaData = {
   meta: {
@@ -33,7 +37,7 @@ const metaData = {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
-events().on(EVENTS.SESSION_RESTORED, async (urlString) => {
+events.on(EVENTS.SESSION_RESTORED, async (urlString) => {
   SessionStorage.remove('connect')
   const url = new URL(urlString)
   authStore.openIdHandleIncoming()
@@ -46,20 +50,24 @@ events().on(EVENTS.SESSION_RESTORED, async (urlString) => {
 })
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
-events().on(EVENTS.LOGIN, async () => {
+events.on(EVENTS.LOGIN, async () => {
   authStore.openIdHandleIncoming()
   await podStore.setResourceRootUrl()
+  if (!profileStore.getConsumer) {
+    const profileName = await podStore.getProfileName()
+    profileStore.consumerName(profileName)
+  }
   SessionStorage.remove('connect')
   SessionStorage.set('restorePreviousSession', true)
 })
 
-events().on(EVENTS.LOGOUT, () => {
+events.on(EVENTS.LOGOUT, () => {
   SessionStorage.remove('connect')
   SessionStorage.remove('restorePreviousSession')
 })
 
-events().on(EVENTS.ERROR, (error) => {
-  console.log('Login error: ', error)
+events.on(EVENTS.ERROR, (error) => {
+  console.error('Login error: ', error)
 })
 
 useMeta(metaData)
