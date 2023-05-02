@@ -151,7 +151,9 @@
                     size="240px"
                     class="absolute-center"
                     color="info"
-                  />
+                  >
+                    <ImageContextMenu :content-url="contentUrl" />
+                  </QIcon>
                 </template>
                 <template v-else-if="isContentHeic(contentUrl)">
                   <QIcon
@@ -159,7 +161,9 @@
                     size="240px"
                     class="absolute-center"
                     color="info"
-                  />
+                  >
+                    <ImageContextMenu :content-url="contentUrl" />
+                  </QIcon>
                 </template>
                 <template v-else>
                   <QImg
@@ -175,29 +179,7 @@
                     no-spinner
                     no-native-menu
                   >
-                    <QMenu touch-position context-menu>
-                      <QList dense style="min-width: 100px">
-                        <QItem
-                          v-close-popup
-                          clickable
-                          @click="onWindowOpenImage(contentUrl)"
-                        >
-                          <QItemSection>
-                            {{ $t('archiveList.openFile') }}
-                          </QItemSection>
-                        </QItem>
-                        <QSeparator />
-                        <QItem
-                          v-close-popup
-                          clickable
-                          @click="onCopy(contentUrl)"
-                        >
-                          <QItemSection>
-                            {{ $t('archiveList.copyFile') }}
-                          </QItemSection>
-                        </QItem>
-                      </QList>
-                    </QMenu>
+                    <ImageContextMenu :content-url="contentUrl" />
                   </QImg>
                 </template>
               </QScrollArea>
@@ -231,7 +213,7 @@
             text-color="primary"
             :icon="shareIcon"
             class="absolute"
-            style="top: 0px; left: 18px; transform: translateY(-50%)"
+            style="top: 0; left: 18px; transform: translateY(-50%)"
             @click="onShareItem(item)"
           >
             <QTooltip>
@@ -293,13 +275,13 @@ import {
   QPagination,
   QVirtualScroll,
   copyToClipboard,
-  openURL,
   uid,
 } from 'quasar'
 import { event as createEvent, default as icalendar } from 'ical-browser'
 import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
 import usePodStore from 'stores/pod'
+import ImageContextMenu from 'components/ImageContextMenu.vue'
 import { FormatContract, ContractTable } from '../types/models'
 import { showPDFInPopup } from '../services/popup'
 import { isDateNotOk, formatterDate } from '../services/dateHelper'
@@ -473,34 +455,6 @@ async function uploadArchive(item: FormatContract) {
 
 function editArchive(item: FormatContract) {
   emit('onEdit', item)
-}
-
-async function onCopy(contentUrl: string) {
-  const base64Response = await fetch(contentUrl)
-  const blob = await base64Response.blob()
-  const clipboardItem = new ClipboardItem({ [blob.type]: blob })
-  try {
-    await navigator.clipboard.write([clipboardItem])
-    $q.notify({
-      type: 'positive',
-      message: 'Данные сохранены в буфер обмена',
-    })
-  } catch (e) {
-    console.error(e)
-    $q.notify({
-      type: 'negative',
-      message: 'Произошла ошибка',
-    })
-  }
-}
-
-function onWindowOpenImage(contentUrl: string) {
-  openURL(contentUrl, undefined, {
-    noopener: true,
-    noreferrer: true,
-    toolbar: false,
-    popup: 1,
-  })
 }
 
 function removeArchive(item: FormatContract) {
