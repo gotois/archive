@@ -29,9 +29,11 @@
           <p v-show="$q.platform.is.desktop" class="text-h4">
             {{ $t('tutorial.info.title') }}
           </p>
-          <p class="text-body1" style="white-space: break-spaces">{{
-            $t('tutorial.info.body')
-          }}</p>
+          <div
+            v-html="parse($t('tutorial.info.body'))"
+            class="text-body1"
+            style="white-space: break-spaces"
+          ></div>
           <QStepperNavigation>
             <QBtn
               color="secondary"
@@ -52,9 +54,12 @@
           <p v-show="$q.platform.is.desktop" class="text-h4">
             {{ $t('tutorial.agreement.title') }}
           </p>
-          <p class="text-body1" style="white-space: break-spaces">
-            {{ $t('tutorial.agreement.body') }}
-          </p>
+          <div
+            v-html="parse($t('tutorial.agreement.body'))"
+            class="text-body1"
+            style="white-space: break-spaces"
+          >
+          </div>
           <QStepperNavigation>
             <QBtn
               color="secondary"
