@@ -1,4 +1,4 @@
-import { Notify } from 'quasar'
+import { Notify, Platform } from 'quasar'
 import { register } from 'register-service-worker'
 
 // ServiceWorkerRegistration: https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration
@@ -20,15 +20,17 @@ register(process.env.SERVICE_WORKER_FILE, {
     console.log('Content has been cached for offline use.')
   },
   updatefound(/* registration */) {
-    Notify.create({
-      spinner: true,
-      message: 'New content is downloading',
-      timeout: 2000,
-    })
+    if (!Platform.is.firefox) {
+      Notify.create({
+        spinner: true,
+        message: 'Обновление загружено',
+        timeout: 2000,
+      })
+    }
   },
   updated(registration) {
     Notify.create({
-      message: 'New content is available',
+      message: 'Идет загрузка обновления',
       icon: 'announcement',
       actions: [
         {
@@ -46,9 +48,7 @@ register(process.env.SERVICE_WORKER_FILE, {
     })
   },
   offline() {
-    Notify.create(
-      'No internet connection found. App is running in offline mode.',
-    )
+    Notify.create('Нет связи с сетью. Приложение запущено в оффлайн режиме.')
   },
   error(err) {
     console.error('Error during service worker registration:', err)

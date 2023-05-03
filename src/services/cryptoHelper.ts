@@ -74,7 +74,7 @@ export function createAndSignPresentation({
 }
 
 export async function generateKeyPair(): Promise<KeysTable> {
-  const newKeyPair = await Ed25519VerificationKey2020.generate()
+  const newKeyPair = await Ed25519VerificationKey2020.generate({})
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   await keys.add(newKeyPair)
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return

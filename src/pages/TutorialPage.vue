@@ -260,14 +260,27 @@ async function onOnlineAuthorize(oidcIssuer: string) {
 async function onFinish() {
   $q.loading.show()
 
-  const keyPair = await generateKeyPair()
-  // если нет доступа к WebID, используем для идентификации fingerprint от keyPair
-  if (!authStore.webId) {
-    /* eslint-disable @typescript-eslint/no-unsafe-call,@typescript-eslint/ban-ts-comment */
-    // @ts-ignore
-    authStore.webId = 'did:key:' + (keyPair.fingerprint() as string)
-    /* eslint-enable @typescript-eslint/no-unsafe-call */
+  try {
+    const keyPair = await generateKeyPair()
+    // если нет доступа к WebID, используем для идентификации fingerprint от keyPair
+    if (!authStore.webId) {
+      /* eslint-disable @typescript-eslint/no-unsafe-call,@typescript-eslint/ban-ts-comment */
+      // @ts-ignore
+      authStore.webId = 'did:key:' + (keyPair.fingerprint() as string)
+      /* eslint-enable @typescript-eslint/no-unsafe-call */
+    }
+  } catch (e) {
+    $q.notify({
+      type: 'error',
+      color: 'negative',
+      message: 'Генерация ключей закончилась ошибкой: ' + String(e.message),
+      position: 'center',
+      progress: false,
+    })
+    $q.loading.hide()
+    return
   }
+
   const keysJSON = await exportKeyPair()
   const status = exportFile('keys.json', keysJSON)
   if (status) {
