@@ -39,14 +39,15 @@ export default route(() => {
 
   Router.beforeEach((to) => {
     const authStore = useAuthStore()
-    switch (to.name) {
-      // hack - специальная страница для сброса состояния приложения
-      case 'reset': {
-        LocalStorage.clear()
-        return {
-          name: 'tutorial',
-        }
+    // hack - специальный путь для сброса состояния приложения
+    if (to.path === '/reset') {
+      LocalStorage.clear()
+      SessionStorage.clear()
+      return {
+        name: 'tutorial',
       }
+    }
+    switch (to.name) {
       case 'privacy': {
         return true
       }
