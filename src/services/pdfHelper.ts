@@ -34,7 +34,10 @@ async function resizeImageA4(dataUrl: string) {
   }
 }
 
-export async function createContractPDF(html: string) {
+export async function createContractPDF(
+  html: string,
+  fileName = 'contract.pdf',
+) {
   const text = convert(html, {
     wordwrap: 80,
   })
@@ -43,9 +46,11 @@ export async function createContractPDF(html: string) {
     template: privacyNotice,
     inputs,
   })
-  const blob = new Blob([pdf.buffer], { type: 'application/pdf' })
+  const file = new File([pdf.buffer], fileName, {
+    type: 'application/pdf',
+  })
 
-  return readFilesPromise([blob])
+  return readFilesPromise([file])
 }
 
 export async function createPDF(object: FormatContract) {

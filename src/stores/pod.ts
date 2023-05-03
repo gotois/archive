@@ -38,6 +38,9 @@ export default defineStore('pod', {
   actions: {
     async initPod() {
       const resourceBaseUrl = this.getResourceBaseUrl
+      if (!resourceBaseUrl) {
+        throw new Error('initPod cannot use empty resourceRootUrl')
+      }
       // hack - у inrupt.net и других провайдеров, при первичной инициализации падает getSolidDataset
       if (!resourceBaseUrl.includes('inrupt.com')) {
         const dataset = createSolidDataset()
@@ -101,11 +104,11 @@ export default defineStore('pod', {
         throw new Error('Pods is empty')
       }
       const selectedPod = 0
-      if (podsUrl.length > 1) {
-        // todo здесь пользователь должен бы самостоятельно выбирать какой Pod будет использовать
-        // ...
-        // selectedPod = 1 || 2 || ...
-      }
+      // todo здесь пользователь должен бы самостоятельно выбирать какой Pod будет использовать
+      // if (podsUrl.length > 1) {
+      // ...
+      // selectedPod = 1 || 2 || ...
+      // }
       this.resourceRootUrl = podsUrl[selectedPod]
     },
     async getProfileName() {

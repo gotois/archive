@@ -282,22 +282,21 @@ async function onFinish() {
     })
   }
 
-  const response = await fetch('docs/privacy.md')
-  const md = await response.text()
-
-  const html = parse(md)
-  const contractPDF = await createContractPDF(html)
-  const newContract: ContractTable = {
-    agent_name: consumer.value,
-    agent_email: email.value,
-    participant_name: productName + ' ' + version,
-    participant_email: bugs.email,
-    instrument_name: 'Пользовательское соглашение',
-    instrument_description: description,
-    startTime: new Date(),
-    images: contractPDF,
-  }
   try {
+    const response = await fetch('docs/privacy.md')
+    const md = await response.text()
+    const html = parse(md)
+    const contractPDF = await createContractPDF(html)
+    const newContract: ContractTable = {
+      agent_name: consumer.value,
+      agent_email: email.value,
+      participant_name: productName + ' ' + version,
+      participant_email: bugs.email,
+      instrument_name: 'Пользовательское соглашение',
+      instrument_description: description,
+      startTime: new Date(),
+      images: contractPDF,
+    }
     if (isLoggedIn.value) {
       await podStore.initPod()
     }
@@ -320,7 +319,7 @@ async function onFinish() {
     $q.notify({
       type: 'error',
       color: 'negative',
-      message: 'Что-то пошло не так',
+      message: 'Что-то пошло не так: ' + String(e.message),
       position: 'center',
       progress: false,
       timeout: 99999999999,

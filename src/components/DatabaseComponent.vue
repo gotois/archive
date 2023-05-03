@@ -141,6 +141,18 @@ async function onExportDB() {
   })
   const filename = exportName.replace(/\.zip$/, '') + '.zip'
 
-  return exportFile(filename, content)
+  const status = exportFile(filename, content)
+  if (status) {
+    $q.notify({
+      type: 'positive',
+      message: 'Файл сохранен',
+    })
+  } else {
+    $q.notify({
+      type: 'error',
+      color: 'negative',
+      message: 'Ошибка при экспорте файла',
+    })
+  }
 }
 </script>
