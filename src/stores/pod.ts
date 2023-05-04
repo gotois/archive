@@ -29,13 +29,19 @@ const { name } = pkg
 
 interface State {
   resourceRootUrl: string
+  oidcIssuer: string
 }
 
 export default defineStore('pod', {
   state: (): State => ({
     resourceRootUrl: '',
+    oidcIssuer: LocalStorage.getItem('oidcIssuer') ?? '',
   }),
   actions: {
+    setOIDCIssuer(oidcIssuer: string) {
+      this.oidcIssuer = oidcIssuer
+      LocalStorage.set('oidcIssuer', oidcIssuer)
+    },
     async initPod() {
       const resourceBaseUrl = this.getResourceBaseUrl
       if (!resourceBaseUrl) {
@@ -181,8 +187,8 @@ export default defineStore('pod', {
       }
       return state.resourceRootUrl + name + '/'
     },
-    getOidcIssuer(): string {
-      return LocalStorage.getItem('oidcIssuer')
+    getOidcIssuer(state): string {
+      return state.oidcIssuer
     },
   },
 })

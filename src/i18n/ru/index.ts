@@ -8,6 +8,10 @@ export default {
     description: 'Упс. Здесь пусто...',
     submit: 'Вернуться на главную',
   },
+  login: {
+    oidcIssuer: 'Ваш OIDC Issuer: {oidcIssuer}',
+    oidcIssuerInput: 'Введите адрес своего OIDC Issuer:',
+  },
   auth: {
     caption: 'Введите ключ',
   },

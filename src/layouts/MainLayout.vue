@@ -299,15 +299,6 @@
         v-model="showSearch"
         @on-search="onSearch"
       />
-      <QDialog v-model="dialogOIDCIssuer" persistent square>
-        <QCard class="q-pa-md">
-          <QToolbar>
-            <QToolbarTitle>Введите адрес своего OIDC Issuer</QToolbarTitle>
-            <QBtn v-close-popup flat round dense icon="close" />
-          </QToolbar>
-          <OIDCIssuerComponent @on-complete="onOnlineAuthorize" />
-        </QCard>
-      </QDialog>
     </QPageContainer>
   </QLayout>
 </template>
@@ -319,7 +310,6 @@ import {
   SessionStorage,
   openURL,
   useQuasar,
-  QCard,
   QDialog,
   QBtn,
   QPageContainer,
@@ -350,7 +340,6 @@ import { logout } from '@inrupt/solid-client-authn-browser/src/defaultSession'
 import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
-import OIDCIssuerComponent from 'components/OIDCIssuerComponent.vue'
 import pkg from '../../package.json'
 import twaManifest from '../../twa-manifest.json'
 
@@ -383,7 +372,6 @@ const profileOpen = ref(false)
 const otpOpen = ref(false)
 const confirm = ref(false)
 const showSearch = ref(false)
-const dialogOIDCIssuer = ref(false)
 const navigatorVersion = ref(version)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 const otp = ref(null)
@@ -409,20 +397,12 @@ async function onSearch(searchText: string) {
   showSearch.value = false
 }
 
-async function onOnlineAuthorize(oidcIssuer: string) {
-  $q.loading.show()
+function loginToPod() {
+  SessionStorage.remove('connect')
   SessionStorage.set('restorePreviousSession', true)
-  LocalStorage.set('oidcIssuer', oidcIssuer)
-  await router.push({
+  return router.push({
     name: 'login',
   })
-}
-
-async function loginToPod() {
-  if (LocalStorage.has('oidcIssuer')) {
-    return onOnlineAuthorize(LocalStorage.getItem('oidcIssuer'))
-  }
-  dialogOIDCIssuer.value = true
 }
 
 async function logOutFromPod() {
