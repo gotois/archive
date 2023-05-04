@@ -101,18 +101,28 @@
         square
         outline
         cover
-        text-color="grey-5"
-        size="md"
-        icon="event"
-        class="q-ml-xs q-mr-xs q-field__control col"
+        no-wrap
+        no-icon-animation
+        color="grey-6"
+        class="my-dropdown col"
       >
         <template v-if="$q.platform.is.mobile" #label>
-          <div class="row q-ml-md items-center text-caption">
-            {{ duration.from }}
-            <template v-if="!dateNoLimit && duration.from !== duration.to">
-              - {{ duration.to }}
-            </template>
+          <div class="row no-wrap">
+            <QIcon left name="event" color="grey-6" />
+            <span class="text-caption text-grey-8">
+              {{ duration.from }}
+              <template v-if="!dateNoLimit && duration.from !== duration.to">
+                - {{ duration.to }}
+              </template>
+            </span>
           </div>
+          <QSeparator vertical spaced inset />
+          <QToggle
+            v-model="dateNoLimit"
+            checked-icon="hourglass_disabled"
+            unchecked-icon="date_range"
+            size="lg"
+          />
         </template>
         <template v-if="dateNoLimit">
           <QDate
@@ -170,7 +180,11 @@
       >
         <QTooltip>{{ $t('duration.toHint') }}</QTooltip>
       </QInput>
-      <QToggle v-model="dateNoLimit" :label="$t('duration.infinity')">
+      <QToggle
+        v-if="!$q.platform.is.mobile"
+        v-model="dateNoLimit"
+        :label="$t('duration.infinity')"
+      >
         <QTooltip>{{ $t('duration.noLimit') }}</QTooltip>
       </QToggle>
     </div>
@@ -240,6 +254,7 @@ import {
   QForm,
   QBtnDropdown,
   QSelect,
+  QSeparator,
   QBtn,
   QIcon,
   QInput,
@@ -451,3 +466,8 @@ async function onSubmit() {
   }
 }
 </script>
+<style lang="scss">
+.my-dropdown .q-btn__content.col {
+  justify-content: space-between;
+}
+</style>
