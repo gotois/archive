@@ -234,7 +234,7 @@
     <template v-if="paginationCount > 0" #after>
       <QSeparator class="q-ma-md" />
       <QPagination
-        v-model="currentPage"
+        v-model="page"
         :max="paginationCount"
         :max-pages="$q.platform.is.desktop ? 10 : 5"
         :direction-links="paginationCount > 10"
@@ -245,7 +245,7 @@
         active-design="outline"
         color="secondary"
         class="flex flex-center self-end"
-        @update:model-value="$emit('onPaginate', currentPage)"
+        @update:model-value="$emit('onPaginate', page)"
       />
     </template>
   </QVirtualScroll>
@@ -296,6 +296,10 @@ const props = defineProps({
     type: Boolean as PropType<boolean>,
     default: false,
   },
+  page: {
+    type: String as PropType<string>,
+    required: true,
+  },
   contracts: {
     type: Array as PropType<FormatContract[]>,
     required: true,
@@ -308,7 +312,7 @@ const podStore = usePodStore()
 const emit = defineEmits(['onPaginate', 'onRemove', 'onEdit'])
 
 const items = ref(props.contracts ?? [])
-const currentPage = ref(1)
+const page = ref(Number(props.page))
 const nativeShareAvailable = ref(typeof navigator.share === 'function')
 
 const isLoggedIn = computed(() => authStore.isLoggedIn)
@@ -316,6 +320,12 @@ const shareIcon = computed(() =>
   $q.platform.is.android ? 'share' : 'ios_share',
 )
 
+watch(
+  () => props.page,
+  (value) => {
+    page.value = Number(value)
+  },
+)
 watch(
   () => props.contracts,
   (newVal) => {

@@ -54,9 +54,10 @@
           :label="$t('header.create')"
         />
         <QRouteTab
-          :to="{ name: 'archive', query: { page: 1 } }"
+          :to="{ name: 'archive' }"
           icon="archive"
           :label="$t('header.archive')"
+          @click="onArchiveRoute"
         >
           <template v-if="isLoggedIn">
             <QBadge color="secondary" text-color="white" floating rounded>
@@ -380,6 +381,16 @@ const archiveNames = computed(() => contractStore.archiveNames)
 
 function onToggleLeftDrawer(): void {
   leftDrawerOpen.value = !leftDrawerOpen.value
+}
+
+function onArchiveRoute(e: Event) {
+  e.preventDefault()
+  return router.push({
+    name: 'archive',
+    query: {
+      page: 1,
+    },
+  })
 }
 
 async function onSearch(searchText: string) {

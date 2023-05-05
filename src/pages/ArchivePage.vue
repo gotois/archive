@@ -16,6 +16,7 @@
         :style="{
           'max-width': $q.platform.is.desktop ? '720px' : 'auto',
         }"
+        :page="currentPage"
         :pagination-count="isContractsEmpty ? 0 : paginationCount"
         @on-paginate="onPaginate"
         @on-remove="onRemove"
@@ -61,18 +62,16 @@
             />.
           </template>
         </template>
-        <template #action>
-          <template v-if="isSearch">
-            <QBtn
-              flat
-              align="left"
-              color="accent"
-              outline
-              :icon="$q.platform.is.desktop ? 'explore' : ''"
-              :label="$t('list.explore')"
-              :to="{ name: 'archive', query: { page: 1 } }"
-            />
-          </template>
+        <template v-if="isSearch" #action>
+          <QBtn
+            flat
+            align="left"
+            color="accent"
+            outline
+            :icon="$q.platform.is.desktop ? 'explore' : ''"
+            :label="$t('list.explore')"
+            :to="{ name: 'archive', query: { page: 1 } }"
+          />
         </template>
       </QBanner>
     </template>
@@ -111,6 +110,8 @@ import {
   h,
   onMounted,
   onBeforeMount,
+  toRef,
+  watch,
 } from 'vue'
 import { useRouter, LocationQuery } from 'vue-router'
 import {
@@ -154,6 +155,7 @@ const metaData = {
 const router = useRouter()
 const authStore = useAuthStore()
 
+const currentPage = toRef(router.currentRoute.value.query, 'page')
 const limit = ref(5)
 const loadingVisible = ref(true)
 const scrollAreaRef = ref<QScrollArea>(null)
@@ -170,6 +172,13 @@ const paginationCount = computed(() =>
   Math.ceil(contractStore.contractsCount / limit.value),
 )
 const isContractsEmpty = computed(() => contracts.value.length === 0)
+
+watch(
+  () => router.currentRoute.value.query,
+  (value) => {
+    currentPage.value = String(value.page)
+  },
+)
 
 useMeta(metaData)
 
