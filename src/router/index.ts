@@ -73,7 +73,6 @@ export default route(() => {
           !LocalStorage.has('code') ||
           (LocalStorage.has('code') && authStore.pinIsLoggedIn)
         ) {
-          console.log('to archive')
           return {
             name: 'archive',
             query: { page: 1 },

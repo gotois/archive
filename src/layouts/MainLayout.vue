@@ -11,16 +11,6 @@
           @click="onToggleLeftDrawer"
         />
         <QToolbarTitle class="text-black-9 text-center non-selectable">
-          <template v-if="isLoggedIn">
-            <QBadge rounded color="green">
-              <QTooltip>Вы подключены к SOLID серверу</QTooltip>
-            </QBadge>
-          </template>
-          <template v-else>
-            <QBadge rounded color="yellow">
-              <QTooltip>Вы не подключены к SOLID серверу</QTooltip>
-            </QBadge>
-          </template>
           {{ $t('header.title') }}
           <QBadge
             outline
@@ -53,21 +43,28 @@
       <QTabs
         shrink
         stretch
-        inline-label
-        outside-arrows
+        :inline-label="!$q.platform.is.desktop"
         mobile-arrows
-        align="center"
+        :align="$q.platform.is.desktop ? 'center' : 'justify'"
       >
         <QRouteTab
           :to="{ name: 'create' }"
           icon="create"
+          exact
           :label="$t('header.create')"
         />
         <QRouteTab
           :to="{ name: 'archive', query: { page: 1 } }"
           icon="archive"
           :label="$t('header.archive')"
-        />
+        >
+          <template v-if="isLoggedIn">
+            <QBadge color="secondary" text-color="white" floating rounded>
+              <!-- todo: здесь число не выгруженных на SOLID договоров -->
+              <QTooltip>Вы подключены к SOLID серверу</QTooltip>
+            </QBadge>
+          </template>
+        </QRouteTab>
       </QTabs>
     </QHeader>
     <QDrawer v-model="leftDrawerOpen" side="left" show-if-above bordered>

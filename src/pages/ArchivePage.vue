@@ -110,6 +110,7 @@ import {
   defineAsyncComponent,
   h,
   onMounted,
+  onBeforeMount,
 } from 'vue'
 import { useRouter, LocationQuery } from 'vue-router'
 import {
@@ -256,8 +257,15 @@ async function updateContracts({
   loadingVisible.value = false
 }
 
+router.afterEach((to) => updateContracts(to.query))
+
+onBeforeMount(() => {
+  if (!router.currentRoute.value.query.page) {
+    router.currentRoute.value.query.page = '1'
+  }
+})
+
 onMounted(async () => {
-  router.afterEach((to) => updateContracts(to.query))
   void updateContracts(router.currentRoute.value.query)
 
   if (profileStore.consumer) {
