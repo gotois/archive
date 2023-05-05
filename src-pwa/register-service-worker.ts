@@ -1,5 +1,8 @@
-import { Notify, Platform } from 'quasar'
+import { Notify, SessionStorage } from 'quasar'
 import { register } from 'register-service-worker'
+import pkg from '../package.json'
+
+const { version } = pkg
 
 // ServiceWorkerRegistration: https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration
 
@@ -20,7 +23,9 @@ register(process.env.SERVICE_WORKER_FILE, {
     console.log('Content has been cached for offline use.')
   },
   updatefound(/* registration */) {
-    if (!Platform.is.firefox) {
+    const prevVersion = SessionStorage.getItem('version')
+    if (prevVersion !== version) {
+      SessionStorage.set('version', version)
       Notify.create({
         spinner: true,
         message: 'Обновление загружено',
