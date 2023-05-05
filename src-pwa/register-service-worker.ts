@@ -1,4 +1,4 @@
-import { Notify, SessionStorage } from 'quasar'
+import { Notify, LocalStorage } from 'quasar'
 import { register } from 'register-service-worker'
 import pkg from '../package.json'
 
@@ -23,9 +23,9 @@ register(process.env.SERVICE_WORKER_FILE, {
     console.log('Content has been cached for offline use.')
   },
   updatefound(/* registration */) {
-    const prevVersion = SessionStorage.getItem('version')
+    const prevVersion = LocalStorage.getItem('version')
     if (prevVersion !== version) {
-      SessionStorage.set('version', version)
+      LocalStorage.set('version', version)
       Notify.create({
         spinner: true,
         message: 'Обновление загружено',

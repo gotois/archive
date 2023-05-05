@@ -2,9 +2,7 @@
   <QLayout view="hHr LpR lfr">
     <QHeader bordered class="bg-white text-primary" height-hint="98">
       <QToolbar>
-        <QToolbarTitle class="text-black-9 text-center">
-          {{ $t('header.title') }}
-        </QToolbarTitle>
+        <ToolbarTitleComponent />
       </QToolbar>
     </QHeader>
     <QPageContainer>
@@ -13,12 +11,7 @@
   </QLayout>
 </template>
 <script lang="ts" setup>
-import {
-  QLayout,
-  QHeader,
-  QToolbar,
-  QToolbarTitle,
-  QPageContainer,
-} from 'quasar'
+import { QLayout, QHeader, QToolbar, QPageContainer } from 'quasar'
 import { RouterView } from 'vue-router'
+import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
 </script>

@@ -10,18 +10,7 @@
           aria-label="Settings"
           @click="onToggleLeftDrawer"
         />
-        <QToolbarTitle class="text-black-9 text-center non-selectable">
-          {{ $t('header.title') }}
-          <QBadge
-            outline
-            rounded
-            align="top"
-            color="accent"
-            class="absolute q-ml-xs"
-          >
-            {{ $t('navigation.version') }}{{ navigatorVersion }}
-          </QBadge>
-        </QToolbarTitle>
+        <ToolbarTitleComponent />
         <QBtn
           flat
           round
@@ -325,7 +314,6 @@ import {
   QBadge,
   QTabs,
   QRouteTab,
-  QToolbarTitle,
   QToolbar,
   QHeader,
   QLayout,
@@ -337,10 +325,9 @@ import { logout } from '@inrupt/solid-client-authn-browser/src/defaultSession'
 import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
-import pkg from '../../package.json'
+import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
 import twaManifest from '../../twa-manifest.json'
 
-const { version } = pkg
 const { packageId } = twaManifest
 
 const DatabaseRemoveComponent = defineAsyncComponent(
@@ -369,7 +356,6 @@ const profileOpen = ref(false)
 const otpOpen = ref(false)
 const confirm = ref(false)
 const showSearch = ref(false)
-const navigatorVersion = ref(version)
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 const otp = ref(null)
 const { consumer, email } = storeToRefs(profileStore)
