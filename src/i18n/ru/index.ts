@@ -33,7 +33,7 @@ export default {
     archive: 'Архив',
   },
   navigation: {
-    version: 'v.',
+    version: 'v.{version}',
     title: 'Настройки',
     feedback: {
       label: 'Оставить отзыв о приложении',

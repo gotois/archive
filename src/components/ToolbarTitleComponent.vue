@@ -8,7 +8,7 @@
       align="top"
       color="accent"
       class="absolute q-ml-xs cursor-pointer"
-      :label="$t('navigation.version') + navigatorVersion"
+      :label="$t('navigation.version', { version: navigatorVersion })"
       @click="onOpenRepo"
     />
   </QToolbarTitle>
