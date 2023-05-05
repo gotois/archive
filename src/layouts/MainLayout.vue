@@ -50,7 +50,6 @@
         <QRouteTab
           :to="{ name: 'create' }"
           icon="create"
-          exact
           :label="$t('header.create')"
         />
         <QRouteTab
@@ -59,12 +58,12 @@
           :label="$t('header.archive')"
           @click="onArchiveRoute"
         >
-          <template v-if="isLoggedIn">
-            <QBadge color="secondary" text-color="white" floating rounded>
-              <!-- todo: здесь число не выгруженных на SOLID договоров -->
-              <QTooltip>Вы подключены к SOLID серверу</QTooltip>
-            </QBadge>
-          </template>
+          <QBadge color="secondary" text-color="white" floating rounded>
+            <template v-if="contractsCount">
+              {{ contractsCount > 999 ? '999+' : contractsCount }}
+            </template>
+            <QTooltip v-if="isLoggedIn">Вы подключены к SOLID серверу</QTooltip>
+          </QBadge>
         </QRouteTab>
       </QTabs>
     </QHeader>
@@ -377,6 +376,7 @@ const { consumer, email } = storeToRefs(profileStore)
 
 const hasCode = computed(() => authStore.hasCode)
 const isLoggedIn = computed(() => authStore.isLoggedIn)
+const contractsCount = computed(() => contractStore.contractsCount)
 const archiveNames = computed(() => contractStore.archiveNames)
 
 function onToggleLeftDrawer(): void {

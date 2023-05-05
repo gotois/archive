@@ -105,7 +105,6 @@
 import {
   ref,
   computed,
-  getCurrentInstance,
   defineAsyncComponent,
   h,
   onMounted,
@@ -141,8 +140,6 @@ const ArchiveListComponent = defineAsyncComponent({
   }),
 })
 
-// eslint-disable-next-line @typescript-eslint/unbound-method
-const { $t } = getCurrentInstance().appContext.config.globalProperties
 const $q = useQuasar()
 const contractStore = useContractStore()
 const podStore = usePodStore()
@@ -152,11 +149,12 @@ const metaData = {
   'title': 'Архив договоров',
   'og:title': 'Архив договоров',
 }
+const LIMIT = 5
+
 const router = useRouter()
 const authStore = useAuthStore()
 
 const currentPage = toRef(router.currentRoute.value.query, 'page')
-const limit = ref(5)
 const loadingVisible = ref(true)
 const scrollAreaRef = ref<QScrollArea>(null)
 const isLoggedIn = computed(() => authStore.isLoggedIn)
@@ -168,9 +166,17 @@ const archiveEmptyText = computed(() => {
   return contractTypes[randomContractType]
 })
 const contracts = computed(() => contractStore.formatContracts)
-const paginationCount = computed(() =>
-  Math.ceil(contractStore.contractsCount / limit.value),
-)
+const paginationCount = computed(() => {
+  switch (router.currentRoute.value.name) {
+    case 'search':
+    case 'filter': {
+      return Math.ceil(contracts.value.length / LIMIT)
+    }
+    default: {
+      return Math.ceil(contractStore.getContractsCount / LIMIT)
+    }
+  }
+})
 const isContractsEmpty = computed(() => contracts.value.length === 0)
 
 watch(
@@ -236,7 +242,7 @@ async function updateContracts({
   filter,
 }: LocationQuery | { page: number; filter: string }) {
   page = Number(page || 1)
-  const offset = (page - 1) * limit.value
+  const offset = (page - 1) * LIMIT
   const query = String(filter ?? '')
 
   switch (router.currentRoute.value.name) {
@@ -244,7 +250,7 @@ async function updateContracts({
       await contractStore.searchFromContracts({
         query,
         offset,
-        limit: limit.value,
+        limit: LIMIT,
       })
       break
     }
@@ -255,7 +261,7 @@ async function updateContracts({
     default: {
       await contractStore.loadAllContracts({
         offset,
-        limit: limit.value,
+        limit: LIMIT,
       })
       break
     }

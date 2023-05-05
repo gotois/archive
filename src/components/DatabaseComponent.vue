@@ -68,7 +68,7 @@ const $q = useQuasar()
 const contractStore = useContractStore()
 
 const file = ref<File>()
-const contractsCount = computed(() => contractStore.contractsCount)
+const contractsCount = computed(() => contractStore.contracts.length)
 
 function rejectedEntries() {
   $q.notify({

@@ -1,3 +1,4 @@
+import { SessionStorage } from 'quasar'
 import { defineStore } from 'pinia'
 import usePodStore from './pod'
 import { db } from '../services/databaseHelper'
@@ -15,9 +16,13 @@ export default defineStore('contracts', {
   state: (): Store => ({
     contracts: [],
     contractNames: new Map(),
-    contractsCount: 0,
+    contractsCount: SessionStorage.getItem('contractsCount') ?? 0,
   }),
   actions: {
+    setContractsCount(count: number) {
+      this.contractsCount = count
+      SessionStorage.set('contractsCount', count)
+    },
     async addContract({
       contractData,
       usePod = false,
@@ -28,7 +33,12 @@ export default defineStore('contracts', {
       this.contracts.push(contractData)
 
       // Save to IndexedDb
-      await db.add(contractData)
+      const countIndex = await db.add(contractData)
+      if (countIndex === 0) {
+        return Promise.reject('Cannot add this item')
+      }
+      const count = await db.contracts.count()
+      this.setContractsCount(count)
 
       if (!usePod) {
         return
@@ -60,10 +70,12 @@ export default defineStore('contracts', {
       this.contracts.splice(i, 1)
 
       // Step 2: IndexedDB
-      const count = await db.remove(id)
-      if (count === 0) {
+      const removedCount = await db.remove(id)
+      if (removedCount === 0) {
         return Promise.reject('Cannot remove this item')
       }
+      const count = await db.contracts.count()
+      this.setContractsCount(count)
       if (!usePod) {
         return
       }
@@ -74,13 +86,11 @@ export default defineStore('contracts', {
       return usePodStore().removeFromPod(contractData.sameAs)
     },
     async filterFromContracts(query: string) {
-      const contracts = await db.contracts
+      this.contracts = await db.contracts
         .where('instrument_name')
         .equals(query)
         .reverse()
         .sortBy('startTime')
-      this.contractsCount = contracts.length
-      this.contracts = contracts
     },
     async searchFromContracts({
       query,
@@ -109,7 +119,6 @@ export default defineStore('contracts', {
           return score >= scoreRate
         },
       })
-      this.contractsCount = searchResults.length
       const ids = searchResults.map((results) => results.id as number)
       if (!ids) {
         return
@@ -124,19 +133,18 @@ export default defineStore('contracts', {
       offset: number
       limit: number
     }) {
-      const count: number = await db.contracts.count()
-      this.contractsCount = count
+      const count = await db.contracts.count()
+      this.setContractsCount(count)
       if (!count) {
         this.contracts = []
         return
       }
-      const contracts = await db.contracts
+      this.contracts = await db.contracts
         .orderBy('startTime')
         .reverse()
         .offset(offset)
         .limit(limit)
         .toArray()
-      this.contracts = contracts
     },
     async loadContractNames() {
       const map = new Map<string, { count: number }>()
@@ -163,6 +171,9 @@ export default defineStore('contracts', {
       })
 
       return Array.from(map)
+    },
+    getContractsCount(state) {
+      return state.contractsCount
     },
     formatContracts(state): FormatContract[] {
       return formatterContracts(state.contracts)
