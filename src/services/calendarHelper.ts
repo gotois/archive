@@ -13,6 +13,9 @@ export default async (object: FormatContract) => {
   for (const base64 of await readFilesPromise(files)) {
     attach.push(base64)
   }
+  if (!object.sameAs) {
+    console.warn('object sameAs is empty')
+  }
   const event = createEvent({
     uid: uid(), // todo нужен идентификатор транзакции на блокчейн
     url: object.sameAs ? new URL(object.sameAs) : null,

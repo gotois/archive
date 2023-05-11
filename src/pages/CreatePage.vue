@@ -71,9 +71,8 @@ async function onCreate(value: string) {
   })
 }
 
-function onRefresh(done) {
+function onRefresh(done: () => void) {
   contractForm.value.resetForm()
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   done()
 }
 

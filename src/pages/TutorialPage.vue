@@ -146,6 +146,7 @@
                   :class="{
                     'full-width': !$q.platform.is.desktop,
                   }"
+                  :loading="$q.loading.isActive"
                   icon="login"
                 />
               </QStepperNavigation>
@@ -261,10 +262,11 @@ async function onFinish() {
   $q.loading.show()
 
   try {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const keyPair = await generateKeyPair()
     // если нет доступа к WebID, используем для идентификации fingerprint от keyPair
     if (!authStore.webId) {
-      /* eslint-disable @typescript-eslint/no-unsafe-call,@typescript-eslint/ban-ts-comment */
+      /* eslint-disable @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/ban-ts-comment */
       // @ts-ignore
       authStore.webId = 'did:key:' + (keyPair.fingerprint() as string)
       /* eslint-enable @typescript-eslint/no-unsafe-call */

@@ -19,7 +19,6 @@ import {
 import { JsonLdDocumentLoader } from 'jsonld-document-loader'
 import { keys } from '../services/databaseHelper'
 import { Credential, ProofCredential } from '../types/models'
-import { KeysTable } from '../types/models'
 
 const jdl = new JsonLdDocumentLoader()
 jdl.addStatic(ed25519Ctx.CONTEXT_URL, ed25519Ctx.CONTEXT)
@@ -73,10 +72,13 @@ export function createAndSignPresentation({
   })
 }
 
-export async function generateKeyPair(): Promise<KeysTable> {
+export async function generateKeyPair(): Promise<Ed25519VerificationKey2020> {
   const newKeyPair = await Ed25519VerificationKey2020.generate({})
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-  await keys.add(newKeyPair)
+  await keys.add({
+    type: newKeyPair.type,
+    privateKeyMultibase: newKeyPair.privateKeyMultibase,
+    publicKeyMultibase: newKeyPair.publicKeyMultibase,
+  })
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return newKeyPair
 }
@@ -96,10 +98,9 @@ export async function getHash(str: string, algo = 'SHA-256') {
 
 export async function exportKeyPair() {
   const keyPair = await keys.last()
-  const exportKeys = await keyPair.export({
+  const exportKeys = keyPair.export({
     publicKey: true,
     privateKey: true,
   })
-  const jsonKeys = JSON.stringify(exportKeys, null, 2)
-  return jsonKeys
+  return JSON.stringify(exportKeys, null, 2)
 }

@@ -276,9 +276,8 @@ async function updateContracts({
   loadingVisible.value = false
 }
 
-async function onRefresh(done) {
+async function onRefresh(done: () => void) {
   await updateContracts(router.currentRoute.value.query)
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   done()
 }
 
