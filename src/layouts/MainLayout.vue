@@ -356,8 +356,7 @@ const profileOpen = ref(false)
 const otpOpen = ref(false)
 const confirm = ref(false)
 const showSearch = ref(false)
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-const otp = ref(null)
+const otp = ref<InstanceType<typeof OTPComponent> | null>(null)
 const { consumer, email } = storeToRefs(profileStore)
 
 const hasCode = computed(() => authStore.hasCode)

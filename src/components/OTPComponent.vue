@@ -41,17 +41,14 @@ const placeholder = ref(
     .split(',')
     .filter((x) => !!x),
 )
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-const otpInput = ref(null)
+const otpInput = ref<InstanceType<typeof VOtpInput> | null>(null)
 
 function onChange(value: string) {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   pin.value = value
   emit('change', value)
 }
 
 function clear() {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
   otpInput.value.clearInput()
   document
     .querySelectorAll('.otp-input')

@@ -81,8 +81,7 @@ const emit = defineEmits(['onSearch'])
 
 const $q = useQuasar()
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-const select = ref(null)
+const select = ref<InstanceType<typeof QSelect> | null>(null)
 const searchText = ref('')
 const searchOptions = ref([])
 

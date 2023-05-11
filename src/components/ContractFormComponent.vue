@@ -1,5 +1,5 @@
 <template>
-  <QPullToRefresh @refresh="onRefresh">
+  <div>
     <QForm
       ref="contractForm"
       class="q-gutter-md"
@@ -245,7 +245,7 @@
         />
       </div>
     </QForm>
-  </QPullToRefresh>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -254,7 +254,6 @@ import {
   useQuasar,
   date,
   QForm,
-  QPullToRefresh,
   QBtnDropdown,
   QSelect,
   QSeparator,
@@ -322,12 +321,6 @@ function filterOptions(val: string, update: (callback: () => void) => void) {
       (v: string) => v.toLowerCase().indexOf(needle) > -1,
     )
   })
-}
-
-function onRefresh(done) {
-  onResetForm()
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  done()
 }
 
 function onResetForm() {
@@ -474,6 +467,10 @@ async function onSubmit() {
     loadingForm.value = false
   }
 }
+
+defineExpose({
+  resetForm: onResetForm,
+})
 </script>
 <style lang="scss">
 .my-dropdown .q-btn__content.col {

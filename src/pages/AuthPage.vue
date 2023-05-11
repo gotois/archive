@@ -28,8 +28,7 @@ const metaData = {
   'og:title': 'Авторизация',
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-const otp = ref(null)
+const otp = ref<InstanceType<typeof OTPComponent> | null>(null)
 const otpDisabled = ref(false)
 
 async function onHandleComplete(value: string) {
