@@ -10,6 +10,7 @@ export default {
   },
   login: {
     oidcIssuer: 'Ваш OIDC Issuer: {oidcIssuer}',
+    authentication: 'Аутентифицироваться',
     oidcIssuerInput: 'Введите адрес своего OIDC Issuer:',
   },
   auth: {
