@@ -3,6 +3,7 @@
     <QScrollArea visible class="absolute-full fit">
       <QPullToRefresh class="absolute-full fit" @refresh="onRefresh">
         <QCard
+          draggable="false"
           flat
           square
           bordered

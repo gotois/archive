@@ -168,31 +168,33 @@
           </template>
         </QBtnDropdown>
         <QInput
-          v-if="!$q.platform.is.mobile && !dateNoLimit"
+          v-if="!$q.platform.is.mobile"
           v-model="duration.to"
           :type="typeof duration.to === 'string' ? 'text' : 'date'"
           :rules="typeof duration.to === 'string' ? ['date'] : []"
           :label="$t('duration.to')"
+          :readonly="dateNoLimit"
           class="col no-padding"
           mask="date"
           outlined
           square
           color="secondary"
         >
-          <QTooltip>{{ $t('duration.toHint') }}</QTooltip>
+          <QTooltip v-if="!dateNoLimit">{{ $t('duration.toHint') }}</QTooltip>
+          <QToggle
+            v-if="!$q.platform.is.mobile"
+            v-model="dateNoLimit"
+            color="secondary"
+            :label="$t('duration.infinity')"
+          >
+            <QTooltip>{{ $t('duration.noLimit') }}</QTooltip>
+          </QToggle>
         </QInput>
-        <QToggle
-          v-if="!$q.platform.is.mobile"
-          v-model="dateNoLimit"
-          :label="$t('duration.infinity')"
-        >
-          <QTooltip>{{ $t('duration.noLimit') }}</QTooltip>
-        </QToggle>
       </div>
       <QFile
         v-model="files"
         :label="$t('files.type')"
-        :counter="files.length ? true : false"
+        :counter="!!files.length"
         accept="image/*, .pdf"
         color="secondary"
         hide-hint

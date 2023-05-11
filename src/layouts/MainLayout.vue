@@ -47,7 +47,14 @@
           :label="$t('header.archive')"
           @click="onArchiveRoute"
         >
-          <QBadge color="secondary" text-color="white" floating rounded>
+          <QBadge
+            color="secondary"
+            transparent
+            dense
+            class="q-ml-xs"
+            :floating="$q.platform.is.desktop"
+            :rounded="$q.platform.is.desktop"
+          >
             <template v-if="contractsCount">
               {{ contractsCount > 999 ? '999+' : contractsCount }}
             </template>

@@ -6,22 +6,25 @@
       :visible="$q.platform.is.desktop"
       class="absolute-full fit"
     >
-      <ArchiveListComponent
-        :loading="loadingVisible"
-        :contracts="contracts"
-        class="q-mt-md q-mb-md q-ml-auto q-mr-auto"
-        :class="{
-          'col-xs-6': $q.platform.is.desktop || $q.platform.is.ipad,
-        }"
-        :style="{
-          'max-width': $q.platform.is.desktop ? '720px' : 'auto',
-        }"
-        :page="currentPage"
-        :pagination-count="isContractsEmpty ? 0 : paginationCount"
-        @on-paginate="onPaginate"
-        @on-remove="onRemove"
-        @on-edit="onEdit"
-      />
+      <QPullToRefresh class="absolute-full fit" @refresh="onRefresh">
+        <ArchiveListComponent
+          draggable="false"
+          :loading="loadingVisible"
+          :contracts="contracts"
+          class="q-mt-md q-mb-md q-ml-auto q-mr-auto"
+          :class="{
+            'col-xs-6': $q.platform.is.desktop || $q.platform.is.ipad,
+          }"
+          :style="{
+            'max-width': $q.platform.is.desktop ? '720px' : 'auto',
+          }"
+          :page="currentPage"
+          :pagination-count="isContractsEmpty ? 0 : paginationCount"
+          @on-paginate="onPaginate"
+          @on-remove="onRemove"
+          @on-edit="onEdit"
+        />
+      </QPullToRefresh>
     </QScrollArea>
     <template
       v-if="!loadingVisible && isContractsEmpty && paginationCount === 0"
@@ -117,6 +120,7 @@ import {
   useMeta,
   useQuasar,
   QSkeleton,
+  QPullToRefresh,
   QScrollArea,
   QPage,
   QBanner,
@@ -272,6 +276,12 @@ async function updateContracts({
   loadingVisible.value = false
 }
 
+async function onRefresh(done) {
+  await updateContracts(router.currentRoute.value.query)
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  done()
+}
+
 router.afterEach((to) => updateContracts(to.query))
 
 onBeforeMount(() => {
@@ -281,7 +291,7 @@ onBeforeMount(() => {
 })
 
 onMounted(async () => {
-  void updateContracts(router.currentRoute.value.query)
+  await updateContracts(router.currentRoute.value.query)
 
   if (profileStore.consumer) {
     await contractStore.loadContractNames()
