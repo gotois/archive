@@ -36,16 +36,17 @@ async function onHandleComplete(value: string) {
   await authStore.validate(value)
   if (authStore.pinIsLoggedIn) {
     await authStore.setCode(value)
-    $q.notify({
-      color: 'positive',
+    const dismiss = $q.notify({
       message: 'Пожалуйста, подождите...',
+      timeout: 2000,
       spinner: true,
     })
     await router.push({
-      name: router.currentRoute.value.name || 'archive',
+      path: String(router.currentRoute.value.query.fullPath ?? '/'),
       query: router.currentRoute.value.query,
       replace: true,
     })
+    dismiss()
   } else {
     otpDisabled.value = true
     $q.notify({
@@ -56,7 +57,6 @@ async function onHandleComplete(value: string) {
     })
     setTimeout(() => {
       otpDisabled.value = false
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return
       otp.value.clear()
     }, timeout)
   }
