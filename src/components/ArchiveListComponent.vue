@@ -244,7 +244,7 @@
         flat
         active-design="outline"
         color="secondary"
-        class="flex flex-center self-end"
+        class="flex flex-center self-end q-mb-md"
         @update:model-value="$emit('onPaginate', page)"
       />
     </template>

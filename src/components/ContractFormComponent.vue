@@ -181,6 +181,7 @@
           color="secondary"
         >
           <QTooltip v-if="!dateNoLimit">{{ $t('duration.toHint') }}</QTooltip>
+          <QSeparator v-if="!dateNoLimit" vertical spaced inset />
           <QToggle
             v-if="!$q.platform.is.mobile"
             v-model="dateNoLimit"
@@ -325,8 +326,13 @@ function filterOptions(val: string, update: (callback: () => void) => void) {
   })
 }
 
-function onResetForm() {
+function onResetForm(confirm = false) {
   const contractFormValue = contractForm.value
+  if (confirm) {
+    if (!window.confirm('Вы действительно хотите очистить форму?')) {
+      return
+    }
+  }
   contractFormValue.resetValidation()
   contractType.value = ''
   customer.value = ''

@@ -72,7 +72,7 @@ async function onCreate(value: string) {
 }
 
 function onRefresh(done: () => void) {
-  contractForm.value.resetForm()
+  contractForm.value.resetForm(true)
   done()
 }
 
