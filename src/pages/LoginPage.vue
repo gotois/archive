@@ -1,8 +1,23 @@
 <template>
   <QPage class="flex column flex-center q-ma-md">
-    <QCard flat square bordered class="q-pa-md" style="width: 400px">
+    <QCard
+      flat
+      square
+      bordered
+      class="q-pa-md"
+      style="width: 400px"
+      :class="{
+        'full-width': $q.platform.is.mobile,
+      }"
+    >
       <template v-if="getOidcIssuer">
-        <p>{{ $t('login.oidcIssuer', { oidcIssuer: getOidcIssuer }) }}</p>
+        <QChip
+          class="full-width q-pl-none"
+          color="transparent"
+          :label="$t('login.oidcIssuer', { oidcIssuer: getOidcIssuer })"
+          removable
+          @remove="onRemove"
+        />
         <QBtn
           color="accent"
           :label="$t('login.authentication')"
@@ -18,8 +33,11 @@
         />
       </template>
       <template v-else>
-        <p>{{ $t('login.oidcIssuerInput') }}</p>
-        <OIDCIssuerComponent @on-complete="onOnlineAuthorize" />
+        <OIDCIssuerComponent label="Адрес URL" @on-complete="onOnlineAuthorize">
+          <QTooltip>
+            {{ $t('login.oidcIssuerInput') }}
+          </QTooltip>
+        </OIDCIssuerComponent>
       </template>
     </QCard>
   </QPage>
@@ -27,7 +45,15 @@
 <script lang="ts" setup>
 import { onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
-import { Loading, SessionStorage, QBtn, QPage, QCard } from 'quasar'
+import {
+  Loading,
+  SessionStorage,
+  QBtn,
+  QChip,
+  QPage,
+  QCard,
+  QTooltip,
+} from 'quasar'
 import usePodStore from 'stores/pod'
 import OIDCIssuerComponent from 'components/OIDCIssuerComponent.vue'
 import solidAuth from '../services/authHelper'
@@ -35,6 +61,10 @@ import solidAuth from '../services/authHelper'
 const podStore = usePodStore()
 
 const { getOidcIssuer } = storeToRefs(podStore)
+
+function onRemove() {
+  podStore.removeOIDCIssuer()
+}
 
 async function onLogin() {
   SessionStorage.remove('connect')
@@ -44,7 +74,7 @@ async function onLogin() {
 async function tryLogin() {
   try {
     Loading.show({
-      message: 'Идет авторизация. Пожалуйста, подождите...',
+      message: 'Идет аутентификация. Пожалуйста, подождите...',
       boxClass: 'bg-grey-2 text-grey-9',
       spinnerColor: 'primary',
     })
@@ -61,13 +91,17 @@ async function tryLogin() {
   }
 }
 
+function onOnlineAuthorize(oidcIssuer: string) {
+  if (!oidcIssuer) {
+    window.alert('OIDC Issuer cannot be empty')
+    return
+  }
+  podStore.setOIDCIssuer(oidcIssuer)
+}
+
 onMounted(async () => {
   if (getOidcIssuer.value) {
     await tryLogin()
   }
 })
-
-function onOnlineAuthorize(oidcIssuer: string) {
-  podStore.setOIDCIssuer(oidcIssuer)
-}
 </script>

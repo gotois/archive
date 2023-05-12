@@ -82,15 +82,13 @@
           <p class="text-body1">{{ $t('tutorial.data.body') }}</p>
           <QSpace class="q-pa-xs" />
           <template v-if="!userComplete && !isLoggedIn">
-            <p>
-              {{ $t('oidc.linkNameStart') }}
-              <span>
-                {{ $t('oidc.name') }}
-                <QTooltip>{{ $t('oidc.tutorialHint') }}</QTooltip>
-              </span>
-              {{ $t('oidc.linkNameEnd') }}
-            </p>
-            <OIDCIssuerComponent @on-complete="onOnlineAuthorize" />
+            <p>{{ $t('oidc.linkName') }}</p>
+            <OIDCIssuerComponent
+              label="Адрес URL"
+              @on-complete="onOnlineAuthorize"
+            >
+              <QTooltip>{{ $t('oidc.tutorialHint') }}</QTooltip>
+            </OIDCIssuerComponent>
           </template>
           <template v-else>
             <p class="text-body1">

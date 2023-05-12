@@ -38,6 +38,10 @@ export default defineStore('pod', {
     oidcIssuer: LocalStorage.getItem('oidcIssuer') ?? '',
   }),
   actions: {
+    removeOIDCIssuer() {
+      this.oidcIssuer = ''
+      LocalStorage.remove('oidcIssuer')
+    },
     setOIDCIssuer(oidcIssuer: string) {
       this.oidcIssuer = oidcIssuer
       LocalStorage.set('oidcIssuer', oidcIssuer)

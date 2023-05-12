@@ -3,7 +3,7 @@
     <QSelect
       v-model="oidcIssuer"
       class="full-width"
-      label="Адрес URL"
+      :label="label"
       type="url"
       use-input
       square
@@ -17,7 +17,9 @@
       input-debounce="0"
       clearable
       new-value-mode="add-unique"
-    />
+    >
+      <slot></slot>
+    </QSelect>
     <QBtn
       color="accent"
       type="button"
@@ -41,17 +43,24 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, PropType } from 'vue'
 import { QSelect, QBtn, QTooltip } from 'quasar'
 
 const emit = defineEmits(['onComplete'])
+defineProps({
+  label: {
+    type: String as PropType<string>,
+    required: true,
+  },
+})
 
 const oidcIssuer = ref('')
 const prefix = ref('https://')
 
 function onComplete() {
-  if (oidcIssuer.value && oidcIssuer.value.length) {
-    emit('onComplete', prefix.value + oidcIssuer.value)
+  const url = oidcIssuer.value
+  if (url && url.length) {
+    emit('onComplete', prefix.value + url)
     return
   }
   emit('onComplete')

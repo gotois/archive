@@ -186,6 +186,7 @@
             v-if="!$q.platform.is.mobile"
             v-model="dateNoLimit"
             color="secondary"
+            class="non-selectable"
             :label="$t('duration.infinity')"
           >
             <QTooltip>{{ $t('duration.noLimit') }}</QTooltip>
