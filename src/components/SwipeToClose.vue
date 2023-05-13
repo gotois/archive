@@ -36,7 +36,7 @@ const root = ref<InstanceType<typeof HTMLDivElement> | null>(null)
 
 const style = computed(() => ({
   transform: `translateY(${translateY.value}px)`,
-  opacity: Math.max(0, 1 - Math.abs(translateY.value / Screen.height)),
+  opacity: Math.max(0.1, 1 - Math.abs((translateY.value / Screen.height) * 2)),
 }))
 
 function handlePan(details: Details) {

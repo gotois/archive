@@ -45,24 +45,14 @@
           >
             <QMenu transition-show="jump-down" transition-duration="200">
               <QList bordered separator padding>
-                <QItem
-                  v-if="isLoggedIn && item.sameAs"
-                  v-close-popup
-                  clickable
-                  @click="editArchive(item)"
-                >
+                <QItem v-close-popup clickable @click="editArchive(item)">
                   <QItemSection side class="text-uppercase">
-                    {{ $t('archiveList.editPod') }}
-                  </QItemSection>
-                </QItem>
-                <QItem
-                  v-else
-                  v-close-popup
-                  clickable
-                  @click="editArchive(item)"
-                >
-                  <QItemSection side class="text-uppercase">
-                    {{ $t('archiveList.edit') }}
+                    <template v-if="isLoggedIn && item.sameAs">
+                      {{ $t('archiveList.editPod') }}
+                    </template>
+                    <template v-else>
+                      {{ $t('archiveList.edit') }}
+                    </template>
                   </QItemSection>
                 </QItem>
                 <QItem v-close-popup clickable @click="removeArchive(item)">
@@ -184,7 +174,7 @@
                   round
                   color="white"
                   text-color="primary"
-                  :icon="item._fullscreen ? 'fullscreen_exit' : 'fullscreen'"
+                  :icon="icon(item)"
                   @click="onShowFullImage(item)"
                 >
                   <QTooltip v-if="item._fullscreen">
@@ -276,9 +266,9 @@ import usePodStore from 'stores/pod'
 import ImageContextMenu from 'components/ImageContextMenu.vue'
 import SwipeToClose from 'components/SwipeToClose.vue'
 import { FormatContract, ContractTable } from '../types/models'
-import { showPDFInPopup } from '../services/popup'
 import { isDateNotOk, formatterDate } from '../helpers/dateHelper'
 import createCal from '../helpers/calendarHelper'
+import { isContentPDF, isContentHeic } from '../helpers/dataHelper'
 
 const $q = useQuasar()
 
@@ -324,6 +314,16 @@ watch(
   },
 )
 
+function icon(item: FormatContract) {
+  if (item._fullscreen) {
+    return 'fullscreen_exit'
+  } else if (isContentPDF(item.object[item._currentSlide - 1].contentUrl)) {
+    return 'open_in_full'
+  } else {
+    return 'fullscreen'
+  }
+}
+
 function prettyDate(item: FormatContract) {
   if (
     !isDateNotOk(item.startTime) &&
@@ -341,26 +341,14 @@ function prettyDate(item: FormatContract) {
   )
 }
 
-function isContentPDF(contentUrl: string) {
-  return contentUrl.startsWith('data:application/pdf;', 0)
-}
-
-function isContentHeic(contentUrl: string) {
-  return contentUrl.startsWith('data:image/heic;', 0)
-}
-
-async function onShowFullImage(object: FormatContract) {
+function onShowFullImage(object: FormatContract) {
   const { contentUrl } = object.object[object._currentSlide - 1]
 
   if (isContentPDF(contentUrl)) {
-    try {
-      await showPDFInPopup(contentUrl)
-    } catch {
-      $q.notify({
-        color: 'negative',
-        message: 'Невозможно открыть. Проверьте права доступа.',
-      })
-    }
+    openURL(contentUrl, undefined, {
+      popup: $q.platform.is.desktop ? 1 : null,
+      menubar: false,
+    })
     return
   }
   object._fullscreen = !object._fullscreen
@@ -385,6 +373,7 @@ async function shareURl(url: string) {
 function onSheet(item: FormatContract) {
   const nativeShareAvailable = typeof navigator.share === 'function'
   const actions = []
+  // Group 1 - Share local
   if (item.sameAs) {
     actions.push({
       label: 'Поделиться ссылкой',
@@ -399,7 +388,10 @@ function onSheet(item: FormatContract) {
       id: 'share',
     })
   }
-  actions.push({})
+  // Group 2 - Publish
+  if (actions.length) {
+    actions.push({})
+  }
   actions.push({
     label: 'Добавить в календарь',
     icon: 'event',
@@ -414,8 +406,9 @@ function onSheet(item: FormatContract) {
       id: 'upload',
     })
   }
-  actions.push({})
+  // Group 3 - Message
   if (item.participant.email) {
+    actions.push({})
     actions.push({
       label: 'Отправить сообщение',
       icon: 'contact_mail',
@@ -507,7 +500,7 @@ function editArchive(item: FormatContract) {
 function removeArchive(item: FormatContract) {
   let message = 'Действительно удалить? Отменить изменения будет невозможно.'
   if (!isLoggedIn.value && item.sameAs) {
-    message += '\nДанные не будут удалены с вашего Pod.'
+    message += '\nВнимание: данные не будут удалены с вашего Pod.'
   }
   $q.notify({
     message: message,

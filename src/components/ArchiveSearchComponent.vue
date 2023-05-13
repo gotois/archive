@@ -104,9 +104,7 @@ async function indexAllDocuments() {
     await miniSearch.addAllAsync(documents)
   }
   if ($q.platform.is.mobile) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
     select.value.showPopup()
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
     select.value.focus()
   }
 }

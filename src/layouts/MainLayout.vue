@@ -217,19 +217,21 @@
             <DatabaseComponent v-if="settingsOpen" />
           </QItemSection>
           <QSeparator />
-          <QItemSection v-if="$q.platform.is.desktop" class="q-pa-md">
-            <p>{{ $t('settings.keychain.title') }}</p>
-            <QBtn
-              :label="$t('settings.keychain.label')"
-              square
-              icon="key"
-              @click="onExportKeychain"
-            >
-              <QTooltip>
-                {{ $t('settings.keychain.tooltip') }}
-              </QTooltip>
-            </QBtn>
-          </QItemSection>
+          <template v-if="$q.platform.is.desktop">
+            <QItemSection class="q-pa-md">
+              <p>{{ $t('settings.keychain.title') }}</p>
+              <QBtn
+                :label="$t('settings.keychain.label')"
+                square
+                icon="key"
+                @click="onExportKeychain"
+              >
+                <QTooltip>
+                  {{ $t('settings.keychain.tooltip') }}
+                </QTooltip>
+              </QBtn>
+            </QItemSection>
+          </template>
           <QSeparator />
           <QItemSection class="q-pa-md">
             <p>{{ $t('settings.clean.description') }}</p>
