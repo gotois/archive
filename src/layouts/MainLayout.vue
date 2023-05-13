@@ -217,6 +217,20 @@
             <DatabaseComponent v-if="settingsOpen" />
           </QItemSection>
           <QSeparator />
+          <QItemSection v-if="$q.platform.is.desktop" class="q-pa-md">
+            <p>{{ $t('settings.keychain.title') }}</p>
+            <QBtn
+              :label="$t('settings.keychain.label')"
+              square
+              icon="key"
+              @click="onExportKeychain"
+            >
+              <QTooltip>
+                {{ $t('settings.keychain.tooltip') }}
+              </QTooltip>
+            </QBtn>
+          </QItemSection>
+          <QSeparator />
           <QItemSection class="q-pa-md">
             <p>{{ $t('settings.clean.description') }}</p>
             <QBtn
@@ -329,6 +343,7 @@ import {
   QHeader,
   QLayout,
   QSpace,
+  exportFile,
 } from 'quasar'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
@@ -337,6 +352,7 @@ import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
+import { exportKeyPair } from '../services/cryptoHelper'
 import twaManifest from '../../twa-manifest.json'
 
 const { packageId } = twaManifest
@@ -387,6 +403,11 @@ function onArchiveRoute(e: Event) {
       page: 1,
     },
   })
+}
+
+async function onExportKeychain() {
+  const keysJSON = await exportKeyPair()
+  exportFile('keys.json', keysJSON)
 }
 
 async function onSearch(searchText: string) {
