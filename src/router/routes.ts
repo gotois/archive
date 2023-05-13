@@ -21,6 +21,11 @@ const routes: RouteRecordRaw[] = [
         name: 'search',
         component: () => import('pages/ArchivePage.vue'),
       },
+      {
+        path: 'feedback',
+        name: 'feedback',
+        component: () => import('pages/FeedbackPage.vue'),
+      },
     ],
   },
   {

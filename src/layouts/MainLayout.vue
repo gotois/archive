@@ -254,6 +254,7 @@
           color="white"
           square
           clickable
+          :disable="router.currentRoute.value.name === 'feedback'"
           :label="$t('navigation.feedback.label')"
           @click="onOpenFeedback"
         >
@@ -319,7 +320,6 @@ import { ref, computed, defineAsyncComponent } from 'vue'
 import {
   LocalStorage,
   SessionStorage,
-  openURL,
   useQuasar,
   QDialog,
   QBtn,
@@ -353,9 +353,6 @@ import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
 import { exportKeyPair } from '../services/cryptoHelper'
-import twaManifest from '../../twa-manifest.json'
-
-const { packageId } = twaManifest
 
 const DatabaseRemoveComponent = defineAsyncComponent(
   () => import('components/DatabaseRemoveComponent.vue'),
@@ -443,22 +440,8 @@ async function logOutFromPod() {
 }
 
 function onOpenFeedback() {
-  if ($q.platform.is.android) {
-    openURL(
-      'https://play.google.com/store/apps/details?id=' + packageId,
-      null,
-      {
-        menubar: false,
-        toolbar: false,
-      },
-    )
-    return
-  }
-  openURL('https://baskovsky.ru/feedback/', null, {
-    noopener: true,
-    menubar: false,
-    toolbar: false,
-    noreferrer: true,
+  return router.push({
+    name: 'feedback',
   })
 }
 
