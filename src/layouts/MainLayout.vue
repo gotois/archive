@@ -52,6 +52,10 @@
             transparent
             dense
             class="q-ml-xs"
+            align="middle"
+            :style="{
+              height: $q.platform.is.mobile ? '24px' : 'auto',
+            }"
             :floating="$q.platform.is.desktop"
             :rounded="$q.platform.is.desktop"
           >
