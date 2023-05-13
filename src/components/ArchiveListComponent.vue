@@ -75,16 +75,6 @@
                     {{ $t('archiveList.edit') }}
                   </QItemSection>
                 </QItem>
-                <QItem
-                  v-if="isLoggedIn && !item.sameAs"
-                  v-close-popup
-                  clickable
-                  @click="uploadArchive(item)"
-                >
-                  <QItemSection side class="text-uppercase">
-                    {{ $t('archiveList.upload') }}
-                  </QItemSection>
-                </QItem>
                 <QItem v-close-popup clickable @click="removeArchive(item)">
                   <QItemSection side class="text-negative text-uppercase">
                     {{ $t('archiveList.remove') }}
@@ -212,14 +202,13 @@
         <QSeparator />
         <QCardSection>
           <QBtn
-            v-if="nativeShareAvailable"
             fab-mini
             color="white"
             text-color="primary"
-            :icon="shareIcon"
+            icon="send"
             class="absolute"
             style="top: 0; left: 18px; transform: translateY(-50%)"
-            @click="onShareItem(item)"
+            @click="onSheet(item)"
           >
             <QTooltip>
               {{ $t('archiveList.shareFile') }}
@@ -280,6 +269,7 @@ import {
   QPagination,
   QVirtualScroll,
   copyToClipboard,
+  openURL,
 } from 'quasar'
 import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
@@ -319,12 +309,8 @@ const emit = defineEmits(['onPaginate', 'onRemove', 'onEdit'])
 
 const items = ref(props.contracts ?? [])
 const page = ref(Number(props.page))
-const nativeShareAvailable = ref(typeof navigator.share === 'function')
 
 const isLoggedIn = computed(() => authStore.isLoggedIn)
-const shareIcon = computed(() =>
-  $q.platform.is.android ? 'share' : 'ios_share',
-)
 
 watch(
   () => props.page,
@@ -397,12 +383,80 @@ async function shareURl(url: string) {
   }
 }
 
-async function onShareItem(object: FormatContract) {
+function onSheet(item: FormatContract) {
+  const nativeShareAvailable = typeof navigator.share === 'function'
+  const actions = []
+  if (nativeShareAvailable) {
+    actions.push({
+      label: 'Поделиться документом',
+      icon: $q.platform.is.android ? 'share' : 'ios_share',
+      color: 'secondary',
+      id: 'share',
+    })
+  }
+  actions.push({
+    label: 'Добавить в календарь',
+    icon: 'event',
+    color: 'secondary',
+    id: 'calendar',
+  })
+  if (!item.sameAs && isLoggedIn.value) {
+    actions.push({
+      label: 'Загрузить на POD',
+      icon: 'cloud_upload',
+      color: 'secondary',
+      id: 'upload',
+    })
+  }
+  if (item.participant.email) {
+    actions.push({
+      label: 'Отправить сообщение',
+      icon: 'contact_mail',
+      color: 'secondary',
+      id: 'mail',
+    })
+  }
+
+  $q.bottomSheet({
+    title: 'Выберите действие',
+    grid: !$q.platform.is.mobile,
+    class: 'text-center',
+    actions: actions,
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  }).onOk(async (action: { id: string }) => {
+    switch (action.id) {
+      case 'share': {
+        const icalFile = await createCal(item)
+        return shareFile(item.instrument.name, icalFile)
+      }
+      case 'calendar': {
+        const icalFile = await createCal(item)
+        const url = URL.createObjectURL(icalFile)
+        openURL(url)
+        URL.revokeObjectURL(url)
+        break
+      }
+      case 'upload': {
+        return uploadArchive(item)
+      }
+      case 'mail': {
+        const url =
+          item.participant.email +
+          '?bcc=' +
+          item.agent.email +
+          '&subject=' +
+          item.instrument.name
+        return openURL(url)
+      }
+    }
+  })
+}
+
+async function shareFile(title: string, file: File) {
   try {
-    const icalFile = await createCal(object)
     await navigator.share({
-      title: object.instrument.name,
-      files: [icalFile],
+      title: title,
+      files: [file],
     })
   } catch (error) {
     if (error.name === 'AbortError') {
@@ -427,8 +481,12 @@ async function uploadArchive(item: FormatContract) {
       type: 'positive',
       message: 'Данные записаны на Ваш Pod',
     })
-  } catch (e) {
-    console.error(e)
+  } catch (error) {
+    console.error('Upload failed', error)
+    $q.notify({
+      type: 'negative',
+      message: 'Произошла ошибка записи данных',
+    })
   }
 }
 

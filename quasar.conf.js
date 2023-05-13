@@ -78,6 +78,7 @@ module.exports = configure((ctx) => {
       // Quasar plugins
       plugins: [
         'Notify',
+        'BottomSheet',
         'Loading',
         'Dialog',
         'Meta',

@@ -144,7 +144,6 @@ export default {
   archiveList: {
     remove: 'Удалить',
     getLink: 'Получить ссылку',
-    upload: 'Загрузить на POD',
     edit: 'Редактировать',
     editPod: 'Редактировать + Pod',
     openFile: 'Открыть окно документа',
