@@ -136,7 +136,10 @@
                       class="absolute-center"
                       color="info"
                     >
-                      <ImageContextMenu :content-url="contentUrl" />
+                      <ImageContextMenu
+                        v-if="!item._fullscreen"
+                        :content-url="contentUrl"
+                      />
                     </QIcon>
                   </template>
                   <template v-else-if="isContentHeic(contentUrl)">
@@ -146,7 +149,10 @@
                       class="absolute-center"
                       color="info"
                     >
-                      <ImageContextMenu :content-url="contentUrl" />
+                      <ImageContextMenu
+                        v-if="!item._fullscreen"
+                        :content-url="contentUrl"
+                      />
                     </QIcon>
                   </template>
                   <template v-else>
@@ -163,7 +169,10 @@
                       no-spinner
                       no-native-menu
                     >
-                      <ImageContextMenu :content-url="contentUrl" />
+                      <ImageContextMenu
+                        v-if="!item._fullscreen"
+                        :content-url="contentUrl"
+                      />
                     </QImg>
                   </template>
                 </SwipeToClose>
