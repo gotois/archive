@@ -143,7 +143,6 @@ export default {
   },
   archiveList: {
     remove: 'Удалить',
-    getLink: 'Получить ссылку',
     edit: 'Редактировать',
     editPod: 'Редактировать + Pod',
     openFile: 'Открыть окно документа',

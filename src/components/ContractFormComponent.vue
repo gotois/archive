@@ -206,7 +206,7 @@
         square
       >
         <template #prepend>
-          <QIcon name="image" />
+          <QIcon name="attach_file" />
         </template>
         <template #append>
           <QIcon name="add" @click.stop />

@@ -46,16 +46,6 @@
             <QMenu transition-show="jump-down" transition-duration="200">
               <QList bordered separator padding>
                 <QItem
-                  v-if="item.sameAs"
-                  v-close-popup
-                  clickable
-                  @click="shareURl(item.sameAs)"
-                >
-                  <QItemSection side class="text-uppercase">
-                    {{ $t('archiveList.getLink') }}
-                  </QItemSection>
-                </QItem>
-                <QItem
                   v-if="isLoggedIn && item.sameAs"
                   v-close-popup
                   clickable
@@ -386,28 +376,36 @@ async function shareURl(url: string) {
 function onSheet(item: FormatContract) {
   const nativeShareAvailable = typeof navigator.share === 'function'
   const actions = []
+  if (item.sameAs) {
+    actions.push({
+      label: 'Поделиться ссылкой',
+      icon: 'link',
+      id: 'link',
+    })
+  }
   if (nativeShareAvailable) {
     actions.push({
       label: 'Поделиться документом',
       icon: $q.platform.is.android ? 'share' : 'ios_share',
-      color: 'secondary',
       id: 'share',
     })
   }
+  actions.push({})
   actions.push({
     label: 'Добавить в календарь',
     icon: 'event',
-    color: 'secondary',
+    color: 'primary',
     id: 'calendar',
   })
   if (!item.sameAs && isLoggedIn.value) {
     actions.push({
       label: 'Загрузить на POD',
       icon: 'cloud_upload',
-      color: 'secondary',
+      color: 'primary',
       id: 'upload',
     })
   }
+  actions.push({})
   if (item.participant.email) {
     actions.push({
       label: 'Отправить сообщение',
@@ -420,7 +418,7 @@ function onSheet(item: FormatContract) {
   $q.bottomSheet({
     title: 'Выберите действие',
     grid: !$q.platform.is.mobile,
-    class: 'text-center',
+    class: $q.platform.is.desktop ? 'text-center' : '',
     actions: actions,
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
   }).onOk(async (action: { id: string }) => {
@@ -428,6 +426,9 @@ function onSheet(item: FormatContract) {
       case 'share': {
         const icalFile = await createCal(item)
         return shareFile(item.instrument.name, icalFile)
+      }
+      case 'link': {
+        return shareURl(item.sameAs)
       }
       case 'calendar': {
         const icalFile = await createCal(item)
