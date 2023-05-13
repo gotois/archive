@@ -2,9 +2,8 @@ import { ImageFormat, jsPDF } from 'jspdf'
 import { generate } from '@pdfme/generator'
 import { convert } from 'html-to-text'
 import { FormatContract } from '../types/models'
-import pkg from '../../package.json'
-import { readFilesPromise } from '../helpers/fileHelper'
 import privacyNotice from '../ui/templates/privacy-notice'
+import pkg from '../../package.json'
 
 const { productName } = pkg
 
@@ -46,11 +45,9 @@ export async function createContractPDF(
     template: privacyNotice,
     inputs,
   })
-  const file = new File([pdf.buffer], fileName, {
+  return new File([pdf.buffer], fileName, {
     type: 'application/pdf',
   })
-
-  return readFilesPromise([file])
 }
 
 export async function createPDF(object: FormatContract) {

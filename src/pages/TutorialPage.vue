@@ -184,6 +184,7 @@ import useProfileStore from 'stores/profile'
 import usePodStore from 'stores/pod'
 import pkg from '../../package.json'
 import { createContractPDF } from '../helpers/pdfHelper'
+import { readFilesPromise } from '../helpers/fileHelper'
 import solidAuth from '../services/authService'
 import { generateKeyPair, exportKeyPair } from '../services/cryptoService'
 import { keys } from '../services/databaseService'
@@ -299,7 +300,8 @@ async function onFinish() {
     const response = await fetch('docs/privacy.md')
     const md = await response.text()
     const html = parse(md)
-    const contractPDF = await createContractPDF(html)
+    const pdfFile = await createContractPDF(html)
+    const contractPDF = await readFilesPromise([pdfFile])
     const newContract: ContractTable = {
       agent_name: consumer.value,
       agent_email: email.value,
