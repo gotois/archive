@@ -143,45 +143,50 @@
               :name="objectIndex + 1"
             >
               <QScrollArea class="absolute-full fit">
-                <template
-                  v-if="!$q.platform.is.safari && isContentPDF(contentUrl)"
+                <SwipeToClose
+                  :disabled="!item._fullscreen"
+                  @on-close="item._fullscreen = false"
                 >
-                  <QIcon
-                    name="picture_as_pdf"
-                    size="240px"
-                    class="absolute-center"
-                    color="info"
+                  <template
+                    v-if="!$q.platform.is.safari && isContentPDF(contentUrl)"
                   >
-                    <ImageContextMenu :content-url="contentUrl" />
-                  </QIcon>
-                </template>
-                <template v-else-if="isContentHeic(contentUrl)">
-                  <QIcon
-                    name="perm_media"
-                    size="240px"
-                    class="absolute-center"
-                    color="info"
-                  >
-                    <ImageContextMenu :content-url="contentUrl" />
-                  </QIcon>
-                </template>
-                <template v-else>
-                  <QImg
-                    class="col"
-                    fit="contain"
-                    :height="item._fullscreen ? '100dvh' : '400px'"
-                    alt="Document"
-                    :ratio="1"
-                    :src="contentUrl"
-                    :loading="item._fullscreen ? 'eager' : 'lazy'"
-                    :decoding="item._fullscreen ? 'sync' : 'async'"
-                    fetchpriority="high"
-                    no-spinner
-                    no-native-menu
-                  >
-                    <ImageContextMenu :content-url="contentUrl" />
-                  </QImg>
-                </template>
+                    <QIcon
+                      name="picture_as_pdf"
+                      size="240px"
+                      class="absolute-center"
+                      color="info"
+                    >
+                      <ImageContextMenu :content-url="contentUrl" />
+                    </QIcon>
+                  </template>
+                  <template v-else-if="isContentHeic(contentUrl)">
+                    <QIcon
+                      name="perm_media"
+                      size="240px"
+                      class="absolute-center"
+                      color="info"
+                    >
+                      <ImageContextMenu :content-url="contentUrl" />
+                    </QIcon>
+                  </template>
+                  <template v-else>
+                    <QImg
+                      class="col"
+                      fit="contain"
+                      :height="item._fullscreen ? '100dvh' : '400px'"
+                      alt="Document"
+                      :ratio="1"
+                      :src="contentUrl"
+                      :loading="item._fullscreen ? 'eager' : 'lazy'"
+                      :decoding="item._fullscreen ? 'sync' : 'async'"
+                      fetchpriority="high"
+                      no-spinner
+                      no-native-menu
+                    >
+                      <ImageContextMenu :content-url="contentUrl" />
+                    </QImg>
+                  </template>
+                </SwipeToClose>
               </QScrollArea>
             </QCarouselSlide>
             <template #control>
@@ -280,6 +285,7 @@ import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
 import usePodStore from 'stores/pod'
 import ImageContextMenu from 'components/ImageContextMenu.vue'
+import SwipeToClose from 'components/SwipeToClose.vue'
 import { FormatContract, ContractTable } from '../types/models'
 import { showPDFInPopup } from '../services/popup'
 import { isDateNotOk, formatterDate } from '../services/dateHelper'
