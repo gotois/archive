@@ -1,9 +1,9 @@
 import { SessionStorage } from 'quasar'
 import { defineStore } from 'pinia'
 import usePodStore from './pod'
-import { db } from '../services/databaseHelper'
-import { recommendationContractTypes } from '../services/recommendationContractTypes'
-import { formatterContracts } from '../services/schemaHelper'
+import { db } from '../services/databaseService'
+import recommendationContractTypes from '../services/recommendationContractEnum'
+import { formatterContracts } from '../helpers/schemaHelper'
 import { FormatContract, ContractTable } from '../types/models'
 
 interface Store {

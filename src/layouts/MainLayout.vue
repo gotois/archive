@@ -352,7 +352,7 @@ import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
-import { exportKeyPair } from '../services/cryptoHelper'
+import { exportKeyPair } from '../services/cryptoService'
 
 const DatabaseRemoveComponent = defineAsyncComponent(
   () => import('components/DatabaseRemoveComponent.vue'),

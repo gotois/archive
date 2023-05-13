@@ -43,7 +43,7 @@ import {
 import { BulkError } from 'dexie'
 import useAuthStore from 'stores/auth'
 import usePodStore from 'stores/pod'
-import { db } from '../services/databaseHelper'
+import { db } from '../services/databaseService'
 
 const emit = defineEmits(['onClear'])
 const $q = useQuasar()

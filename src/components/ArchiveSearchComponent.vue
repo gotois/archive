@@ -75,7 +75,7 @@ import {
   QCardActions,
 } from 'quasar'
 import MiniSearch from 'minisearch'
-import { db } from '../services/databaseHelper'
+import { db } from '../services/databaseService'
 
 const emit = defineEmits(['onSearch'])
 

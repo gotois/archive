@@ -17,7 +17,7 @@ import {
 } from '@digitalbazaar/ed25519-signature-2020'
 // @ts-ignore
 import { JsonLdDocumentLoader } from 'jsonld-document-loader'
-import { keys } from '../services/databaseHelper'
+import { keys } from './databaseService'
 import { Credential, ProofCredential } from '../types/models'
 
 const jdl = new JsonLdDocumentLoader()

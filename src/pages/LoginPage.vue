@@ -56,7 +56,7 @@ import {
 } from 'quasar'
 import usePodStore from 'stores/pod'
 import OIDCIssuerComponent from 'components/OIDCIssuerComponent.vue'
-import solidAuth from '../services/authHelper'
+import solidAuth from '../services/authService'
 
 const podStore = usePodStore()
 

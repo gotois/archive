@@ -3,7 +3,7 @@ import { generate } from '@pdfme/generator'
 import { convert } from 'html-to-text'
 import { FormatContract } from '../types/models'
 import pkg from '../../package.json'
-import { readFilesPromise } from '../services/fileHelper'
+import { readFilesPromise } from '../helpers/fileHelper'
 import privacyNotice from '../ui/templates/privacy-notice'
 
 const { productName } = pkg

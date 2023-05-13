@@ -1,7 +1,7 @@
 import { uid } from 'quasar'
 import { event as createEvent, default as icalendar } from 'ical-browser'
-import { createPDF } from '../services/pdfHelper'
-import { readFilesPromise } from '../services/fileHelper'
+import { createPDF } from '../helpers/pdfHelper'
+import { readFilesPromise } from '../helpers/fileHelper'
 import { FormatContract } from '../types/models'
 import pkg from '../../package.json'
 

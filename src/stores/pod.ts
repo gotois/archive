@@ -15,13 +15,13 @@ import {
 } from '@inrupt/solid-client'
 import { FOAF, SCHEMA_INRUPT } from '@inrupt/vocab-common-rdf'
 import useAuthStore from 'stores/auth'
-import { sign } from '../services/cryptoHelper'
+import { sign } from '../services/cryptoService'
 import {
   formatterContract,
   formatterLDContract,
   formatterDatasetContract,
-} from '../services/schemaHelper'
-import { db } from '../services/databaseHelper'
+} from '../helpers/schemaHelper'
+import { db } from '../services/databaseService'
 import { ContractTable, FormatContract } from '../types/models'
 import pkg from '../../package.json'
 

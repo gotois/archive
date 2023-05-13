@@ -273,10 +273,10 @@ import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
 import { ContractTable } from '../types/models'
-import { readFilesPromise } from '../services/fileHelper'
-import { formatDate } from '../services/dateHelper'
-import { contractTypes } from '../services/contractTypes'
-import { recommendationContractTypes } from '../services/recommendationContractTypes'
+import { readFilesPromise } from '../helpers/fileHelper'
+import { formatDate } from '../helpers/dateHelper'
+import contractTypes from '../services/contractEnum'
+import recommendationContractTypes from '../services/recommendationContractEnum'
 
 interface Duration {
   from: Date | string

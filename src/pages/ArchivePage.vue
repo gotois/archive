@@ -133,7 +133,7 @@ import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
 import usePodStore from 'stores/pod'
-import { contractTypes } from '../services/contractTypes'
+import contractTypes from '../services/contractEnum'
 import { FormatContract } from '../types/models'
 
 const ArchiveListComponent = defineAsyncComponent({

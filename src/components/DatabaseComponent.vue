@@ -61,8 +61,8 @@ import {
 import { exportDB, importInto } from 'dexie-export-import'
 import { BulkError } from 'dexie'
 import useContractStore from 'stores/contract'
-import { db } from '../services/databaseHelper'
-import { getContent, generate } from '../services/zipHelper'
+import { db } from '../services/databaseService'
+import { getContent, generate } from '../helpers/zipHelper'
 
 const $q = useQuasar()
 const contractStore = useContractStore()

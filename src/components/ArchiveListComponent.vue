@@ -288,8 +288,8 @@ import ImageContextMenu from 'components/ImageContextMenu.vue'
 import SwipeToClose from 'components/SwipeToClose.vue'
 import { FormatContract, ContractTable } from '../types/models'
 import { showPDFInPopup } from '../services/popup'
-import { isDateNotOk, formatterDate } from '../services/dateHelper'
-import createCal from '../services/calendarHelper'
+import { isDateNotOk, formatterDate } from '../helpers/dateHelper'
+import createCal from '../helpers/calendarHelper'
 
 const $q = useQuasar()
 

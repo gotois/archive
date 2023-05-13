@@ -1,4 +1,4 @@
-export const recommendationContractTypes = [
+export default [
   // Удостоверения личности
   'Паспорт РФ',
   'Загранпаспорт',
