@@ -267,9 +267,10 @@ import ImageContextMenu from 'components/ImageContextMenu.vue'
 import SwipeToClose from 'components/SwipeToClose.vue'
 import { FormatContract, ContractTable } from '../types/models'
 import { isDateNotOk, formatterDate } from '../helpers/dateHelper'
+import { readFilesPromise } from '../helpers/fileHelper'
 import createCal from '../helpers/calendarHelper'
 import { isContentPDF, isContentHeic } from '../helpers/dataHelper'
-import { mailUrl } from '../helpers/mailHelper'
+import { mailUrl, googleMailUrl } from '../helpers/mailHelper'
 
 const $q = useQuasar()
 
@@ -394,10 +395,16 @@ function onSheet(item: FormatContract) {
     actions.push({})
   }
   actions.push({
-    label: 'Добавить в календарь',
+    label: 'Скачать ICS',
     icon: 'event',
     color: 'primary',
     id: 'calendar',
+  })
+  actions.push({
+    label: 'Добавить в Google календарь',
+    icon: 'event',
+    color: 'secondary',
+    id: 'google-calendar',
   })
   if (!item.sameAs && isLoggedIn.value) {
     actions.push({
@@ -433,11 +440,18 @@ function onSheet(item: FormatContract) {
       case 'link': {
         return shareURl(item.sameAs)
       }
+      case 'google-calendar': {
+        const url = googleMailUrl(item).toString()
+        return openURL(url)
+      }
       case 'calendar': {
-        const icalFile = await createCal(item)
-        const url = URL.createObjectURL(icalFile)
-        openURL(url)
-        URL.revokeObjectURL(url)
+        const file = await createCal(item)
+        const [dataURI] = await readFilesPromise([file])
+        const link = document.createElement('a')
+        link.href = dataURI
+        link.setAttribute('download', file.name)
+        link.setAttribute('target', '_blank')
+        link.click()
         break
       }
       case 'upload': {

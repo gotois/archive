@@ -216,8 +216,8 @@
             <p>{{ $t('settings.native.description') }}</p>
             <DatabaseComponent v-if="settingsOpen" />
           </QItemSection>
-          <QSeparator />
           <template v-if="$q.platform.is.desktop">
+            <QSeparator />
             <QItemSection class="q-pa-md">
               <p>{{ $t('settings.keychain.title') }}</p>
               <QBtn
@@ -287,6 +287,7 @@
         outline
         clickable
         class="row"
+        :selected="router.currentRoute.value.query.filter === name"
         :color="value.recommendation ? 'orange' : ''"
         @click="onSelectArchiveName(name, value)"
       >

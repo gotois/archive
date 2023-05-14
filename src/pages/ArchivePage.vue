@@ -43,7 +43,12 @@
         }"
       >
         <template #default>
-          <template v-if="isSearch">{{ $t('archive.searchEmpty') }}</template>
+          <template v-if="isSearch">
+            {{ $t('archive.searchEmpty') }}
+          </template>
+          <template v-else-if="isFilter">{{
+            $t('archive.filterEmpty')
+          }}</template>
           <template v-else>
             {{ $t('archive.empty') }}
             {{ $t('archive.example') }}
@@ -65,7 +70,7 @@
             />.
           </template>
         </template>
-        <template v-if="isSearch" #action>
+        <template v-if="isSearch || isFilter" #action>
           <QBtn
             flat
             align="left"
@@ -162,7 +167,8 @@ const currentPage = toRef(router.currentRoute.value.query, 'page')
 const loadingVisible = ref(true)
 const scrollAreaRef = ref<QScrollArea>(null)
 const isLoggedIn = computed(() => authStore.isLoggedIn)
-const isSearch = computed(() => Boolean(router.currentRoute.value.query.filter))
+const isSearch = computed(() => Boolean(router.currentRoute.value.query.search))
+const isFilter = computed(() => Boolean(router.currentRoute.value.query.filter))
 const archiveEmptyText = computed(() => {
   const randomContractType = Math.floor(
     Math.random() * (contractTypes.length - 1),
