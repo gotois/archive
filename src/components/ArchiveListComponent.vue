@@ -269,6 +269,7 @@ import { FormatContract, ContractTable } from '../types/models'
 import { isDateNotOk, formatterDate } from '../helpers/dateHelper'
 import createCal from '../helpers/calendarHelper'
 import { isContentPDF, isContentHeic } from '../helpers/dataHelper'
+import { mailUrl } from '../helpers/mailHelper'
 
 const $q = useQuasar()
 
@@ -443,13 +444,7 @@ function onSheet(item: FormatContract) {
         return uploadArchive(item)
       }
       case 'mail': {
-        const url =
-          item.participant.email +
-          '?bcc=' +
-          item.agent.email +
-          '&subject=' +
-          item.instrument.name
-        return openURL(url)
+        return openURL(mailUrl(item))
       }
     }
   })
