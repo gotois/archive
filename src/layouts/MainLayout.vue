@@ -183,20 +183,33 @@
                 square
                 color="negative"
                 icon="remove"
-                label="Удалить PIN"
+                :label="$t('settings.otp.removeCode')"
                 @click="onOTPChange('')"
               />
             </template>
             <template v-else>
-              <p>{{ $t('settings.otp.description') }}</p>
-              <OTPComponent
-                ref="otp"
-                autofocus
-                class="flex flex-center"
-                @on-change="onOTPChange"
-                @on-complete="onOTPHandleComplete"
+              <QBtn
+                dense
+                square
+                icon="key"
+                :label="$t('settings.otp.addCode')"
+                @click="showOTPDialog = true"
               />
-              <QTooltip>{{ $t('settings.otp.label') }}</QTooltip>
+              <QDialog v-model="showOTPDialog" position="bottom" square>
+                <QCard flat class="q-pa-md">
+                  <QCardSection>
+                    <p>{{ $t('settings.otp.description') }}</p>
+                    <QSpace class="q-pa-xs" />
+                    <OTPComponent
+                      ref="otp"
+                      autofocus
+                      class="flex flex-center"
+                      @on-change="onOTPChange"
+                      @on-complete="onOTPHandleComplete"
+                    />
+                  </QCardSection>
+                </QCard>
+              </QDialog>
             </template>
           </QItemSection>
         </QExpansionItem>
@@ -321,9 +334,9 @@
 <script lang="ts" setup>
 import { ref, computed, defineAsyncComponent } from 'vue'
 import {
+  useQuasar,
   LocalStorage,
   SessionStorage,
-  useQuasar,
   QDialog,
   QBtn,
   QPageContainer,
@@ -346,6 +359,8 @@ import {
   QHeader,
   QLayout,
   QSpace,
+  QCard,
+  QCardSection,
   exportFile,
 } from 'quasar'
 import { useRouter } from 'vue-router'
@@ -376,6 +391,7 @@ const authStore = useAuthStore()
 const contractStore = useContractStore()
 const profileStore = useProfileStore()
 
+const showOTPDialog = ref(false)
 const leftDrawerOpen = ref(false)
 const rightDrawerOpen = ref(false)
 const settingsOpen = ref(false)
@@ -483,7 +499,7 @@ async function onOTPHandleComplete(code: string) {
       message: 'Ключ изменен',
     })
   } else {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+    showOTPDialog.value = false
     otp.value.clear()
   }
 }

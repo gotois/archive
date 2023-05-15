@@ -59,8 +59,9 @@ export default {
       description: 'Измените Ваше ФИО или почту в новых договорах.',
     },
     otp: {
-      label: 'Используйте цифры',
-      description: 'Введите PIN для входа в приложение.',
+      removeCode: 'Удалить PIN',
+      addCode: 'Установить PIN',
+      description: 'Введите цифровой PIN для входа в приложение.',
     },
     keychain: {
       title: 'Управление сертификатами',
