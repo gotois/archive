@@ -282,18 +282,20 @@ async function onFinish() {
     return
   }
 
-  const keysJSON = await exportKeyPair()
-  const status = exportFile('keys.json', keysJSON)
-  if (status) {
-    $q.notify({
-      type: 'positive',
-      message: 'Ключи сгенерированы и хранятся в памяти Вашего устройства.',
-    })
-  } else {
-    $q.notify({
-      type: 'warning',
-      message: 'Ваш ключ сохранен в вашем браузере.',
-    })
+  if ($q.platform.is.desktop) {
+    const keysJSON = await exportKeyPair()
+    const status = exportFile('keys.json', keysJSON)
+    if (status) {
+      $q.notify({
+        type: 'positive',
+        message: 'Ключи сгенерированы и хранятся в памяти Вашего устройства.',
+      })
+    } else {
+      $q.notify({
+        type: 'warning',
+        message: 'Ваш ключ сохранен в вашем браузере.',
+      })
+    }
   }
 
   try {
