@@ -201,6 +201,7 @@
                     <p>{{ $t('settings.otp.description') }}</p>
                     <QSpace class="q-pa-xs" />
                     <OTPComponent
+                      v-if="showOTPDialog"
                       ref="otp"
                       autofocus
                       class="flex flex-center"
@@ -474,33 +475,28 @@ function onFinishProfile() {
 }
 
 function onOTPChange(value: string) {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-  if (!hasCode.value) {
+  if (!hasCode.value || value.length) {
     return
   }
-  if (value === '') {
-    if (window.confirm('Действительно удалить пин?')) {
-      authStore.removeCode()
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-      otp.value.clear()
-      $q.notify({
-        type: 'positive',
-        message: 'Ключ отключен',
-      })
-    }
+  if (window.confirm('Действительно удалить пин?')) {
+    authStore.removeCode()
+    $q.notify({
+      type: 'positive',
+      message: 'Ключ отключен',
+    })
+    showOTPDialog.value = false
   }
 }
 
 async function onOTPHandleComplete(code: string) {
-  if (window.confirm('Действительно сохранить пин?')) {
+  if (window.confirm('Действительно сохранить PIN?')) {
     await authStore.setCode(code)
     $q.notify({
       type: 'positive',
-      message: 'Ключ изменен',
+      message: 'PIN сохранен',
     })
   } else {
     showOTPDialog.value = false
-    otp.value.clear()
   }
 }
 
@@ -517,7 +513,6 @@ async function onSelectArchiveName(
     })
     return
   }
-
   await router.push({
     name: 'filter',
     query: {
