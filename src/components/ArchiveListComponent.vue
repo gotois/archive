@@ -124,6 +124,9 @@
                       name="picture_as_pdf"
                       size="240px"
                       class="absolute-center"
+                      :class="{
+                        grabbing: item.object.length > 1,
+                      }"
                       color="info"
                     >
                       <ImageContextMenu
@@ -137,6 +140,9 @@
                       name="perm_media"
                       size="240px"
                       class="absolute-center"
+                      :class="{
+                        grabbing: item.object.length > 1,
+                      }"
                       color="info"
                     >
                       <ImageContextMenu
@@ -148,13 +154,16 @@
                   <template v-else>
                     <QImg
                       class="col"
+                      alt="Document"
                       fit="contain"
                       :height="item._fullscreen ? '100dvh' : '400px'"
-                      alt="Document"
                       :ratio="1"
                       :src="contentUrl"
                       :loading="item._fullscreen ? 'eager' : 'lazy'"
                       :decoding="item._fullscreen ? 'sync' : 'async'"
+                      :class="{
+                        grabbing: item.object.length > 1,
+                      }"
                       fetchpriority="high"
                       no-spinner
                       no-native-menu
@@ -538,3 +547,12 @@ function removeArchive(item: FormatContract) {
   })
 }
 </script>
+<style lang="scss" scoped>
+.grabbing {
+  cursor: grab;
+
+  :active {
+    cursor: grabbing;
+  }
+}
+</style>

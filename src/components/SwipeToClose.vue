@@ -1,7 +1,7 @@
 <template>
   <div
     ref="root"
-    v-touch-pan.vertical.mouse.mightPrevent.mouseMightPrevent="handlePan"
+    v-touch-pan.vertical.down.mouse.mouseCapture.prevent.stop="handlePan"
     class="swipe-to-close"
     :style="style"
   >
