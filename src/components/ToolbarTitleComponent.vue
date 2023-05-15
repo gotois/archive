@@ -1,7 +1,10 @@
 <template>
   <QToolbarTitle class="text-black-9 text-center non-selectable">
     <template v-if="$q.platform.is.mobile && $q.platform.is.android">
-      <QIcon name="img:/icons/safari-pinned-tab.svg" />
+      <QIcon
+        class="orientation-landscape"
+        name="img:/icons/safari-pinned-tab.svg"
+      />
     </template>
     <template v-else>
       {{ $t('header.title') }}

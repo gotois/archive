@@ -1,7 +1,7 @@
 <template>
   <div
     ref="root"
-    v-touch-pan.vertical.down.mouse.mouseCapture.prevent.stop="handlePan"
+    v-touch-pan.vertical.down.mouse.mouseCapture.stop="handlePan"
     class="swipe-to-close"
     :style="style"
   >
@@ -67,6 +67,10 @@ function handlePan(details: Details) {
 <style lang="scss" scoped>
 .swipe-to-close {
   will-change: opacity, transform;
-  position: relative;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
 }
 </style>
