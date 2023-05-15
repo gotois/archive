@@ -27,7 +27,7 @@
           icon="menu"
           aria-label="Menu"
           @click="rightDrawerOpen = !rightDrawerOpen"
-        ></QBtn>
+        />
       </QToolbar>
       <QTabs
         shrink
@@ -77,6 +77,7 @@
         <QBtn
           v-if="isLoggedIn"
           color="negative"
+          dense
           square
           glossy
           push
@@ -87,6 +88,7 @@
         <QBtn
           v-if="!isLoggedIn"
           color="primary"
+          dense
           square
           glossy
           push
@@ -153,6 +155,8 @@
                 :label="$t('consumer.save')"
                 icon="save"
                 class="full-width"
+                round
+                dense
                 square
                 :class="{
                   'q-mt-md': consumer?.length === 0,
@@ -179,6 +183,7 @@
           <QItemSection class="q-pa-md">
             <template v-if="hasCode">
               <QBtn
+                round
                 dense
                 square
                 color="negative"
@@ -189,6 +194,7 @@
             </template>
             <template v-else>
               <QBtn
+                round
                 dense
                 square
                 icon="key"
@@ -236,6 +242,8 @@
               <p>{{ $t('settings.keychain.title') }}</p>
               <QBtn
                 :label="$t('settings.keychain.label')"
+                dense
+                round
                 square
                 icon="key"
                 @click="onExportKeychain"
@@ -252,6 +260,8 @@
             <QBtn
               :label="$t('settings.clean.submit')"
               color="negative"
+              dense
+              round
               square
               icon="delete_outline"
               @click="confirm = true"
@@ -268,6 +278,7 @@
           icon="link"
           class="cursor-pointer full-width q-pa-md self-end"
           color="white"
+          dense
           square
           clickable
           :disable="router.currentRoute.value.name === 'feedback'"
@@ -301,13 +312,14 @@
         outline
         clickable
         class="row"
+        :disable="router.currentRoute.value.query.filter === name"
         :selected="router.currentRoute.value.query.filter === name"
         :color="value.recommendation ? 'orange' : ''"
         @click="onSelectArchiveName(name, value)"
       >
-        <QAvatar v-if="value.count > 1" color="secondary" text-color="white">{{
-          value.count
-        }}</QAvatar>
+        <QAvatar v-if="value.count > 1" color="secondary" text-color="white">
+          {{ value.count }}
+        </QAvatar>
         <div class="ellipsis">{{ name }}</div>
         <QTooltip>{{ name }}</QTooltip>
       </QChip>
