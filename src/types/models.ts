@@ -132,3 +132,8 @@ export interface CredentialSubject {
   endTime?: Date
   object: string[]
 }
+
+export type ContractData = {
+  count: number
+  recommendation: boolean
+}

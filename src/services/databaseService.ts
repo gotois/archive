@@ -3,7 +3,7 @@ import { Platform } from 'quasar'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020'
-import { ContractTable, KeysTable } from '../types/models'
+import { ContractTable, KeysTable, ContractData } from '../types/models'
 
 class KeysDatabase extends Dexie {
   public keys: Dexie.Table<KeysTable, number> // id is number in this case
@@ -81,13 +81,13 @@ class ContractDatabase extends Dexie {
   }
 
   public async getContractNames() {
-    const map: Map<string, { count: number }> = new Map()
+    const map: Map<string, ContractData> = new Map()
     await db.contracts.each((value) => {
       let count = 1
       if (map.get(value.instrument_name)) {
         count += map.get(value.instrument_name).count
       }
-      map.set(value.instrument_name, { count })
+      map.set(value.instrument_name, { count, recommendation: false })
     })
     return map
   }

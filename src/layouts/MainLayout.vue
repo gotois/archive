@@ -315,6 +315,8 @@
         :disable="router.currentRoute.value.query.filter === name"
         :selected="router.currentRoute.value.query.filter === name"
         :color="value.recommendation ? 'orange' : ''"
+        :removable="value.recommendation"
+        @remove="onRemoveArchiveName(name as String)"
         @click="onSelectArchiveName(name, value)"
       >
         <QAvatar v-if="value.count > 1" color="secondary" text-color="white">
@@ -510,6 +512,10 @@ async function onOTPHandleComplete(code: string) {
   } else {
     showOTPDialog.value = false
   }
+}
+
+function onRemoveArchiveName(name: string) {
+  contractStore.removeContractName(name)
 }
 
 async function onSelectArchiveName(

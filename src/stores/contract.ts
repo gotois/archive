@@ -4,24 +4,32 @@ import usePodStore from './pod'
 import { db } from '../services/databaseService'
 import recommendationContractTypes from '../services/recommendationContractEnum'
 import { formatterContracts } from '../helpers/schemaHelper'
-import { FormatContract, ContractTable } from '../types/models'
+import { FormatContract, ContractTable, ContractData } from '../types/models'
 
 interface Store {
+  contractNames: Map<string, ContractData>
   contracts: ContractTable[]
-  contractNames: Map<string, { count: number }>
   contractsCount: number
 }
+
+const contractNames = new Map<string, ContractData>()
+recommendationContractTypes.forEach((contractName) => {
+  contractNames.set(contractName, { count: 0, recommendation: true })
+})
 
 export default defineStore('contracts', {
   state: (): Store => ({
     contracts: [],
-    contractNames: new Map(),
+    contractNames: contractNames, // todo использовать SessionStorage для сохранения
     contractsCount: SessionStorage.getItem('contractsCount') ?? 0,
   }),
   actions: {
     setContractsCount(count: number) {
       this.contractsCount = count
       SessionStorage.set('contractsCount', count)
+    },
+    removeContractName(name: string) {
+      this.contractNames.delete(name)
     },
     async addContract({
       contractData,
@@ -147,30 +155,14 @@ export default defineStore('contracts', {
         .toArray()
     },
     async loadContractNames() {
-      const map = new Map<string, { count: number }>()
-      for (const names of await db.getContractNames()) {
-        map.set(...names)
+      for (const [name, data] of await db.getContractNames()) {
+        this.contractNames.set(name, data)
       }
-      this.contractNames = map
     },
   },
   getters: {
     archiveNames(state) {
-      const map = new Map()
-
-      recommendationContractTypes.forEach((contractName) => {
-        map.set(contractName, { count: 0, recommendation: true })
-      })
-
-      state.contractNames.forEach((contractName, name) => {
-        map.set(name, {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
-          count: contractName.count,
-          recommendation: false,
-        })
-      })
-
-      return Array.from(map)
+      return Array.from(state.contractNames)
     },
     getContractsCount(state) {
       return state.contractsCount
