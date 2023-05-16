@@ -1,20 +1,19 @@
 <template>
-  <QToolbarTitle
-    v-if="!($q.platform.is.mobile && $q.platform.is.android)"
-    class="text-center non-selectable"
-  >
+  <QToolbarTitle class="text-center non-selectable">
     <QIcon
       class="orientation-landscape"
       name="img:/icons/safari-pinned-tab.svg"
     />
-    {{ $t('header.title') }}
+    <template v-if="!($q.platform.is.mobile && $q.platform.is.android)">
+      {{ $t('header.title') }}
+    </template>
     <QBadge
       outline
       rounded
       transparent
       align="top"
       color="accent"
-      class="absolute q-ml-xs cursor-pointer"
+      class="absolute q-ml-xs cursor-pointer orientation-landscape"
       :label="$t('navigation.version', { version: navigatorVersion })"
       @click="onOpenRepo"
     />
