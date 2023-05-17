@@ -46,6 +46,7 @@
 import { onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import {
+  Notify,
   Loading,
   SessionStorage,
   QBtn,
@@ -93,7 +94,10 @@ async function tryLogin() {
 
 function onOnlineAuthorize(oidcIssuer: string) {
   if (!oidcIssuer) {
-    window.alert('OIDC Issuer cannot be empty')
+    Notify.create({
+      type: 'negative',
+      message: 'OIDC Issuer cannot be empty',
+    })
     return
   }
   podStore.setOIDCIssuer(oidcIssuer)
