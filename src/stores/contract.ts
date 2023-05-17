@@ -1,4 +1,4 @@
-import { SessionStorage } from 'quasar'
+import { LocalStorage, SessionStorage } from 'quasar'
 import { defineStore } from 'pinia'
 import usePodStore from './pod'
 import { db } from '../services/databaseService'
@@ -12,15 +12,23 @@ interface Store {
   contractsCount: number
 }
 
-const contractNames = new Map<string, ContractData>()
-recommendationContractTypes.forEach((contractName) => {
-  contractNames.set(contractName, { count: 0, recommendation: true })
-})
+let contractNames: Map<string, ContractData> = null
+if (LocalStorage.has('contractNames')) {
+  contractNames = new Map<string, ContractData>(
+    LocalStorage.getItem('contractNames'),
+  )
+} else {
+  contractNames = new Map<string, ContractData>()
+  recommendationContractTypes.forEach((contractName) => {
+    contractNames.set(contractName, { count: 0, recommendation: true })
+  })
+  LocalStorage.set('contractNames', Array.from(contractNames))
+}
 
 export default defineStore('contracts', {
   state: (): Store => ({
     contracts: [],
-    contractNames: contractNames, // todo использовать SessionStorage для сохранения
+    contractNames: contractNames,
     contractsCount: SessionStorage.getItem('contractsCount') ?? 0,
   }),
   actions: {
@@ -30,6 +38,7 @@ export default defineStore('contracts', {
     },
     removeContractName(name: string) {
       this.contractNames.delete(name)
+      LocalStorage.set('contractNames', this.archiveNames)
     },
     async addContract({
       contractData,
