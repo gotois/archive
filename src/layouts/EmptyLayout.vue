@@ -1,6 +1,9 @@
 <template>
   <QLayout view="hHr LpR lfr">
     <QHeader bordered class="bg-white text-primary" height-hint="98">
+      <AndroidBarComponent
+        v-if="$q.fullscreen.isActive && $q.platform.is.android"
+      />
       <QToolbar>
         <ToolbarTitleComponent />
       </QToolbar>
@@ -11,7 +14,12 @@
   </QLayout>
 </template>
 <script lang="ts" setup>
+import { defineAsyncComponent } from 'vue'
 import { QLayout, QHeader, QToolbar, QPageContainer } from 'quasar'
 import { RouterView } from 'vue-router'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
+
+const AndroidBarComponent = defineAsyncComponent(
+  () => import('components/AndroidBarComponent.vue'),
+)
 </script>

@@ -1,6 +1,9 @@
 <template>
   <QLayout view="lHr lpR lfr">
     <QHeader reveal bordered class="bg-white text-primary" height-hint="98">
+      <AndroidBarComponent
+        v-if="$q.fullscreen.isActive && $q.platform.is.android"
+      />
       <QToolbar>
         <QBtn
           flat
@@ -398,6 +401,9 @@ const ArchiveSearchComponent = defineAsyncComponent(
 )
 const OTPComponent = defineAsyncComponent(
   () => import('components/OTPComponent.vue'),
+)
+const AndroidBarComponent = defineAsyncComponent(
+  () => import('components/AndroidBarComponent.vue'),
 )
 
 const $q = useQuasar()
