@@ -1,9 +1,7 @@
 <template>
   <QLayout view="lHr lpR lfr">
     <QHeader reveal bordered class="bg-white text-primary" height-hint="98">
-      <AndroidBarComponent
-        v-if="$q.fullscreen.isActive && $q.platform.is.android"
-      />
+      <AndroidBarComponent v-if="isTWA && $q.platform.is.android" />
       <QToolbar>
         <QBtn
           flat
@@ -411,6 +409,7 @@ const router = useRouter()
 const authStore = useAuthStore()
 const contractStore = useContractStore()
 const profileStore = useProfileStore()
+const isTWA = document.referrer.includes('android-app://')
 
 const showOTPDialog = ref(false)
 const leftDrawerOpen = ref(false)

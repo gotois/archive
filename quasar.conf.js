@@ -85,7 +85,6 @@ module.exports = configure((ctx) => {
         'Meta',
         'LocalStorage',
         'AddressbarColor',
-        'AppFullscreen',
       ],
     },
 
