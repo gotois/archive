@@ -230,21 +230,33 @@ async function onRemove(item: FormatContract) {
   }
 }
 
-async function onEdit(item: FormatContract) {
-  const value = window.prompt('Введите новое описание:')
-  if (!value) {
-    return
-  }
-  item.instrument.description = value
+function onEdit(item: FormatContract) {
+  $q.dialog({
+    message: 'Введите новое описание:',
+    prompt: {
+      model: '',
+      isValid: (val) => val.length > 2,
+      type: 'text',
+    },
+    cancel: true,
+    persistent: true,
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  }).onOk(async (value: string) => {
+    item.instrument.description = value
+    await editContract(item)
+    $q.notify({
+      type: 'positive',
+      message: 'Данные обновлены',
+    })
+  })
+}
+
+async function editContract(item: FormatContract) {
   await contractStore.editContract(item)
 
   if (isLoggedIn.value) {
     await podStore.updateIntoPod(item)
   }
-  $q.notify({
-    type: 'positive',
-    message: 'Данные обновлены',
-  })
 }
 
 async function updateContracts({

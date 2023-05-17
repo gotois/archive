@@ -115,8 +115,23 @@ async function onImportDB() {
   }
 }
 
-async function onExportDB() {
-  const exportName = window.prompt('Введите название файла договоров:')
+function onExportDB() {
+  $q.dialog({
+    message: 'Введите название файла договоров:',
+    prompt: {
+      model: '',
+      isValid: (val) => val.length > 2,
+      type: 'text',
+    },
+    cancel: true,
+    persistent: true,
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  }).onOk(async (exportName: string) => {
+    await databaseExport(exportName)
+  })
+}
+
+async function databaseExport(exportName: string) {
   if (!exportName) {
     return
   }
