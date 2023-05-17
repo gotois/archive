@@ -85,6 +85,7 @@ export default defineStore('contracts', {
       const id = Number(contractData.identifier.value)
       const i = this.contracts.map((item) => item.id).indexOf(id)
       this.contracts.splice(i, 1)
+      this.removeContractName(contractData.instrument.name)
 
       // Step 2: IndexedDB
       const removedCount = await db.remove(id)
