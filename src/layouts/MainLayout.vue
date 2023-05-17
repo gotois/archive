@@ -4,8 +4,8 @@
       <QToolbar>
         <QBtn
           flat
-          dense
           round
+          :dense="$q.platform.is.desktop"
           icon="settings"
           aria-label="Settings"
           @click="onToggleLeftDrawer"
@@ -14,7 +14,7 @@
         <QBtn
           flat
           round
-          dense
+          :dense="$q.platform.is.desktop"
           class="cursor-pointer"
           name="search"
           icon="search"
@@ -22,8 +22,8 @@
         />
         <QBtn
           flat
-          dense
           round
+          :dense="$q.platform.is.desktop"
           icon="menu"
           aria-label="Menu"
           @click="rightDrawerOpen = !rightDrawerOpen"
@@ -50,7 +50,7 @@
           <QBadge
             color="secondary"
             transparent
-            dense
+            :dense="$q.platform.is.desktop"
             class="q-ml-xs"
             align="middle"
             :style="{
@@ -77,7 +77,7 @@
         <QBtn
           v-if="isLoggedIn"
           color="negative"
-          dense
+          :dense="$q.platform.is.desktop"
           square
           glossy
           push
@@ -88,7 +88,7 @@
         <QBtn
           v-if="!isLoggedIn"
           color="primary"
-          dense
+          :dense="$q.platform.is.desktop"
           square
           glossy
           push
@@ -156,7 +156,7 @@
                 icon="save"
                 class="full-width"
                 round
-                dense
+                :dense="$q.platform.is.desktop"
                 square
                 :class="{
                   'q-mt-md': consumer?.length === 0,
@@ -184,7 +184,7 @@
             <template v-if="hasCode">
               <QBtn
                 round
-                dense
+                :dense="$q.platform.is.desktop"
                 square
                 color="negative"
                 icon="remove"
@@ -195,7 +195,7 @@
             <template v-else>
               <QBtn
                 round
-                dense
+                :dense="$q.platform.is.desktop"
                 square
                 icon="key"
                 :label="$t('settings.otp.addCode')"
@@ -242,7 +242,7 @@
               <p>{{ $t('settings.keychain.title') }}</p>
               <QBtn
                 :label="$t('settings.keychain.label')"
-                dense
+                :dense="$q.platform.is.desktop"
                 round
                 square
                 icon="key"
@@ -260,7 +260,7 @@
             <QBtn
               :label="$t('settings.clean.submit')"
               color="negative"
-              dense
+              :dense="$q.platform.is.desktop"
               round
               square
               icon="delete_outline"
@@ -278,7 +278,7 @@
           icon="link"
           class="cursor-pointer full-width q-pa-md self-end"
           color="white"
-          dense
+          :dense="$q.platform.is.desktop"
           square
           clickable
           :disable="router.currentRoute.value.name === 'feedback'"
@@ -307,7 +307,7 @@
       <QChip
         v-for="([name, value], objectKey) in archiveNames"
         :key="objectKey"
-        dense
+        :dense="$q.platform.is.desktop"
         square
         outline
         clickable

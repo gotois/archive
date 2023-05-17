@@ -1,6 +1,6 @@
 <template>
   <QMenu touch-position context-menu>
-    <QList dense style="min-width: 100px">
+    <QList :dense="$q.platform.is.desktop" style="min-width: 100px">
       <QItem v-close-popup clickable @click="onWindowOpenImage(contentUrl)">
         <QItemSection>
           {{ $t('archiveList.openFile') }}
