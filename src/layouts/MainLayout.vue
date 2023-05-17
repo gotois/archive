@@ -497,26 +497,34 @@ function onOTPChange(value: string) {
   if (!hasCode.value || value.length) {
     return
   }
-  if (window.confirm('Действительно удалить пин?')) {
+  $q.dialog({
+    message: 'Действительно удалить пин?',
+    cancel: true,
+    persistent: true,
+  }).onOk(() => {
     authStore.removeCode()
     $q.notify({
       type: 'positive',
       message: 'Ключ отключен',
     })
-    showOTPDialog.value = false
-  }
+  })
+  showOTPDialog.value = false
 }
 
-async function onOTPHandleComplete(code: string) {
-  if (window.confirm('Действительно сохранить PIN?')) {
+function onOTPHandleComplete(code: string) {
+  $q.dialog({
+    message: 'Действительно сохранить PIN?',
+    cancel: true,
+    persistent: true,
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  }).onOk(async () => {
     await authStore.setCode(code)
     $q.notify({
       type: 'positive',
       message: 'PIN сохранен',
     })
-  } else {
-    showOTPDialog.value = false
-  }
+  })
+  showOTPDialog.value = false
 }
 
 function onRemoveArchiveName(name: string) {

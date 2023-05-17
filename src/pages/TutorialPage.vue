@@ -224,12 +224,15 @@ async function onOnlineAuthorize(oidcIssuer: string) {
   if (!oidcIssuer) {
     const confirmMessage =
       'Вы не сможете подписывать договоры цифровой подписью без WebId.\nПродолжить использование в режиме Offline?'
-    if (window.confirm(confirmMessage)) {
+    $q.dialog({
+      message: confirmMessage,
+      cancel: true,
+      persistent: true,
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    }).onOk(async () => {
       userComplete.value = true
       await keys.destroy()
-      return
-    }
-    userComplete.value = false
+    })
     return
   }
 

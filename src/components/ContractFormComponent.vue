@@ -327,13 +327,8 @@ function filterOptions(val: string, update: (callback: () => void) => void) {
   })
 }
 
-function onResetForm(confirm = false) {
+function resetForm() {
   const contractFormValue = contractForm.value
-  if (confirm) {
-    if (!window.confirm('Вы действительно хотите очистить форму?')) {
-      return
-    }
-  }
   contractFormValue.resetValidation()
   contractType.value = ''
   customer.value = ''
@@ -345,6 +340,20 @@ function onResetForm(confirm = false) {
   }
   files.value = []
   dateNoLimit.value = false
+}
+
+function onResetForm(confirm = false) {
+  if (confirm) {
+    $q.dialog({
+      message: 'Вы действительно хотите очистить форму?',
+      cancel: true,
+      persistent: true,
+    }).onOk(() => {
+      resetForm()
+    })
+    return
+  }
+  resetForm()
 }
 
 function onSelectDate(value: string | Duration) {
