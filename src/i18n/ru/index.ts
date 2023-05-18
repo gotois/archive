@@ -30,7 +30,6 @@ export default {
     notfound: 'Нет результатов',
   },
   header: {
-    title: 'Мои договоры',
     create: 'Создание',
     archive: 'Архив',
   },

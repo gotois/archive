@@ -4,8 +4,8 @@
       class="orientation-landscape"
       name="img:/icons/safari-pinned-tab.svg"
     />
-    <template v-if="!($q.platform.is.mobile && $q.platform.is.android)">
-      {{ $t('header.title') }}
+    <template v-if="!$q.platform.is.android">
+      {{ launcherName }}
     </template>
     <QBadge
       outline
@@ -23,6 +23,7 @@
 import { toRef } from 'vue'
 import { QToolbarTitle, QBadge, QIcon, openURL } from 'quasar'
 import pkg from '../../package.json'
+import { launcherName } from '../../twa-manifest.json'
 
 const navigatorVersion = toRef(pkg, 'version')
 

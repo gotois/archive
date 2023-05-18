@@ -1,7 +1,7 @@
 <template>
   <QLayout view="hHr LpR lfr">
     <QHeader bordered class="bg-white text-primary" height-hint="98">
-      <AndroidBarComponent v-if="isTWA && $q.platform.is.android" />
+      <AndroidBarComponent v-if="isTWA" />
       <QToolbar>
         <ToolbarTitleComponent />
       </QToolbar>
@@ -16,8 +16,7 @@ import { defineAsyncComponent } from 'vue'
 import { QLayout, QHeader, QToolbar, QPageContainer } from 'quasar'
 import { RouterView } from 'vue-router'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
-
-const isTWA = document.referrer.includes('android-app://')
+import { isTWA } from '../helpers/twaHelper'
 
 const AndroidBarComponent = defineAsyncComponent(
   () => import('components/AndroidBarComponent.vue'),

@@ -1,6 +1,6 @@
 <template>
-  <QBar dense>
-    <div>Мои договоры</div>
+  <QBar dense class="non-selectable bg-white text-black">
+    <div>{{ launcherName }}</div>
     <QIcon name="img:/icons/safari-pinned-tab.svg" />
     <QSpace />
     <QIcon v-if="connectionSupports" :name="signalIcon(connectionType)" />
@@ -9,20 +9,24 @@
       v-if="batterySupports"
       :name="batteryIcon(batteryLevel, batteryCharning)"
     />
-    <div>{{ time }}</div>
+    <div>{{ date.formatDate(now, 'HH:mm') }}</div>
   </QBar>
 </template>
 <script lang="ts" setup>
-import { computed, ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { date, QSpace, QBar, QIcon } from 'quasar'
+import { launcherName } from '../../twa-manifest.json'
 
 const batteryCharning = ref(false)
 const batteryLevel = ref(-1)
 const connectionType = ref('')
+const now = ref<Date>(new Date())
 
-const connectionSupports = computed(() => Reflect.has(navigator, 'connection'))
-const batterySupports = computed(() => Reflect.has(navigator, 'getBattery'))
-const time = computed(() => date.formatDate(new Date(), 'HH:mm'))
+const connectionSupports = Reflect.has(navigator, 'connection')
+const batterySupports = Reflect.has(navigator, 'getBattery')
+const updateDate = setInterval(() => {
+  now.value = new Date()
+}, 1000)
 
 // todo добавить оставшиеся иконки в зависимости от состояния батареи
 function batteryIcon(batteryLevel, batteryCharning) {
@@ -81,11 +85,14 @@ async function watchBattery() {
 }
 
 onMounted(async () => {
-  if (Reflect.has(navigator, 'connection')) {
+  if (connectionSupports) {
     watchConnection()
   }
-  if (Reflect.has(navigator, 'getBattery')) {
+  if (batterySupports) {
     await watchBattery()
   }
+})
+onUnmounted(() => {
+  clearInterval(updateDate)
 })
 </script>

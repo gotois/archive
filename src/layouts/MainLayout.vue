@@ -1,7 +1,7 @@
 <template>
   <QLayout view="lHr lpR lfr">
     <QHeader reveal bordered class="bg-white text-primary" height-hint="98">
-      <AndroidBarComponent v-if="isTWA && $q.platform.is.android" />
+      <AndroidBarComponent v-if="isTWA" />
       <QToolbar>
         <QBtn
           flat
@@ -386,8 +386,9 @@ import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
-import { exportKeyPair } from '../services/cryptoService'
+import { isTWA } from '../helpers/twaHelper'
 
+import { exportKeyPair } from '../services/cryptoService'
 const DatabaseRemoveComponent = defineAsyncComponent(
   () => import('components/DatabaseRemoveComponent.vue'),
 )
@@ -409,7 +410,6 @@ const router = useRouter()
 const authStore = useAuthStore()
 const contractStore = useContractStore()
 const profileStore = useProfileStore()
-const isTWA = document.referrer.includes('android-app://')
 
 const showOTPDialog = ref(false)
 const leftDrawerOpen = ref(false)
