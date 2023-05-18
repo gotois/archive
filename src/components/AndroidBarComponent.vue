@@ -7,7 +7,7 @@
     <div v-if="batteryLevel >= 0" class="gt-xs">{{ batteryLevel * 100 }}%</div>
     <QIcon
       v-if="batterySupports"
-      :name="batteryIcon(batteryLevel, batteryCharning)"
+      :name="batteryIcon(batteryLevel, batteryCharging)"
     />
     <div>{{ date.formatDate(now, 'HH:mm') }}</div>
   </QBar>
@@ -17,7 +17,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { date, QSpace, QBar, QIcon } from 'quasar'
 import { launcherName } from '../../twa-manifest.json'
 
-const batteryCharning = ref(false)
+const batteryCharging = ref(false)
 const batteryLevel = ref(-1)
 const connectionType = ref('')
 const now = ref<Date>(new Date())
@@ -28,17 +28,34 @@ const updateDate = setInterval(() => {
   now.value = new Date()
 }, 1000)
 
-// todo добавить оставшиеся иконки в зависимости от состояния батареи
-function batteryIcon(batteryLevel, batteryCharning) {
-  if (batteryCharning) {
+function batteryIcon(batteryLevel, batteryCharging) {
+  if (batteryCharging) {
     return 'battery_charging_full'
+  } else if (batteryLevel === 0) {
+    return 'badge_critical_battery'
+  } else if (batteryLevel <= 10) {
+    return 'battery_very_low'
+  } else if (batteryLevel <= 20) {
+    return 'battery_low'
+  } else if (batteryLevel <= 50) {
+    return 'battery_horiz_050'
+  } else if (batteryLevel <= 75) {
+    return 'battery_horiz_075'
+  } else if (batteryLevel <= 100) {
+    return 'battery_full_alt'
   } else {
-    return 'battery_full'
+    return 'battery_unknown'
   }
 }
 
 function signalIcon(connectionType: string) {
   switch (connectionType) {
+    case 'slow-2g': {
+      return 'g_mobiledata'
+    }
+    case '2g': {
+      return 'e_mobiledata'
+    }
     case '3g': {
       return '3g_mobiledata'
     }
@@ -58,7 +75,7 @@ function watchConnection() {
   /* eslint-disable */
   connectionType.value = navigator.connection.effectiveType
   navigator.connection.addEventListener('change', () => {
-    console.log(
+    console.warn(
       `Connection type changed to ${navigator.connection.effectiveType}`,
     )
     connectionType.value = navigator.connection.effectiveType
@@ -69,16 +86,16 @@ function watchConnection() {
 async function watchBattery() {
   /* eslint-disable */
   const battery = await navigator.getBattery()
-  batteryCharning.value = battery.charging
+  batteryCharging.value = battery.charging
   batteryLevel.value = battery.level
 
-  battery.addEventListener("chargingchange", () => {
-    console.log(`Battery charging - ${battery.charging ? 'Yes' : 'No'}`)
-    batteryCharning.value = battery.charging
+  battery.addEventListener('chargingchange', () => {
+    console.warn(`Battery charging - ${battery.charging ? 'Yes' : 'No'}`)
+    batteryCharging.value = battery.charging
   });
 
   battery.addEventListener('levelchange', () => {
-    console.log(`Battery level: ${battery.level * 100}%`)
+    console.warn(`Battery level: ${battery.level * 100}%`)
     batteryLevel.value = battery.level
   })
   /* eslint-enable */
