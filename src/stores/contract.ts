@@ -2,7 +2,6 @@ import { LocalStorage, SessionStorage } from 'quasar'
 import { defineStore } from 'pinia'
 import usePodStore from './pod'
 import { db } from '../services/databaseService'
-import recommendationContractTypes from '../services/recommendationContractEnum'
 import { formatterContracts } from '../helpers/schemaHelper'
 import { FormatContract, ContractTable, ContractData } from '../types/models'
 
@@ -18,10 +17,7 @@ if (LocalStorage.has('contractNames')) {
     LocalStorage.getItem('contractNames'),
   )
 } else {
-  contractNames = new Map<string, ContractData>()
-  recommendationContractTypes.forEach((contractName) => {
-    contractNames.set(contractName, { count: 0, recommendation: true })
-  })
+  contractNames = await db.getContractNames()
   LocalStorage.set('contractNames', Array.from(contractNames))
 }
 
@@ -35,6 +31,11 @@ export default defineStore('contracts', {
     setContractsCount(count: number) {
       this.contractsCount = count
       SessionStorage.set('contractsCount', count)
+    },
+    addContractName(name: string) {
+      const count = this.contractNames.get(name)?.count ?? 0
+      this.contractNames.set(name, { count: count + 1, recommendation: false })
+      LocalStorage.set('contractNames', this.getArchiveNames)
     },
     removeContractName(name: string) {
       this.contractNames.delete(name)
@@ -54,6 +55,7 @@ export default defineStore('contracts', {
       if (countIndex === 0) {
         return Promise.reject('Cannot add this item')
       }
+      this.addContractName(contractData.instrument_name)
       const count = await db.contracts.count()
       this.setContractsCount(count)
 
@@ -164,18 +166,13 @@ export default defineStore('contracts', {
         .limit(limit)
         .toArray()
     },
-    async loadContractNames() {
-      for (const [name, data] of await db.getContractNames()) {
-        this.contractNames.set(name, data)
-      }
-    },
   },
   getters: {
     getArchiveNames(state) {
       return Array.from(state.contractNames)
     },
     getArchiveKeys(state) {
-      return Array.from(state.contractNames.keys())
+      return Array.from(state.contractNames.keys()).sort()
     },
     getContractsCount(state) {
       return state.contractsCount

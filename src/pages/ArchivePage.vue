@@ -9,7 +9,7 @@
       <QPullToRefresh class="absolute-full fit" @refresh="onRefresh">
         <ArchiveListComponent
           draggable="false"
-          :loading="loadingVisible"
+          :loading="$q.loading.isActive"
           :contracts="contracts"
           class="q-mt-md q-mb-md q-ml-auto q-mr-auto"
           :class="{
@@ -27,7 +27,7 @@
       </QPullToRefresh>
     </QScrollArea>
     <template
-      v-if="!loadingVisible && isContractsEmpty && paginationCount === 0"
+      v-if="!$q.loading.isActive && isContractsEmpty && paginationCount === 0"
     >
       <QBanner
         :class="{
@@ -136,7 +136,6 @@ import {
 } from 'quasar'
 import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
-import useProfileStore from 'stores/profile'
 import usePodStore from 'stores/pod'
 import contractTypes from '../services/contractEnum'
 import { FormatContract } from '../types/models'
@@ -152,7 +151,6 @@ const ArchiveListComponent = defineAsyncComponent({
 const $q = useQuasar()
 const contractStore = useContractStore()
 const podStore = usePodStore()
-const profileStore = useProfileStore()
 
 const metaData = {
   'title': 'Архив договоров',
@@ -164,7 +162,6 @@ const router = useRouter()
 const authStore = useAuthStore()
 
 const currentPage = toRef(router.currentRoute.value.query, 'page')
-const loadingVisible = ref(true)
 const scrollAreaRef = ref<QScrollArea>(null)
 const isLoggedIn = computed(() => authStore.isLoggedIn)
 const isSearch = computed(() => Boolean(router.currentRoute.value.query.search))
@@ -199,7 +196,7 @@ watch(
 useMeta(metaData)
 
 async function onPaginate(page: number) {
-  loadingVisible.value = true
+  $q.loading.show()
   await router.push({
     name: router.currentRoute.value.name,
     query: {
@@ -207,6 +204,7 @@ async function onPaginate(page: number) {
       filter: router.currentRoute.value.query?.filter,
     },
   })
+  $q.loading.hide()
   scrollAreaRef.value.setScrollPosition('vertical', 0, 150)
 }
 
@@ -216,7 +214,6 @@ async function onRemove(item: FormatContract) {
       contractData: item,
       usePod: isLoggedIn.value,
     })
-    await contractStore.loadContractNames()
     $q.notify({
       type: 'positive',
       message: 'Данные успешно удалены',
@@ -288,10 +285,7 @@ async function updateContracts({
       break
     }
   }
-  if ($q.loading.isActive) {
-    $q.loading.hide()
-  }
-  loadingVisible.value = false
+  $q.loading.hide()
 }
 
 async function onRefresh(done: () => void) {
@@ -309,9 +303,5 @@ onBeforeMount(() => {
 
 onMounted(async () => {
   await updateContracts(router.currentRoute.value.query)
-
-  if (profileStore.consumer) {
-    await contractStore.loadContractNames()
-  }
 })
 </script>

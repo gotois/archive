@@ -469,7 +469,6 @@ async function onSubmit() {
         },
       ],
     })
-    await contractStore.loadContractNames()
     onResetForm()
   } catch (e) {
     console.error(e)
