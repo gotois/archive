@@ -48,7 +48,7 @@ class KeysDatabase extends Dexie {
     privateKeyMultibase: string
     publicKeyMultibase: string
   }) {
-    return keys.keys.add({
+    return this.keys.add({
       publicKey: keyPair.publicKeyMultibase,
       privateKey: keyPair.privateKeyMultibase,
       type: keyPair.type,
@@ -86,7 +86,7 @@ class ContractDatabase extends Dexie {
     recommendationContractTypes.forEach((contractName) => {
       map.set(contractName, { count: 0, recommendation: true })
     })
-    await db.contracts.each((value) => {
+    await this.contracts.each((value) => {
       let count = 1
       if (map.get(value.instrument_name)) {
         count += map.get(value.instrument_name).count
@@ -102,7 +102,7 @@ class ContractDatabase extends Dexie {
       instrument_name: string
       instrument_description: string
     }[] = []
-    await db.contracts.each((contract) => {
+    await this.contracts.each((contract) => {
       documents.push({
         id: contract.id,
         instrument_name: contract.instrument_name,
@@ -113,15 +113,15 @@ class ContractDatabase extends Dexie {
   }
 
   public add(contract: ContractTable) {
-    return db.contracts.add(contract)
+    return this.contracts.add(contract)
   }
 
   public update(id: number, contract: ContractTable) {
-    return db.contracts.update(id, contract)
+    return this.contracts.update(id, contract)
   }
 
   public remove(id: number) {
-    return db.contracts.where('id').equals(id).delete()
+    return this.contracts.where('id').equals(id).delete()
   }
 
   public destroy() {
