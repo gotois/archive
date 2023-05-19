@@ -1,5 +1,5 @@
 <template>
-  <QBar dense class="non-selectable bg-white text-black">
+  <QBar dense class="non-selectable bg-transparent text-primary">
     <div>{{ launcherName }}</div>
     <QIcon name="img:/icons/safari-pinned-tab.svg" />
     <QSpace />
@@ -13,9 +13,10 @@
   </QBar>
 </template>
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, toRef, onMounted, onUnmounted } from 'vue'
 import { date, QSpace, QBar, QIcon } from 'quasar'
-import { launcherName } from '../../twa-manifest.json'
+import manifest from '../../twa-manifest.json'
+const launcherName = toRef(manifest, 'launcherName')
 
 const batteryCharging = ref(false)
 const batteryLevel = ref(-1)

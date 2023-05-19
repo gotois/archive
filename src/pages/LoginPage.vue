@@ -76,7 +76,6 @@ async function tryLogin() {
   try {
     Loading.show({
       message: 'Идет аутентификация. Пожалуйста, подождите...',
-      boxClass: 'bg-grey-2 text-grey-9',
       spinnerColor: 'primary',
     })
     await solidAuth({

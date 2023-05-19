@@ -1,5 +1,8 @@
 <template>
-  <QPage class="bg-grey-1 flex flex-center column">
+  <QPage
+    class="flex flex-center column"
+    :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'"
+  >
     <p class="text-caption text-center">
       {{ $t('auth.caption') }}
     </p>

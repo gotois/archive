@@ -1,6 +1,6 @@
 <template>
   <QLayout view="hHr LpR lfr">
-    <QHeader bordered class="bg-white text-primary" height-hint="98">
+    <QHeader bordered class="text-primary bg-transparent" height-hint="98">
       <AndroidBarComponent v-if="isTWA" />
       <QToolbar>
         <ToolbarTitleComponent />

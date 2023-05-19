@@ -1,7 +1,7 @@
 <template>
   <QPage>
     <QScrollArea visible class="absolute-full fit q-pl-md q-pr-md">
-      <PrivacyComponent class="bg-white text-black-9 overflow-auto" />
+      <PrivacyComponent class="bg-transparent text-primary overflow-auto" />
     </QScrollArea>
   </QPage>
 </template>

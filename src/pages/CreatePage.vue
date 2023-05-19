@@ -1,5 +1,5 @@
 <template>
-  <QPage class="bg-grey-1">
+  <QPage :class="$q.dark.isActive ? 'bg-transparent' : 'bg-grey-1'">
     <QScrollArea visible class="absolute-full fit">
       <QPullToRefresh class="absolute-full fit" @refresh="onRefresh">
         <QCard

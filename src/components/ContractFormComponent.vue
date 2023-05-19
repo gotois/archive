@@ -24,7 +24,6 @@
         autocomplete="on"
         spellcheck="false"
         color="secondary"
-        bg-color="white"
         use-input
         lazy-rules
         hide-selected

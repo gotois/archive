@@ -17,7 +17,6 @@
           autocomplete="off"
           spellcheck="false"
           color="secondary"
-          bg-color="white"
           input-debounce="50"
           :options="searchOptions"
           :label="$t('searchDialog.searchText')"

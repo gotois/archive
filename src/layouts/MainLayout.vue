@@ -1,6 +1,11 @@
 <template>
   <QLayout view="lHr lpR lfr">
-    <QHeader reveal bordered class="bg-white text-primary" height-hint="98">
+    <QHeader
+      reveal
+      bordered
+      height-hint="98"
+      class="text-primary bg-transparent"
+    >
       <AndroidBarComponent v-if="isTWA" />
       <QToolbar>
         <QBtn
@@ -104,9 +109,7 @@
           icon="person"
           :dense="$q.platform.is.desktop"
           class="column non-selectable"
-          :class="{
-            'bg-grey-2': profileOpen,
-          }"
+          :expand-separator="profileOpen"
           :label="$t('settings.native.profile')"
         >
           <QItemSection class="q-pa-md">
@@ -120,7 +123,6 @@
             >
               <QInput
                 v-model="consumer"
-                bg-color="white"
                 color="secondary"
                 type="text"
                 outlined
@@ -138,7 +140,6 @@
               </QInput>
               <QInput
                 v-model="email"
-                bg-color="white"
                 color="secondary"
                 type="email"
                 outlined
@@ -176,9 +177,7 @@
           icon="vpn_key"
           :dense="$q.platform.is.desktop"
           class="column non-selectable"
-          :class="{
-            'bg-grey-2': otpOpen,
-          }"
+          :expand-separator="otpOpen"
           :label="$t('settings.native.otp')"
         >
           <QItemSection class="q-pa-md">
@@ -228,9 +227,7 @@
           icon="import_export"
           :dense="$q.platform.is.desktop"
           class="column non-selectable"
-          :class="{
-            'bg-grey-2': settingsOpen,
-          }"
+          :expand-separator="settingsOpen"
           :label="$t('settings.native.title')"
         >
           <QItemSection class="q-pa-md">
@@ -278,7 +275,7 @@
         <QChip
           icon="link"
           class="cursor-pointer full-width q-pa-md self-end"
-          color="white"
+          color="transparent"
           :dense="$q.platform.is.desktop"
           square
           clickable

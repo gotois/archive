@@ -6,7 +6,11 @@
     <QCardSection class="q-pt-none">
       {{ $t('settings.clean.label') }}
     </QCardSection>
-    <QCardActions align="right" class="bg-white text-teal">
+    <QCardActions
+      align="right"
+      class="text-teal"
+      :class="$q.dark.isActive ? 'bg-dark' : 'bg-white'"
+    >
       <QBtn
         v-close-popup
         flat
