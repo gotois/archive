@@ -290,7 +290,7 @@
       </QList>
     </QDrawer>
     <QDrawer
-      v-if="archiveNames.length"
+      v-if="getArchiveNames.length"
       v-model="rightDrawerOpen"
       show-if-above
       bordered
@@ -303,7 +303,7 @@
         {{ $t('documentTypes.title') }}
       </p>
       <QChip
-        v-for="([name, value], objectKey) in archiveNames"
+        v-for="([name, value], objectKey) in getArchiveNames"
         :key="objectKey"
         :dense="$q.platform.is.desktop"
         square
@@ -324,7 +324,7 @@
         <QTooltip>{{ name }}</QTooltip>
       </QChip>
       <QSkeleton
-        v-show="archiveNames.length === 0"
+        v-show="getArchiveNames.length === 0"
         type="QChip"
         animation="blink"
         width="100%"
@@ -345,7 +345,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, defineAsyncComponent } from 'vue'
+import { ref, defineAsyncComponent } from 'vue'
 import {
   useQuasar,
   LocalStorage,
@@ -408,6 +408,9 @@ const authStore = useAuthStore()
 const contractStore = useContractStore()
 const profileStore = useProfileStore()
 
+const { consumer, email } = storeToRefs(profileStore)
+const { getArchiveNames, contractsCount } = storeToRefs(contractStore)
+const { hasCode, isLoggedIn } = storeToRefs(authStore)
 const showOTPDialog = ref(false)
 const leftDrawerOpen = ref(false)
 const rightDrawerOpen = ref(false)
@@ -417,12 +420,6 @@ const otpOpen = ref(false)
 const confirm = ref(false)
 const showSearch = ref(false)
 const otp = ref<InstanceType<typeof OTPComponent> | null>(null)
-const { consumer, email } = storeToRefs(profileStore)
-
-const hasCode = computed(() => authStore.hasCode)
-const isLoggedIn = computed(() => authStore.isLoggedIn)
-const contractsCount = computed(() => contractStore.contractsCount)
-const archiveNames = computed(() => contractStore.archiveNames)
 
 function onToggleLeftDrawer(): void {
   leftDrawerOpen.value = !leftDrawerOpen.value

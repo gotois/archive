@@ -252,7 +252,7 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType, ref, computed } from 'vue'
+import { PropType, ref } from 'vue'
 import {
   useQuasar,
   date,
@@ -268,14 +268,13 @@ import {
   QToggle,
   QFile,
 } from 'quasar'
+import { storeToRefs } from 'pinia'
 import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
 import { ContractTable } from '../types/models'
 import { readFilesPromise } from '../helpers/fileHelper'
 import { formatDate } from '../helpers/dateHelper'
-import contractTypes from '../services/contractEnum'
-import recommendationContractTypes from '../services/recommendationContractEnum'
 
 interface Duration {
   from: Date | string
@@ -299,6 +298,7 @@ const authStore = useAuthStore()
 const contractStore = useContractStore()
 const profileStore = useProfileStore()
 
+const { isLoggedIn } = storeToRefs(authStore)
 const contractType = ref(props.contractTypeName)
 const customer = ref('')
 const email = ref('')
@@ -308,19 +308,16 @@ const duration = ref<Duration>({
   to: $q.platform.is.mobile ? formatDate(afterYearDate) : afterYearDate,
 })
 const files = ref([])
+const contractOptions = ref(contractStore.getArchiveKeys)
 const contractForm = ref<QForm>()
 const dateNoLimit = ref(false)
-const allContractTypes = [].concat(recommendationContractTypes, contractTypes)
-const contractOptions = ref(allContractTypes)
 const loadingForm = ref(false)
-
-const isLoggedIn = computed(() => authStore.isLoggedIn)
 
 // eslint-disable-next-line no-unused-vars
 function filterOptions(val: string, update: (callback: () => void) => void) {
   update(() => {
     const needle = val.toLowerCase()
-    contractOptions.value = allContractTypes.filter(
+    contractOptions.value = contractStore.getArchiveKeys.filter(
       (v: string) => v.toLowerCase().indexOf(needle) > -1,
     )
   })

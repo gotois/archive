@@ -38,7 +38,7 @@ export default defineStore('contracts', {
     },
     removeContractName(name: string) {
       this.contractNames.delete(name)
-      LocalStorage.set('contractNames', this.archiveNames)
+      LocalStorage.set('contractNames', this.getArchiveNames)
     },
     async addContract({
       contractData,
@@ -171,8 +171,11 @@ export default defineStore('contracts', {
     },
   },
   getters: {
-    archiveNames(state) {
+    getArchiveNames(state) {
       return Array.from(state.contractNames)
+    },
+    getArchiveKeys(state) {
+      return Array.from(state.contractNames.keys())
     },
     getContractsCount(state) {
       return state.contractsCount
