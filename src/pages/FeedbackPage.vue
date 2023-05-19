@@ -18,9 +18,8 @@
 import { onMounted } from 'vue'
 import { QPage, Platform, openURL } from 'quasar'
 import { useRouter } from 'vue-router'
-import twaManifest from '../../twa-manifest.json'
+import { packageId } from '../../twa-manifest.json'
 
-const { packageId } = twaManifest
 const router = useRouter()
 
 onMounted(() => {

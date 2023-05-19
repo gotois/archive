@@ -168,17 +168,25 @@ export default defineStore('contracts', {
     },
   },
   getters: {
+    formatContracts(state): FormatContract[] {
+      return formatterContracts(state.contracts)
+    },
+    getArchiveKeys(state) {
+      return Array.from(state.contractNames.keys()).sort((a, b) => {
+        if (a.toLowerCase() < b.toLowerCase()) {
+          return -1
+        } else if (a.toLowerCase() === b.toLowerCase()) {
+          return 0
+        } else {
+          return 1
+        }
+      })
+    },
     getArchiveNames(state) {
       return Array.from(state.contractNames)
     },
-    getArchiveKeys(state) {
-      return Array.from(state.contractNames.keys()).sort()
-    },
     getContractsCount(state) {
       return state.contractsCount
-    },
-    formatContracts(state): FormatContract[] {
-      return formatterContracts(state.contracts)
     },
   },
 })

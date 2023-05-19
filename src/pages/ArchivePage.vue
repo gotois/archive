@@ -88,19 +88,26 @@
         hide-label
         glossy
         push
-        class="bg-white shadow-2"
+        class="shadow-2"
         icon="add"
         direction="up"
         vertical-actions-align="right"
         color="accent"
+        :class="{
+          'bg-white': !$q.dark.isActive,
+          'bg-dark': $q.dark.isActive,
+        }"
       >
         <QFabAction
           push
           icon="create"
           square
           outline
-          class="bg-white"
           color="primary"
+          :class="{
+            'bg-white': !$q.dark.isActive,
+            'bg-dark': $q.dark.isActive,
+          }"
           :label="$t('list.create')"
           :to="{ name: 'create' }"
         />
@@ -236,7 +243,6 @@ function onEdit(item: FormatContract) {
       type: 'text',
     },
     cancel: true,
-    persistent: true,
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
   }).onOk(async (value: string) => {
     item.instrument.description = value
