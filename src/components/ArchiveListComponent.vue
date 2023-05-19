@@ -84,9 +84,11 @@
                   v-ripple
                   width="64px"
                   :ratio="1"
-                  class="bg-transparent rounded-borders cursor-pointer shadow-box shadow-4"
+                  class="rounded-borders cursor-pointer shadow-box shadow-4"
                   :class="{
                     'inset-shadow-down': navProps.active,
+                    'bg-white': !$q.dark.isActive,
+                    'bg-dark': $q.dark.isActive,
                   }"
                   :img-style="{
                     'border': navProps.active

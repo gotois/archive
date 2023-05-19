@@ -74,17 +74,11 @@ defineExpose({
   font-size: 20px;
   border-radius: 4px;
   text-align: center;
-  border: 1px solid rgba(black, 0.24);
   outline: none;
   transition: border-color 0.36s cubic-bezier(0.4, 0, 0.2, 1);
 
   &:focus-visible {
     outline: none;
-  }
-
-  &:active,
-  &:hover {
-    border-color: rgba(black, 0.87);
   }
 
   &:focus,
@@ -100,7 +94,6 @@ defineExpose({
   }
 
   &.is-complete {
-    background-color: white;
     border: 1px solid $secondary;
   }
 
@@ -118,6 +111,35 @@ defineExpose({
 
   + span {
     pointer-events: none;
+  }
+}
+body.body--light {
+  .otp-input {
+    background-color: white;
+    border: 1px solid rgba(black, 0.24);
+
+    &:active,
+    &:hover {
+      border-color: rgba(black, 0.87);
+    }
+    &.is-complete {
+      background-color: white;
+    }
+  }
+}
+body.body--dark {
+  .otp-input {
+    color: white;
+    background-color: var(--q-dark);
+    border: 1px solid rgba(white, 0.24);
+
+    &:active,
+    &:hover {
+      border-color: rgba(white, 0.87);
+    }
+    &.is-complete {
+      background-color: black;
+    }
   }
 }
 </style>
