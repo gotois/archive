@@ -50,7 +50,7 @@
           >
             <QMenu transition-show="jump-down" transition-duration="200">
               <QList bordered separator padding :dense="$q.platform.is.desktop">
-                <QItem v-close-popup clickable @click="editArchive(item)">
+                <QItem v-close-popup clickable @click="emit('onEdit', item)">
                   <QItemSection side>
                     <QItemLabel
                       v-if="isLoggedIn && item.sameAs"
@@ -64,7 +64,7 @@
                     </QItemLabel>
                   </QItemSection>
                 </QItem>
-                <QItem v-close-popup clickable @click="removeArchive(item)">
+                <QItem v-close-popup clickable @click="emit('onRemove', item)">
                   <QItemSection side>
                     <QItemLabel
                       v-if="isLoggedIn && item.sameAs"
@@ -532,42 +532,6 @@ async function uploadArchive(item: FormatContract) {
       message: 'Произошла ошибка записи данных',
     })
   }
-}
-
-function editArchive(item: FormatContract) {
-  emit('onEdit', item)
-}
-
-function removeArchive(item: FormatContract) {
-  let message = 'Действительно удалить? Отменить удаление будет невозможно.'
-  if (!isLoggedIn.value && item.sameAs) {
-    message += '\nВнимание: данные не будут удалены с вашего Pod.'
-  }
-  $q.notify({
-    message: message,
-    type: 'negative',
-    position: 'center',
-    group: false,
-    multiLine: true,
-    textColor: 'white',
-    timeout: 7500,
-    attrs: {
-      role: 'alertdialog',
-    },
-    actions: [
-      {
-        label: 'Удалить',
-        color: 'warning',
-        handler: () => {
-          emit('onRemove', item)
-        },
-      },
-      {
-        label: 'Отмена',
-        color: 'white',
-      },
-    ],
-  })
 }
 </script>
 <style lang="scss" scoped>

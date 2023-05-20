@@ -6,6 +6,7 @@
     <QIcon
       v-show="!$q.dark.isActive"
       class="orientation-landscape"
+      style="vertical-align: text-top"
       name="img:/icons/safari-pinned-tab.svg"
     />
     <template v-if="!$q.platform.is.android">

@@ -217,7 +217,7 @@ async function onPaginate(page: number) {
   scrollAreaRef.value.setScrollPosition('vertical', 0, 150)
 }
 
-async function onRemove(item: FormatContract) {
+async function removeContract(item: FormatContract) {
   try {
     await contractStore.removeContract({
       contractData: item,
@@ -225,7 +225,7 @@ async function onRemove(item: FormatContract) {
     })
     $q.notify({
       type: 'positive',
-      message: 'Данные успешно удалены',
+      message: `Контракт "${item.instrument.name}" успешно удален.`,
     })
   } catch (e) {
     console.error(e)
@@ -234,6 +234,39 @@ async function onRemove(item: FormatContract) {
       message: 'Произошла проблема с удалением данных',
     })
   }
+}
+
+function onRemove(item: FormatContract) {
+  let message = 'Действительно удалить? Отменить удаление будет невозможно.'
+  if (!isLoggedIn.value && item.sameAs) {
+    message += '\nВнимание: данные не будут удалены с вашего Pod.'
+  }
+  $q.notify({
+    message: message,
+    type: 'negative',
+    position: 'center',
+    group: false,
+    multiLine: true,
+    textColor: 'white',
+    timeout: 7500,
+    attrs: {
+      role: 'alertdialog',
+    },
+    actions: [
+      {
+        label: 'Удалить',
+        color: 'warning',
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        handler: async () => {
+          await removeContract(item)
+        },
+      },
+      {
+        label: 'Отмена',
+        color: 'white',
+      },
+    ],
+  })
 }
 
 function onEdit(item: FormatContract) {

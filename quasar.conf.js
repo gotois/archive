@@ -84,7 +84,7 @@ module.exports = configure((ctx) => {
         'Dialog',
         'Meta',
         'LocalStorage',
-        'AddressbarColor',
+        'SessionStorage',
       ],
     },
 
