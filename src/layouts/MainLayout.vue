@@ -9,6 +9,7 @@
       <AndroidBarComponent v-if="isTWA" />
       <QToolbar>
         <QBtn
+          v-if="$q.screen.xs || $q.screen.sm || $q.screen.md"
           flat
           round
           :dense="$q.platform.is.desktop"
@@ -27,6 +28,7 @@
           @click="showSearch = true"
         />
         <QBtn
+          v-if="$q.screen.xs || $q.screen.sm || $q.screen.md"
           flat
           round
           :dense="$q.platform.is.desktop"
@@ -73,7 +75,13 @@
         </QRouteTab>
       </QTabs>
     </QHeader>
-    <QDrawer v-model="leftDrawerOpen" side="left" show-if-above bordered>
+    <QDrawer
+      v-model="leftDrawerOpen"
+      side="left"
+      class="scroll-y"
+      show-if-above
+      bordered
+    >
       <p
         class="full-width block text-h6 q-pl-md q-pr-md q-pt-md no-border-radius non-selectable no-pointer-events"
       >
@@ -292,10 +300,10 @@
     <QDrawer
       v-if="getArchiveNames.length"
       v-model="rightDrawerOpen"
-      show-if-above
-      bordered
       side="right"
       class="q-pa-md scroll-y"
+      show-if-above
+      bordered
     >
       <p
         class="block full-width text-h6 text-left q-mb-md no-border-radius non-selectable no-pointer-events"

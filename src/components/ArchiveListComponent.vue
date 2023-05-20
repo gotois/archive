@@ -411,12 +411,14 @@ function onSheet(item: FormatContract) {
     color: 'primary',
     id: 'calendar',
   })
-  actions.push({
-    label: 'Добавить в Google календарь',
-    icon: 'event',
-    color: 'secondary',
-    id: 'google-calendar',
-  })
+  if ($q.platform.is.android) {
+    actions.push({
+      label: 'Добавить в Google календарь',
+      icon: 'event',
+      color: 'secondary',
+      id: 'google-calendar',
+    })
+  }
   if (!item.sameAs && isLoggedIn.value) {
     actions.push({
       label: 'Загрузить на POD',
