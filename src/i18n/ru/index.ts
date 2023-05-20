@@ -132,7 +132,7 @@ export default {
     },
     agreement: {
       title: 'Пользовательское соглашение',
-      body: 'Разработчик не осуществляет сбор любых Ваших персональных данных.<br>Приложение распространяется "как есть".<br>Исходный код распространяется по лицензии MIT и доступен по [ссылке](https://github.com/gotois/archive).<br>Текст пользовательского соглашения доступен по [ссылке](https://archive.gotointeractive.com/privacy).',
+      body: 'Разработчик не осуществляет сбор любых Ваших персональных данных.<br>Приложение распространяется "как есть".<br>Исходный код распространяется по лицензии [GNU General Public License v3.0](https://github.com/gotois/archive/blob/master/LICENSE) и доступен по [ссылке](https://github.com/gotois/archive).<br>Текст пользовательского соглашения доступен по [ссылке](https://archive.gotointeractive.com/privacy).',
       ok: 'Принять',
     },
     data: {
