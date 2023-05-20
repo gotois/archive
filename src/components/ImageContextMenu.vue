@@ -21,7 +21,7 @@
   </QMenu>
 </template>
 <script lang="ts" setup>
-import { PropType, computed } from 'vue'
+import { PropType, ref } from 'vue'
 import {
   Notify,
   QMenu,
@@ -39,7 +39,7 @@ defineProps({
   },
 })
 
-const canWrite = computed(() => Reflect.has(navigator.clipboard, 'write'))
+const canWrite = ref(Reflect.has(navigator.clipboard, 'write'))
 
 async function onCopy(contentUrl: string) {
   const base64Response = await fetch(contentUrl)

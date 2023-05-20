@@ -10,7 +10,7 @@
         <ArchiveListComponent
           draggable="false"
           :loading="$q.loading.isActive"
-          :contracts="contracts"
+          :contracts="formatContracts"
           class="q-mt-md q-mb-md q-ml-auto q-mr-auto"
           :class="{
             'col-xs-6': $q.platform.is.desktop || $q.platform.is.ipad,
@@ -19,7 +19,7 @@
             'max-width': $q.platform.is.desktop ? '720px' : 'auto',
           }"
           :page="currentPage"
-          :pagination-count="isContractsEmpty ? 0 : paginationCount"
+          :pagination-count="formatContracts.length ? 0 : paginationCount"
           @on-paginate="onPaginate"
           @on-remove="onRemove"
           @on-edit="onEdit"
@@ -27,7 +27,9 @@
       </QPullToRefresh>
     </QScrollArea>
     <template
-      v-if="!$q.loading.isActive && isContractsEmpty && paginationCount === 0"
+      v-if="
+        !$q.loading.isActive && !formatContracts.length && paginationCount === 0
+      "
     >
       <QBanner
         :class="{
@@ -141,6 +143,7 @@ import {
   QFab,
   QFabAction,
 } from 'quasar'
+import { storeToRefs } from 'pinia'
 import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
 import usePodStore from 'stores/pod'
@@ -169,8 +172,9 @@ const router = useRouter()
 const authStore = useAuthStore()
 
 const currentPage = toRef(router.currentRoute.value.query, 'page')
-const scrollAreaRef = ref<QScrollArea>(null)
-const isLoggedIn = computed(() => authStore.isLoggedIn)
+const scrollAreaRef = ref<InstanceType<typeof QScrollArea> | null>(null)
+const { isLoggedIn } = storeToRefs(authStore)
+const { formatContracts } = storeToRefs(contractStore)
 const isSearch = computed(() => Boolean(router.currentRoute.value.query.search))
 const isFilter = computed(() => Boolean(router.currentRoute.value.query.filter))
 const archiveEmptyText = computed(() => {
@@ -179,19 +183,17 @@ const archiveEmptyText = computed(() => {
   )
   return contractTypes[randomContractType]
 })
-const contracts = computed(() => contractStore.formatContracts)
 const paginationCount = computed(() => {
   switch (router.currentRoute.value.name) {
     case 'search':
     case 'filter': {
-      return Math.ceil(contracts.value.length / LIMIT)
+      return Math.ceil(formatContracts.value.length / LIMIT)
     }
     default: {
       return Math.ceil(contractStore.getContractsCount / LIMIT)
     }
   }
 })
-const isContractsEmpty = computed(() => contracts.value.length === 0)
 
 watch(
   () => router.currentRoute.value.query,

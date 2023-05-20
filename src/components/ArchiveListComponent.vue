@@ -246,7 +246,7 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType, ref, computed, watch } from 'vue'
+import { PropType, ref, watch } from 'vue'
 import {
   useQuasar,
   QSkeleton,
@@ -271,6 +271,7 @@ import {
   copyToClipboard,
   openURL,
 } from 'quasar'
+import { storeToRefs } from 'pinia'
 import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
 import usePodStore from 'stores/pod'
@@ -311,8 +312,7 @@ const emit = defineEmits(['onPaginate', 'onRemove', 'onEdit'])
 
 const items = ref(props.contracts ?? [])
 const page = ref(Number(props.page))
-
-const isLoggedIn = computed(() => authStore.isLoggedIn)
+const { isLoggedIn } = storeToRefs(authStore)
 
 watch(
   () => props.page,
@@ -520,7 +520,7 @@ function editArchive(item: FormatContract) {
 }
 
 function removeArchive(item: FormatContract) {
-  let message = 'Действительно удалить? Отменить изменения будет невозможно.'
+  let message = 'Действительно удалить? Отменить удаление будет невозможно.'
   if (!isLoggedIn.value && item.sameAs) {
     message += '\nВнимание: данные не будут удалены с вашего Pod.'
   }

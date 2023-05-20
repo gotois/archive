@@ -35,7 +35,6 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
 import {
   LocalStorage,
   useQuasar,
@@ -44,6 +43,7 @@ import {
   QCardSection,
   QCard,
 } from 'quasar'
+import { storeToRefs } from 'pinia'
 import { BulkError } from 'dexie'
 import useAuthStore from 'stores/auth'
 import usePodStore from 'stores/pod'
@@ -54,7 +54,7 @@ const $q = useQuasar()
 const podStore = usePodStore()
 const authStore = useAuthStore()
 
-const isLoggedIn = computed(() => authStore.isLoggedIn)
+const { isLoggedIn } = storeToRefs(authStore)
 
 async function onClearDatabasePlus() {
   emit('onClear')

@@ -157,7 +157,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, defineAsyncComponent, onMounted } from 'vue'
+import { ref, defineAsyncComponent, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   useQuasar,
@@ -176,6 +176,7 @@ import {
   exportFile,
   SessionStorage,
 } from 'quasar'
+import { storeToRefs } from 'pinia'
 import { marked } from 'marked'
 import useAuthStore from 'stores/auth'
 import tutorialStore from 'stores/tutorial'
@@ -212,8 +213,7 @@ const step = ref(Number(searchParams.get(stepParam) ?? 1))
 const consumer = ref('')
 const email = ref('')
 const userComplete = ref(false)
-
-const isLoggedIn = computed(() => authStore.isLoggedIn)
+const { isLoggedIn } = storeToRefs(authStore)
 
 const metaData = {
   'title': 'Примите лицензионное соглашение',
