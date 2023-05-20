@@ -52,8 +52,12 @@
               <QList bordered separator padding :dense="$q.platform.is.desktop">
                 <QItem v-close-popup clickable @click="editArchive(item)">
                   <QItemSection side>
-                    <QItemLabel overline>
-                      {{ $t('archiveList.editPod') }}
+                    <QItemLabel
+                      v-if="isLoggedIn && item.sameAs"
+                      overline
+                      caption
+                    >
+                      {{ $t('archiveList.pod') }}
                     </QItemLabel>
                     <QItemLabel class="text-uppercase">
                       {{ $t('archiveList.edit') }}
@@ -62,6 +66,13 @@
                 </QItem>
                 <QItem v-close-popup clickable @click="removeArchive(item)">
                   <QItemSection side>
+                    <QItemLabel
+                      v-if="isLoggedIn && item.sameAs"
+                      overline
+                      caption
+                    >
+                      {{ $t('archiveList.pod') }}
+                    </QItemLabel>
                     <QItemLabel class="text-negative text-uppercase">
                       {{ $t('archiveList.remove') }}
                     </QItemLabel>

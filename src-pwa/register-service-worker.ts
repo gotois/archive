@@ -23,6 +23,9 @@ register(process.env.SERVICE_WORKER_FILE, {
     console.log('Content has been cached for offline use.')
   },
   updatefound(/* registration */) {
+    if (!LocalStorage.has('version')) {
+      return
+    }
     const prevVersion = LocalStorage.getItem('version')
     if (prevVersion !== version) {
       LocalStorage.set('version', version)
@@ -34,6 +37,9 @@ register(process.env.SERVICE_WORKER_FILE, {
     }
   },
   updated(registration) {
+    if (!LocalStorage.has('version')) {
+      return
+    }
     Notify.create({
       message: 'Идет загрузка обновления',
       icon: 'announcement',

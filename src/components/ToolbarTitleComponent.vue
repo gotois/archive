@@ -1,5 +1,8 @@
 <template>
-  <QToolbarTitle class="text-center non-selectable">
+  <QToolbarTitle
+    class="text-center non-selectable cursor-pointer"
+    @click="onOpenRepo"
+  >
     <QIcon
       v-show="!$q.dark.isActive"
       class="orientation-landscape"
@@ -8,21 +11,14 @@
     <template v-if="!$q.platform.is.android">
       {{ launcherName }}
     </template>
-    <QBadge
-      outline
-      rounded
-      transparent
-      align="top"
-      color="accent"
-      class="absolute q-ml-xs cursor-pointer orientation-landscape"
-      :label="$t('navigation.version', { version: navigatorVersion })"
-      @click="onOpenRepo"
-    />
+    <QTooltip>
+      {{ $t('navigation.version', { version: navigatorVersion }) }}
+    </QTooltip>
   </QToolbarTitle>
 </template>
 <script lang="ts" setup>
 import { toRef } from 'vue'
-import { QToolbarTitle, QBadge, QIcon, openURL } from 'quasar'
+import { QToolbarTitle, QTooltip, QIcon, openURL } from 'quasar'
 import pkg from '../../package.json'
 import manifest from '../../twa-manifest.json'
 

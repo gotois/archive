@@ -6,6 +6,10 @@ import { onMounted } from 'vue'
 import { ref } from 'vue'
 import { marked } from 'marked'
 
+marked.use({
+  gfm: true,
+})
+
 const html = ref('')
 
 onMounted(async () => {

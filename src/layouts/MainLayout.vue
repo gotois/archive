@@ -358,8 +358,6 @@
 import { ref, defineAsyncComponent } from 'vue'
 import {
   useQuasar,
-  LocalStorage,
-  SessionStorage,
   QDialog,
   QBtn,
   QPageContainer,
@@ -463,8 +461,8 @@ async function onSearch(searchText: string) {
 }
 
 function loginToPod() {
-  SessionStorage.remove('connect')
-  SessionStorage.set('restorePreviousSession', true)
+  $q.sessionStorage.remove('connect')
+  $q.sessionStorage.set('restorePreviousSession', true)
   return router.push({
     name: 'login',
   })
@@ -473,9 +471,9 @@ function loginToPod() {
 async function logOutFromPod() {
   await logout()
   authStore.openIdHandleIncoming()
-  LocalStorage.remove('oidcIssuer')
-  SessionStorage.remove('restorePreviousSession')
-  SessionStorage.remove('connect')
+  $q.localStorage.remove('oidcIssuer')
+  $q.sessionStorage.remove('restorePreviousSession')
+  $q.sessionStorage.remove('connect')
   $q.notify({
     message: 'Вы отключили привязку к вашему Pod',
     type: 'positive',

@@ -157,7 +157,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, defineAsyncComponent, onMounted } from 'vue'
+import { ref, watch, defineAsyncComponent, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   useQuasar,
@@ -174,7 +174,6 @@ import {
   QIcon,
   QTooltip,
   exportFile,
-  SessionStorage,
 } from 'quasar'
 import { storeToRefs } from 'pinia'
 import { marked } from 'marked'
@@ -215,9 +214,44 @@ const email = ref('')
 const userComplete = ref(false)
 const { isLoggedIn } = storeToRefs(authStore)
 
-const metaData = {
-  'title': 'Примите лицензионное соглашение',
-  'og:title': 'Лицензионное соглашение',
+watch(
+  () => step.value,
+  (value) => {
+    setMeta(value)
+  },
+)
+
+function setMeta(value) {
+  switch (value) {
+    case 1: {
+      useMeta({
+        'title': 'Как работает наш сервис',
+        'og:title': 'Как работает наш сервис',
+      })
+      break
+    }
+    case 2: {
+      useMeta({
+        'title': 'Пользовательское соглашение',
+        'og:title': 'Пользовательское соглашение',
+      })
+      break
+    }
+    case 3: {
+      useMeta({
+        'title': 'Договор на использование',
+        'og:title': 'Договор на использование',
+      })
+      break
+    }
+    default: {
+      useMeta({
+        'title': 'Примите лицензионное соглашение',
+        'og:title': 'Лицензионное соглашение',
+      })
+      break
+    }
+  }
 }
 
 async function onOnlineAuthorize(oidcIssuer: string) {
@@ -237,7 +271,7 @@ async function onOnlineAuthorize(oidcIssuer: string) {
   }
 
   $q.loading.show()
-  SessionStorage.remove('connect')
+  $q.sessionStorage.remove('connect')
   const redirectUrl =
     window.location.origin +
     window.location.pathname +
@@ -349,7 +383,7 @@ async function onFinish() {
   }
 }
 
-useMeta(metaData)
+setMeta(step.value)
 
 onMounted(() => {
   const { query } = router.currentRoute.value
