@@ -24,6 +24,11 @@
         icon="file_upload"
         color="primary"
         :outline="!file"
+        ripple
+        square
+        stretch
+        rounded
+        :dense="$q.platform.is.desktop"
         class="full-width"
       >
         <QTooltip>
@@ -36,6 +41,11 @@
       icon="file_download"
       :label="$t('settings.native.export')"
       class="full-width q-mt-md"
+      ripple
+      square
+      stretch
+      rounded
+      :dense="$q.platform.is.desktop"
       :disable="contractsCount === 0"
       :outline="contractsCount === 0"
       @click="onExportDB"

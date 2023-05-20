@@ -240,8 +240,7 @@ function onEdit(item: FormatContract) {
   $q.dialog({
     message: 'Введите новое описание:',
     prompt: {
-      model: '',
-      isValid: (val) => val.length > 2,
+      model: item.instrument.description ?? '',
       type: 'text',
     },
     cancel: true,

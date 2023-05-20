@@ -44,21 +44,13 @@
 </template>
 <script lang="ts" setup>
 import { onMounted } from 'vue'
+import { useQuasar, QBtn, QChip, QPage, QCard, QTooltip } from 'quasar'
 import { storeToRefs } from 'pinia'
-import {
-  Notify,
-  Loading,
-  SessionStorage,
-  QBtn,
-  QChip,
-  QPage,
-  QCard,
-  QTooltip,
-} from 'quasar'
 import usePodStore from 'stores/pod'
 import OIDCIssuerComponent from 'components/OIDCIssuerComponent.vue'
 import solidAuth from '../services/authService'
 
+const $q = useQuasar()
 const podStore = usePodStore()
 
 const { getOidcIssuer } = storeToRefs(podStore)
@@ -68,14 +60,17 @@ function onRemove() {
 }
 
 async function onLogin() {
-  SessionStorage.remove('connect')
+  $q.sessionStorage.remove('connect')
   await tryLogin()
 }
 
 async function tryLogin() {
   try {
-    Loading.show({
+    $q.loading.show({
       message: 'Идет аутентификация. Пожалуйста, подождите...',
+      boxClass: $q.dark.isActive
+        ? 'bg-black text-white'
+        : 'bg-grey-2 text-grey-9',
       spinnerColor: 'primary',
     })
     await solidAuth({
@@ -85,15 +80,15 @@ async function tryLogin() {
     })
   } catch (e) {
     console.error(e)
-    SessionStorage.remove('restorePreviousSession')
+    $q.sessionStorage.remove('restorePreviousSession')
   } finally {
-    Loading.hide()
+    $q.loading.hide()
   }
 }
 
 function onOnlineAuthorize(oidcIssuer: string) {
   if (!oidcIssuer) {
-    Notify.create({
+    $q.notify({
       type: 'negative',
       message: 'OIDC Issuer cannot be empty',
     })

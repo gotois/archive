@@ -248,9 +248,11 @@
               <p>{{ $t('settings.keychain.title') }}</p>
               <QBtn
                 :label="$t('settings.keychain.label')"
-                :dense="$q.platform.is.desktop"
-                round
+                ripple
                 square
+                stretch
+                rounded
+                :dense="$q.platform.is.desktop"
                 icon="key"
                 @click="onExportKeychain"
               >

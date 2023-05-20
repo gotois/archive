@@ -1,8 +1,10 @@
 <template>
   <QVirtualScroll :items="items as FormatContract[]" separator>
-    <template #default="{ item, index }">
+    <template
+      #default="{ item, index }: { item: FormatContract, index: number }"
+    >
       <QSpace v-if="index > 0" style="height: 20px" />
-      <QCard v-show="loading" flat square bordered>
+      <QCard v-if="loading" flat square bordered>
         <QSkeleton type="text" height="80px" class="q-pa-md" />
         <QSkeleton height="400px" class="full-width" square />
         <QCardSection>
@@ -11,7 +13,10 @@
       </QCard>
       <QCard v-show="!loading" :key="index" flat square bordered>
         <div class="row">
-          <div class="column q-pl-md" style="max-width: calc(100% - 45px)">
+          <div
+            class="column q-pl-md q-pb-sm"
+            style="max-width: calc(100% - 45px)"
+          >
             <p
               class="full-width q-pt-md text-subtitle1 text-uppercase text-weight-bold no-margin"
               :style="{
@@ -44,20 +49,22 @@
             icon="more_vert"
           >
             <QMenu transition-show="jump-down" transition-duration="200">
-              <QList bordered separator padding>
+              <QList bordered separator padding :dense="$q.platform.is.desktop">
                 <QItem v-close-popup clickable @click="editArchive(item)">
-                  <QItemSection side class="text-uppercase">
-                    <template v-if="isLoggedIn && item.sameAs">
+                  <QItemSection side>
+                    <QItemLabel overline>
                       {{ $t('archiveList.editPod') }}
-                    </template>
-                    <template v-else>
+                    </QItemLabel>
+                    <QItemLabel class="text-uppercase">
                       {{ $t('archiveList.edit') }}
-                    </template>
+                    </QItemLabel>
                   </QItemSection>
                 </QItem>
                 <QItem v-close-popup clickable @click="removeArchive(item)">
-                  <QItemSection side class="text-negative text-uppercase">
-                    {{ $t('archiveList.remove') }}
+                  <QItemSection side>
+                    <QItemLabel class="text-negative text-uppercase">
+                      {{ $t('archiveList.remove') }}
+                    </QItemLabel>
                   </QItemSection>
                 </QItem>
               </QList>
@@ -214,7 +221,7 @@
               {{ $t('archiveList.shareFile') }}
             </QTooltip>
           </QBtn>
-          <p class="text-overline text-orange-9 no-margin">
+          <p class="text-overline text-orange-9 no-margin q-pt-sm">
             {{ prettyDate(item) }}
           </p>
           <div class="row items-center">
@@ -251,6 +258,7 @@ import {
   useQuasar,
   QSkeleton,
   QBtn,
+  QItemLabel,
   QSeparator,
   QSpace,
   QItemSection,
