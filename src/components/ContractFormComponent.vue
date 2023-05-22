@@ -313,7 +313,6 @@ const contractForm = ref<QForm>()
 const dateNoLimit = ref(false)
 const loadingForm = ref(false)
 
-// eslint-disable-next-line no-unused-vars
 function filterOptions(val: string, update: (callback: () => void) => void) {
   update(() => {
     const needle = val.toLowerCase()

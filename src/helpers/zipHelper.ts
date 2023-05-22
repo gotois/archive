@@ -21,7 +21,6 @@ export async function getContent(value: File): Promise<Blob> {
 
 export async function generate(
   blob: Blob,
-  // eslint-disable-next-line no-unused-vars
   onUpdate: (metadata: JSZip.JSZipMetadata) => void,
 ) {
   const zip = new JSZip()

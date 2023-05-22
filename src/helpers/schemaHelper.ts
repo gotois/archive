@@ -19,9 +19,7 @@ import {
   FormatContractParticipant,
 } from '../types/models'
 
-// eslint-disable-next-line no-unused-vars
 enum BaseContext {
-  // eslint-disable-next-line no-unused-vars
   schemaOrg = 'https://schema.org',
 }
 

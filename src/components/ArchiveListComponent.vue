@@ -402,6 +402,15 @@ async function shareURl(url: string) {
   }
 }
 
+enum SheetAction {
+  LINK = 'link',
+  SHARE = 'share',
+  CALENDAR = 'calendar',
+  GOOGLE_CALENDAR = 'google-calendar',
+  UPLOAD = 'upload',
+  MAIL = 'mail',
+}
+
 function onSheet(item: FormatContract) {
   const nativeShareAvailable = typeof navigator.share === 'function'
   const actions = []
@@ -410,14 +419,14 @@ function onSheet(item: FormatContract) {
     actions.push({
       label: 'Поделиться ссылкой',
       icon: 'link',
-      id: 'link',
+      id: SheetAction.LINK,
     })
   }
   if (nativeShareAvailable) {
     actions.push({
       label: 'Поделиться документом',
       icon: $q.platform.is.android ? 'share' : 'ios_share',
-      id: 'share',
+      id: SheetAction.SHARE,
     })
   }
   // Group 2 - Publish
@@ -428,14 +437,14 @@ function onSheet(item: FormatContract) {
     label: 'Скачать ICS',
     icon: 'event',
     color: 'primary',
-    id: 'calendar',
+    id: SheetAction.CALENDAR,
   })
   if ($q.platform.is.android) {
     actions.push({
       label: 'Добавить в Google календарь',
       icon: 'event',
       color: 'secondary',
-      id: 'google-calendar',
+      id: SheetAction.GOOGLE_CALENDAR,
     })
   }
   if (!item.sameAs && isLoggedIn.value) {
@@ -443,7 +452,7 @@ function onSheet(item: FormatContract) {
       label: 'Загрузить на POD',
       icon: 'cloud_upload',
       color: 'primary',
-      id: 'upload',
+      id: SheetAction.UPLOAD,
     })
   }
   // Group 3 - Message
@@ -453,7 +462,7 @@ function onSheet(item: FormatContract) {
       label: 'Отправить сообщение',
       icon: 'contact_mail',
       color: 'secondary',
-      id: 'mail',
+      id: SheetAction.MAIL,
     })
   }
 
@@ -463,20 +472,20 @@ function onSheet(item: FormatContract) {
     class: $q.platform.is.desktop ? 'text-center' : '',
     actions: actions,
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  }).onOk(async (action: { id: string }) => {
+  }).onOk(async (action: { id: SheetAction }) => {
     switch (action.id) {
-      case 'share': {
+      case SheetAction.SHARE: {
         const icalFile = await createCal(item)
         return shareFile(item.instrument.name, icalFile)
       }
-      case 'link': {
+      case SheetAction.LINK: {
         return shareURl(item.sameAs)
       }
-      case 'google-calendar': {
+      case SheetAction.GOOGLE_CALENDAR: {
         const url = googleMailUrl(item).toString()
         return openURL(url)
       }
-      case 'calendar': {
+      case SheetAction.CALENDAR: {
         const file = await createCal(item)
         const [dataURI] = await readFilesPromise([file])
         const link = document.createElement('a')
@@ -484,12 +493,12 @@ function onSheet(item: FormatContract) {
         link.setAttribute('download', file.name)
         link.setAttribute('target', '_blank')
         link.click()
-        break
+        return
       }
-      case 'upload': {
+      case SheetAction.UPLOAD: {
         return uploadArchive(item)
       }
-      case 'mail': {
+      case SheetAction.MAIL: {
         return openURL(mailUrl(item))
       }
     }
@@ -503,10 +512,10 @@ async function shareFile(title: string, file: File) {
       files: [file],
     })
   } catch (error) {
+    console.error('Sharing failed', error)
     if (error.name === 'AbortError') {
       return
     }
-    console.error('Sharing failed', error)
     $q.notify({
       type: 'negative',
       message: 'Произошла ошибка шеринга файла',

@@ -110,7 +110,6 @@ async function indexAllDocuments() {
 
 function onFilterSelect(
   val: string,
-  // eslint-disable-next-line no-unused-vars
   update: (callback: () => void, callback2: (ref: QSelect) => void) => void,
   abort: () => void,
 ) {

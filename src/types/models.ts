@@ -22,9 +22,8 @@ export interface KeysTable {
 interface ContextCredential<T> {
   [key: string]: T
 }
-// eslint-disable-next-line no-unused-vars
+
 enum ProofTypes {
-  // eslint-disable-next-line
   Ed25519Signature2020 = 'Ed25519Signature2020',
 }
 

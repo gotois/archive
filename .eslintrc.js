@@ -47,5 +47,7 @@ module.exports = {
     quotes: ['warn', 'single', {avoidEscape: true}],
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'vue/no-v-html': 'off',
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': 'error',
   },
 }
