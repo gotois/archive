@@ -19,7 +19,7 @@
             'max-width': $q.platform.is.desktop ? '720px' : 'auto',
           }"
           :page="currentPage"
-          :pagination-count="formatContracts.length ? 0 : paginationCount"
+          :pagination-count="paginationCount"
           @on-paginate="onPaginate"
           @on-remove="onRemove"
           @on-edit="onEdit"

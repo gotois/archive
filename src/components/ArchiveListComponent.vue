@@ -4,7 +4,7 @@
       #default="{ item, index }: { item: FormatContract, index: number }"
     >
       <QSpace v-if="index > 0" style="height: 20px" />
-      <QCard v-if="loading" flat square bordered>
+      <QCard v-show="loading" flat square bordered>
         <QSkeleton type="text" height="80px" class="q-pa-md" />
         <QSkeleton height="400px" class="full-width" square />
         <QCardSection>
