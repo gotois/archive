@@ -3,6 +3,14 @@
     <QHeader bordered class="text-primary bg-transparent" height-hint="98">
       <AndroidBarComponent v-if="isTWA" />
       <QToolbar>
+        <QBtn
+          v-if="$route.name !== 'tutorial'"
+          round
+          flat
+          color="primary"
+          icon="arrow_back"
+          to="/"
+        />
         <ToolbarTitleComponent />
       </QToolbar>
     </QHeader>
@@ -13,7 +21,7 @@
 </template>
 <script lang="ts" setup>
 import { defineAsyncComponent } from 'vue'
-import { QLayout, QHeader, QToolbar, QPageContainer } from 'quasar'
+import { QLayout, QHeader, QToolbar, QPageContainer, QBtn } from 'quasar'
 import { RouterView } from 'vue-router'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
 import { isTWA } from '../helpers/twaHelper'

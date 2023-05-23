@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import useAuthStore from 'stores/auth'
 import usePodStore from 'stores/pod'
 import routes from './routes'
+import { ROUTE_NAMES } from './routes'
 import solidAuth from '../services/authService'
 
 export default route(() => {
@@ -37,30 +38,30 @@ export default route(() => {
     Loading.hide()
   })
 
-  Router.beforeEach((to) => {
+  Router.beforeEach((to, from) => {
     const authStore = useAuthStore()
     // hack - специальный путь для сброса состояния приложения
     if (to.path === '/reset') {
       LocalStorage.clear()
       SessionStorage.clear()
       return {
-        name: 'tutorial',
+        name: ROUTE_NAMES.TUTORIAL,
       }
     }
     switch (to.name) {
-      case 'privacy': {
+      case ROUTE_NAMES.PRIVACY: {
         return true
       }
-      case 'login': {
+      case ROUTE_NAMES.LOGIN: {
         if (!authStore.isLoggedIn) {
           return true
         }
         break
       }
-      case 'tutorial': {
+      case ROUTE_NAMES.TUTORIAL: {
         if (LocalStorage.has('tutorialCompleted')) {
           return {
-            name: 'archive',
+            name: ROUTE_NAMES.ARCHIVE,
             query: {
               page: 1,
             },
@@ -74,7 +75,7 @@ export default route(() => {
           (LocalStorage.has('code') && authStore.pinIsLoggedIn)
         ) {
           return {
-            name: 'archive',
+            name: ROUTE_NAMES.ARCHIVE,
             query: { page: 1 },
           }
         }
@@ -83,8 +84,9 @@ export default route(() => {
       default: {
         switch (to.query.error) {
           case 'access_denied': {
+            SessionStorage.remove('restorePreviousSession')
             return {
-              name: 'main',
+              name: ROUTE_NAMES.ROOT,
               query: {},
             }
           }
@@ -98,13 +100,13 @@ export default route(() => {
         }
         if (!LocalStorage.has('tutorialCompleted')) {
           return {
-            name: 'tutorial',
+            name: ROUTE_NAMES.TUTORIAL,
             query: {},
           }
         }
         if (LocalStorage.has('code') && !authStore.pinIsLoggedIn) {
           return {
-            name: 'auth',
+            name: ROUTE_NAMES.AUTH,
             query: {
               fullPath: to.fullPath,
             },
@@ -112,11 +114,12 @@ export default route(() => {
         }
         if (
           !authStore.isLoggedIn &&
+          from.name !== ROUTE_NAMES.LOGIN &&
           SessionStorage.has('restorePreviousSession')
         ) {
           return {
             ...to,
-            name: 'login',
+            name: ROUTE_NAMES.LOGIN,
           }
         }
         break

@@ -1,29 +1,42 @@
 import { RouteRecordRaw } from 'vue-router'
 
+export enum ROUTE_NAMES {
+  ROOT = 'main',
+  ARCHIVE = 'archive',
+  FILTER = 'filter',
+  SEARCH = 'search',
+  FEEDBACK = 'feedback',
+  AUTH = 'auth',
+  CREATE = 'create',
+  TUTORIAL = 'tutorial',
+  PRIVACY = 'privacy',
+  LOGIN = 'login',
+}
+
 const routes: RouteRecordRaw[] = [
   {
-    name: 'main',
+    name: ROUTE_NAMES.ROOT,
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       {
         path: '',
-        name: 'archive',
+        name: ROUTE_NAMES.ARCHIVE,
         component: () => import('pages/ArchivePage.vue'),
       },
       {
         path: 'filter',
-        name: 'filter',
+        name: ROUTE_NAMES.FILTER,
         component: () => import('pages/ArchivePage.vue'),
       },
       {
         path: 'search',
-        name: 'search',
+        name: ROUTE_NAMES.SEARCH,
         component: () => import('pages/ArchivePage.vue'),
       },
       {
         path: 'feedback',
-        name: 'feedback',
+        name: ROUTE_NAMES.FEEDBACK,
         component: () => import('pages/FeedbackPage.vue'),
       },
     ],
@@ -38,7 +51,7 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '',
-        name: 'auth',
+        name: ROUTE_NAMES.AUTH,
         component: () => import('pages/AuthPage.vue'),
       },
     ],
@@ -49,7 +62,7 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '',
-        name: 'create',
+        name: ROUTE_NAMES.CREATE,
         component: () => import('pages/CreatePage.vue'),
       },
     ],
@@ -60,7 +73,7 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '',
-        name: 'tutorial',
+        name: ROUTE_NAMES.TUTORIAL,
         component: () => import('pages/TutorialPage.vue'),
       },
     ],
@@ -71,7 +84,7 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '',
-        name: 'privacy',
+        name: ROUTE_NAMES.PRIVACY,
         component: () => import('pages/PrivacyPage.vue'),
       },
     ],
@@ -82,7 +95,7 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '',
-        name: 'login',
+        name: ROUTE_NAMES.LOGIN,
         component: () => import('pages/LoginPage.vue'),
       },
     ],
