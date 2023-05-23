@@ -22,7 +22,7 @@
         :disable="!file"
         type="submit"
         icon="file_upload"
-        color="primary"
+        color="secondary"
         :outline="!file"
         ripple
         square

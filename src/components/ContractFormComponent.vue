@@ -186,6 +186,10 @@
             v-model="dateNoLimit"
             color="secondary"
             class="non-selectable"
+            :class="{
+              'text-grey-14': !dateNoLimit,
+              'text-secondary': dateNoLimit,
+            }"
             :label="$t('duration.infinity')"
           >
             <QTooltip>{{ $t('duration.noLimit') }}</QTooltip>

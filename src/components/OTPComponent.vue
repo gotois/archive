@@ -119,6 +119,7 @@ body.body--light {
     border: 1px solid rgba(black, 0.24);
 
     &:active,
+    &:focus-visible,
     &:hover {
       border-color: rgba(black, 0.87);
     }
@@ -134,6 +135,7 @@ body.body--dark {
     border: 1px solid rgba(white, 0.24);
 
     &:active,
+    &:focus-visible,
     &:hover {
       border-color: rgba(white, 0.87);
     }

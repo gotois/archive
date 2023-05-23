@@ -173,7 +173,7 @@
                 }"
                 :outline="!consumer?.length && !email?.length"
                 type="submit"
-                color="accent"
+                color="secondary"
               />
             </QForm>
           </QItemSection>
@@ -205,7 +205,11 @@
                 round
                 :dense="$q.platform.is.desktop"
                 square
+                ripple
+                stretch
+                rounded
                 icon="key"
+                color="secondary"
                 :label="$t('settings.otp.addCode')"
                 @click="showOTPDialog = true"
               />
@@ -252,6 +256,7 @@
                 square
                 stretch
                 rounded
+                color="secondary"
                 :dense="$q.platform.is.desktop"
                 icon="key"
                 @click="onExportKeychain"

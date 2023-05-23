@@ -222,7 +222,7 @@
           <QBtn
             fab-mini
             color="white"
-            text-color="primary"
+            text-color="accent"
             icon="send"
             class="absolute"
             style="top: 0; left: 18px; transform: translateY(-50%)"
