@@ -126,7 +126,8 @@ async function onImportDB() {
 }
 
 function onExportDB() {
-  $q.dialog({
+  const dialog = $q.dialog({
+    title: 'Экспорт договоров',
     message: 'Введите название файла договоров:',
     prompt: {
       model: '',
@@ -134,9 +135,10 @@ function onExportDB() {
       type: 'text',
     },
     cancel: true,
-    persistent: true,
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  }).onOk(async (exportName: string) => {
+    persistent: false,
+  })
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  dialog.onOk(async (exportName: string) => {
     await databaseExport(exportName)
   })
 }
