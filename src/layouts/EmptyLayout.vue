@@ -5,12 +5,15 @@
       <QToolbar>
         <QBtn
           v-if="$route.name !== 'tutorial'"
-          round
-          flat
+          to="/"
           color="primary"
           icon="arrow_back"
-          to="/"
-        />
+          round
+          flat
+          unelevated
+        >
+          <QTooltip>Вернуться</QTooltip>
+        </QBtn>
         <ToolbarTitleComponent />
       </QToolbar>
     </QHeader>
@@ -21,7 +24,14 @@
 </template>
 <script lang="ts" setup>
 import { defineAsyncComponent } from 'vue'
-import { QLayout, QHeader, QToolbar, QPageContainer, QBtn } from 'quasar'
+import {
+  QLayout,
+  QHeader,
+  QToolbar,
+  QPageContainer,
+  QBtn,
+  QTooltip,
+} from 'quasar'
 import { RouterView } from 'vue-router'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
 import { isTWA } from '../helpers/twaHelper'
