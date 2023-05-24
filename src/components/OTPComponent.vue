@@ -3,11 +3,10 @@
     ref="otpInput"
     :value="pin"
     input-classes="otp-input"
-    separator="-"
+    :separator="separator"
     :num-inputs="num"
     :is-disabled="disabled"
     :should-auto-focus="autofocus"
-    :is-input-num="true"
     :conditional-class="['first', '', '', 'last']"
     :placeholder="placeholder"
     @on-change="onChange"
@@ -28,6 +27,14 @@ const props = defineProps({
     type: Boolean as PropType<boolean>,
     default: false,
   },
+  placeholder: {
+    type: String as PropType<string>,
+    default: '*',
+  },
+  separator: {
+    type: String as PropType<string>,
+    default: '-',
+  },
   num: {
     type: Number as PropType<number>,
     default: 4,
@@ -36,7 +43,7 @@ const props = defineProps({
 
 const pin = ref('')
 const placeholder = ref(
-  '*,'
+  (props.placeholder + ',')
     .repeat(props.num)
     .split(',')
     .filter((x) => !!x),
