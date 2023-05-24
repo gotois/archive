@@ -139,7 +139,19 @@ function onExportDB() {
   })
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   dialog.onOk(async (exportName: string) => {
-    await databaseExport(exportName)
+    const status = await databaseExport(exportName)
+    if (status) {
+      $q.notify({
+        type: 'positive',
+        message: 'Файл сохранен',
+      })
+    } else {
+      $q.notify({
+        type: 'error',
+        color: 'negative',
+        message: 'Ошибка при экспорте файла',
+      })
+    }
   })
 }
 
@@ -168,18 +180,6 @@ async function databaseExport(exportName: string) {
   })
   const filename = exportName.replace(/\.zip$/, '') + '.zip'
 
-  const status = exportFile(filename, content)
-  if (status) {
-    $q.notify({
-      type: 'positive',
-      message: 'Файл сохранен',
-    })
-  } else {
-    $q.notify({
-      type: 'error',
-      color: 'negative',
-      message: 'Ошибка при экспорте файла',
-    })
-  }
+  return exportFile(filename, content)
 }
 </script>

@@ -15,7 +15,11 @@
         v-model="contractType"
         :options="contractOptions"
         :label="$t('contract.type')"
-        :hint="$t('contract.hint')"
+        :hint="
+          $q.platform.is.mobile
+            ? $t('contract.hint.mobile')
+            : $t('contract.hint.desktop')
+        "
         :rules="[(val) => (val && val.length > 0) || $t('contract.rules')]"
         popup-content-class="q-pt-sm"
         new-value-mode="add-unique"
@@ -343,11 +347,12 @@ function resetForm() {
 
 function onResetForm(confirm = false) {
   if (confirm) {
-    $q.dialog({
+    const dialog = $q.dialog({
       message: 'Вы действительно хотите очистить форму?',
       cancel: true,
       persistent: true,
-    }).onOk(() => {
+    })
+    dialog.onOk(() => {
       resetForm()
     })
     return

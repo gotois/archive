@@ -270,21 +270,30 @@ function onRemove(item: FormatContract) {
 }
 
 function onEdit(item: FormatContract) {
-  $q.dialog({
+  const dialog = $q.dialog({
     message: 'Введите новое описание:',
     prompt: {
       model: item.instrument.description ?? '',
       type: 'text',
     },
     cancel: true,
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  }).onOk(async (value: string) => {
+  })
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  dialog.onOk(async (value: string) => {
     item.instrument.description = value
-    await editContract(item)
-    $q.notify({
-      type: 'positive',
-      message: 'Данные обновлены',
-    })
+    try {
+      await editContract(item)
+      $q.notify({
+        type: 'positive',
+        message: 'Данные обновлены',
+      })
+    } catch (e) {
+      console.error(e)
+      $q.notify({
+        color: 'negative',
+        message: 'Ошибка в обновлении',
+      })
+    }
   })
 }
 

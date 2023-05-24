@@ -21,10 +21,10 @@
         :transition-next="$q.platform.is.desktop ? 'slide-left' : 'slide-down'"
       >
         <QStep
-          :name="1"
+          :name="STEP.BEGIN"
           :title="$t('tutorial.info.title')"
           icon="create_new_folder"
-          :done="step > 1"
+          :done="step > STEP.BEGIN"
         >
           <p v-show="$q.platform.is.desktop" class="text-h4">
             {{ $t('tutorial.info.title') }}
@@ -46,10 +46,10 @@
           </QStepperNavigation>
         </QStep>
         <QStep
-          :name="2"
+          :name="STEP.SECOND"
           :title="$t('tutorial.agreement.title')"
           icon="article"
-          :done="step > 2"
+          :done="step > STEP.SECOND"
         >
           <p v-show="$q.platform.is.desktop" class="text-h4">
             {{ $t('tutorial.agreement.title') }}
@@ -203,12 +203,18 @@ const authStore = useAuthStore()
 const contractStore = useContractStore()
 const profileStore = useProfileStore()
 
+enum STEP {
+  BEGIN = 1,
+  SECOND = 2,
+  FINAL = 3,
+}
+
 const { description, version, productName, bugs } = pkg
 const searchParams = new URLSearchParams(window.location.search)
-const tutorialFinalStep = 3
+const tutorialFinalStep = STEP.FINAL
 const stepParam = 'step'
 
-const step = ref(Number(searchParams.get(stepParam) ?? 1))
+const step = ref(Number(searchParams.get(stepParam) ?? STEP.BEGIN))
 const consumer = ref('')
 const email = ref('')
 const userComplete = ref(false)
@@ -223,21 +229,21 @@ watch(
 
 function setMeta(value) {
   switch (value) {
-    case 1: {
+    case STEP.BEGIN: {
       useMeta({
         'title': 'Как работает наш сервис',
         'og:title': 'Как работает наш сервис',
       })
       break
     }
-    case 2: {
+    case STEP.SECOND: {
       useMeta({
         'title': 'Пользовательское соглашение',
         'og:title': 'Пользовательское соглашение',
       })
       break
     }
-    case 3: {
+    case STEP.FINAL: {
       useMeta({
         'title': 'Договор на использование',
         'og:title': 'Договор на использование',
@@ -258,14 +264,23 @@ async function onOnlineAuthorize(oidcIssuer: string) {
   if (!oidcIssuer) {
     const confirmMessage =
       'Вы не сможете подписывать договоры цифровой подписью без WebId.\nПродолжить использование в режиме Offline?'
-    $q.dialog({
+    const dialog = $q.dialog({
       message: confirmMessage,
       cancel: true,
       persistent: true,
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    }).onOk(async () => {
+    })
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    dialog.onOk(async () => {
       userComplete.value = true
-      await keys.destroy()
+      try {
+        await keys.destroy()
+      } catch (e) {
+        console.error(e)
+        $q.notify({
+          type: 'negative',
+          message: 'Произошла ошибка',
+        })
+      }
     })
     return
   }

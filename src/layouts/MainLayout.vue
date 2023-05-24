@@ -504,32 +504,50 @@ function onOTPChange(value: string) {
   if (!hasCode.value || value.length) {
     return
   }
-  $q.dialog({
+  const dialog = $q.dialog({
     message: 'Действительно удалить пин?',
     cancel: true,
     persistent: true,
-  }).onOk(() => {
-    authStore.removeCode()
-    $q.notify({
-      type: 'positive',
-      message: 'Ключ отключен',
-    })
+  })
+  dialog.onOk(() => {
+    try {
+      authStore.removeCode()
+      $q.notify({
+        type: 'positive',
+        message: 'Ключ отключен',
+      })
+    } catch (e) {
+      console.error(e)
+      $q.notify({
+        type: 'negative',
+        message: 'Произошла ошибка',
+      })
+    }
   })
   showOTPDialog.value = false
 }
 
 function onOTPHandleComplete(code: string) {
-  $q.dialog({
+  const dialog = $q.dialog({
     message: 'Действительно сохранить PIN?',
     cancel: true,
     persistent: true,
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  }).onOk(async () => {
-    await authStore.setCode(code)
-    $q.notify({
-      type: 'positive',
-      message: 'PIN сохранен',
-    })
+  })
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  dialog.onOk(async () => {
+    try {
+      await authStore.setCode(code)
+      $q.notify({
+        type: 'positive',
+        message: 'PIN сохранен',
+      })
+    } catch (e) {
+      console.error(e)
+      $q.notify({
+        type: 'negative',
+        message: 'Ошибка в сохранении PIN',
+      })
+    }
   })
   showOTPDialog.value = false
 }
