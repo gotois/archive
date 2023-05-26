@@ -98,7 +98,26 @@
           >
             <template #navigation-icon="navProps">
               <div class="q-pa-md non-selectable">
+                <QIcon
+                  v-if="isContentPDF(item.object[navProps.index].contentUrl)"
+                  name="picture_as_pdf"
+                  size="64px"
+                  color="info"
+                  class="rounded-borders cursor-pointer shadow-box shadow-4"
+                  :class="{
+                    'inset-shadow-down': navProps.active,
+                    'bg-white': !$q.dark.isActive,
+                    'bg-dark': $q.dark.isActive,
+                  }"
+                  :style="{
+                    border: navProps.active
+                      ? '1px solid var(--q-secondary)'
+                      : 'none',
+                  }"
+                  @click="navProps.onClick"
+                />
                 <QImg
+                  v-else
                   v-ripple
                   width="64px"
                   :ratio="1"
@@ -140,20 +159,13 @@
                   <template
                     v-if="!$q.platform.is.safari && isContentPDF(contentUrl)"
                   >
-                    <QIcon
+                    <object
                       name="picture_as_pdf"
-                      size="240px"
                       class="absolute-center"
-                      :class="{
-                        grabbing: item.object.length > 1,
-                      }"
-                      color="info"
-                    >
-                      <ImageContextMenu
-                        v-if="!item._fullscreen"
-                        :content-url="contentUrl"
-                      />
-                    </QIcon>
+                      :data="contentUrl"
+                      type="application/pdf"
+                      style="width: 100%; height: 400px"
+                    ></object>
                   </template>
                   <template v-else-if="isContentHeic(contentUrl)">
                     <QIcon
