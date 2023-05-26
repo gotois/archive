@@ -6,11 +6,16 @@
     <p class="text-caption text-center">
       {{ $t('auth.caption') }}
     </p>
-    <OTPComponent
+    <QOtp
       ref="otp"
-      autofocus
+      :num="4"
+      :dense="$q.platform.is.desktop"
       :disabled="otpDisabled"
-      @on-complete="onHandleComplete"
+      class="flex flex-center"
+      separator="-"
+      outlined
+      autofocus
+      @complete="onHandleComplete"
     />
   </QPage>
 </template>
@@ -19,7 +24,7 @@
 import { ref } from 'vue'
 import { useMeta, useQuasar, QPage } from 'quasar'
 import { useRouter } from 'vue-router'
-import OTPComponent from 'components/OTPComponent.vue'
+import QOtp from 'quasar-app-extension-q-otp/src/component/QOtp.vue'
 import useAuthStore from 'stores/auth'
 
 const $q = useQuasar()
@@ -31,7 +36,7 @@ const metaData = {
   'og:title': 'Авторизация',
 }
 
-const otp = ref<InstanceType<typeof OTPComponent> | null>(null)
+const otp = ref<InstanceType<typeof QOtp> | null>(null)
 const otpDisabled = ref(false)
 
 async function onHandleComplete(value: string) {
@@ -52,6 +57,7 @@ async function onHandleComplete(value: string) {
     dismiss()
   } else {
     otpDisabled.value = true
+    otp.value.blur()
     $q.notify({
       color: 'negative',
       message: 'Неверный ключ',
@@ -61,6 +67,7 @@ async function onHandleComplete(value: string) {
     setTimeout(() => {
       otpDisabled.value = false
       otp.value.clear()
+      otp.value.focus()
     }, timeout)
   }
 }

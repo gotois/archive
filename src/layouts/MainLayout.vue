@@ -218,13 +218,17 @@
                   <QCardSection>
                     <p>{{ $t('settings.otp.description') }}</p>
                     <QSpace class="q-pa-xs" />
-                    <OTPComponent
+                    <QOtp
                       v-if="showOTPDialog"
                       ref="otp"
+                      separator="-"
+                      outlined
                       autofocus
+                      :dense="$q.platform.is.desktop"
+                      :num="4"
                       class="flex flex-center"
-                      @on-change="onOTPChange"
-                      @on-complete="onOTPHandleComplete"
+                      @change="onOTPChange"
+                      @complete="onOTPHandleComplete"
                     />
                   </QCardSection>
                 </QCard>
@@ -397,7 +401,6 @@ import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
 import { isTWA } from '../helpers/twaHelper'
-
 import { exportKeyPair } from '../services/cryptoService'
 const DatabaseRemoveComponent = defineAsyncComponent(
   () => import('components/DatabaseRemoveComponent.vue'),
@@ -408,8 +411,8 @@ const DatabaseComponent = defineAsyncComponent(
 const ArchiveSearchComponent = defineAsyncComponent(
   () => import('components/ArchiveSearchComponent.vue'),
 )
-const OTPComponent = defineAsyncComponent(
-  () => import('components/OTPComponent.vue'),
+const QOtp = defineAsyncComponent(
+  () => import('quasar-app-extension-q-otp/src/component/QOtp.vue'),
 )
 const AndroidBarComponent = defineAsyncComponent(
   () => import('components/AndroidBarComponent.vue'),
@@ -432,7 +435,7 @@ const profileOpen = ref(false)
 const otpOpen = ref(false)
 const confirm = ref(false)
 const showSearch = ref(false)
-const otp = ref<InstanceType<typeof OTPComponent> | null>(null)
+const otp = ref<InstanceType<typeof QOtp> | null>(null)
 
 function onToggleLeftDrawer(): void {
   leftDrawerOpen.value = !leftDrawerOpen.value
