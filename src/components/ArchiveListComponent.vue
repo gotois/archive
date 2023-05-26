@@ -381,12 +381,3 @@ async function uploadArchive(item: FormatContract) {
   }
 }
 </script>
-<style lang="scss" scoped>
-.grabbing {
-  cursor: grab;
-
-  :active {
-    cursor: grabbing;
-  }
-}
-</style>

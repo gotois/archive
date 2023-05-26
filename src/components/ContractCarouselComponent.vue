@@ -188,3 +188,12 @@ function onShowFullImage(object: FormatContract) {
   object._fullscreen = !object._fullscreen
 }
 </script>
+<style lang="scss" scoped>
+.grabbing {
+  cursor: grab;
+
+  :active {
+    cursor: grabbing;
+  }
+}
+</style>
