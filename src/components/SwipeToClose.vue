@@ -1,8 +1,12 @@
 <template>
   <div
     ref="root"
-    v-touch-pan.vertical.down.mouse.mouseCapture.stop="handlePan"
-    class="swipe-to-close"
+    v-touch-pan.vertical.down.mouse.mouseCapture.stop="
+      disabled ? null : handlePan
+    "
+    :class="{
+      'swipe-to-close': !disabled,
+    }"
     :style="style"
   >
     <slot />
@@ -21,7 +25,7 @@ interface Details extends TouchSwipeParams {
   }
 }
 
-const props = defineProps({
+defineProps({
   disabled: {
     type: Boolean as PropType<boolean>,
     required: false,
@@ -40,9 +44,6 @@ const style = computed(() => ({
 }))
 
 function handlePan(details: Details) {
-  if (props.disabled) {
-    return
-  }
   if (details.direction === 'up') {
     return
   }
