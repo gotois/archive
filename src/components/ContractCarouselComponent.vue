@@ -1,11 +1,11 @@
 <template>
   <QCarousel
-    v-model="item._currentSlide"
-    v-model:fullscreen="item._fullscreen"
+    v-model="currentSlide"
+    v-model:fullscreen="fullscreen"
     transition-prev="slide-right"
     transition-next="slide-left"
     control-color="secondary"
-    :navigation="!item._fullscreen && item.object.length > 1"
+    :navigation="!fullscreen && item.object.length > 1"
     :arrows="$q.platform.is.desktop && item.object.length > 1"
     animated
     swipeable
@@ -63,10 +63,7 @@
       :name="objectIndex + 1"
     >
       <QScrollArea class="absolute-full fit">
-        <SwipeToClose
-          :disabled="!item._fullscreen"
-          @on-close="item._fullscreen = false"
-        >
+        <SwipeToClose :disabled="!fullscreen" @on-close="fullscreen = false">
           <template v-if="!$q.platform.is.safari && isContentPDF(contentUrl)">
             <object
               name="picture_as_pdf"
@@ -86,10 +83,7 @@
               }"
               color="info"
             >
-              <ImageContextMenu
-                v-if="!item._fullscreen"
-                :content-url="contentUrl"
-              />
+              <ImageContextMenu v-if="!fullscreen" :content-url="contentUrl" />
             </QIcon>
           </template>
           <template v-else>
@@ -97,11 +91,11 @@
               class="col"
               alt="Document"
               fit="contain"
-              :height="item._fullscreen ? '100dvh' : '400px'"
+              :height="fullscreen ? '100dvh' : '400px'"
               :ratio="1"
               :src="contentUrl"
-              :loading="item._fullscreen ? 'eager' : 'lazy'"
-              :decoding="item._fullscreen ? 'sync' : 'async'"
+              :loading="fullscreen ? 'eager' : 'lazy'"
+              :decoding="fullscreen ? 'sync' : 'async'"
               :class="{
                 grabbing: item.object.length > 1,
               }"
@@ -109,10 +103,7 @@
               no-spinner
               no-native-menu
             >
-              <ImageContextMenu
-                v-if="!item._fullscreen"
-                :content-url="contentUrl"
-              />
+              <ImageContextMenu v-if="!fullscreen" :content-url="contentUrl" />
             </QImg>
           </template>
         </SwipeToClose>
@@ -127,7 +118,7 @@
           :icon="icon(item)"
           @click="onShowFullImage(item)"
         >
-          <QTooltip v-if="item._fullscreen">
+          <QTooltip v-if="fullscreen">
             {{ $t('archiveList.closeFile') }}
           </QTooltip>
           <QTooltip v-else>
@@ -139,7 +130,7 @@
   </QCarousel>
 </template>
 <script lang="ts" setup>
-import { toRef } from 'vue'
+import { ref, toRef } from 'vue'
 import {
   QBtn,
   QIcon,
@@ -163,12 +154,14 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const item = toRef<FormatContract | null>(props, 'model')
+const item = toRef<FormatContract>(props, 'model')
+const currentSlide = ref(1)
+const fullscreen = ref(false)
 
 function icon(item: FormatContract) {
-  if (item._fullscreen) {
+  if (fullscreen.value) {
     return 'fullscreen_exit'
-  } else if (isContentPDF(item.object[item._currentSlide - 1].contentUrl)) {
+  } else if (isContentPDF(item.object[currentSlide.value - 1].contentUrl)) {
     return 'open_in_full'
   } else {
     return 'fullscreen'
@@ -176,7 +169,7 @@ function icon(item: FormatContract) {
 }
 
 function onShowFullImage(object: FormatContract) {
-  const { contentUrl } = object.object[object._currentSlide - 1]
+  const { contentUrl } = object.object[currentSlide.value - 1]
 
   if (isContentPDF(contentUrl)) {
     openURL(contentUrl, undefined, {
@@ -185,7 +178,7 @@ function onShowFullImage(object: FormatContract) {
     })
     return
   }
-  object._fullscreen = !object._fullscreen
+  fullscreen.value = !fullscreen.value
 }
 </script>
 <style lang="scss" scoped>
@@ -194,6 +187,11 @@ function onShowFullImage(object: FormatContract) {
 
   :active {
     cursor: grabbing;
+  }
+}
+.q-carousel {
+  ::selection {
+    background: transparent;
   }
 }
 </style>
