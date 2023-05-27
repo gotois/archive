@@ -63,14 +63,22 @@
       :name="objectIndex + 1"
     >
       <QScrollArea class="absolute-full fit">
-        <SwipeToClose :disabled="!fullscreen" @on-close="fullscreen = false">
+        <SwipeToClose
+          :disabled="!fullscreen"
+          :style="{
+            'max-height': fullscreen ? '100dvh' : '400px',
+          }"
+          @on-close="fullscreen = false"
+        >
           <template v-if="!$q.platform.is.safari && isContentPDF(contentUrl)">
             <object
               name="picture_as_pdf"
-              class="absolute-center"
               :data="contentUrl"
               type="application/pdf"
-              style="width: 100%; height: 400px"
+              :style="{
+                width: '100%',
+                height: fullscreen ? '100dvh' : '400px',
+              }"
             ></object>
           </template>
           <template v-else-if="isContentHeic(contentUrl)">
@@ -115,7 +123,7 @@
           round
           color="white"
           text-color="primary"
-          :icon="icon(item)"
+          :icon="icon(item.object[currentSlide - 1].contentUrl)"
           @click="onShowFullImage(item)"
         >
           <QTooltip v-if="fullscreen">
@@ -158,10 +166,10 @@ const item = toRef<FormatContract>(props, 'model')
 const currentSlide = ref(1)
 const fullscreen = ref(false)
 
-function icon(item: FormatContract) {
+function icon(contentUrl: string) {
   if (fullscreen.value) {
     return 'fullscreen_exit'
-  } else if (isContentPDF(item.object[currentSlide.value - 1].contentUrl)) {
+  } else if (Platform.is.safari && isContentPDF(contentUrl)) {
     return 'open_in_full'
   } else {
     return 'fullscreen'
@@ -171,7 +179,7 @@ function icon(item: FormatContract) {
 function onShowFullImage(object: FormatContract) {
   const { contentUrl } = object.object[currentSlide.value - 1]
 
-  if (isContentPDF(contentUrl)) {
+  if (Platform.is.safari && isContentPDF(contentUrl)) {
     openURL(contentUrl, undefined, {
       popup: Platform.is.desktop ? 1 : null,
       menubar: false,
