@@ -35,14 +35,7 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  LocalStorage,
-  useQuasar,
-  QBtn,
-  QCardActions,
-  QCardSection,
-  QCard,
-} from 'quasar'
+import { useQuasar, QBtn, QCardActions, QCardSection, QCard } from 'quasar'
 import { storeToRefs } from 'pinia'
 import { BulkError } from 'dexie'
 import useAuthStore from 'stores/auth'
@@ -62,7 +55,7 @@ async function onClearDatabasePlus() {
   try {
     await podStore.removeContractsDataset()
     await db.delete()
-    LocalStorage.clear()
+    $q.localStorage.clear()
     $q.loading.hide()
     const timeout = 1500
     $q.notify({
@@ -91,7 +84,7 @@ async function onClearDatabase() {
   $q.loading.show()
   try {
     await db.delete()
-    LocalStorage.clear()
+    $q.localStorage.clear()
     $q.loading.hide()
     const timeout = 1500
     $q.notify({

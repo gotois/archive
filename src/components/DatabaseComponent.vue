@@ -113,6 +113,7 @@ async function onImportDB() {
       overwriteValues: true,
       clearTablesBeforeImport: false,
     })
+    $q.localStorage.remove('contractNames')
     location.reload()
   } catch (error) {
     const msg = (error as BulkError).message

@@ -139,7 +139,7 @@
   </QCarousel>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { toRef } from 'vue'
 import {
   QBtn,
   QIcon,
@@ -163,7 +163,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const item = ref<FormatContract | null>(props.model)
+const item = toRef<FormatContract | null>(props, 'model')
 
 function icon(item: FormatContract) {
   if (item._fullscreen) {

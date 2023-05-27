@@ -18,7 +18,7 @@
           :style="{
             'max-width': $q.platform.is.desktop ? '720px' : 'auto',
           }"
-          :page="currentPage"
+          :page="Number(currentPage)"
           :pagination-count="paginationCount"
           @on-paginate="onPaginate"
           @on-remove="onRemove"

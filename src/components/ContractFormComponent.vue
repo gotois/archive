@@ -260,7 +260,7 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType, ref } from 'vue'
+import { PropType, ref, toRef } from 'vue'
 import {
   useQuasar,
   date,
@@ -307,7 +307,7 @@ const contractStore = useContractStore()
 const profileStore = useProfileStore()
 
 const { isLoggedIn } = storeToRefs(authStore)
-const contractType = ref(props.contractTypeName)
+const contractType = toRef(props, 'contractTypeName')
 const customer = ref('')
 const email = ref('')
 const description = ref('')

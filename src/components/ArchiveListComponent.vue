@@ -1,5 +1,5 @@
 <template>
-  <QVirtualScroll :items="items as FormatContract[]" separator>
+  <QVirtualScroll :items="contracts as FormatContract[]" separator>
     <template
       #default="{ item, index }: { item: FormatContract, index: number }"
     >
@@ -133,7 +133,7 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType, ref, watch } from 'vue'
+import { PropType, ref, toRef, watch } from 'vue'
 import {
   useQuasar,
   QSkeleton,
@@ -176,7 +176,7 @@ const props = defineProps({
     default: false,
   },
   page: {
-    type: String as PropType<string>,
+    type: Number as PropType<number>,
     required: true,
   },
   contracts: {
@@ -190,20 +190,14 @@ const contractStore = useContractStore()
 const podStore = usePodStore()
 const emit = defineEmits(['onPaginate', 'onRemove', 'onEdit'])
 
-const items = ref(props.contracts ?? [])
+const contracts = toRef(props, 'contracts', [])
 const page = ref(Number(props.page))
 const { isLoggedIn } = storeToRefs(authStore)
 
 watch(
   () => props.page,
   (value) => {
-    page.value = Number(value)
-  },
-)
-watch(
-  () => props.contracts,
-  (newVal) => {
-    items.value = newVal
+    page.value = value
   },
 )
 
