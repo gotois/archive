@@ -40,6 +40,7 @@ import {
   QScrollArea,
 } from 'quasar'
 import { useRouter } from 'vue-router'
+import { ROUTE_NAMES } from '../router/routes'
 
 const ContractFormComponent = defineAsyncComponent({
   loader: () => import('components/ContractFormComponent.vue'),
@@ -61,9 +62,9 @@ const metaData = {
 
 async function onCreate(value: string) {
   await router.push({
-    name: 'filter',
+    name: ROUTE_NAMES.FILTER,
     query: {
-      filter: value,
+      name: value,
       page: 1,
     },
   })

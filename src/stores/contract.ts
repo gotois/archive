@@ -106,6 +106,9 @@ export default defineStore('contracts', {
       return usePodStore().removeFromPod(contractData.sameAs)
     },
     async filterFromContracts(query: string) {
+      if (!query) {
+        return
+      }
       this.contracts = await db.contracts
         .where('instrument_name')
         .equals(query)

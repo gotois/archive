@@ -1,4 +1,12 @@
 <template>
+  <teleport to="head">
+    <component :is="'script'" type="application/ld+json">
+      {{ webSite }}
+    </component>
+    <component :is="'script'" type="application/ld+json">
+      {{ organization }}
+    </component>
+  </teleport>
   <RouterView />
 </template>
 <script lang="ts">
@@ -19,6 +27,8 @@ import { useRouter } from 'vue-router'
 import usePodStore from 'stores/pod'
 import useAuthStore from 'stores/auth'
 import useProfileStore from 'stores/profile'
+import pkg from '../package.json'
+import twaMinifest from '../twa-manifest.json'
 
 const $q = useQuasar()
 const router = useRouter()
@@ -34,6 +44,39 @@ const metaData = {
       'http-equiv': 'Content-Type',
       'content': 'text/html; charset=UTF-8',
     },
+  },
+}
+const webSite = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  'url': pkg.homepage,
+  'thumbnailUrl': twaMinifest.iconUrl,
+  'version': pkg.version,
+  'creator': {
+    '@type': 'Person',
+    ...pkg.author,
+  },
+  'publisher': pkg.publisher,
+  'license': 'https://github.com/gotois/archive/blob/master/LICENSE',
+  'potentialAction': {
+    '@type': 'SearchAction',
+    'target': pkg.homepage + 'search?name={query_string}',
+    'query-input': 'required name=query_string',
+  },
+}
+const organization = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  'url': 'https://gotointeractive.com',
+  'logo': 'https://avatars.githubusercontent.com/u/16117425',
+  'location': {
+    '@type': 'VirtualLocation',
+    'url': 'https://app.aragon.org/#/daos/ethereum/gic.dao.eth',
+  },
+  'sameAs': ['https://github.com/gotois'],
+  'founder': {
+    '@type': 'Person',
+    ...pkg.author,
   },
 }
 

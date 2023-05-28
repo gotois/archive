@@ -25,17 +25,17 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/ArchivePage.vue'),
       },
       {
-        path: 'filter',
+        path: ROUTE_NAMES.FILTER,
         name: ROUTE_NAMES.FILTER,
         component: () => import('pages/ArchivePage.vue'),
       },
       {
-        path: 'search',
+        path: ROUTE_NAMES.SEARCH,
         name: ROUTE_NAMES.SEARCH,
         component: () => import('pages/ArchivePage.vue'),
       },
       {
-        path: 'feedback',
+        path: ROUTE_NAMES.FEEDBACK,
         name: ROUTE_NAMES.FEEDBACK,
         component: () => import('pages/FeedbackPage.vue'),
       },

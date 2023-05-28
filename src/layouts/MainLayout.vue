@@ -402,6 +402,7 @@ import useProfileStore from 'stores/profile'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
 import { isTWA } from '../helpers/twaHelper'
 import { exportKeyPair } from '../services/cryptoService'
+import { ROUTE_NAMES } from '../router/routes'
 const DatabaseRemoveComponent = defineAsyncComponent(
   () => import('components/DatabaseRemoveComponent.vue'),
 )
@@ -444,7 +445,7 @@ function onToggleLeftDrawer(): void {
 function onArchiveRoute(e: Event) {
   e.preventDefault()
   return router.push({
-    name: 'archive',
+    name: ROUTE_NAMES.ARCHIVE,
     query: {
       page: 1,
     },
@@ -459,9 +460,9 @@ async function onExportKeychain() {
 async function onSearch(searchText: string) {
   $q.loading.show()
   await router.push({
-    name: 'search',
+    name: ROUTE_NAMES.SEARCH,
     query: {
-      filter: searchText,
+      name: searchText,
       page: 1,
     },
   })
@@ -472,7 +473,7 @@ function loginToPod() {
   $q.sessionStorage.remove('connect')
   $q.sessionStorage.set('restorePreviousSession', true)
   return router.push({
-    name: 'login',
+    name: ROUTE_NAMES.LOGIN,
   })
 }
 
@@ -490,7 +491,7 @@ async function logOutFromPod() {
 
 function onOpenFeedback() {
   return router.push({
-    name: 'feedback',
+    name: ROUTE_NAMES.FEEDBACK,
   })
 }
 
@@ -565,7 +566,7 @@ async function onSelectArchiveName(
 ) {
   if (value.count === 0) {
     await router.push({
-      name: 'create',
+      name: ROUTE_NAMES.CREATE,
       query: {
         contractTypeName: name,
       },
@@ -573,9 +574,9 @@ async function onSelectArchiveName(
     return
   }
   await router.push({
-    name: 'filter',
+    name: ROUTE_NAMES.FILTER,
     query: {
-      filter: name,
+      name: name,
       page: 1,
     },
   })

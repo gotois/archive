@@ -17,7 +17,11 @@
   },
   "repository": "github:gotois/archive",
   "productName": "Мои договоры",
-  "author": "Denis Baskovsky <baskovsky@yandex.ru> (https://baskovsky.ru/)",
+  "author": {
+    "name": "Denis Baskovsky",
+    "email": "baskovsky@yandex.ru",
+    "url": "https://baskovsky.ru/"
+  },
   "contributors": [
     {
       "name": "Denis Baskovsky",

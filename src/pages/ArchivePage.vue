@@ -148,6 +148,7 @@ import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
 import usePodStore from 'stores/pod'
 import contractTypes from '../services/contractEnum'
+import { ROUTE_NAMES } from '../router/routes'
 import { FormatContract } from '../types/models'
 
 const ArchiveListComponent = defineAsyncComponent({
@@ -185,8 +186,8 @@ const archiveEmptyText = computed(() => {
 })
 const paginationCount = computed(() => {
   switch (router.currentRoute.value.name) {
-    case 'search':
-    case 'filter': {
+    case ROUTE_NAMES.SEARCH:
+    case ROUTE_NAMES.FILTER: {
       return Math.ceil(formatContracts.value.length / LIMIT)
     }
     default: {
@@ -210,7 +211,7 @@ async function onPaginate(page: number) {
     name: router.currentRoute.value.name,
     query: {
       page: page,
-      filter: router.currentRoute.value.query?.filter,
+      name: router.currentRoute.value.query?.name,
     },
   })
   $q.loading.hide()
@@ -307,14 +308,14 @@ async function editContract(item: FormatContract) {
 
 async function updateContracts({
   page,
-  filter,
-}: LocationQuery | { page: number; filter: string }) {
+  name,
+}: LocationQuery | { page: number; name: string }) {
   page = Number(page || 1)
   const offset = (page - 1) * LIMIT
-  const query = String(filter ?? '')
+  const query = String(name ?? '')
 
   switch (router.currentRoute.value.name) {
-    case 'search': {
+    case ROUTE_NAMES.SEARCH: {
       await contractStore.searchFromContracts({
         query,
         offset,
@@ -322,7 +323,7 @@ async function updateContracts({
       })
       break
     }
-    case 'filter': {
+    case ROUTE_NAMES.FILTER: {
       await contractStore.filterFromContracts(query)
       break
     }

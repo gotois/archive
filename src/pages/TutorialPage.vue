@@ -183,6 +183,7 @@ import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
 import usePodStore from 'stores/pod'
 import pkg from '../../package.json'
+import { ROUTE_NAMES } from '../router/routes'
 import { createContractPDF } from '../helpers/pdfHelper'
 import { readFilesPromise } from '../helpers/fileHelper'
 import solidAuth from '../services/authService'
@@ -377,9 +378,9 @@ async function onFinish() {
     profileStore.consumerEmail(email.value)
     tutorialStore().tutorialComplete()
     await router.push({
-      name: 'filter',
+      name: ROUTE_NAMES.FILTER,
       query: {
-        filter: newContract.instrument_name,
+        name: newContract.instrument_name,
         page: 1,
       },
     })
