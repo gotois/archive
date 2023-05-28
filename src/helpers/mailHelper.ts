@@ -4,7 +4,8 @@ import { FormatContract } from '../types/models'
 export function mailUrl(item: FormatContract) {
   let str = item.participant.email
   if (item.agent.email) {
-    str += '?bcc=' + item.agent.email
+    const bccEmail = item.agent.email.replace('mailto:', '')
+    str += '?bcc=' + bccEmail
   }
   if (item.instrument.name) {
     str += '&subject=' + item.instrument.name

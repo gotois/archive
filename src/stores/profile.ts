@@ -1,5 +1,6 @@
 import { LocalStorage } from 'quasar'
 import { defineStore } from 'pinia'
+import { getEmailProperty } from '../helpers/schemaHelper'
 
 interface State {
   consumer: string
@@ -24,11 +25,13 @@ export default defineStore('profile', {
     },
   },
   getters: {
-    getConsumer(state) {
-      return state.consumer
-    },
-    getEmail(state) {
-      return state.email
+    getPersonLD(state) {
+      return {
+        '@context': 'https://schema.org',
+        '@type': 'Person',
+        'email': getEmailProperty(state.email),
+        'name': state.consumer,
+      }
     },
   },
 })

@@ -196,20 +196,24 @@ export function formatterLDContract(
   return deepMerge(baseCredential, credential)
 }
 
+export function getEmailProperty(email: string) {
+  return email.startsWith('mailto:') ? email : 'mailto:' + email
+}
+
 export function formatterContract(contract: ContractTable): FormatContract {
   const agent: FormatContractAgent = {
     '@type': 'Person',
     'name': contract.agent_name,
   }
   if (contract.agent_email) {
-    agent.email = 'mailto:' + contract.agent_email
+    agent.email = getEmailProperty(contract.agent_email)
   }
   const participant: FormatContractParticipant = {
     '@type': 'Person',
     'name': contract.participant_name,
   }
   if (contract.participant_email) {
-    participant.email = 'mailto:' + contract.participant_email
+    participant.email = getEmailProperty(contract.participant_email)
   }
   const instrument = {
     '@type': 'Thing',

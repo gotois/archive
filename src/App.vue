@@ -97,7 +97,8 @@ events.on(EVENTS.SESSION_RESTORED, async (urlString) => {
 events.on(EVENTS.LOGIN, async () => {
   authStore.openIdHandleIncoming()
   await podStore.setResourceRootUrl()
-  if (!profileStore.getConsumer) {
+  const { name } = profileStore.getPersonLD
+  if (!name) {
     const profileName = await podStore.getProfileName()
     profileStore.consumerName(profileName)
   }

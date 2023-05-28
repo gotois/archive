@@ -448,9 +448,10 @@ async function onSubmit() {
 
   try {
     const images = await readFilesPromise(files.value)
+    const person = profileStore.getPersonLD
     const newContract: ContractTable = {
-      agent_name: profileStore.getConsumer,
-      agent_email: profileStore.getEmail,
+      agent_name: person.name,
+      agent_email: person.email,
       participant_name: customer.value,
       participant_email: email.value,
       instrument_name: contractType.value,
