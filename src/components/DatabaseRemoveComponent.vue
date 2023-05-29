@@ -56,6 +56,7 @@ async function onClearDatabasePlus() {
     await podStore.removeContractsDataset()
     await db.delete()
     $q.localStorage.clear()
+    $q.sessionStorage.clear()
     $q.loading.hide()
     const timeout = 1500
     $q.notify({

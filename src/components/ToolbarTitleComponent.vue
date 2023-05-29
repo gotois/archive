@@ -12,6 +12,7 @@
     <template v-if="!$q.platform.is.android">
       {{ launcherName }}
     </template>
+    <slot />
     <QTooltip>
       {{ $t('navigation.version', { version: navigatorVersion }) }}
     </QTooltip>

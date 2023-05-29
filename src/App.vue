@@ -6,7 +6,9 @@ import useAuth from 'stores/auth'
 export default {
   preFetch() {
     const authStore = useAuth()
-    authStore.openIdHandleIncoming()
+    if (authStore.tryAuth) {
+      authStore.openIdHandleIncoming()
+    }
   },
 }
 </script>

@@ -17,8 +17,16 @@
           aria-label="Settings"
           @click="onToggleLeftDrawer"
         />
-        <ToolbarTitleComponent />
+        <ToolbarTitleComponent>
+          <QBadge
+            v-if="isDemo"
+            label="Демо режим"
+            transparent
+            class="vertical-top q-ml-xs"
+          />
+        </ToolbarTitleComponent>
         <QBtn
+          v-if="contractsCount > 0"
           flat
           round
           :dense="$q.platform.is.desktop"
@@ -56,6 +64,7 @@
           @click="onArchiveRoute"
         >
           <QBadge
+            v-if="contractsCount > 0"
             color="secondary"
             transparent
             :dense="$q.platform.is.desktop"
@@ -68,7 +77,7 @@
             :rounded="$q.platform.is.desktop"
           >
             <template v-if="contractsCount">
-              {{ contractsCount > 999 ? '999+' : contractsCount }}
+              {{ contractsCount > 999 ? '999+' : String(contractsCount) }}
             </template>
             <QTooltip v-if="isLoggedIn">Вы подключены к SOLID серверу</QTooltip>
           </QBadge>
@@ -89,7 +98,19 @@
       </p>
       <QList style="max-height: calc(100% - 64px)" class="fit column no-wrap">
         <QBtn
-          v-if="isLoggedIn"
+          v-if="isDemo"
+          color="black"
+          :dense="$q.platform.is.desktop"
+          square
+          glossy
+          push
+          unelevated
+          class="full-width q-mb-md"
+          label="Регистрация"
+          @click="$router.push('/reset')"
+        />
+        <QBtn
+          v-else-if="isLoggedIn"
           color="negative"
           :dense="$q.platform.is.desktop"
           square
@@ -100,7 +121,7 @@
           @click="logOutFromPod"
         />
         <QBtn
-          v-if="!isLoggedIn"
+          v-else-if="!isLoggedIn"
           color="primary"
           :dense="$q.platform.is.desktop"
           square
@@ -427,7 +448,7 @@ const profileStore = useProfileStore()
 
 const { consumer, email } = storeToRefs(profileStore)
 const { getArchiveNames, contractsCount } = storeToRefs(contractStore)
-const { hasCode, isLoggedIn } = storeToRefs(authStore)
+const { hasCode, isLoggedIn, isDemo } = storeToRefs(authStore)
 const showOTPDialog = ref(false)
 const leftDrawerOpen = ref(false)
 const rightDrawerOpen = ref(false)

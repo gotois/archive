@@ -11,10 +11,12 @@ interface Store {
   openIdExpirationDate: null | number
   openIdIsLoggedIn: boolean
   webId: WebId | string
+  tryAuth: boolean
 }
 
 export default defineStore('auth', {
   state: (): Store => ({
+    tryAuth: LocalStorage.getItem('tryAuth') ?? false,
     pinIsLoggedIn: SessionStorage.getItem('isLoggedIn') ?? false,
     code: LocalStorage.getItem('code'),
     openIdSessionId: '',
@@ -28,6 +30,9 @@ export default defineStore('auth', {
       LocalStorage.set('code', cryptoCode)
       this.code = cryptoCode
     },
+    setTryAuthValue() {
+      LocalStorage.set('tryAuth', true)
+    },
     removeCode() {
       LocalStorage.remove('code')
       SessionStorage.remove('isLoggedIn')
@@ -40,19 +45,24 @@ export default defineStore('auth', {
     },
     openIdHandleIncoming() {
       const { info } = getDefaultSession()
-      this.openIdSessionId = info.sessionId
       if (info.webId) {
+        this.openIdSessionId = info.sessionId
         this.webId = info.webId
+        this.setTryAuthValue()
       } else {
         console.warn('Your WebId empty')
       }
-      this.openIdIsLoggedIn = info?.isLoggedIn ?? false
+      this.openIdIsLoggedIn = info.isLoggedIn
       if (info.expirationDate) {
         this.openIdExpirationDate = info?.expirationDate
+        this.setTryAuthValue()
       }
     },
   },
   getters: {
+    isDemo(state) {
+      return state.openIdSessionId.length === 0 && !state.tryAuth
+    },
     hasCode(state) {
       return Boolean(state.code)
     },
