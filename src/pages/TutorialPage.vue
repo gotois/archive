@@ -263,8 +263,8 @@ function setMeta(value) {
   switch (value) {
     case STEP.WELCOME: {
       useMeta({
-        'title': `Добро пожалвать в сервис "${pkg.productName}"`,
-        'og:title': `Добро пожалвать в сервис "${pkg.productName}"`,
+        'title': `Добро пожаловать в сервис "${pkg.productName}"`,
+        'og:title': `Добро пожаловать в сервис "${pkg.productName}"`,
       })
       break
     }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/" xmlns:moz="http://www.mozilla.org/2006/browser/search/">
+  <ShortName>Мои договоры</ShortName>
+  <LongName>Поиск по архиву договоров</LongName>
+  <Description>Ваша база договоров</Description>
+  <Image height="16" width="16" type="image/x-icon">https://archive.gotointeractive.com/favicon.ico</Image>
+  <Image height="32" width="32" type="image/png">https://archive.gotointeractive.com/icons/favicon-32x32.png</Image>
+  <Image height="64" width="64" type="image/svg+xml">https://archive.gotointeractive.com/icons/safari-pinned-tab.svg</Image>
+  <Url type="application/opensearchdescription+xml" rel="self" template="https://archive.gotointeractive.com/opensearch.xml" />
+  <Url type="text/html" template="https://archive.gotointeractive.com/search?name={searchTerms}"/>
+  <InputEncoding>UTF-8</InputEncoding>
+  <OutputEncoding>UTF-8</OutputEncoding>
+  <moz:SearchForm>https://archive.gotointeractive.com/search</moz:SearchForm>
+</OpenSearchDescription>

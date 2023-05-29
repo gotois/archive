@@ -86,6 +86,14 @@ const metaData = {
   noscript: {
     default: '<strong>Включите JavaScript для запуска приложения.</strong>',
   },
+  link: {
+    opensearch: {
+      rel: 'search',
+      type: 'application/opensearchdescription+xml',
+      title: 'Поиск по архиву договоров',
+      href: pkg.homepage + 'opensearch.xml',
+    },
+  },
 }
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
