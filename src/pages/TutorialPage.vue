@@ -21,10 +21,40 @@
         :transition-next="$q.platform.is.desktop ? 'slide-left' : 'slide-down'"
       >
         <QStep
-          :name="STEP.BEGIN"
+          :name="STEP.WELCOME"
+          :title="$t('tutorial.welcome.title')"
+          icon="create_new_folder"
+          :done="step > STEP.WELCOME"
+        >
+          <QIcon
+            class="flex q-ml-auto q-mr-auto q-ma-md"
+            name="img:/icons/safari-pinned-tab.svg"
+            size="128px"
+          />
+          <p v-show="$q.platform.is.desktop" class="text-h4 text-center">
+            {{ $t('tutorial.welcome.title') }}
+          </p>
+          <div
+            class="text-body1"
+            style="white-space: break-spaces"
+            v-html="parse($t('tutorial.welcome.body'))"
+          ></div>
+          <QStepperNavigation>
+            <QBtn
+              color="secondary"
+              :label="$t('tutorial.welcome.ok')"
+              :class="{
+                'full-width': !$q.platform.is.desktop,
+              }"
+              @click="$refs.stepper.next()"
+            />
+          </QStepperNavigation>
+        </QStep>
+        <QStep
+          :name="STEP.INFO"
           :title="$t('tutorial.info.title')"
           icon="create_new_folder"
-          :done="step > STEP.BEGIN"
+          :done="step > STEP.INFO"
         >
           <p v-show="$q.platform.is.desktop" class="text-h4">
             {{ $t('tutorial.info.title') }}
@@ -46,10 +76,10 @@
           </QStepperNavigation>
         </QStep>
         <QStep
-          :name="STEP.SECOND"
+          :name="STEP.AGREEMENT"
           :title="$t('tutorial.agreement.title')"
           icon="article"
-          :done="step > STEP.SECOND"
+          :done="step > STEP.AGREEMENT"
         >
           <p v-show="$q.platform.is.desktop" class="text-h4">
             {{ $t('tutorial.agreement.title') }}
@@ -205,9 +235,10 @@ const contractStore = useContractStore()
 const profileStore = useProfileStore()
 
 enum STEP {
-  BEGIN = 1,
-  SECOND = 2,
-  FINAL = 3,
+  WELCOME = 1,
+  INFO = 2,
+  AGREEMENT = 3,
+  FINAL = 4,
 }
 
 const { description, version, productName, bugs } = pkg
@@ -215,7 +246,7 @@ const searchParams = new URLSearchParams(window.location.search)
 const tutorialFinalStep = STEP.FINAL
 const stepParam = 'step'
 
-const step = ref(Number(searchParams.get(stepParam) ?? STEP.BEGIN))
+const step = ref(Number(searchParams.get(stepParam) ?? STEP.WELCOME))
 const consumer = ref('')
 const email = ref('')
 const userComplete = ref(false)
@@ -230,14 +261,21 @@ watch(
 
 function setMeta(value) {
   switch (value) {
-    case STEP.BEGIN: {
+    case STEP.WELCOME: {
+      useMeta({
+        'title': `Добро пожалвать в сервис "${pkg.productName}"`,
+        'og:title': `Добро пожалвать в сервис "${pkg.productName}"`,
+      })
+      break
+    }
+    case STEP.INFO: {
       useMeta({
         'title': 'Как работает наш сервис',
         'og:title': 'Как работает наш сервис',
       })
       break
     }
-    case STEP.SECOND: {
+    case STEP.AGREEMENT: {
       useMeta({
         'title': 'Пользовательское соглашение',
         'og:title': 'Пользовательское соглашение',
@@ -253,8 +291,8 @@ function setMeta(value) {
     }
     default: {
       useMeta({
-        'title': 'Примите лицензионное соглашение',
-        'og:title': 'Лицензионное соглашение',
+        'title': pkg.productName,
+        'og:title': pkg.productName,
       })
       break
     }

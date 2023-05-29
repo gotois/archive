@@ -1,4 +1,5 @@
 import { format } from 'quasar'
+import { productName } from '../../../package.json'
 
 const { humanStorageSize } = format
 
@@ -132,6 +133,11 @@ export default {
     date: 'Открыть календарь',
   },
   tutorial: {
+    welcome: {
+      title: `Добро пожаловать в "${productName}"`,
+      body: 'Удобная и безопасная фиксация любых договоренностей на ваших устройствах.',
+      ok: 'Продолжить',
+    },
     info: {
       title: 'Как работает наш сервис',
       body:
