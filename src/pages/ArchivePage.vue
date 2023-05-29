@@ -176,8 +176,12 @@ const currentPage = toRef(router.currentRoute.value.query, 'page')
 const scrollAreaRef = ref<InstanceType<typeof QScrollArea> | null>(null)
 const { isLoggedIn } = storeToRefs(authStore)
 const { formatContracts } = storeToRefs(contractStore)
-const isSearch = computed(() => Boolean(router.currentRoute.value.query.search))
-const isFilter = computed(() => Boolean(router.currentRoute.value.query.filter))
+const isSearch = computed(
+  () => router.currentRoute.value.name === ROUTE_NAMES.SEARCH,
+)
+const isFilter = computed(
+  () => router.currentRoute.value.name === ROUTE_NAMES.FILTER,
+)
 const archiveEmptyText = computed(() => {
   const randomContractType = Math.floor(
     Math.random() * (contractTypes.length - 1),
