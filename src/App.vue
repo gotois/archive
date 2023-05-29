@@ -1,12 +1,4 @@
 <template>
-  <teleport to="head">
-    <component :is="'script'" type="application/ld+json">
-      {{ webSite }}
-    </component>
-    <component :is="'script'" type="application/ld+json">
-      {{ organization }}
-    </component>
-  </teleport>
   <RouterView />
 </template>
 <script lang="ts">
@@ -29,6 +21,7 @@ import useAuthStore from 'stores/auth'
 import useProfileStore from 'stores/profile'
 import pkg from '../package.json'
 import twaMinifest from '../twa-manifest.json'
+import { isTWA } from './helpers/twaHelper'
 
 const $q = useQuasar()
 const router = useRouter()
@@ -37,15 +30,6 @@ const authStore = useAuthStore()
 const profileStore = useProfileStore()
 const events = getDefaultSession().events
 
-const metaData = {
-  meta: {
-    keywords: { name: 'keywords', content: 'Ваша база договоров' },
-    equiv: {
-      'http-equiv': 'Content-Type',
-      'content': 'text/html; charset=UTF-8',
-    },
-  },
-}
 const webSite = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
@@ -77,6 +61,30 @@ const organization = {
   'founder': {
     '@type': 'Person',
     ...pkg.author,
+  },
+}
+const metaData = {
+  titleTemplate: (title: string) =>
+    isTWA ? title : `${title} - archive.gotointeractive.com`,
+  meta: {
+    keywords: { name: 'keywords', content: 'Ваша база договоров' },
+    equiv: {
+      'http-equiv': 'Content-Type',
+      'content': 'text/html; charset=UTF-8',
+    },
+  },
+  script: {
+    webSite: {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify(webSite),
+    },
+    organization: {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify(organization),
+    },
+  },
+  noscript: {
+    default: '<strong>Включите JavaScript для запуска приложения.</strong>',
   },
 }
 
