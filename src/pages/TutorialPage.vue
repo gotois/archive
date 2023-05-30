@@ -112,9 +112,14 @@
           <p class="text-body1">{{ $t('tutorial.data.body') }}</p>
           <QSpace class="q-pa-xs" />
           <template v-if="!userComplete && !isLoggedIn">
-            <p>{{ $t('oidc.linkName') }}</p>
+            <div
+              class="text-body1"
+              style="white-space: break-spaces"
+              v-html="parse($t('oidc.linkName'))"
+            >
+            </div>
             <OIDCIssuerComponent
-              label="Адрес URL"
+              :label="$t('oidc.label')"
               @on-complete="onOnlineAuthorize"
             >
               <QTooltip>{{ $t('oidc.tutorialHint') }}</QTooltip>
