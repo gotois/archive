@@ -39,10 +39,10 @@ const webSite = {
   'thumbnailUrl': twaMinifest.iconUrl,
   'version': pkg.version,
   'creator': {
-    '@type': 'Person',
+    '@type': 'Organization',
     ...pkg.author,
   },
-  'publisher': pkg.publisher,
+  'publisher': pkg.author.name,
   'license': 'https://github.com/gotois/archive/blob/master/LICENSE',
   'potentialAction': {
     '@type': 'SearchAction',
@@ -53,7 +53,7 @@ const webSite = {
 const organization = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
-  'url': 'https://gotointeractive.com',
+  'url': pkg.author.url,
   'logo': 'https://avatars.githubusercontent.com/u/16117425',
   'location': {
     '@type': 'VirtualLocation',
@@ -62,7 +62,7 @@ const organization = {
   'sameAs': ['https://github.com/gotois'],
   'founder': {
     '@type': 'Person',
-    ...pkg.author,
+    ...pkg.contributors[0],
   },
 }
 const metaData = {

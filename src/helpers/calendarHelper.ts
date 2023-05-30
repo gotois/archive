@@ -5,7 +5,7 @@ import { readFilesPromise } from '../helpers/fileHelper'
 import { FormatContract } from '../types/models'
 import pkg from '../../package.json'
 
-const { publisher, productName } = pkg
+const { author, productName } = pkg
 
 export default async (object: FormatContract) => {
   const files = await createPDF(object)
@@ -39,7 +39,7 @@ export default async (object: FormatContract) => {
     ],
   })
   return icalendar(
-    '-//' + publisher + '//NONSGML ' + productName + '//EN',
+    '-//' + author.name + '//NONSGML ' + productName + '//EN',
     object.instrument.name,
     event,
   )

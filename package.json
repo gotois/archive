@@ -9,7 +9,7 @@
     "мои договоры",
     "договоры оффлайн"
   ],
-  "publisher": "goto Interactive Software",
+  "license": "GPL-3.0",
   "homepage": "https://archive.gotointeractive.com/",
   "bugs": {
     "url": "https://github.com/gotois/archive/issues",
@@ -18,9 +18,9 @@
   "repository": "github:gotois/archive",
   "productName": "Мои договоры",
   "author": {
-    "name": "Denis Baskovsky",
-    "email": "baskovsky@yandex.ru",
-    "url": "https://baskovsky.ru/"
+    "name": "goto Interactive Communications (DAO)",
+    "email": "support@gotointeractive.com",
+    "url": "https://gotointeractive.com"
   },
   "contributors": [
     {
@@ -53,7 +53,7 @@
     "dexie-export-import": "4.0.7",
     "ed25519-signature-2020-context": "1.1.0",
     "html-to-text": "9.0.5",
-    "ical-browser": "~0.0.2",
+    "ical-browser": "~0.0.4",
     "jsonld-document-loader": "2.0.0",
     "jspdf": "2.5.1",
     "jszip": "3.10.1",

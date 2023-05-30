@@ -241,7 +241,6 @@ enum STEP {
   FINAL = 4,
 }
 
-const { description, version, productName, bugs } = pkg
 const searchParams = new URLSearchParams(window.location.search)
 const tutorialFinalStep = STEP.FINAL
 const stepParam = 'step'
@@ -398,10 +397,10 @@ async function onFinish() {
     const newContract: ContractTable = {
       agent_name: consumer.value,
       agent_email: email.value,
-      participant_name: productName + ' ' + version,
-      participant_email: bugs.email,
+      participant_name: pkg.author.name,
+      participant_email: pkg.author.email,
       instrument_name: 'Пользовательское соглашение',
-      instrument_description: description,
+      instrument_description: `${pkg.productName}: ${pkg.description} v.${pkg.version}`,
       startTime: new Date(),
       images: contractPDF,
     }

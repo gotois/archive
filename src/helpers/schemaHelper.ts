@@ -209,7 +209,7 @@ export function formatterContract(contract: ContractTable): FormatContract {
     agent.email = getEmailProperty(contract.agent_email)
   }
   const participant: FormatContractParticipant = {
-    '@type': 'Person',
+    '@type': 'Person', // todo @type может так и значением "Organization"
     'name': contract.participant_name,
   }
   if (contract.participant_email) {
