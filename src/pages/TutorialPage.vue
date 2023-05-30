@@ -27,7 +27,7 @@
           :done="step > STEP.WELCOME"
         >
           <QIcon
-            class="flex q-ml-auto q-mr-auto q-ma-md"
+            class="flex q-ml-auto q-mr-auto q-ma-md bg-white rounded-borders"
             name="img:/icons/safari-pinned-tab.svg"
             size="128px"
           />
@@ -102,7 +102,7 @@
           </QStepperNavigation>
         </QStep>
         <QStep
-          :name="tutorialFinalStep"
+          :name="STEP.FINAL"
           :title="$t('tutorial.data.title')"
           icon="assignment"
         >
@@ -226,6 +226,9 @@ import { generateKeyPair, exportKeyPair } from '../services/cryptoService'
 import { keys } from '../services/databaseService'
 import { ContractTable } from '../types/models'
 
+marked.use({
+  gfm: true,
+})
 const { parse } = marked
 
 const OIDCIssuerComponent = defineAsyncComponent(
@@ -247,7 +250,6 @@ enum STEP {
 }
 
 const searchParams = new URLSearchParams(window.location.search)
-const tutorialFinalStep = STEP.FINAL
 const stepParam = 'step'
 
 const step = ref(Number(searchParams.get(stepParam) ?? STEP.WELCOME))
@@ -448,7 +450,7 @@ onMounted(() => {
 
   // Если пользователь отменил вход через WebId, возвращаем его на страницу подтверждения
   if (query.error === 'access_denied') {
-    step.value = tutorialFinalStep
+    step.value = STEP.FINAL
     return
   }
 })
