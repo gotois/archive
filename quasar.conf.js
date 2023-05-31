@@ -93,7 +93,7 @@ module.exports = configure((ctx) => {
       workboxMode: 'injectManifest',
       workboxOptions: {},
       manifest: {
-        name: pkg.name,
+        name: pkg.productName,
         short_name: pkg.productName,
         description: pkg.description,
         start_url: '.',

@@ -1,7 +1,7 @@
 <template>
   <div class="full-width">
     <QSelect
-      v-model="oidcIssuer"
+      v-model.trim="oidcIssuer"
       class="full-width"
       :label="label"
       type="url"

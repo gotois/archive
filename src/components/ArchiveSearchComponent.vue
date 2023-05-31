@@ -13,7 +13,7 @@
         </QTooltip>
         <QSelect
           ref="select"
-          v-model="searchText"
+          v-model.trim="searchText"
           autocomplete="off"
           spellcheck="false"
           color="primary"

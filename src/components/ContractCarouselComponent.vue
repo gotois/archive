@@ -72,8 +72,14 @@
           }"
           @on-close="fullscreen = false"
         >
+          <QSkeleton
+            v-if="$q.loading.isActive"
+            type="rect"
+            square
+            height="400px"
+          />
           <template
-            v-if="
+            v-else-if="
               !$q.platform.is.safari && encodingFormat === 'application/pdf'
             "
           >
@@ -147,6 +153,7 @@
 import { ref, toRef } from 'vue'
 import {
   QBtn,
+  QSkeleton,
   QIcon,
   QTooltip,
   QImg,

@@ -9,7 +9,6 @@
       <QPullToRefresh class="absolute-full fit" @refresh="onRefresh">
         <ArchiveListComponent
           draggable="false"
-          :loading="$q.loading.isActive"
           :contracts="formatContracts"
           class="q-mt-md q-mb-md q-ml-auto q-mr-auto"
           :class="{

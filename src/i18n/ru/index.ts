@@ -5,7 +5,7 @@ const { humanStorageSize } = format
 
 export default {
   organization: {
-    prodid: `-//goto Interactive Communications DAO//NONSGML ${productName}//RU`,
+    prodid: `-//GIC DAO//NONSGML ${productName}//RU`,
   },
   error404: {
     title: '404',
@@ -36,13 +36,14 @@ export default {
   header: {
     create: 'Создание',
     archive: 'Архив',
+    demo: 'Демо',
   },
   navigation: {
     version: 'v.{version}',
     title: 'Настройки',
     register: 'Регистрация',
-    signoff: 'Выйти из Solid',
-    signon: 'Войти через WebId',
+    signout: 'Выйти из Solid',
+    signin: 'Войти через WebId',
     feedback: {
       label: 'Оставить отзыв о приложении',
       tooltip: 'Если вы нашли ошибку, напишите нам об этом',
@@ -95,7 +96,7 @@ export default {
     issuerTooltipLogin: 'Войдите через {oidcIssuer}.',
   },
   contract: {
-    rules: 'Пожалуйста, введите тип договора',
+    rules: 'Введите тип договора',
     type: 'Тип договора',
     hint: {
       desktop:
@@ -107,11 +108,12 @@ export default {
   consumer: {
     type: 'Ваше ФИО',
     email: 'Ваша почта',
-    rules: 'Пожалуйста, введите потребителя (заказчика) услуги',
+    emailRules: 'Введите адрес почты',
+    rules: 'Введите потребителя (заказчика) услуги',
     save: 'Сохранить',
   },
   customer: {
-    rules: 'Пожалуйста, введите исполнителя',
+    rules: 'Введите исполнителя',
     type: 'Исполнитель',
     hint: 'ФИО исполнителя, ИНН или WebID',
     hintEmail: 'Электронная почта исполнителя',

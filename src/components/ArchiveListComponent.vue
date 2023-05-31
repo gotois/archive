@@ -3,15 +3,15 @@
     <template
       #default="{ item, index }: { item: FormatContract, index: number }"
     >
-      <QSpace v-if="index > 0" style="height: 20px" />
-      <QCard v-show="loading" flat square bordered>
-        <QSkeleton type="text" height="80px" class="q-pa-md" />
-        <QSkeleton height="400px" class="full-width" square />
-        <QCardSection>
-          <QSkeleton type="rect" height="50px" />
-        </QCardSection>
-      </QCard>
-      <QCard v-show="!loading" :key="index" flat square bordered>
+      <QCard
+        :key="index"
+        flat
+        square
+        bordered
+        :class="{
+          'q-mt-md': index > 0,
+        }"
+      >
         <div class="row">
           <div
             class="column q-pl-md q-pb-sm"
@@ -115,7 +115,7 @@
     <template v-if="paginationCount > 0" #after>
       <QSeparator class="q-ma-md" />
       <QPagination
-        v-model="page"
+        v-model.number="page"
         :max="paginationCount"
         :max-pages="$q.platform.is.desktop ? 10 : 5"
         :direction-links="paginationCount > 10"
@@ -136,7 +136,6 @@
 import { PropType, ref, toRef, watch, getCurrentInstance } from 'vue'
 import {
   useQuasar,
-  QSkeleton,
   QBtn,
   QItemLabel,
   QSeparator,
@@ -173,10 +172,6 @@ const props = defineProps({
     type: Number as PropType<number>,
     required: true,
   },
-  loading: {
-    type: Boolean as PropType<boolean>,
-    default: false,
-  },
   page: {
     type: Number as PropType<number>,
     required: true,
@@ -193,7 +188,7 @@ const podStore = usePodStore()
 const emit = defineEmits(['onPaginate', 'onRemove', 'onEdit'])
 
 const contracts = toRef(props, 'contracts', [])
-const page = ref(Number(props.page))
+const page = ref(props.page)
 const { isLoggedIn } = storeToRefs(authStore)
 
 watch(

@@ -69,10 +69,15 @@ const metaData = {
   titleTemplate: (title: string) =>
     isTWA ? title : `${title} - archive.gotointeractive.com`,
   meta: {
-    keywords: { name: 'keywords', content: 'Ваша база договоров' },
-    equiv: {
+    'keywords': { name: 'keywords', content: pkg.keywords.join(', ') },
+    'equiv': {
       'http-equiv': 'Content-Type',
       'content': 'text/html; charset=UTF-8',
+    },
+    'theme-color': {
+      name: 'theme-color',
+      content: '#000000',
+      media: '(prefers-color-scheme: dark)',
     },
   },
   script: {

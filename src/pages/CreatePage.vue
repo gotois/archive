@@ -24,6 +24,7 @@
             @on-create="onCreate"
           />
         </QCard>
+        <QSpace class="q-pb-xs" />
       </QPullToRefresh>
     </QScrollArea>
   </QPage>
@@ -34,6 +35,7 @@ import { defineAsyncComponent, h, ref } from 'vue'
 import {
   useMeta,
   QPage,
+  QSpace,
   QSkeleton,
   QPullToRefresh,
   QCard,

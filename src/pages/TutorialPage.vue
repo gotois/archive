@@ -3,7 +3,7 @@
     <QScrollArea visible class="absolute-full fit">
       <QStepper
         ref="stepper"
-        v-model="step"
+        v-model.number="step"
         color="primary"
         flat
         alternative-labels
@@ -139,7 +139,7 @@
               @submit="onFinish"
             >
               <QInput
-                v-model="consumer"
+                v-model.trim="consumer"
                 :label="$t('consumer.type')"
                 :rules="[
                   (val) => (val && val.length > 0) || $t('consumer.rules'),
@@ -157,11 +157,12 @@
                 </template>
               </QInput>
               <QInput
-                v-model="email"
+                v-model.trim="email"
                 :label="$t('consumer.email')"
                 name="email"
                 type="email"
                 :rules="['email']"
+                :error-message="$t('consumer.emailRules')"
                 autocomplete="off"
                 clearable
                 outlined
@@ -254,7 +255,7 @@ enum STEP {
 const searchParams = new URLSearchParams(window.location.search)
 const stepParam = 'step'
 
-const step = ref(Number(searchParams.get(stepParam) ?? STEP.WELCOME))
+const step = ref(searchParams.get(stepParam) ?? STEP.WELCOME)
 const consumer = ref('')
 const email = ref('')
 const userComplete = ref(false)

@@ -11,17 +11,20 @@
         <QBtn
           v-if="$q.screen.xs || $q.screen.sm || $q.screen.md"
           flat
+          :class="{
+            invisible: miniState,
+          }"
           round
           :dense="$q.platform.is.desktop"
           icon="settings"
-          aria-label="Settings"
           @click="onToggleLeftDrawer"
         />
         <ToolbarTitleComponent>
           <QBadge
             v-if="isDemo"
-            label="Демо режим"
+            :label="$t('header.demo')"
             transparent
+            color="secondary"
             class="vertical-top q-ml-xs"
           />
         </ToolbarTitleComponent>
@@ -41,7 +44,6 @@
           round
           :dense="$q.platform.is.desktop"
           icon="menu"
-          aria-label="Menu"
           @click="rightDrawerOpen = !rightDrawerOpen"
         />
       </QToolbar>
@@ -88,51 +90,70 @@
       v-model="leftDrawerOpen"
       side="left"
       class="scroll-y"
-      show-if-above
+      :show-if-above="bigScreen"
+      :mini-to-overlay="bigScreen"
+      :width="300"
+      :mini="miniState"
+      no-mini-animation
       bordered
+      @mouseenter="bigScreen ? (miniState = false) : null"
+      @mouseleave="bigScreen ? (miniState = true) : null"
     >
       <p
         class="full-width block text-h6 q-pl-md q-pr-md q-pt-md no-border-radius non-selectable no-pointer-events"
       >
-        {{ $t('navigation.title') }}
+        <QIcon
+          v-if="miniState"
+          size="24px"
+          class=""
+          name="settings"
+          color="primary"
+        />
+        <span v-else>{{ $t('navigation.title') }}</span>
       </p>
       <QList style="max-height: calc(100% - 64px)" class="fit column no-wrap">
-        <QBtn
-          v-if="isDemo"
-          :color="$q.dark.isActive ? 'white' : 'dark'"
-          :text-color="$q.dark.isActive ? 'dark' : 'white'"
-          :dense="$q.platform.is.desktop"
-          square
-          glossy
-          push
-          unelevated
-          class="full-width q-mb-md"
-          :label="$t('navigation.register')"
-          @click="$router.push('/reset')"
-        />
-        <QBtn
-          v-else-if="isLoggedIn"
-          color="negative"
-          :dense="$q.platform.is.desktop"
-          square
-          glossy
-          push
-          class="full-width q-mb-md"
-          :label="$t('navigation.signoff')"
-          @click="logOutFromPod"
-        />
-        <QBtn
-          v-else-if="!isLoggedIn"
-          color="primary"
-          :dense="$q.platform.is.desktop"
-          square
-          glossy
-          push
-          unelevated
-          class="full-width q-mb-md"
-          :label="$t('navigation.signon')"
-          @click="loginToPod"
-        />
+        <div v-if="miniState">
+          <QSpace class="q-mb-md" style="height: 32px" />
+        </div>
+        <div v-else>
+          <QBtn
+            v-if="isDemo"
+            :color="$q.dark.isActive ? 'white' : 'dark'"
+            :text-color="$q.dark.isActive ? 'dark' : 'white'"
+            :dense="$q.platform.is.desktop"
+            square
+            glossy
+            push
+            unelevated
+            class="full-width q-mb-md block"
+            :label="$t('navigation.register')"
+            @click="$router.push('/reset')"
+          />
+          <QBtn
+            v-else-if="isLoggedIn"
+            color="negative"
+            :dense="$q.platform.is.desktop"
+            square
+            glossy
+            push
+            unelevated
+            class="full-width q-mb-md block"
+            :label="$t('navigation.signout')"
+            @click="logOutFromPod"
+          />
+          <QBtn
+            v-else-if="!isLoggedIn"
+            color="primary"
+            :dense="$q.platform.is.desktop"
+            square
+            glossy
+            push
+            unelevated
+            class="full-width q-mb-md block"
+            :label="$t('navigation.signin')"
+            @click="loginToPod"
+          />
+        </div>
         <QExpansionItem
           v-model="profileOpen"
           group="backupgroup"
@@ -152,11 +173,12 @@
               @submit="onFinishProfile"
             >
               <QInput
-                v-model="consumer"
+                v-model.trim="consumer"
                 color="secondary"
                 type="text"
                 outlined
                 clearable
+                :hide-hint="!$q.platform.is.desktop"
                 :label="$t('consumer.type')"
                 :rules="[
                   (val) => (val && val.length > 0) || $t('consumer.rules'),
@@ -169,13 +191,16 @@
                 </template>
               </QInput>
               <QInput
-                v-model="email"
+                v-model.trim="email"
                 color="secondary"
                 type="email"
                 outlined
                 clearable
+                :hide-hint="!$q.platform.is.desktop"
+                :hide-bottom-space="!email"
                 :label="$t('consumer.email')"
                 :rules="['email']"
+                :error-message="$t('consumer.emailRules')"
                 name="email"
                 autocomplete="off"
               >
@@ -320,8 +345,8 @@
           :dense="$q.platform.is.desktop"
           square
           clickable
-          :disable="router.currentRoute.value.name === 'feedback'"
-          :label="$t('navigation.feedback.label')"
+          :disable="router.currentRoute.value.name === ROUTE_NAMES.FEEDBACK"
+          :label="miniState ? '' : $t('navigation.feedback.label')"
           @click="onOpenFeedback"
         >
           <QTooltip>
@@ -386,7 +411,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, defineAsyncComponent } from 'vue'
+import { ref, computed, defineAsyncComponent } from 'vue'
 import {
   useQuasar,
   QDialog,
@@ -450,6 +475,11 @@ const profileStore = useProfileStore()
 const { consumer, email } = storeToRefs(profileStore)
 const { getArchiveNames, contractsCount } = storeToRefs(contractStore)
 const { hasCode, isLoggedIn, isDemo } = storeToRefs(authStore)
+const bigScreen = computed(
+  () => $q.platform.is.desktop && ($q.screen.xl || $q.screen.lg),
+)
+
+const miniState = ref(bigScreen.value)
 const showOTPDialog = ref(false)
 const leftDrawerOpen = ref(false)
 const rightDrawerOpen = ref(false)

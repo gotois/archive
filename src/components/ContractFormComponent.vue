@@ -20,7 +20,8 @@
             ? $t('contract.hint.mobile')
             : $t('contract.hint.desktop')
         "
-        :rules="[(val) => (val && val.length > 0) || $t('contract.rules')]"
+        :rules="[(val) => val && val.length > 0]"
+        :error-message="$t('contract.rules')"
         popup-content-class="q-pt-sm"
         new-value-mode="add-unique"
         input-debounce="50"
@@ -31,8 +32,7 @@
         use-input
         lazy-rules
         hide-selected
-        hide-hint
-        hide-bottom-space
+        :hide-bottom-space="!$q.platform.is.desktop"
         fill-input
         rounded
         outlined
@@ -44,16 +44,17 @@
         </template>
       </QSelect>
       <QInput
-        v-model="customer"
+        v-model.trim="customer"
         :label="$t('customer.type')"
         :hint="$t('customer.hint')"
-        :rules="[(val) => (val && val.length > 0) || $t('customer.rules')]"
+        :rules="[(val) => val && val.length > 0]"
+        :error-message="$t('customer.rules')"
         autocomplete="on"
         name="customer"
         type="text"
         spellcheck="true"
-        hide-bottom-space
-        hide-hint
+        :hide-bottom-space="!$q.platform.is.desktop"
+        :hide-hint="!$q.platform.is.desktop"
         outlined
         lazy-rules
         square
@@ -65,7 +66,7 @@
         </template>
       </QInput>
       <QInput
-        v-model="email"
+        v-model.trim="email"
         :label="$t('customer.email')"
         :hint="$t('customer.hintEmail')"
         :rules="['email']"
@@ -74,8 +75,9 @@
         name="email"
         spellcheck="false"
         lazy-rules
-        hide-hint
-        hide-bottom-space
+        :error-message="$t('consumer.emailRules')"
+        :hide-hint="!$q.platform.is.desktop"
+        :hide-bottom-space="!$q.platform.is.desktop"
         outlined
         square
         color="secondary"
@@ -206,8 +208,9 @@
         :counter="!!files.length"
         accept="image/*, .pdf"
         color="secondary"
-        hide-hint
-        hide-bottom-space
+        :hide-hint="!$q.platform.is.desktop"
+        :hide-bottom-space="!$q.platform.is.desktop"
+        :hint="$t('files.hint')"
         outlined
         multiple
         square
@@ -221,13 +224,13 @@
         <QTooltip>{{ $t('files.hint') }}</QTooltip>
       </QFile>
       <QInput
-        v-model="description"
+        v-model.trim="description"
         :label="$t('description.type')"
         :hint="$t('description.hint')"
         type="textarea"
         class="no-padding"
-        color="secondary"
-        hide-hint
+        color="primary"
+        :hide-hint="!$q.platform.is.desktop"
         hide-bottom-space
         outlined
         square
