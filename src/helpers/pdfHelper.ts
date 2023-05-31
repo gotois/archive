@@ -66,20 +66,20 @@ export async function createPDF(object: FormatContract) {
   const files = []
   let docLength = 0
 
-  for (const { contentUrl } of object.object) {
-    const [mimeType] = contentUrl.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)
-
-    if (mimeType === 'application/pdf') {
+  for (const { contentUrl, encodingFormat } of object.object) {
+    if (encodingFormat === 'application/pdf') {
       const [extension] = contentUrl.match(/[^:/]\w+(?=;|,)/)
       const res = await fetch(contentUrl)
       const blob: Blob = await res.blob()
       const fileName = object.instrument.name + '.' + extension
-      const file = new File([blob], fileName, { type: mimeType })
+      const file = new File([blob], fileName, { type: encodingFormat })
       files.push(file)
       continue
     }
 
-    const format = mimeType.replace('image/', '').toUpperCase() as ImageFormat
+    const format = encodingFormat
+      .replace('image/', '')
+      .toUpperCase() as ImageFormat
     const { width, height } = await resizeImageA4(contentUrl)
 
     if (docLength != 0) {

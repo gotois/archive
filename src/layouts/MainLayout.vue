@@ -99,14 +99,15 @@
       <QList style="max-height: calc(100% - 64px)" class="fit column no-wrap">
         <QBtn
           v-if="isDemo"
-          color="black"
+          :color="$q.dark.isActive ? 'white' : 'dark'"
+          :text-color="$q.dark.isActive ? 'dark' : 'white'"
           :dense="$q.platform.is.desktop"
           square
           glossy
           push
           unelevated
           class="full-width q-mb-md"
-          label="Регистрация"
+          :label="$t('navigation.register')"
           @click="$router.push('/reset')"
         />
         <QBtn
@@ -117,7 +118,7 @@
           glossy
           push
           class="full-width q-mb-md"
-          label="Выйти из Solid"
+          :label="$t('navigation.signoff')"
           @click="logOutFromPod"
         />
         <QBtn
@@ -129,7 +130,7 @@
           push
           unelevated
           class="full-width q-mb-md"
-          label="Войти через WebId"
+          :label="$t('navigation.signon')"
           @click="loginToPod"
         />
         <QExpansionItem
@@ -350,8 +351,8 @@
         outline
         clickable
         class="row"
-        :disable="router.currentRoute.value.query.filter === name"
-        :selected="router.currentRoute.value.query.filter === name"
+        :disable="router.currentRoute.value.query.name === name"
+        :selected="router.currentRoute.value.query.name === name"
         :color="value.recommendation ? 'orange' : ''"
         :removable="value.recommendation"
         @remove="onRemoveArchiveName(name as String)"

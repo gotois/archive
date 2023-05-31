@@ -133,7 +133,7 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType, ref, toRef, watch } from 'vue'
+import { PropType, ref, toRef, watch, getCurrentInstance } from 'vue'
 import {
   useQuasar,
   QSkeleton,
@@ -165,6 +165,8 @@ import createCal from '../helpers/calendarHelper'
 import { mailUrl, googleMailUrl } from '../helpers/mailHelper'
 
 const $q = useQuasar()
+// eslint-disable-next-line @typescript-eslint/unbound-method
+const $t = getCurrentInstance().appContext.config.globalProperties.$t
 
 const props = defineProps({
   paginationCount: {
@@ -297,6 +299,7 @@ function onSheet(item: FormatContract) {
       id: SheetAction.MAIL,
     })
   }
+  const icalId = $t('organization.prodid')
 
   $q.bottomSheet({
     title: 'Выберите действие',
@@ -307,7 +310,7 @@ function onSheet(item: FormatContract) {
   }).onOk(async (action: { id: SheetAction }) => {
     switch (action.id) {
       case SheetAction.SHARE: {
-        const icalFile = await createCal(item)
+        const icalFile = await createCal(icalId, item)
         return shareFile(item.instrument.name, icalFile)
       }
       case SheetAction.LINK: {
@@ -318,7 +321,7 @@ function onSheet(item: FormatContract) {
         return openURL(url)
       }
       case SheetAction.CALENDAR: {
-        const file = await createCal(item)
+        const file = await createCal(icalId, item)
         const [dataURI] = await readFilesPromise([file])
         const link = document.createElement('a')
         link.href = dataURI

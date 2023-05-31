@@ -147,6 +147,7 @@
                 name="consumer"
                 type="text"
                 autocomplete="on"
+                autofocus
                 clearable
                 outlined
                 @focus="(e) => e.target.scrollIntoView()"
@@ -174,7 +175,8 @@
                   color="accent"
                   type="submit"
                   square
-                  :outline="!consumer?.length && !email?.length"
+                  :outline="!consumerValid"
+                  :disable="!consumerValid"
                   :label="$t('tutorial.complete')"
                   :class="{
                     'full-width': !$q.platform.is.desktop,
@@ -192,7 +194,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, defineAsyncComponent, onMounted } from 'vue'
+import { ref, watch, computed, defineAsyncComponent, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   useQuasar,
@@ -257,6 +259,9 @@ const consumer = ref('')
 const email = ref('')
 const userComplete = ref(false)
 const { isLoggedIn } = storeToRefs(authStore)
+const consumerValid = computed(() => {
+  return Boolean(consumer.value.length && email.value.length)
+})
 
 watch(
   () => step.value,

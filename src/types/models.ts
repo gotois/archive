@@ -112,6 +112,7 @@ export interface FormatContract extends BaseSchemaType {
   'object': {
     '@type': string
     'contentUrl': string
+    'encodingFormat': string
   }[]
 }
 export interface FormatContractAgent extends BaseSchemaType, Person {}

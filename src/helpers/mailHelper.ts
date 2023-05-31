@@ -1,4 +1,4 @@
-import { formatIcal } from '../helpers/dateHelper'
+import { formatIcal } from './dateHelper'
 import { FormatContract } from '../types/models'
 
 export function mailUrl(item: FormatContract) {

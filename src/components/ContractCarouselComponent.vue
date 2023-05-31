@@ -14,7 +14,9 @@
     <template #navigation-icon="navProps">
       <div class="q-pa-md non-selectable">
         <QIcon
-          v-if="isContentPDF(item.object[navProps.index].contentUrl)"
+          v-if="
+            item.object[navProps.index].encodingFormat === 'application/pdf'
+          "
           name="picture_as_pdf"
           size="64px"
           color="info"
@@ -57,7 +59,7 @@
       </div>
     </template>
     <QCarouselSlide
-      v-for="({ contentUrl }, objectIndex) in item.object"
+      v-for="({ contentUrl, encodingFormat }, objectIndex) in item.object"
       :key="objectIndex"
       class="no-margin no-padding"
       :name="objectIndex + 1"
@@ -70,7 +72,11 @@
           }"
           @on-close="fullscreen = false"
         >
-          <template v-if="!$q.platform.is.safari && isContentPDF(contentUrl)">
+          <template
+            v-if="
+              !$q.platform.is.safari && encodingFormat === 'application/pdf'
+            "
+          >
             <object
               name="picture_as_pdf"
               :data="contentUrl"
@@ -81,7 +87,7 @@
               }"
             ></object>
           </template>
-          <template v-else-if="isContentHeic(contentUrl)">
+          <template v-else-if="encodingFormat === 'image/heic'">
             <QIcon
               name="perm_media"
               size="240px"
@@ -123,7 +129,7 @@
           round
           color="white"
           text-color="primary"
-          :icon="icon(item.object[currentSlide - 1].contentUrl)"
+          :icon="icon(item.object[currentSlide - 1].encodingFormat)"
           @click="onShowFullImage(item)"
         >
           <QTooltip v-if="fullscreen">
@@ -153,7 +159,6 @@ import {
 } from 'quasar'
 import ImageContextMenu from 'components/ImageContextMenu.vue'
 import SwipeToClose from 'components/SwipeToClose.vue'
-import { isContentPDF, isContentHeic } from '../helpers/dataHelper'
 import { FormatContract } from '../types/models'
 
 interface Props {
@@ -166,10 +171,10 @@ const item = toRef<FormatContract>(props, 'model')
 const currentSlide = ref(1)
 const fullscreen = ref(false)
 
-function icon(contentUrl: string) {
+function icon(encodingFormat: string) {
   if (fullscreen.value) {
     return 'fullscreen_exit'
-  } else if (Platform.is.safari && isContentPDF(contentUrl)) {
+  } else if (Platform.is.safari && encodingFormat === 'application/pdf') {
     return 'open_in_full'
   } else {
     return 'fullscreen'
@@ -177,9 +182,9 @@ function icon(contentUrl: string) {
 }
 
 function onShowFullImage(object: FormatContract) {
-  const { contentUrl } = object.object[currentSlide.value - 1]
+  const { contentUrl, encodingFormat } = object.object[currentSlide.value - 1]
 
-  if (Platform.is.safari && isContentPDF(contentUrl)) {
+  if (Platform.is.safari && encodingFormat === 'application/pdf') {
     openURL(contentUrl, undefined, {
       popup: Platform.is.desktop ? 1 : null,
       menubar: false,

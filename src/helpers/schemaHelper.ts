@@ -18,6 +18,7 @@ import {
   credentialSubjectType,
   FormatContractParticipant,
 } from '../types/models'
+import { getMimeType } from './dataHelper'
 
 enum BaseContext {
   schemaOrg = 'https://schema.org',
@@ -208,8 +209,12 @@ export function formatterContract(contract: ContractTable): FormatContract {
   if (contract.agent_email) {
     agent.email = getEmailProperty(contract.agent_email)
   }
+
+  const orgNames = ['ОРГАНИЗАЦИЯ', 'ООО', 'АО', 'DAO', 'LLC', 'INC', 'COMPANY']
   const participant: FormatContractParticipant = {
-    '@type': 'Person', // todo @type может так и значением "Organization"
+    '@type': orgNames.includes(contract.participant_name.toUpperCase())
+      ? 'Organization'
+      : 'Person',
     'name': contract.participant_name,
   }
   if (contract.participant_email) {
@@ -227,6 +232,7 @@ export function formatterContract(contract: ContractTable): FormatContract {
   }
   const object = contract.images.map((image) => ({
     '@type': 'ImageObject',
+    'encodingFormat': getMimeType(image),
     'contentUrl': image,
   }))
   return {

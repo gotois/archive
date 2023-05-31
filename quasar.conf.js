@@ -99,13 +99,13 @@ module.exports = configure((ctx) => {
         start_url: '.',
         display: 'standalone',
         orientation: 'portrait',
-        background_color: '#027be3',
         dir: 'auto',
         scope: '/',
         iarc_rating_id: 'e84b072d-71b3-4d3e-86ae-31a8ce4e53b7',
         lang: 'ru',
         categories: ['productivity'],
-        theme_color: '#027be3',
+        background_color: '#000000',
+        theme_color: '#000000',
         icons: [
           {
             src: 'icons/icon-128x128.png',
@@ -148,7 +148,7 @@ module.exports = configure((ctx) => {
         appleTouchIcon167: 'icons/apple-icon-167x167.png',
         appleSafariPinnedTab: 'icons/safari-pinned-tab.svg',
         msapplicationTileImage: 'icons/ms-icon-144x144.png',
-        msapplicationTileColor: '#027be3',
+        msapplicationTileColor: '#000000',
       },
       sourceFiles: {
         pwaRegisterServiceWorker: 'src-pwa/register-service-worker',

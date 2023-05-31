@@ -30,11 +30,12 @@
           outlined
           square
           fill-input
+          :loading="searching"
           new-value-mode="add-unique"
           @update:model-value="onSearchText"
           @filter="onFilterSelect"
         >
-          <template #append>
+          <template v-if="!searching" #append>
             <QIcon name="search" />
           </template>
           <template #no-option>
@@ -84,6 +85,7 @@ const $q = useQuasar()
 const select = ref<InstanceType<typeof QSelect> | null>(null)
 const searchText = ref('')
 const searchOptions = ref([])
+const searching = ref(false)
 
 const miniSearch: MiniSearch = new MiniSearch({
   fields: ['instrument_name', 'instrument_description'],
@@ -118,6 +120,7 @@ function onFilterSelect(
     abort()
     return
   }
+  searching.value = true
 
   abort()
   setTimeout(() => {
@@ -144,6 +147,7 @@ function onFilterSelect(
           })
           searchOptions.value = Array.from(suggestionElement)
         }
+        searching.value = false
       },
       (ref) => {
         if (

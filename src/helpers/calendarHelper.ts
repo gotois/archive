@@ -1,13 +1,10 @@
 import { uid } from 'quasar'
 import { event as createEvent, default as icalendar } from 'ical-browser'
-import { createPDF } from '../helpers/pdfHelper'
-import { readFilesPromise } from '../helpers/fileHelper'
+import { createPDF } from './pdfHelper'
+import { readFilesPromise } from './fileHelper'
 import { FormatContract } from '../types/models'
-import pkg from '../../package.json'
 
-const { author, productName } = pkg
-
-export default async (object: FormatContract) => {
+export default async (id: string, object: FormatContract) => {
   const files = await createPDF(object)
   const attach = []
   for (const base64 of await readFilesPromise(files)) {
@@ -38,9 +35,6 @@ export default async (object: FormatContract) => {
       },
     ],
   })
-  return icalendar(
-    '-//' + author.name + '//NONSGML ' + productName + '//EN',
-    object.instrument.name,
-    event,
-  )
+
+  return icalendar(id, object.instrument.name, event)
 }
