@@ -48,6 +48,7 @@
     "@inrupt/vocab-common-rdf": "1.0.5",
     "@pdfme/generator": "1.1.10",
     "@quasar/extras": "1.16.4",
+    "@solana/web3.js": "~1.77.3",
     "credentials-context": "2.0.0",
     "dexie": "3.2.3",
     "dexie-export-import": "4.0.7",

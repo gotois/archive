@@ -76,8 +76,8 @@ const metaData = {
     },
     'theme-color': {
       name: 'theme-color',
-      content: '#000000',
-      media: '(prefers-color-scheme: dark)',
+      content: '#ffffff',
+      media: '(prefers-color-scheme: light)',
     },
   },
   script: {
