@@ -215,6 +215,7 @@ import {
 } from 'quasar'
 import { storeToRefs } from 'pinia'
 import { marked } from 'marked'
+import { PublicKey } from '@solana/web3.js'
 import useAuthStore from 'stores/auth'
 import tutorialStore from 'stores/tutorial'
 import useContractStore from 'stores/contract'
@@ -227,16 +228,16 @@ import { readFilesPromise } from '../helpers/fileHelper'
 import solidAuth from '../services/authService'
 import { generateKeyPair, exportKeyPair } from '../services/cryptoService'
 import { keys } from '../services/databaseService'
+import { getSolana } from '../services/phantomWalletService'
 import { ContractTable } from '../types/models'
-
-marked.use({
-  gfm: true,
-})
-const { parse } = marked
 
 const OIDCIssuerComponent = defineAsyncComponent(
   () => import('components/OIDCIssuerComponent.vue'),
 )
+
+marked.use({
+  gfm: true,
+})
 
 const $q = useQuasar()
 const router = useRouter()
@@ -244,6 +245,7 @@ const podStore = usePodStore()
 const authStore = useAuthStore()
 const contractStore = useContractStore()
 const profileStore = useProfileStore()
+const { parse } = marked
 
 enum STEP {
   WELCOME = 1,
@@ -252,10 +254,17 @@ enum STEP {
   FINAL = 4,
 }
 
-const searchParams = new URLSearchParams(window.location.search)
 const stepParam = 'step'
 
-const step = ref(searchParams.get(stepParam) ?? STEP.WELCOME)
+function getCurrentStep() {
+  const searchParams = new URLSearchParams(window.location.search)
+
+  if (searchParams.get(stepParam)) {
+    return Number(searchParams.get(stepParam))
+  }
+}
+
+const step = ref(getCurrentStep() ?? STEP.WELCOME)
 const consumer = ref('')
 const email = ref('')
 const userComplete = ref(false)
@@ -271,7 +280,7 @@ watch(
   },
 )
 
-function setMeta(value) {
+function setMeta(value: number) {
   switch (value) {
     case STEP.WELCOME: {
       useMeta({
@@ -364,10 +373,18 @@ async function onFinish() {
   $q.loading.show()
 
   try {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const keyPair = await generateKeyPair()
-    // если нет доступа к WebID, используем для идентификации fingerprint от keyPair
-    if (!authStore.webId) {
+    if (authStore.webId) {
+      const solana = getSolana()
+      /* eslint-disable */
+      if (solana && !solana.isConnected) {
+        const { publicKey }: { publicKey: PublicKey } = await solana.connect({ onlyIfTrusted: false })
+        authStore.wallet = publicKey.toBase58()
+      }
+      /* eslint-enable */
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const keyPair = await generateKeyPair()
+      // если нет доступа к WebID, используем для идентификации fingerprint от keyPair
       /* eslint-disable @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/ban-ts-comment */
       // @ts-ignore
       authStore.webId = 'did:key:' + (keyPair.fingerprint() as string)

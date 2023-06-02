@@ -1,5 +1,7 @@
 import { LocalStorage } from 'quasar'
 import { defineStore } from 'pinia'
+import useAuthStore from 'stores/auth'
+import { getSolana } from '../services/phantomWalletService'
 import { getEmailProperty } from '../helpers/schemaHelper'
 
 interface State {
@@ -25,6 +27,27 @@ export default defineStore('profile', {
     },
   },
   getters: {
+    getWalletLD(state) {
+      const authStore = useAuthStore()
+      const solana = getSolana()
+      if (!authStore.wallet) {
+        /* eslint-disable */
+        authStore.wallet = solana?.isConnected ? solana.publicKey.toBase58() : null
+        /* eslint-enable */
+      }
+
+      return {
+        '@context': ['https://w3id.org/wallet/v1'],
+        'id': 'did:example', // todo заменить идентификатор
+        // "controller": "did:example",
+        'type': 'SolanaAddress',
+        'multibase': authStore.wallet,
+        /* eslint-disable */
+        'name': solana?.isPhantom ? 'Phantom Wallet' : null,
+        /* eslint-enable */
+        'correlation': [authStore.webId, state.email],
+      }
+    },
     getPersonLD(state) {
       return {
         '@context': 'https://schema.org',

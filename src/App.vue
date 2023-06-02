@@ -18,12 +18,14 @@ import { useMeta, useQuasar } from 'quasar'
 import { EVENTS } from '@inrupt/solid-client-authn-core'
 import { getDefaultSession } from '@inrupt/solid-client-authn-browser/src/defaultSession'
 import { useRouter } from 'vue-router'
+import { PublicKey } from '@solana/web3.js'
 import usePodStore from 'stores/pod'
 import useAuthStore from 'stores/auth'
 import useProfileStore from 'stores/profile'
+import { getSolana } from './services/phantomWalletService'
+import { isTWA } from './helpers/twaHelper'
 import pkg from '../package.json'
 import twaMinifest from '../twa-manifest.json'
-import { isTWA } from './helpers/twaHelper'
 
 const $q = useQuasar()
 const router = useRouter()
@@ -137,6 +139,20 @@ events.on(EVENTS.LOGOUT, () => {
 events.on(EVENTS.ERROR, (error) => {
   console.error('Login error:', error)
 })
+/* eslint-disable */
+const solana = getSolana()
+if (solana) {
+  solana.on('connect', (publicKey: PublicKey) => {
+    console.log('connect, phantom account:', publicKey.toBase58())
+  })
+  solana.on('disconnect', () => {
+    console.warn('disconnect')
+  })
+  solana.on('accountChanged', (publicKey: PublicKey | null) => {
+    console.log(publicKey)
+  })
+}
+/* eslint-enable */
 
 useMeta(metaData)
 </script>
