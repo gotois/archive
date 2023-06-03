@@ -171,6 +171,31 @@
                   <QIcon name="email" />
                 </template>
               </QInput>
+              <QInput
+                v-model.trim="wallet"
+                :label="$t('wallet.label')"
+                :type="isPwd ? 'password' : 'text'"
+                :hint="$t('wallet.hint')"
+                name="wallet"
+                autocomplete="off"
+                outlined
+              >
+                <template #prepend>
+                  <QIcon name="key" />
+                </template>
+                <template #append>
+                  <QIcon
+                    :name="isPwd ? 'visibility_off' : 'visibility'"
+                    class="cursor-pointer q-mr-md"
+                    @click="isPwd = !isPwd"
+                  />
+                  <QBtn
+                    icon="wallet"
+                    label="Phantom"
+                    @click="tryToLoginPhantomWallet"
+                  />
+                </template>
+              </QInput>
               <QStepperNavigation class="q-pa-md no-margin">
                 <QBtn
                   color="accent"
@@ -267,6 +292,8 @@ function getCurrentStep() {
 const step = ref(getCurrentStep() ?? STEP.WELCOME)
 const consumer = ref('')
 const email = ref('')
+const wallet = ref('')
+const isPwd = ref(false)
 const userComplete = ref(false)
 const { isLoggedIn } = storeToRefs(authStore)
 const consumerValid = computed(() => {
@@ -369,18 +396,26 @@ async function onOnlineAuthorize(oidcIssuer: string) {
   }
 }
 
+async function tryToLoginPhantomWallet() {
+  const solana = getSolana()
+  /* eslint-disable */
+  if (solana && !solana.isConnected) {
+     const { publicKey }: { publicKey: PublicKey } = await solana.connect({ onlyIfTrusted: false })
+     return publicKey.toBase58()
+  } else {
+    window.open('https://phantom.app', '_blank')
+  }
+  /* eslint-enable */
+}
+
 async function onFinish() {
   $q.loading.show()
 
   try {
     if (authStore.webId) {
-      const solana = getSolana()
-      /* eslint-disable */
-      if (solana && !solana.isConnected) {
-        const { publicKey }: { publicKey: PublicKey } = await solana.connect({ onlyIfTrusted: false })
-        authStore.wallet = publicKey.toBase58()
+      if (wallet.value) {
+        authStore.wallet = wallet.value
       }
-      /* eslint-enable */
     } else {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const keyPair = await generateKeyPair()

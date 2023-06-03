@@ -105,7 +105,6 @@
         <QIcon
           v-if="miniState"
           size="24px"
-          class=""
           name="settings"
           color="primary"
         />
@@ -170,14 +169,38 @@
               autocapitalize="off"
               autocomplete="off"
               greedy
+              style="max-width: calc(300px - 32px)"
               @submit="onFinishProfile"
             >
+              <QField
+                v-if="isLoggedIn"
+                outlined
+                label="WebId"
+                color="secondary"
+                class="q-pb-md full-width"
+                stack-label
+              >
+                <template #prepend>
+                  <QIcon name="web" />
+                </template>
+                <template #control>
+                  <div class="self-center no-outline ellipsis">{{ webId }}</div>
+                </template>
+                <template #append>
+                  <QIcon
+                    name="content_copy"
+                    class="cursor-pointer"
+                    @click="copyToClipboard(webId)"
+                  />
+                </template>
+              </QField>
               <QInput
                 v-model.trim="consumer"
                 color="secondary"
                 type="text"
                 outlined
                 clearable
+                stack-label
                 :hide-hint="!$q.platform.is.desktop"
                 :label="$t('consumer.type')"
                 :rules="[
@@ -196,6 +219,7 @@
                 type="email"
                 outlined
                 clearable
+                stack-label
                 :hide-hint="!$q.platform.is.desktop"
                 :hide-bottom-space="!email"
                 :label="$t('consumer.email')"
@@ -208,6 +232,23 @@
                   <QIcon name="email" />
                 </template>
               </QInput>
+              <QField
+                v-if="getWalletLD.multibase"
+                outlined
+                label="Wallet"
+                color="secondary"
+                class="q-pb-md full-width"
+                stack-label
+              >
+                <template #prepend>
+                  <QIcon name="wallet" />
+                </template>
+                <template #control>
+                  <div class="self-center no-outline ellipsis">
+                    {{ getWalletLD.multibase }}
+                  </div>
+                </template>
+              </QField>
               <QBtn
                 :label="$t('consumer.save')"
                 icon="save"
@@ -416,6 +457,7 @@ import {
   useQuasar,
   QDialog,
   QBtn,
+  QField,
   QPageContainer,
   QSkeleton,
   QTooltip,
@@ -439,6 +481,7 @@ import {
   QCard,
   QCardSection,
   exportFile,
+  copyToClipboard,
 } from 'quasar'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
@@ -474,7 +517,7 @@ const profileStore = useProfileStore()
 
 const { consumer, email } = storeToRefs(profileStore)
 const { getArchiveNames, contractsCount } = storeToRefs(contractStore)
-const { hasCode, isLoggedIn, isDemo } = storeToRefs(authStore)
+const { hasCode, isLoggedIn, isDemo, webId } = storeToRefs(authStore)
 const bigScreen = computed(
   () => $q.platform.is.desktop && ($q.screen.xl || $q.screen.lg),
 )

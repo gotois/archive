@@ -112,6 +112,10 @@ export default {
     rules: 'Введите потребителя (заказчика) услуги',
     save: 'Сохранить',
   },
+  wallet: {
+    label: 'Private Key Solana',
+    hint: 'Введите адрес вашего Private Key от Solana или авторизуйтесь через кошелек',
+  },
   customer: {
     rules: 'Введите исполнителя',
     type: 'Исполнитель',
