@@ -1,7 +1,9 @@
 <template>
   <QToolbarTitle
-    class="text-center non-selectable cursor-pointer"
-    @click="onOpenRepo"
+    class="non-selectable"
+    :class="{
+      'text-center': !$q.platform.is.desktop,
+    }"
   >
     <QIcon
       v-show="!$q.dark.isActive"
@@ -9,13 +11,17 @@
       style="vertical-align: text-top"
       name="img:/icons/safari-pinned-tab.svg"
     />
-    <template v-if="!$q.platform.is.android">
+    <span
+      v-if="!$q.platform.is.android"
+      class="cursor-pointer text-center"
+      @click="onOpenRepo"
+    >
       {{ launcherName }}
-    </template>
+      <QTooltip>
+        {{ $t('navigation.version', { version: navigatorVersion }) }}
+      </QTooltip>
+    </span>
     <slot />
-    <QTooltip>
-      {{ $t('navigation.version', { version: navigatorVersion }) }}
-    </QTooltip>
   </QToolbarTitle>
 </template>
 <script lang="ts" setup>

@@ -237,6 +237,7 @@ import {
   QIcon,
   QTooltip,
   exportFile,
+  openURL,
 } from 'quasar'
 import { storeToRefs } from 'pinia'
 import { marked } from 'marked'
@@ -403,7 +404,10 @@ async function tryToLoginPhantomWallet() {
      const { publicKey }: { publicKey: PublicKey } = await solana.connect({ onlyIfTrusted: false })
      return publicKey.toBase58()
   } else {
-    window.open('https://phantom.app', '_blank')
+    openURL('https://phantom.app', undefined, {
+      noopener: true,
+      noreferrer: true,
+    })
   }
   /* eslint-enable */
 }

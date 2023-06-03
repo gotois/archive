@@ -28,16 +28,23 @@
             class="vertical-top q-ml-xs"
           />
         </ToolbarTitleComponent>
-        <QBtn
-          v-if="contractsCount > 0"
-          flat
-          round
-          :dense="$q.platform.is.desktop"
-          class="cursor-pointer"
-          name="search"
-          icon="search"
-          @click="showSearch = true"
-        />
+        <template v-if="contractsCount > 0">
+          <SearchInputComponent
+            v-if="$q.platform.is.desktop"
+            autofocus
+            @search="(value) => onSearch(value)"
+          />
+          <QBtn
+            v-else
+            flat
+            round
+            :dense="$q.platform.is.desktop"
+            class="cursor-pointer"
+            name="search"
+            icon="search"
+            @click="showSearch = true"
+          />
+        </template>
         <QBtn
           v-if="$q.screen.xs || $q.screen.sm || $q.screen.md"
           flat
@@ -102,12 +109,7 @@
       <p
         class="full-width block text-h6 q-pl-md q-pr-md q-pt-md no-border-radius non-selectable no-pointer-events"
       >
-        <QIcon
-          v-if="miniState"
-          size="24px"
-          name="settings"
-          color="primary"
-        />
+        <QIcon v-if="miniState" size="24px" name="settings" color="primary" />
         <span v-else>{{ $t('navigation.title') }}</span>
       </p>
       <QList style="max-height: calc(100% - 64px)" class="fit column no-wrap">
@@ -452,7 +454,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, defineAsyncComponent } from 'vue'
+import { ref, computed, defineAsyncComponent, onMounted } from 'vue'
 import {
   useQuasar,
   QDialog,
@@ -490,14 +492,19 @@ import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
+import { indexAllDocuments } from '../services/searchService'
 import { isTWA } from '../helpers/twaHelper'
 import { exportKeyPair } from '../services/cryptoService'
 import { ROUTE_NAMES } from '../router/routes'
+
 const DatabaseRemoveComponent = defineAsyncComponent(
   () => import('components/DatabaseRemoveComponent.vue'),
 )
 const DatabaseComponent = defineAsyncComponent(
   () => import('components/DatabaseComponent.vue'),
+)
+const SearchInputComponent = defineAsyncComponent(
+  () => import('components/SearchInputComponent.vue'),
 )
 const ArchiveSearchComponent = defineAsyncComponent(
   () => import('components/ArchiveSearchComponent.vue'),
@@ -515,7 +522,7 @@ const authStore = useAuthStore()
 const contractStore = useContractStore()
 const profileStore = useProfileStore()
 
-const { consumer, email } = storeToRefs(profileStore)
+const { consumer, email, getWalletLD } = storeToRefs(profileStore)
 const { getArchiveNames, contractsCount } = storeToRefs(contractStore)
 const { hasCode, isLoggedIn, isDemo, webId } = storeToRefs(authStore)
 const bigScreen = computed(
@@ -676,4 +683,10 @@ async function onSelectArchiveName(
     },
   })
 }
+
+onMounted(async () => {
+  if ($q.platform.is.desktop && contractsCount.value > 0) {
+    await indexAllDocuments()
+  }
+})
 </script>
