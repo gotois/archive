@@ -12,7 +12,6 @@ interface Store {
   openIdIsLoggedIn: boolean
   webId: WebId | string
   tryAuth: boolean
-  wallet: string
 }
 
 export default defineStore('auth', {
@@ -24,7 +23,6 @@ export default defineStore('auth', {
     openIdExpirationDate: null,
     openIdIsLoggedIn: false,
     webId: getDefaultSession().info.webId,
-    wallet: null,
   }),
   actions: {
     async setCode(value: string) {

@@ -19,6 +19,8 @@ import {
 import { JsonLdDocumentLoader } from 'jsonld-document-loader'
 import { keys } from './databaseService'
 import { Credential, ProofCredential } from '../types/models'
+// @ts-ignore
+import * as base68 from 'base58-universal'
 
 const jdl = new JsonLdDocumentLoader()
 jdl.addStatic(ed25519Ctx.CONTEXT_URL, ed25519Ctx.CONTEXT)
@@ -29,6 +31,8 @@ jdl.addStatic(
 )
 
 const documentLoader = jdl.build()
+
+export const decode: (str: string) => Uint8Array = base68.decode
 
 export async function sign({
   credential,

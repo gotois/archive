@@ -172,10 +172,11 @@
                 </template>
               </QInput>
               <QInput
-                v-model.trim="wallet"
+                v-model.trim="walletPrivateKey"
                 :label="$t('wallet.label')"
                 :type="isPwd ? 'password' : 'text'"
                 :hint="$t('wallet.hint')"
+                :disable="getMultibase.length > 0"
                 name="wallet"
                 autocomplete="off"
                 outlined
@@ -241,12 +242,12 @@ import {
 } from 'quasar'
 import { storeToRefs } from 'pinia'
 import { marked } from 'marked'
-import { PublicKey } from '@solana/web3.js'
 import useAuthStore from 'stores/auth'
 import tutorialStore from 'stores/tutorial'
 import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
 import usePodStore from 'stores/pod'
+import useWalletStore from 'stores/wallet'
 import pkg from '../../package.json'
 import { ROUTE_NAMES } from '../router/routes'
 import { createContractPDF } from '../helpers/pdfHelper'
@@ -271,6 +272,7 @@ const podStore = usePodStore()
 const authStore = useAuthStore()
 const contractStore = useContractStore()
 const profileStore = useProfileStore()
+const walletStore = useWalletStore()
 const { parse } = marked
 
 enum STEP {
@@ -293,10 +295,12 @@ function getCurrentStep() {
 const step = ref(getCurrentStep() ?? STEP.WELCOME)
 const consumer = ref('')
 const email = ref('')
-const wallet = ref('')
+const walletPrivateKey = ref('')
 const isPwd = ref(false)
 const userComplete = ref(false)
 const { isLoggedIn } = storeToRefs(authStore)
+const { getMultibase } = storeToRefs(walletStore)
+
 const consumerValid = computed(() => {
   return Boolean(consumer.value.length && email.value.length)
 })
@@ -399,17 +403,24 @@ async function onOnlineAuthorize(oidcIssuer: string) {
 
 async function tryToLoginPhantomWallet() {
   const solana = getSolana()
-  /* eslint-disable */
-  if (solana && !solana.isConnected) {
-     const { publicKey }: { publicKey: PublicKey } = await solana.connect({ onlyIfTrusted: false })
-     return publicKey.toBase58()
-  } else {
-    openURL('https://phantom.app', undefined, {
+  if (!solana) {
+    return openURL('https://phantom.app', undefined, {
       noopener: true,
       noreferrer: true,
     })
   }
+  /* eslint-disable */
+  if (solana.isConnected) {
+    walletStore.setPublicKey(solana.publicKey)
+  } else {
+    const { publicKey } = await solana.connect({ onlyIfTrusted: false })
+    walletStore.setPublicKey(publicKey)
+  }
   /* eslint-enable */
+  $q.notify({
+    type: 'positive',
+    message: 'Вы привязали свой кошелек Phantom',
+  })
 }
 
 async function onFinish() {
@@ -417,8 +428,8 @@ async function onFinish() {
 
   try {
     if (authStore.webId) {
-      if (wallet.value) {
-        authStore.wallet = wallet.value
+      if (walletPrivateKey.value) {
+        walletStore.setPrivateKey(walletPrivateKey.value)
       }
     } else {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

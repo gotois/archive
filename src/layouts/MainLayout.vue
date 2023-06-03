@@ -236,10 +236,10 @@
               </QInput>
               <QField
                 v-if="getWalletLD.multibase"
-                outlined
-                label="Wallet"
+                label="Wallet Public Key"
                 color="secondary"
                 class="q-pb-md full-width"
+                outlined
                 stack-label
               >
                 <template #prepend>
@@ -249,6 +249,13 @@
                   <div class="self-center no-outline ellipsis">
                     {{ getWalletLD.multibase }}
                   </div>
+                </template>
+                <template #append>
+                  <QIcon
+                    name="content_copy"
+                    class="cursor-pointer"
+                    @click="copyToClipboard(getWalletLD.multibase)"
+                  />
                 </template>
               </QField>
               <QBtn
@@ -491,6 +498,7 @@ import { logout } from '@inrupt/solid-client-authn-browser/src/defaultSession'
 import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
+import useWalletStore from 'stores/wallet'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
 import { indexAllDocuments } from '../services/searchService'
 import { isTWA } from '../helpers/twaHelper'
@@ -521,10 +529,12 @@ const router = useRouter()
 const authStore = useAuthStore()
 const contractStore = useContractStore()
 const profileStore = useProfileStore()
+const walletStore = useWalletStore()
 
-const { consumer, email, getWalletLD } = storeToRefs(profileStore)
+const { consumer, email } = storeToRefs(profileStore)
 const { getArchiveNames, contractsCount } = storeToRefs(contractStore)
 const { hasCode, isLoggedIn, isDemo, webId } = storeToRefs(authStore)
+const { getWalletLD } = storeToRefs(walletStore)
 const bigScreen = computed(
   () => $q.platform.is.desktop && ($q.screen.xl || $q.screen.lg),
 )

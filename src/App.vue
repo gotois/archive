@@ -18,10 +18,10 @@ import { useMeta, useQuasar } from 'quasar'
 import { EVENTS } from '@inrupt/solid-client-authn-core'
 import { getDefaultSession } from '@inrupt/solid-client-authn-browser/src/defaultSession'
 import { useRouter } from 'vue-router'
-import { PublicKey } from '@solana/web3.js'
 import usePodStore from 'stores/pod'
 import useAuthStore from 'stores/auth'
 import useProfileStore from 'stores/profile'
+import useWalletStore from 'stores/wallet'
 import { getSolana } from './services/phantomWalletService'
 import { isTWA } from './helpers/twaHelper'
 import pkg from '../package.json'
@@ -32,6 +32,7 @@ const router = useRouter()
 const podStore = usePodStore()
 const authStore = useAuthStore()
 const profileStore = useProfileStore()
+const walletStore = useWalletStore()
 const events = getDefaultSession().events
 
 const webSite = {
@@ -142,14 +143,17 @@ events.on(EVENTS.ERROR, (error) => {
 /* eslint-disable */
 const solana = getSolana()
 if (solana) {
-  solana.on('connect', (publicKey: PublicKey) => {
-    console.log('connect, phantom account:', publicKey.toBase58())
+  solana.on('connect', (publicKey) => {
+    console.warn('connected to phantom account')
+    walletStore.setPublicKey(publicKey)
   })
   solana.on('disconnect', () => {
     console.warn('disconnect')
+    walletStore.setPublicKey(null)
   })
-  solana.on('accountChanged', (publicKey: PublicKey | null) => {
-    console.log(publicKey)
+  solana.on('accountChanged', (publicKey) => {
+    console.warn('accountChanged')
+    walletStore.setPublicKey(publicKey)
   })
 }
 /* eslint-enable */
