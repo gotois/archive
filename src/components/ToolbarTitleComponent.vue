@@ -1,10 +1,5 @@
 <template>
-  <QToolbarTitle
-    class="non-selectable"
-    :class="{
-      'text-center': !$q.platform.is.desktop,
-    }"
-  >
+  <QToolbarTitle class="non-selectable">
     <QIcon
       v-show="!$q.dark.isActive"
       class="orientation-landscape"

@@ -9,6 +9,9 @@ renderer.link = function (href, title, text) {
     title,
     text,
   ) as string
+  if (href === '#' && title?.length > 0) {
+    return `<span style="cursor: help" title="${title}">${text}</span>`
+  }
   return href.startsWith(pkg.homepage)
     ? html
     : html.replace(

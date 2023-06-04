@@ -19,7 +19,11 @@
           icon="settings"
           @click="onToggleLeftDrawer"
         />
-        <ToolbarTitleComponent>
+        <ToolbarTitleComponent
+          :class="{
+            'text-center': !$q.platform.is.desktop,
+          }"
+        >
           <QBadge
             v-if="isDemo"
             :label="$t('header.demo')"

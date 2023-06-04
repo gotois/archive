@@ -14,7 +14,7 @@
         >
           <QTooltip>Вернуться</QTooltip>
         </QBtn>
-        <ToolbarTitleComponent />
+        <ToolbarTitleComponent class="text-center" />
       </QToolbar>
     </QHeader>
     <QPageContainer>

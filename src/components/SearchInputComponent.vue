@@ -10,7 +10,7 @@
     :options="searchOptions"
     :label="label"
     :loading="searching"
-    input-class="text-right"
+    input-class="text-right q-pb-md"
     use-input
     hide-dropdown-icon
     rounded
