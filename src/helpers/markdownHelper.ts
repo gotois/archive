@@ -1,23 +1,28 @@
 import { marked } from 'marked'
+import { Dark } from 'quasar'
 import pkg from '../../package.json'
 
 const renderer = new marked.Renderer()
 renderer.link = function (href, title, text) {
-  const html = marked.Renderer.prototype.link.call(
-    this,
-    href,
-    title,
-    text,
-  ) as string
   if (href === '#' && title?.length > 0) {
     return `<span style="cursor: help" title="${title}">${text}</span>`
   }
-  return href.startsWith(pkg.homepage)
-    ? html
-    : html.replace(
-        /^<a /,
-        '<a target="_blank" rel="noreferrer noopener nofollow" ',
-      )
+  const anchor = document.createElement('a')
+  if (!href.startsWith(pkg.homepage)) {
+    anchor.target = '_blank'
+    anchor.rel = 'noreferrer noopener nofollow'
+  }
+  anchor.classList.add(Dark.isActive ? 'text-white' : 'text-dark')
+  if (href) {
+    anchor.href = href
+  }
+  if (title) {
+    anchor.title = title
+  }
+  if (text) {
+    anchor.text = text
+  }
+  return anchor.outerHTML
 }
 
 marked.setOptions({
