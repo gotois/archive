@@ -29,6 +29,7 @@
       :class="{
         'full-width': $q.platform.is.mobile,
       }"
+      :loading="$q.loading.isActive"
       no-caps
       @click="onComplete"
     >
