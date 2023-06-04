@@ -241,7 +241,6 @@ import {
   openURL,
 } from 'quasar'
 import { storeToRefs } from 'pinia'
-import { marked } from 'marked'
 import useAuthStore from 'stores/auth'
 import tutorialStore from 'stores/tutorial'
 import useContractStore from 'stores/contract'
@@ -250,6 +249,7 @@ import usePodStore from 'stores/pod'
 import useWalletStore from 'stores/wallet'
 import pkg from '../../package.json'
 import { ROUTE_NAMES } from '../router/routes'
+import { parse } from '../helpers/markdownHelper'
 import { createContractPDF } from '../helpers/pdfHelper'
 import { readFilesPromise } from '../helpers/fileHelper'
 import solidAuth from '../services/authService'
@@ -262,10 +262,6 @@ const OIDCIssuerComponent = defineAsyncComponent(
   () => import('components/OIDCIssuerComponent.vue'),
 )
 
-marked.use({
-  gfm: true,
-})
-
 const $q = useQuasar()
 const router = useRouter()
 const podStore = usePodStore()
@@ -273,7 +269,6 @@ const authStore = useAuthStore()
 const contractStore = useContractStore()
 const profileStore = useProfileStore()
 const walletStore = useWalletStore()
-const { parse } = marked
 
 enum STEP {
   WELCOME = 1,
