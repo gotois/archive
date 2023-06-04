@@ -1,6 +1,6 @@
 <template>
   <QPage :class="$q.dark.isActive ? 'bg-transparent' : 'bg-grey-1'">
-    <QScrollArea visible class="absolute-full fit">
+    <QScrollArea ref="scroll" visible class="absolute-full fit">
       <QStepper
         ref="stepper"
         v-model.number="step"
@@ -8,6 +8,7 @@
         flat
         alternative-labels
         contracted
+        :swipeable="$q.platform.is.desktop"
         :animated="!$q.platform.is.desktop"
         :vertical="!$q.platform.is.desktop"
         class="q-pa-md q-card--bordered q-ml-auto q-mr-auto q-mt-md q-mb-md"
@@ -19,11 +20,15 @@
           'max-width': $q.platform.is.desktop ? '720px' : 'auto',
         }"
         :transition-next="$q.platform.is.desktop ? 'slide-left' : 'slide-down'"
+        @update:model-value="
+          (step) => scroll.setScrollPosition('vertical', step * 30, 100)
+        "
       >
         <QStep
           :name="STEP.WELCOME"
           :title="$t('tutorial.welcome.title')"
           icon="create_new_folder"
+          done-color="positive"
           :done="step > STEP.WELCOME"
         >
           <QIcon
@@ -54,6 +59,7 @@
           :name="STEP.INFO"
           :title="$t('tutorial.info.title')"
           icon="create_new_folder"
+          done-color="positive"
           :done="step > STEP.INFO"
         >
           <p v-show="$q.platform.is.desktop" class="text-h4">
@@ -78,7 +84,9 @@
         <QStep
           :name="STEP.AGREEMENT"
           :title="$t('tutorial.agreement.title')"
+          :caption="$t('tutorial.agreement.caption')"
           icon="article"
+          done-color="positive"
           :done="step > STEP.AGREEMENT"
         >
           <p v-show="$q.platform.is.desktop" class="text-h4">
@@ -104,6 +112,7 @@
         <QStep
           :name="STEP.FINAL"
           :title="$t('tutorial.data.title')"
+          done-color="positive"
           icon="assignment"
         >
           <p v-show="$q.platform.is.desktop" class="text-h4">
@@ -287,6 +296,7 @@ function getCurrentStep() {
   }
 }
 
+const scroll = ref<InstanceType<typeof QScrollArea> | null>(null)
 const step = ref(getCurrentStep() ?? STEP.WELCOME)
 const consumer = ref('')
 const email = ref('')
