@@ -21,7 +21,7 @@
         }"
         :transition-next="$q.platform.is.desktop ? 'slide-left' : 'slide-down'"
         @update:model-value="
-          (step) => scroll.setScrollPosition('vertical', step * 30, 100)
+          (x) => scroll.setScrollPosition('vertical', x * 30, 100)
         "
       >
         <QStep
@@ -114,6 +114,7 @@
           :title="$t('tutorial.data.title')"
           done-color="positive"
           icon="assignment"
+          class="q-pb-md"
         >
           <p v-show="$q.platform.is.desktop" class="text-h4">
             {{ $t('tutorial.data.title') }}
@@ -150,13 +151,12 @@
               <QInput
                 v-model.trim="consumer"
                 :label="$t('consumer.type')"
-                :rules="[
-                  (val) => (val && val.length > 0) || $t('consumer.rules'),
-                ]"
+                :rules="[(val) => val && val.length > 0]"
                 name="consumer"
                 type="text"
                 autocomplete="on"
                 autofocus
+                :error-message="$t('consumer.rules')"
                 clearable
                 outlined
                 @focus="(e) => e.target.scrollIntoView()"
@@ -200,6 +200,7 @@
                     @click="isPwd = !isPwd"
                   />
                   <QBtn
+                    v-if="hasPhantomWallet"
                     icon="wallet"
                     label="Phantom"
                     @click="tryToLoginPhantomWallet"
@@ -305,7 +306,7 @@ const isPwd = ref(true)
 const userComplete = ref(false)
 const { isLoggedIn } = storeToRefs(authStore)
 const { getMultibase } = storeToRefs(walletStore)
-
+const hasPhantomWallet = computed(() => Reflect.has(window, 'phantom'))
 const consumerValid = computed(() => {
   return Boolean(consumer.value.length && email.value.length)
 })
@@ -449,6 +450,7 @@ async function onFinish() {
     $q.notify({
       type: 'error',
       color: 'negative',
+      multiLine: true,
       message: 'Генерация ключей закончилась ошибкой: ' + String(e.message),
       position: 'center',
       progress: false,

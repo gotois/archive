@@ -1,4 +1,4 @@
-import { Loading, LocalStorage, SessionStorage } from 'quasar'
+import { Notify, Loading, LocalStorage, SessionStorage } from 'quasar'
 import { route } from 'quasar/wrappers'
 import { createRouter, createWebHistory } from 'vue-router'
 import useAuthStore from 'stores/auth'
@@ -99,6 +99,25 @@ export default route(() => {
           }
         }
         if (!LocalStorage.has('tutorialCompleted')) {
+          if (to.path !== '/') {
+            Notify.create({
+              message: 'Страница недоступна без авторизации.',
+              type: 'warning',
+              timeout: 99999999999,
+              multiLine: true,
+              actions: [
+                {
+                  label: 'Вернуться на страницу',
+                  handler() {
+                    void Router.replace(to.fullPath)
+                  },
+                },
+                {
+                  icon: 'close',
+                },
+              ],
+            })
+          }
           return {
             name: ROUTE_NAMES.TUTORIAL,
             query: {},

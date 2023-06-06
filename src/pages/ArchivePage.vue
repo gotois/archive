@@ -1,6 +1,12 @@
 <template>
   <QPage :class="$q.dark.isActive ? 'bg-transparent' : 'bg-grey-1'">
     <QScrollArea
+      v-if="
+        formatContracts.length > 0 &&
+        paginationCount > 0 &&
+        Number.isSafeInteger(Number(currentPage)) &&
+        Number(currentPage) <= paginationCount
+      "
       ref="scrollAreaRef"
       :delay="500"
       :visible="$q.platform.is.desktop"
@@ -25,11 +31,7 @@
         />
       </QPullToRefresh>
     </QScrollArea>
-    <template
-      v-if="
-        !$q.loading.isActive && !formatContracts.length && paginationCount === 0
-      "
-    >
+    <template v-else>
       <QBanner
         :class="{
           'col-6': $q.platform.is.desktop,
@@ -261,12 +263,12 @@ function onRemove(item: FormatContract) {
         label: 'Удалить',
         color: 'warning',
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        handler: async () => {
+        async handler() {
           await removeContract(item)
         },
       },
       {
-        label: 'Отмена',
+        icon: 'close',
         color: 'white',
       },
     ],
@@ -314,6 +316,9 @@ async function updateContracts({
   name,
 }: LocationQuery | { page: number; name: string }) {
   page = Number(page || 1)
+  if (Number.isNaN(page)) {
+    return
+  }
   const offset = (page - 1) * LIMIT
   const query = String(name ?? '')
 

@@ -475,7 +475,7 @@ async function onSubmit() {
         {
           label: 'Перейти',
           color: 'white',
-          handler: () => {
+          handler() {
             emit('onCreate', newContract.instrument_name)
           },
         },

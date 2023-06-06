@@ -43,12 +43,13 @@ register(process.env.SERVICE_WORKER_FILE, {
     Notify.create({
       message: 'Идет загрузка обновления',
       icon: 'announcement',
+      multiLine: true,
       actions: [
         {
           label: 'Refresh',
           color: 'white',
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
-          handler: async () => {
+          async handler() {
             await registration.unregister()
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
