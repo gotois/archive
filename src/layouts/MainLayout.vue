@@ -163,8 +163,9 @@
           v-model="profileOpen"
           group="backupgroup"
           icon="person"
-          :dense="$q.platform.is.desktop"
+          expand-icon-class="text-primary"
           class="column non-selectable"
+          :dense="$q.platform.is.desktop"
           :expand-separator="profileOpen"
           :label="$t('settings.native.profile')"
         >
@@ -284,8 +285,9 @@
           v-model="otpOpen"
           group="backupgroup"
           icon="vpn_key"
-          :dense="$q.platform.is.desktop"
+          expand-icon-class="text-primary"
           class="column non-selectable"
+          :dense="$q.platform.is.desktop"
           :expand-separator="otpOpen"
           :label="$t('settings.native.otp')"
         >
@@ -342,8 +344,9 @@
           v-model="settingsOpen"
           group="backupgroup"
           icon="import_export"
-          :dense="$q.platform.is.desktop"
+          expand-icon-class="text-primary"
           class="column non-selectable"
+          :dense="$q.platform.is.desktop"
           :expand-separator="settingsOpen"
           :label="$t('settings.native.title')"
         >
@@ -570,7 +573,9 @@ function onArchiveRoute(e: Event) {
 
 async function onExportKeychain() {
   const keysJSON = await exportKeyPair()
-  exportFile('keys.json', keysJSON)
+  if (keysJSON) {
+    exportFile('keys.json', keysJSON)
+  }
 }
 
 async function onSearch(searchText: string) {

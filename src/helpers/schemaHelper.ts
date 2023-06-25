@@ -133,6 +133,9 @@ export function formatterLDContract(
   webId: string,
   formatContract: FormatContract,
 ) {
+  if (!webId) {
+    throw new Error('WebId is empty')
+  }
   const context = new Map()
   const credentialSubject = new Map()
 
