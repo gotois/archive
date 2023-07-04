@@ -217,7 +217,7 @@
                 autocomplete="on"
               >
                 <template #prepend>
-                  <QIcon name="face" />
+                  <QIcon :name="avatar ? 'img:' + avatar : 'face'" />
                 </template>
               </QInput>
               <QInput
@@ -538,7 +538,7 @@ const contractStore = useContractStore()
 const profileStore = useProfileStore()
 const walletStore = useWalletStore()
 
-const { consumer, email } = storeToRefs(profileStore)
+const { consumer, email, avatar } = storeToRefs(profileStore)
 const { getArchiveNames, contractsCount } = storeToRefs(contractStore)
 const { hasCode, isLoggedIn, isDemo, webId } = storeToRefs(authStore)
 const { getWalletLD } = storeToRefs(walletStore)
@@ -616,9 +616,10 @@ function onOpenFeedback() {
   })
 }
 
-function onFinishProfile() {
+async function onFinishProfile() {
   profileStore.consumerName(consumer.value)
   profileStore.consumerEmail(email.value)
+  await profileStore.setAvatar(email.value)
   $q.notify({
     message: 'Профиль обновлен',
     type: 'positive',

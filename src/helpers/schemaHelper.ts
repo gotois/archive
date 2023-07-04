@@ -19,6 +19,7 @@ import {
   FormatContractParticipant,
 } from '../types/models'
 import { getMimeType } from './dataHelper'
+import { getHash } from '../services/cryptoService'
 
 enum BaseContext {
   schemaOrg = 'https://schema.org',
@@ -205,13 +206,15 @@ export function getEmailProperty(email: string) {
 }
 
 export async function getGravatarURL(email: string) {
-  const encoder = new TextEncoder()
-  const data = encoder.encode(email)
-  const hash = await crypto.subtle.digest('SHA-256', data)
-  const hashHex = Array.from(new Uint8Array(hash))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('')
-  return `https://www.gravatar.com/avatar/${hashHex}`
+  const hashHex = await getHash(email)
+  const link = `https://www.gravatar.com/avatar/${hashHex}`
+
+  if (navigator.onLine) {
+    const { status } = await fetch(link + '?d=404')
+    if (status >= 200 && status < 400) {
+      return link
+    }
+  }
 }
 
 export function formatterContract(contract: ContractTable): FormatContract {

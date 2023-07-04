@@ -260,15 +260,17 @@ function onRemove(item: FormatContract) {
     },
     actions: [
       {
+        icon: 'check_circle',
         label: 'Удалить',
-        color: 'warning',
+        color: 'white',
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         async handler() {
           await removeContract(item)
         },
       },
       {
-        icon: 'close',
+        icon: 'cancel',
+        label: 'Отмена',
         color: 'white',
       },
     ],

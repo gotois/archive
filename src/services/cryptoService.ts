@@ -90,14 +90,9 @@ export async function generateKeyPair(): Promise<Ed25519VerificationKey2020> {
 export async function getHash(str: string, algo = 'SHA-256') {
   const strBuf = new TextEncoder().encode(str)
   const hash = await crypto.subtle.digest(algo, strBuf)
-  // here hash is an arrayBuffer,
-  // so we'll convert it to its hex version
-  let result = ''
-  const view = new DataView(hash)
-  for (let i = 0; i < hash.byteLength; i += 4) {
-    result += ('00000000' + view.getUint32(i).toString(16)).slice(-8)
-  }
-  return result
+  return Array.from(new Uint8Array(hash))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')
 }
 
 export async function exportKeyPair() {
