@@ -204,6 +204,16 @@ export function getEmailProperty(email: string) {
   return email.startsWith('mailto:') ? email : 'mailto:' + email
 }
 
+export async function getGravatarURL(email: string) {
+  const encoder = new TextEncoder()
+  const data = encoder.encode(email)
+  const hash = await crypto.subtle.digest('SHA-256', data)
+  const hashHex = Array.from(new Uint8Array(hash))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')
+  return `https://www.gravatar.com/avatar/${hashHex}`
+}
+
 export function formatterContract(contract: ContractTable): FormatContract {
   const agent: FormatContractAgent = {
     '@type': 'Person',
