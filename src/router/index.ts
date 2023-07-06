@@ -5,6 +5,7 @@ import useAuthStore from 'stores/auth'
 import usePodStore from 'stores/pod'
 import routes from './routes'
 import { ROUTE_NAMES } from './routes'
+import { keys } from '../services/databaseService'
 import solidAuth from '../services/authService'
 
 export default route(() => {
@@ -19,6 +20,14 @@ export default route(() => {
   // Если пользователь уже входил через Pod, пробуем авторизовать автоматически
   Router.beforeEach(async (to) => {
     const { code, state, error } = to.query
+
+    // hack - специальный путь для сброса состояния приложения
+    if (to.path === '/reset') {
+      LocalStorage.clear()
+      SessionStorage.clear()
+      await keys.destroy()
+    }
+
     if (error || !(code && state)) {
       return
     }
@@ -40,10 +49,7 @@ export default route(() => {
 
   Router.beforeEach((to, from) => {
     const authStore = useAuthStore()
-    // hack - специальный путь для сброса состояния приложения
     if (to.path === '/reset') {
-      LocalStorage.clear()
-      SessionStorage.clear()
       return {
         name: ROUTE_NAMES.TUTORIAL,
       }

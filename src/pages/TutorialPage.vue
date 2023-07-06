@@ -8,7 +8,7 @@
         flat
         alternative-labels
         contracted
-        :swipeable="$q.platform.is.desktop"
+        :swipeable="false"
         :animated="!$q.platform.is.desktop"
         :vertical="!$q.platform.is.desktop"
         class="q-pa-md q-card--bordered q-ml-auto q-mr-auto q-mt-md q-mb-md"
@@ -20,9 +20,7 @@
           'max-width': $q.platform.is.desktop ? '720px' : 'auto',
         }"
         :transition-next="$q.platform.is.desktop ? 'slide-left' : 'slide-down'"
-        @update:model-value="
-          (x) => scroll.setScrollPosition('vertical', x * 30, 100)
-        "
+        @update:model-value="onStep"
       >
         <QStep
           :name="STEP.WELCOME"
@@ -110,120 +108,162 @@
           </QStepperNavigation>
         </QStep>
         <QStep
+          :name="STEP.WALLET"
+          :title="$t('tutorial.wallet.title')"
+          :caption="$t('tutorial.wallet.caption')"
+          done-color="positive"
+          icon="assignment"
+          class="q-pb-md"
+          :done="step > STEP.WALLET"
+        >
+          <p v-show="$q.platform.is.desktop" class="text-h4">
+            {{ $t('tutorial.wallet.title') }}
+          </p>
+          <div
+            class="text-body1"
+            style="white-space: break-spaces"
+            v-html="parse($t('tutorial.wallet.body'))"
+          >
+          </div>
+          <QInput
+            v-if="!hasPhantomWallet"
+            v-model.trim="walletPrivateKey"
+            :label="$t('wallet.label')"
+            :type="isPwd ? 'password' : 'text'"
+            :hint="$t('wallet.hint')"
+            :maxlength="88"
+            name="wallet"
+            autocomplete="off"
+            outlined
+          >
+            <template #prepend>
+              <QIcon name="key" />
+            </template>
+            <template #append>
+              <QIcon
+                :name="isPwd ? 'visibility_off' : 'visibility'"
+                class="cursor-pointer q-mr-md"
+                @click="isPwd = !isPwd"
+              />
+            </template>
+          </QInput>
+          <QStepperNavigation>
+            <QBtn
+              v-if="hasPhantomWallet"
+              color="accent"
+              icon="wallet"
+              :label="$t('tutorial.wallet.ok')"
+              @click="tryToLoginPhantomWallet"
+            />
+            <QBtn
+              v-else
+              :disable="walletPrivateKey.length === 0"
+              color="accent"
+              :label="$t('tutorial.wallet.ok')"
+              :class="{
+                'full-width': !$q.platform.is.desktop,
+              }"
+              @click="onWalletComplete"
+            />
+          </QStepperNavigation>
+        </QStep>
+        <QStep
+          :name="STEP.OIDC"
+          :title="$t('tutorial.oidc.title')"
+          :caption="$t('tutorial.oidc.caption')"
+          done-color="positive"
+          icon="assignment"
+          class="q-pb-md"
+          :done="step > STEP.OIDC"
+        >
+          <p v-show="$q.platform.is.desktop" class="text-h4">
+            {{ $t('tutorial.oidc.title') }}
+          </p>
+          <div
+            class="text-body1"
+            style="white-space: break-spaces"
+            v-html="parse($t('tutorial.oidc.body'))"
+          >
+          </div>
+          <OIDCIssuerComponent
+            :label="$t('oidc.label')"
+            @on-complete="onOnlineAuthorize"
+          >
+            <QTooltip>{{ $t('oidc.tutorialHint') }}</QTooltip>
+          </OIDCIssuerComponent>
+        </QStep>
+        <QStep
           :name="STEP.FINAL"
           :title="$t('tutorial.data.title')"
           done-color="positive"
           icon="assignment"
           class="q-pb-md"
+          :done="step > STEP.FINAL"
         >
           <p v-show="$q.platform.is.desktop" class="text-h4">
             {{ $t('tutorial.data.title') }}
           </p>
           <p class="text-body1">{{ $t('tutorial.data.body') }}</p>
           <QSpace class="q-pa-xs" />
-          <template v-if="!userComplete && !isLoggedIn">
-            <div
-              class="text-body1"
-              style="white-space: break-spaces"
-              v-html="parse($t('oidc.linkName'))"
-            >
-            </div>
-            <OIDCIssuerComponent
-              :label="$t('oidc.label')"
-              @on-complete="onOnlineAuthorize"
-            >
-              <QTooltip>{{ $t('oidc.tutorialHint') }}</QTooltip>
-            </OIDCIssuerComponent>
-          </template>
-          <template v-else>
-            <p class="text-body1">
-              {{ $t('tutorial.signHint') }}
-            </p>
-            <QForm
-              ref="nameForm"
-              class="q-gutter-md q-mt-md"
-              autocapitalize="off"
-              autocomplete="off"
+          <QForm
+            ref="nameForm"
+            class="q-gutter-md q-mt-md"
+            autocapitalize="off"
+            autocomplete="off"
+            autofocus
+            greedy
+            @submit="onFinish"
+          >
+            <QInput
+              v-model.trim="consumer"
+              :label="$t('consumer.type')"
+              :rules="[(val) => val && val.length > 0]"
+              name="consumer"
+              type="text"
+              autocomplete="on"
               autofocus
-              greedy
-              @submit="onFinish"
+              :error-message="$t('consumer.rules')"
+              clearable
+              outlined
+              no-error-icon
+              @focus="(e) => e.target.scrollIntoView()"
             >
-              <QInput
-                v-model.trim="consumer"
-                :label="$t('consumer.type')"
-                :rules="[(val) => val && val.length > 0]"
-                name="consumer"
-                type="text"
-                autocomplete="on"
-                autofocus
-                :error-message="$t('consumer.rules')"
-                clearable
-                outlined
-                @focus="(e) => e.target.scrollIntoView()"
-              >
-                <template #prepend>
-                  <QIcon name="face" />
-                </template>
-              </QInput>
-              <QInput
-                v-model.trim="email"
-                :label="$t('consumer.email')"
-                name="email"
-                type="email"
-                :rules="['email']"
-                :error-message="$t('consumer.emailRules')"
-                autocomplete="off"
-                clearable
-                outlined
-              >
-                <template #prepend>
-                  <QIcon name="email" />
-                </template>
-              </QInput>
-              <QInput
-                v-model.trim="walletPrivateKey"
-                :label="$t('wallet.label')"
-                :type="isPwd ? 'password' : 'text'"
-                :hint="$t('wallet.hint')"
-                :disable="getMultibase.length > 0"
-                name="wallet"
-                autocomplete="off"
-                outlined
-              >
-                <template #prepend>
-                  <QIcon name="key" />
-                </template>
-                <template #append>
-                  <QIcon
-                    :name="isPwd ? 'visibility_off' : 'visibility'"
-                    class="cursor-pointer q-mr-md"
-                    @click="isPwd = !isPwd"
-                  />
-                  <QBtn
-                    v-if="hasPhantomWallet"
-                    icon="wallet"
-                    label="Phantom"
-                    @click="tryToLoginPhantomWallet"
-                  />
-                </template>
-              </QInput>
-              <QStepperNavigation class="q-pa-md no-margin">
-                <QBtn
-                  color="accent"
-                  type="submit"
-                  square
-                  :outline="!consumerValid"
-                  :disable="!consumerValid"
-                  :label="$t('tutorial.complete')"
-                  :class="{
-                    'full-width': !$q.platform.is.desktop,
-                  }"
-                  :loading="$q.loading.isActive"
-                  icon="login"
-                />
-              </QStepperNavigation>
-            </QForm>
-          </template>
+              <template #prepend>
+                <QIcon name="face" />
+              </template>
+            </QInput>
+            <QInput
+              v-model.trim="email"
+              :label="$t('consumer.email')"
+              name="email"
+              type="email"
+              :rules="['email']"
+              :error-message="$t('consumer.emailRules')"
+              autocomplete="off"
+              lazy-rules
+              clearable
+              no-error-icon
+              outlined
+            >
+              <template #prepend>
+                <QIcon name="email" />
+              </template>
+            </QInput>
+            <QStepperNavigation class="q-pa-md no-margin">
+              <QBtn
+                color="accent"
+                type="submit"
+                square
+                :disable="!consumerValid"
+                :label="$t('tutorial.data.ok')"
+                :class="{
+                  'full-width': !$q.platform.is.desktop,
+                }"
+                :loading="$q.loading.isActive"
+                icon="login"
+              />
+            </QStepperNavigation>
+          </QForm>
         </QStep>
       </QStepper>
     </QScrollArea>
@@ -231,24 +271,24 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, computed, defineAsyncComponent, onMounted } from 'vue'
+import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import {
-  useQuasar,
-  useMeta,
-  QPage,
-  QScrollArea,
-  QStepper,
-  QStep,
-  QStepperNavigation,
-  QBtn,
-  QSpace,
-  QForm,
-  QInput,
-  QIcon,
-  QTooltip,
   exportFile,
   openURL,
+  QBtn,
+  QForm,
+  QIcon,
+  QInput,
+  QPage,
+  QScrollArea,
+  QSpace,
+  QStep,
+  QStepper,
+  QStepperNavigation,
+  QTooltip,
+  useMeta,
+  useQuasar,
 } from 'quasar'
 import { storeToRefs } from 'pinia'
 import useAuthStore from 'stores/auth'
@@ -263,7 +303,7 @@ import { parse } from '../helpers/markdownHelper'
 import { createContractPDF } from '../helpers/pdfHelper'
 import { readFilesPromise } from '../helpers/fileHelper'
 import solidAuth from '../services/authService'
-import { generateKeyPair, exportKeyPair } from '../services/cryptoService'
+import { exportKeyPair, WalletType } from '../services/cryptoService'
 import { keys } from '../services/databaseService'
 import { getSolana } from '../services/phantomWalletService'
 import { ContractTable } from '../types/models'
@@ -284,7 +324,9 @@ enum STEP {
   WELCOME = 1,
   INFO = 2,
   AGREEMENT = 3,
-  FINAL = 4,
+  WALLET = 4,
+  OIDC = 5,
+  FINAL = 6,
 }
 
 const stepParam = 'step'
@@ -298,14 +340,15 @@ function getCurrentStep() {
 }
 
 const scroll = ref<InstanceType<typeof QScrollArea> | null>(null)
+const stepper = ref<InstanceType<typeof QStepper> | null>(null)
 const step = ref(getCurrentStep() ?? STEP.WELCOME)
 const consumer = ref('')
 const email = ref('')
 const walletPrivateKey = ref('')
+const walletPublicKey = ref('')
+const walletType = ref<WalletType>(WalletType.Unknown)
 const isPwd = ref(true)
-const userComplete = ref(false)
 const { isLoggedIn } = storeToRefs(authStore)
-const { getMultibase } = storeToRefs(walletStore)
 const hasPhantomWallet = computed(() => Reflect.has(window, 'phantom'))
 const consumerValid = computed(() => {
   return Boolean(consumer.value.length && email.value.length)
@@ -361,24 +404,15 @@ function setMeta(value: number) {
 async function onOnlineAuthorize(oidcIssuer: string) {
   if (!oidcIssuer) {
     const confirmMessage =
-      'Вы не сможете подписывать договоры цифровой подписью без WebId.\nПродолжить использование в режиме Offline?'
+      'Вы не сможете подписывать договоры цифровой подписью без WebID. Продолжить использование в режиме Offline?'
     const dialog = $q.dialog({
       message: confirmMessage,
       cancel: true,
       persistent: true,
     })
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    dialog.onOk(async () => {
-      userComplete.value = true
-      try {
-        await keys.destroy()
-      } catch (e) {
-        console.error(e)
-        $q.notify({
-          type: 'negative',
-          message: 'Произошла ошибка',
-        })
-      }
+    dialog.onOk(() => {
+      stepper.value.next()
     })
     return
   }
@@ -407,6 +441,26 @@ async function onOnlineAuthorize(oidcIssuer: string) {
   }
 }
 
+async function onWalletComplete() {
+  $q.loading.show()
+  try {
+    await walletStore.setKeypare({
+      privateKey: walletPrivateKey.value,
+      publicKey: walletPublicKey.value,
+      type: walletType.value,
+    })
+    stepper.value.next()
+  } catch (e) {
+    console.error(e)
+    $q.notify({
+      color: 'negative',
+      message: 'Произошла ошибка связки крипто кошелька',
+    })
+  } finally {
+    $q.loading.hide()
+  }
+}
+
 async function tryToLoginPhantomWallet() {
   const solana = getSolana()
   if (!solana) {
@@ -417,46 +471,28 @@ async function tryToLoginPhantomWallet() {
   }
   /* eslint-disable */
   if (solana.isConnected) {
-    walletStore.setPublicKey(solana.publicKey)
+    await walletStore.setKeypare({
+      privateKey: null,
+      publicKey: solana.publicKey.toBase58(),
+      type: WalletType.Phantom,
+    })
   } else {
     const { publicKey } = await solana.connect({ onlyIfTrusted: false })
-    walletStore.setPublicKey(publicKey)
+    await walletStore.setKeypare({
+      privateKey: null,
+      publicKey: publicKey.toBase58(),
+      type: WalletType.Phantom,
+    })
   }
   /* eslint-enable */
-  $q.notify({
-    type: 'positive',
-    message: 'Вы привязали свой кошелек Phantom',
-  })
+  stepper.value.next()
 }
 
 async function onFinish() {
   $q.loading.show()
 
-  try {
-    if (authStore.webId) {
-      if (walletPrivateKey.value) {
-        walletStore.setPrivateKey(walletPrivateKey.value)
-      }
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const keyPair = await generateKeyPair()
-      // если нет доступа к WebID, используем для идентификации fingerprint от keyPair
-      /* eslint-disable @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/ban-ts-comment */
-      // @ts-ignore
-      authStore.webId = 'did:key:' + (keyPair.fingerprint() as string)
-      /* eslint-enable @typescript-eslint/no-unsafe-call */
-    }
-  } catch (e) {
-    $q.notify({
-      type: 'error',
-      color: 'negative',
-      multiLine: true,
-      message: 'Генерация ключей закончилась ошибкой: ' + String(e.message),
-      position: 'center',
-      progress: false,
-    })
-    $q.loading.hide()
-    return
+  if (!authStore.webId) {
+    authStore.webId = 'did:demo_user'
   }
 
   if ($q.platform.is.desktop) {
@@ -502,6 +538,7 @@ async function onFinish() {
     })
     profileStore.consumerName(consumer.value)
     profileStore.consumerEmail(email.value)
+    await profileStore.setAvatar(email.value)
     tutorialStore().tutorialComplete()
     await router.push({
       name: ROUTE_NAMES.FILTER,
@@ -525,6 +562,17 @@ async function onFinish() {
   }
 }
 
+async function onStep(step: number) {
+  await router.push({
+    query: {
+      ...router.currentRoute.value.query,
+      step: step,
+    },
+    replace: true,
+  })
+  scroll.value.setScrollPosition('vertical', step * 30, 100)
+}
+
 setMeta(step.value)
 
 onMounted(() => {
@@ -533,7 +581,12 @@ onMounted(() => {
   // Если пользователь отменил вход через WebId, возвращаем его на страницу подтверждения
   if (query.error === 'access_denied') {
     step.value = STEP.FINAL
-    return
+  }
+  if (isLoggedIn.value) {
+    step.value = STEP.FINAL
+  }
+  if (step.value > STEP.WALLET && walletStore.getMultibase.length === 0) {
+    step.value = STEP.WALLET
   }
 })
 </script>

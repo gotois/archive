@@ -215,6 +215,7 @@ export async function getGravatarURL(email: string) {
       return link
     }
   }
+  return ''
 }
 
 export function formatterContract(contract: ContractTable): FormatContract {

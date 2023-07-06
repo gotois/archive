@@ -105,7 +105,7 @@ export default defineStore('pod', {
     async setResourceRootUrl() {
       const authStore = useAuthStore()
       if (!authStore.webId) {
-        throw new Error('WebId is empty')
+        throw new Error('WebID is empty')
       }
       const podsUrl = await getPodUrlAll(authStore.webId, {
         fetch,
