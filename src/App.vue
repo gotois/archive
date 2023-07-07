@@ -23,6 +23,7 @@ import useAuthStore from 'stores/auth'
 import useProfileStore from 'stores/profile'
 import useWalletStore from 'stores/wallet'
 import { getSolana } from './services/phantomWalletService'
+import { WalletType } from './services/cryptoService'
 import { isTWA } from './helpers/twaHelper'
 import pkg from '../package.json'
 import twaMinifest from '../twa-manifest.json'
@@ -143,17 +144,24 @@ events.on(EVENTS.ERROR, (error) => {
 /* eslint-disable */
 const solana = getSolana()
 if (solana) {
-  solana.on('connect', (publicKey) => {
-    console.warn('connected to phantom account')
-    walletStore.setPublicKey(publicKey)
-  })
+  // todo - поддержать
+  // solana.on('connect', (publicKey) => {
+  //   console.warn('connected to phantom account')
+  //   // walletStore.setPublicKey(publicKey)
+  // })
   solana.on('disconnect', () => {
-    console.warn('disconnect')
-    walletStore.setPublicKey(null)
+    console.warn('Phantom disconnect')
+    $q.notify({
+      type: 'warning',
+      message: 'Wallet disconnected',
+    })
   })
-  solana.on('accountChanged', (publicKey) => {
+  solana.on('accountChanged', async (publicKey: any) => {
     console.warn('accountChanged')
-    walletStore.setPublicKey(publicKey)
+    await walletStore.setKeypare({
+      publicKey: publicKey,
+      type: WalletType.Phantom,
+    })
   })
 }
 /* eslint-enable */

@@ -15,8 +15,17 @@ export interface ContractTable {
 export interface KeysTable {
   id?: number
   publicKey: string
-  privateKey: string
+  privateKey: Uint8Array
   type: string
+  clusterApiUrl?: string
+}
+
+export interface DIDTable {
+  id: string
+  controller: string
+  type: 'Ed25519VerificationKey2020'
+  publicKeyMultibase: string
+  privateKeyMultibase: string
 }
 
 interface ContextCredential<T> {
@@ -89,6 +98,7 @@ interface Person {
 interface ContractIdentifier {
   propertyID: string
   value: string
+  name?: string // здесь может храниться signature от Phantom Solana
 }
 
 interface ContractInstrument {

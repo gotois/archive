@@ -6,21 +6,18 @@ import { uid } from 'quasar'
 // @ts-ignore
 import * as vc from '@digitalbazaar/vc'
 // @ts-ignore
-import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020'
-// @ts-ignore
 import cred from 'credentials-context'
 // @ts-ignore
 import ed25519Ctx from 'ed25519-signature-2020-context'
-import {
-  Ed25519Signature2020,
-  // @ts-ignore
-} from '@digitalbazaar/ed25519-signature-2020'
+// @ts-ignore
+import { Ed25519Signature2020 } from '@digitalbazaar/ed25519-signature-2020'
 // @ts-ignore
 import { JsonLdDocumentLoader } from 'jsonld-document-loader'
-import { keys } from './databaseService'
-import { Credential, ProofCredential } from '../types/models'
 // @ts-ignore
 import * as base68 from 'base58-universal'
+import tweetnacl from 'tweetnacl'
+import { Keypair } from '@solana/web3.js'
+import { Credential, ProofCredential } from '../types/models'
 
 const jdl = new JsonLdDocumentLoader()
 jdl.addStatic(ed25519Ctx.CONTEXT_URL, ed25519Ctx.CONTEXT)
@@ -34,19 +31,20 @@ const documentLoader = jdl.build()
 
 export const decode: (str: string) => Uint8Array = base68.decode
 
-export async function sign({
+export const encode: (x: Uint8Array) => string = base68.encode
+
+export enum WalletType {
+  Phantom = 'Phantom Wallet',
+  Unknown = 'Unknown Wallet', // Solana base58
+}
+
+export function sign({
   credential,
-  verificationMethod = 'https://gotointeractive.com',
+  suite,
 }: {
   credential: Credential
-  verificationMethod?: string
+  suite: Ed25519Signature2020
 }): Promise<ProofCredential> {
-  const keyPair = await keys.last()
-  const suite = new Ed25519Signature2020({
-    key: keyPair,
-  })
-  suite.verificationMethod = verificationMethod
-
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return vc.issue({
     credential,
@@ -76,15 +74,35 @@ export function createAndSignPresentation({
   })
 }
 
-export async function generateKeyPair(): Promise<Ed25519VerificationKey2020> {
-  const newKeyPair = await Ed25519VerificationKey2020.generate({})
-  await keys.add({
-    type: newKeyPair.type,
-    privateKeyMultibase: newKeyPair.privateKeyMultibase,
-    publicKeyMultibase: newKeyPair.publicKeyMultibase,
-  })
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return newKeyPair
+function encodeMessage(message: string) {
+  return new TextEncoder().encode(JSON.stringify(message))
+}
+
+export async function signMessageUsePhantom(message: string) {
+  if (!globalThis?.phantom?.solana) {
+    throw new Error('Solana Phantom Wallet not found')
+  }
+  if (!globalThis?.phantom?.solana?.isConnected) {
+    await globalThis?.phantom?.solana.connect({ onlyIfTrusted: false })
+  }
+  const signed = await globalThis?.phantom?.solana?.signMessage(
+    encodeMessage(message),
+    'utf8',
+  )
+  const signature = encode(signed.signature as Uint8Array)
+  return {
+    signature,
+    publicKey: signed.publicKey.toString(),
+  }
+}
+
+export function signMessageUseSolana(message: string, secretKey: Uint8Array) {
+  const fromWallet = Keypair.fromSecretKey(secretKey)
+  const signature = tweetnacl.sign(encodeMessage(message), fromWallet.secretKey)
+  return {
+    signature: encode(signature),
+    publicKey: fromWallet.publicKey.toString(),
+  }
 }
 
 export async function getHash(str: string, algo = 'SHA-256') {
@@ -93,13 +111,4 @@ export async function getHash(str: string, algo = 'SHA-256') {
   return Array.from(new Uint8Array(hash))
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('')
-}
-
-export async function exportKeyPair() {
-  const keyPair = await keys.last()
-  const exportKeys = keyPair.export({
-    publicKey: true,
-    privateKey: true,
-  })
-  return JSON.stringify(exportKeys, null, 2)
 }

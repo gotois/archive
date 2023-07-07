@@ -1,33 +1,67 @@
 import { defineStore } from 'pinia'
-import { PublicKey, Keypair } from '@solana/web3.js'
+import { Connection, PublicKey, Keypair } from '@solana/web3.js'
 import useAuthStore from 'stores/auth'
 import useProfileStore from 'stores/profile'
-import { decode } from '../services/cryptoService'
+import { keys } from '../services/databaseService'
+import { decode, WalletType } from '../services/cryptoService'
 
 interface Store {
   type: WalletType
-  secretKey: Uint8Array | null
-  publicKey: PublicKey
+  publicKey: PublicKey | null
 }
 
-const keyPair = await keys.last()
+const solanaKeys = await keys.last()
 
 export default defineStore('wallet', {
   state: (): Store => ({
-    type: keyPair?.type ?? WalletType.Unknown,
-    secretKey: keyPair?.secretKey,
-    publicKey: keyPair?.publicKey,
+    type: solanaKeys?.type ?? WalletType.Unknown,
+    publicKey: solanaKeys?.publicKey,
   }),
   actions: {
-    setPrivateKey(privateKey: string) {
-      const key = decode(privateKey)
-      const keypair = Keypair.fromSecretKey(key)
-      this.setPublicKey(keypair.publicKey)
-      this.secretKey = keypair.secretKey
-    },
-    setPublicKey(publicKey: PublicKey) {
-      this.publicKey = publicKey
-      SessionStorage.set('walletPublicKey', publicKey)
+    async setKeypare({
+      privateKey,
+      publicKey,
+      type,
+      clusterApiUrl,
+    }: {
+      privateKey: string
+      publicKey?: string
+      type: WalletType
+      clusterApiUrl?: string
+    }) {
+      switch (type) {
+        case WalletType.Phantom: {
+          this.type = type
+          this.publicKey = new PublicKey(publicKey)
+          await keys.add({
+            type: this.type,
+            privateKey: null,
+            publicKey: this.getMultibase,
+          })
+          break
+        }
+        default: {
+          this.type = type
+          const key = decode(privateKey)
+          const keypair = Keypair.fromSecretKey(key)
+          this.publicKey = keypair.publicKey
+          const connection = new Connection(clusterApiUrl, {
+            commitment: 'confirmed',
+            confirmTransactionInitialTimeout: 60000,
+          })
+          const getBalance = await connection.getBalance(keypair.publicKey)
+          if (getBalance === 0) {
+            throw 'Cannot connect unbalanced key'
+          }
+          await keys.add({
+            type: this.type,
+            privateKey: keypair.secretKey,
+            publicKey: this.getMultibase,
+            clusterApiUrl: clusterApiUrl,
+          })
+          break
+        }
+      }
     },
   },
   getters: {
@@ -41,7 +75,7 @@ export default defineStore('wallet', {
       }
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      return state.publicKey ?? ''
+      return state.publicKey?.toBase58() ?? ''
     },
     getWalletLD(state) {
       const authStore = useAuthStore()
@@ -49,7 +83,7 @@ export default defineStore('wallet', {
 
       return {
         '@context': ['https://w3id.org/wallet/v1'],
-        'id': 'did:example', // todo заменить идентификатор на адрес хранения кошелька, который выгружен, например на Solid сервере
+        'id': profileStore.did,
         'type': 'SolanaAddress',
         'multibase': String(state.getMultibase),
         'name': String(state.type),

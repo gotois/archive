@@ -178,6 +178,7 @@ export function formatterLDContract(
   credentialSubject.set('identifier', {
     propertyID: identifier.propertyID,
     value: identifier.value,
+    name: identifier.name,
   })
   if (endTime) {
     credentialSubject.set('endTime', endTime.toJSON())

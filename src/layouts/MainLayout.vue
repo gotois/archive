@@ -240,8 +240,8 @@
                 </template>
               </QInput>
               <QField
-                v-if="getWalletLD.multibase"
-                label="Wallet Public Key"
+                v-if="getWalletLD.id"
+                label="DID"
                 color="secondary"
                 class="q-pb-md full-width"
                 outlined
@@ -252,14 +252,14 @@
                 </template>
                 <template #control>
                   <div class="self-center no-outline ellipsis">
-                    {{ getWalletLD.multibase }}
+                    {{ getWalletLD.id }}
                   </div>
                 </template>
                 <template #append>
                   <QIcon
                     name="content_copy"
                     class="cursor-pointer"
-                    @click="copyToClipboard(getWalletLD.multibase)"
+                    @click="copyToClipboard(getWalletLD.id)"
                   />
                 </template>
               </QField>
@@ -509,7 +509,6 @@ import useWalletStore from 'stores/wallet'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
 import { indexAllDocuments } from '../services/searchService'
 import { isTWA } from '../helpers/twaHelper'
-import { exportKeyPair } from '../services/cryptoService'
 import { ROUTE_NAMES } from '../router/routes'
 
 const DatabaseRemoveComponent = defineAsyncComponent(

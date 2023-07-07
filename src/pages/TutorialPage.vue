@@ -155,16 +155,106 @@
               :label="$t('tutorial.wallet.ok')"
               @click="tryToLoginPhantomWallet"
             />
-            <QBtn
-              v-else
-              :disable="walletPrivateKey.length === 0"
-              color="accent"
-              :label="$t('tutorial.wallet.ok')"
-              :class="{
-                'full-width': !$q.platform.is.desktop,
-              }"
-              @click="onWalletComplete"
-            />
+            <template v-else>
+              <QSelect
+                v-model="solanaClusterApiURL"
+                :options="solanaClusters"
+                :prefix="prefix"
+                label="Solana Cluster"
+                popup-content-class="q-pt-sm"
+                new-value-mode="add-unique"
+                input-debounce="50"
+                name="contractType"
+                autocomplete="on"
+                spellcheck="false"
+                color="secondary"
+                :hide-bottom-space="!$q.platform.is.desktop"
+                use-input
+                hide-selected
+                fill-input
+                rounded
+                outlined
+                square
+                @update:modelValue="setSolanaClusterApiUrl"
+                @newValue="setSolanaClusterApiUrl"
+              >
+                <template #prepend>
+                  <QIcon name="web" />
+                </template>
+              </QSelect>
+              <QBtn
+                :disable="
+                  walletPrivateKey.length === 0 ||
+                  solanaClusterApiURL.length === 0
+                "
+                color="accent"
+                :label="$t('tutorial.wallet.ok')"
+                class="q-mt-md"
+                :class="{
+                  'full-width': !$q.platform.is.desktop,
+                }"
+                @click="onWalletComplete"
+              />
+            </template>
+          </QStepperNavigation>
+        </QStep>
+        <QStep
+          :name="STEP.CRYPTO"
+          :title="$t('tutorial.crypto.title')"
+          :caption="$t('tutorial.crypto.caption')"
+          icon="article"
+          done-color="positive"
+          :done="step > STEP.CRYPTO"
+        >
+          <p v-show="$q.platform.is.desktop" class="text-h4">
+            {{ $t('tutorial.crypto.title') }}
+          </p>
+          <div
+            class="text-body1"
+            style="white-space: break-spaces"
+            v-html="parse($t('tutorial.crypto.body'))"
+          >
+          </div>
+          <QInput v-if="did" :model-value="did" readonly />
+          <QStepperNavigation>
+            <template v-if="!did">
+              <QBtn
+                color="accent"
+                label="Сгенерировать ключ"
+                :class="{
+                  'full-width': !$q.platform.is.desktop,
+                }"
+                @click="onGenerateKeyPair"
+              >
+                <QTooltip>Сгенерировать новый ключ</QTooltip>
+              </QBtn>
+              <QFile
+                v-model="keyPairFile"
+                color="accent"
+                filled
+                accept=".json"
+                label="Импортировать файл ключа"
+                :class="{
+                  'full-width': !$q.platform.is.desktop,
+                }"
+                @update:model-value="onLoadKeyPairFile"
+              >
+                <template #prepend>
+                  <QIcon name="cloud_upload" @click.stop.prevent />
+                </template>
+                <QTooltip>Импортировать существующий ключ</QTooltip>
+              </QFile>
+            </template>
+            <template v-else>
+              <QBtn
+                color="secondary"
+                :label="$t('tutorial.crypto.ok')"
+                :class="{
+                  'full-width': !$q.platform.is.desktop,
+                }"
+                @click="exportKeyPair"
+              />
+            </template>
           </QStepperNavigation>
         </QStep>
         <QStep
@@ -279,9 +369,11 @@ import {
   QBtn,
   QForm,
   QIcon,
+  QSelect,
   QInput,
   QPage,
   QScrollArea,
+  QFile,
   QSpace,
   QStep,
   QStepper,
@@ -297,16 +389,17 @@ import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
 import usePodStore from 'stores/pod'
 import useWalletStore from 'stores/wallet'
+import { clusterApiUrl } from '@solana/web3.js'
 import pkg from '../../package.json'
 import { ROUTE_NAMES } from '../router/routes'
 import { parse } from '../helpers/markdownHelper'
 import { createContractPDF } from '../helpers/pdfHelper'
 import { readFilesPromise } from '../helpers/fileHelper'
 import solidAuth from '../services/authService'
-import { exportKeyPair, WalletType } from '../services/cryptoService'
-import { keys } from '../services/databaseService'
+import { WalletType } from '../services/cryptoService'
+import { keyPair } from '../services/databaseService'
 import { getSolana } from '../services/phantomWalletService'
-import { ContractTable } from '../types/models'
+import { ContractTable, DIDTable } from '../types/models'
 
 const OIDCIssuerComponent = defineAsyncComponent(
   () => import('components/OIDCIssuerComponent.vue'),
@@ -325,8 +418,9 @@ enum STEP {
   INFO = 2,
   AGREEMENT = 3,
   WALLET = 4,
-  OIDC = 5,
-  FINAL = 6,
+  CRYPTO = 5,
+  OIDC = 6,
+  FINAL = 7,
 }
 
 const stepParam = 'step'
@@ -344,8 +438,21 @@ const stepper = ref<InstanceType<typeof QStepper> | null>(null)
 const step = ref(getCurrentStep() ?? STEP.WELCOME)
 const consumer = ref('')
 const email = ref('')
+const prefix = ref('https://')
 const walletPrivateKey = ref('')
+const solanaClusterApiURL = ref('')
+const solanaClusters = ref(
+  [
+    clusterApiUrl('devnet'),
+    clusterApiUrl('testnet'),
+    clusterApiUrl('mainnet-beta'),
+  ].map((url) => {
+    return url.replace(prefix.value, '').replace(/\/$/, '')
+  }),
+)
 const walletPublicKey = ref('')
+const did = ref('')
+const keyPairFile = ref<File>(null)
 const walletType = ref<WalletType>(WalletType.Unknown)
 const isPwd = ref(true)
 const { isLoggedIn } = storeToRefs(authStore)
@@ -404,7 +511,7 @@ function setMeta(value: number) {
 async function onOnlineAuthorize(oidcIssuer: string) {
   if (!oidcIssuer) {
     const confirmMessage =
-      'Вы не сможете подписывать договоры цифровой подписью без WebID. Продолжить использование в режиме Offline?'
+      'Ваши договоры не будут сохраняться на сервере SOLiD. Вы не сможете создавать токены ваших документов. Продолжить?'
     const dialog = $q.dialog({
       message: confirmMessage,
       cancel: true,
@@ -441,6 +548,10 @@ async function onOnlineAuthorize(oidcIssuer: string) {
   }
 }
 
+function setSolanaClusterApiUrl(value: string) {
+  solanaClusterApiURL.value = value
+}
+
 async function onWalletComplete() {
   $q.loading.show()
   try {
@@ -448,13 +559,14 @@ async function onWalletComplete() {
       privateKey: walletPrivateKey.value,
       publicKey: walletPublicKey.value,
       type: walletType.value,
+      clusterApiUrl: prefix.value + solanaClusterApiURL.value,
     })
     stepper.value.next()
   } catch (e) {
     console.error(e)
     $q.notify({
       color: 'negative',
-      message: 'Произошла ошибка связки крипто кошелька',
+      message: 'Произошла ошибка привязки крипто кошелька',
     })
   } finally {
     $q.loading.hide()
@@ -472,14 +584,12 @@ async function tryToLoginPhantomWallet() {
   /* eslint-disable */
   if (solana.isConnected) {
     await walletStore.setKeypare({
-      privateKey: null,
       publicKey: solana.publicKey.toBase58(),
       type: WalletType.Phantom,
     })
   } else {
     const { publicKey } = await solana.connect({ onlyIfTrusted: false })
     await walletStore.setKeypare({
-      privateKey: null,
       publicKey: publicKey.toBase58(),
       type: WalletType.Phantom,
     })
@@ -488,15 +598,54 @@ async function tryToLoginPhantomWallet() {
   stepper.value.next()
 }
 
-async function onFinish() {
-  $q.loading.show()
+function onLoadKeyPairFile(file: File) {
+  const reader = new FileReader()
+  reader.addEventListener(
+    'load',
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    async () => {
+      try {
+        const key = JSON.parse(reader.result as string) as DIDTable
+        await keyPair.setKeyPair({
+          id: key.id,
+          controller: key.controller,
+          type: key.type,
+          publicKeyMultibase: key.publicKeyMultibase,
+          privateKeyMultibase: key.privateKeyMultibase,
+        })
+        did.value = key.id
+      } catch (error) {
+        console.error(error)
+        $q.notify({
+          type: 'negative',
+          message: 'Произошла ошибка чтения файла',
+        })
+      }
+    },
+    false,
+  )
+  reader.readAsText(file)
+}
 
-  if (!authStore.webId) {
-    authStore.webId = 'did:demo_user'
-  }
+async function onGenerateKeyPair() {
+  const resolver = `did:sol:${walletStore.publicKey.toString()}`
+  const key = await keyPair.generateNewKeyPair(resolver)
+  await keyPair.setKeyPair(key)
+  did.value = key.id
+}
 
-  if ($q.platform.is.desktop) {
-    const keysJSON = await exportKeyPair()
+function exportKeyPair() {
+  const dialog = $q.dialog({
+    message: 'Вы хотите сохранить файл ключа локально?',
+    cancel: true,
+    persistent: true,
+  })
+  dialog.onDismiss(() => {
+    stepper.value.next()
+  })
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  dialog.onOk(async () => {
+    const keysJSON = await keyPair.prepareKeyPair()
     if (keysJSON) {
       const status = exportFile('keys.json', keysJSON)
       if (status) {
@@ -507,10 +656,18 @@ async function onFinish() {
       } else {
         $q.notify({
           type: 'warning',
-          message: 'Ваш ключ сохранен в вашем браузере.',
+          message: 'Ваш ключ не удалось сохранить локально на устройстве.',
         })
       }
     }
+  })
+}
+
+async function onFinish() {
+  $q.loading.show()
+
+  if (!authStore.webId) {
+    authStore.webId = 'did:demo_user'
   }
 
   try {
@@ -538,6 +695,7 @@ async function onFinish() {
     })
     profileStore.consumerName(consumer.value)
     profileStore.consumerEmail(email.value)
+    profileStore.consumerDID(did.value)
     await profileStore.setAvatar(email.value)
     tutorialStore().tutorialComplete()
     await router.push({
@@ -585,7 +743,7 @@ onMounted(() => {
   if (isLoggedIn.value) {
     step.value = STEP.FINAL
   }
-  if (step.value > STEP.WALLET && walletStore.getMultibase.length === 0) {
+  if (step.value > STEP.WALLET && walletStore.getMultibase?.length === 0) {
     step.value = STEP.WALLET
   }
 })

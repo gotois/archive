@@ -3,39 +3,109 @@ import { Platform } from 'quasar'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020'
-import recommendationContractTypes from '../services/recommendationContractEnum'
-import { ContractTable, KeysTable, ContractData } from '../types/models'
+import { PublicKey } from '@solana/web3.js'
+import recommendationContractTypes from './recommendationContractEnum'
+import {
+  ContractTable,
+  KeysTable,
+  DIDTable,
+  ContractData,
+} from '../types/models'
+import { WalletType } from './cryptoService'
 
-class KeysDatabase extends Dexie {
-  public keys: Dexie.Table<KeysTable, number> // id is number in this case
+class KeyPairDatabase extends Dexie {
+  public keyPair: Dexie.Table<DIDTable, number>
 
   public constructor() {
-    super('KeysDatabase')
+    super('KeyPairDatabase')
 
     if (!Platform.has.webStorage) {
       throw new Error('webStorage not supported')
     }
 
     this.version(1).stores({
-      keys: '++id, publicKey, privateKey, type',
+      keyPair: 'id, controller, type, publicKeyMultibase, privateKeyMultibase',
+    })
+    this.keyPair = this.table('keyPair')
+  }
+
+  async prepareKeyPair() {
+    const keys = await this.last()
+    const exportKeys = keys.export({
+      publicKey: true,
+      privateKey: true,
+    })
+    return JSON.stringify(exportKeys, null, 2)
+  }
+
+  public async last() {
+    const keysTable = await this.keyPair.reverse().last()
+    if (!keysTable) {
+      throw new Error('KeyPair not found')
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+    return Ed25519VerificationKey2020.from(keysTable) as DIDTable
+  }
+
+  generateNewKeyPair(controller: string) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+    return Ed25519VerificationKey2020.generate({
+      controller,
+    }) as Promise<DIDTable>
+  }
+  async setKeyPair(keyPair: DIDTable) {
+    await this.destroy()
+    return this.keyPair.add(keyPair)
+  }
+
+  public destroy() {
+    return this.keyPair.clear()
+  }
+}
+
+class SolanaKeysDatabase extends Dexie {
+  public keys: Dexie.Table<KeysTable, number> // id is number in this case
+
+  public constructor() {
+    super('SolanaKeysDatabase')
+
+    if (!Platform.has.webStorage) {
+      throw new Error('webStorage not supported')
+    }
+
+    this.version(1).stores({
+      keys: '++id, publicKey, privateKey, type, clusterApiUrl',
     })
     this.keys = this.table('keys')
   }
 
-  public async last() {
-    const keysTable = await keys.keys.reverse().last()
+  public async last(): Promise<{
+    type: WalletType
+    publicKey: PublicKey
+    secretKey?: Uint8Array
+    clusterApiUrl?: string
+  } | null> {
+    const keysTable = await this.keys.reverse().last()
     if (!keysTable) {
-      throw new Error('KeyPair not found')
+      return null
     }
     switch (keysTable.type) {
-      case 'Ed25519VerificationKey2020': {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-return
-        return Ed25519VerificationKey2020.from({
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          publicKeyMultibase: keysTable.publicKey,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          privateKeyMultibase: keysTable.privateKey,
-        })
+      case WalletType.Phantom: {
+        return {
+          type: WalletType.Phantom,
+          publicKey: new PublicKey(keysTable.publicKey),
+        }
+      }
+      case WalletType.Unknown: {
+        if (!keysTable.privateKey) {
+          throw new Error('Error privateKey')
+        }
+        return {
+          type: WalletType.Unknown,
+          secretKey: keysTable.privateKey,
+          publicKey: new PublicKey(keysTable.publicKey),
+          clusterApiUrl: keysTable.clusterApiUrl,
+        }
       }
       default: {
         throw new Error(`Unknown type: ${String(keysTable.type)}`)
@@ -43,16 +113,9 @@ class KeysDatabase extends Dexie {
     }
   }
 
-  public add(keyPair: {
-    type: string
-    privateKeyMultibase: string
-    publicKeyMultibase: string
-  }) {
-    return this.keys.add({
-      publicKey: keyPair.publicKeyMultibase,
-      privateKey: keyPair.privateKeyMultibase,
-      type: keyPair.type,
-    })
+  public async add(keyPair: KeysTable) {
+    await this.destroy()
+    return this.keys.add(keyPair)
   }
 
   public destroy() {
@@ -130,4 +193,5 @@ class ContractDatabase extends Dexie {
 }
 
 export const db = new ContractDatabase()
-export const keys = new KeysDatabase()
+export const keys = new SolanaKeysDatabase()
+export const keyPair = new KeyPairDatabase()
