@@ -16,8 +16,11 @@ import {
 } from '@inrupt/solid-client'
 import { RDF, FOAF, SCHEMA_INRUPT } from '@inrupt/vocab-common-rdf'
 import useAuthStore from 'stores/auth'
-import { ProofCredential, CredentialTypes } from '../helpers/schemaHelper'
-import { FormatContract } from '../types/models'
+import {
+  ProofCredential,
+  CredentialTypes,
+  FormatContract,
+} from '../types/models'
 import pkg from '../../package.json'
 
 const { name } = pkg

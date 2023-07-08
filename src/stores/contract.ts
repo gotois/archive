@@ -261,7 +261,8 @@ export default defineStore('contracts', {
       usePod: boolean
     }) {
       // Step 1: JS
-      const id = contract.identifier.find(({ name }) => name === 'Dexie').value
+      const id = contract.identifier.find(({ name }) => name === 'Dexie')
+        .value as number
       const i = this.contracts.map((item) => item.id).indexOf(id)
       this.contracts.splice(i, 1)
       this.removeContractName(contract.instrument.name)
@@ -277,10 +278,10 @@ export default defineStore('contracts', {
         return
       }
       // Step 3: Solid Pod
-      if (!contractData.sameAs) {
+      if (!contract.sameAs) {
         return Promise.reject('Not exist sameAs')
       }
-      return usePodStore().removeFromPod(contractData.sameAs)
+      return usePodStore().removeFromPod(contract.sameAs)
     },
     async filterFromContracts(query: string) {
       if (!query) {

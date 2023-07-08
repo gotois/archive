@@ -120,6 +120,12 @@ interface BaseSchemaType {
   '@type': string
 }
 
+interface ImageType {
+  '@type': string
+  'contentUrl': string
+  'encodingFormat': string
+}
+
 export interface FormatContract extends BaseSchemaType {
   '@context': string
   'sameAs'?: string
@@ -129,11 +135,7 @@ export interface FormatContract extends BaseSchemaType {
   'identifier': FormatContractIdentifier[]
   'startTime': Date
   'endTime'?: Date
-  'object': {
-    '@type': string
-    'contentUrl': string
-    'encodingFormat': string
-  }[]
+  'object': ImageType[]
 }
 export interface FormatContractAgent extends BaseSchemaType, Person {}
 export interface FormatContractParticipant extends BaseSchemaType, Person {}
@@ -147,8 +149,9 @@ export interface CredentialSubject {
   identifier: ContractIdentifier[]
   startTime: Date
   endTime?: Date
-  object: string[]
+  object: ImageType[]
   url: string
+  sameAs?: string
 }
 
 export type ContractData = {

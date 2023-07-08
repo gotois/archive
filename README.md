@@ -1,5 +1,5 @@
 # Мои договоры
-> Контролируемая Вами персональная база договоров.
+> Персональная безопасная база договоров.
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/f467de0f-4773-4f8a-ac3b-5d4aeca0ea83/deploy-status)](https://app.netlify.com/sites/my-archive/deploys)
 [![Website](https://img.shields.io/website/https/archive.gotointeractive.com.svg?link=https://archive.gotointeractive.com)](https://archive.gotointeractive.com)
@@ -7,30 +7,34 @@
 [![Android](https://img.shields.io/badge/Android-Install-green?style=for-the-badge&link=https://play.google.com/store/apps/details?id=ru.baskovsky.archive.twa)](https://play.google.com/store/apps/details?id=ru.baskovsky.archive.twa)
 [![Документация](https://img.shields.io/badge/%D0%94%D0%BE%D0%BA%D1%83%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D1%86%D0%B8%D1%8F-gray?style=for-the-badge&link=https://baskovsky.ru/2021/09/my-archive/)](https://baskovsky.ru/2021/09/my-archive/)
 
-## Demo
-
-[Запустить PWA](https://archive.gotointeractive.com/)
-
 ## Описание продукта
 
-- Надоело хранить свои договоры в специальных папочках на компьютере?
 - Боитесь хранить свои договоры в неконтролиуемых облачных сервисах, вроде DropBox, Yandex Disk, Google Drive, etc?
-- Трудно найти "тот самый договор"?
+- Надоело хранить свои договоры в специальных папочках на компьютере?
+- Трудно найти потерявшийся документ?
 
 > Сервис "Мои договоры" решил все эти проблемы!
 
-- Храните свои договоры всегда под рукой в своем любимом браузере.
-- Контролируйте их хранение самостоятельно.
-- Реактивный клиент для удобного семантического поиска.
+- Надежное хранение и контроль договоров на вашем сервере или полностью офлайн.
+- Легкий доступ к личным договорам: всегда под рукой в вашем любимом браузере.
+- Удобный клиент и поиск.
+
+## Попробовать демонстрацию
+
+[Запустить PWA](https://archive.gotointeractive.com/)
+
+---
 
 ## Технические возможности
 Сервис "Мои договоры" использует стандарты PWA и LinkedData, предоставляя клиентам следующие возможности:
 
 - `Адаптивный дизайн` для мобильной, таблет и десктопной версии;
 - Доступ к договорам в режиме `Offline`;
+- Отсутствие контролируемого сервера;
 - Надежное хранилище договоров внутри `IndexDB`;
 - `Шифрование` передачи данных;
 - Цифровая подпись с помощью `Linked Data Proofs`;
+- Поддержка `Web3 Solana`;
 - `Полнотекстовый поиск` договоров;
 - Поддержка документов в популярных форматах `PDF, PNG, JPG`;
 - Генерация договора в формате `PDF`;
@@ -39,28 +43,27 @@
 - Поддержка Импорта/Экспорта базы данных в файл формате `zip`;
 - Загрузка/Выгрузка базы данных через `SOLiD сервер` на собственный `Pod`;
 
----
+## Самостоятельная установка
 
-## Самостоятельная установка для разработчика
-
-## Установка пакетов
+### Установка
 ```bash
+git clone git@github.com:gotois/archive.git && cd archive
 npm i
 ```
 
-## Cборка и запуск PWA
+### Cборка и запуск PWA
 
-### Запуск в режиме разработки (hot-code reloading, error reporting, etc.)
+#### Запуск в режиме разработки (hot-code reloading, error reporting, etc.)
 ```bash
 npm run dev
 ```
 
-### Создание сборки для продакшена
+#### Создание сборки для продакшена
 ```bash
 npm run build
 ```
 
-## Сборка и запуск TWA
+### Сборка и запуск TWA
 
 - Установите в twa-manifest.json свой signingKey:
 ```json5

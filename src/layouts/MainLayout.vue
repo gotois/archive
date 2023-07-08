@@ -509,6 +509,7 @@ import useWalletStore from 'stores/wallet'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
 import { indexAllDocuments } from '../services/searchService'
 import { isTWA } from '../helpers/twaHelper'
+import { keyPair } from '../services/databaseService'
 import { ROUTE_NAMES } from '../router/routes'
 
 const DatabaseRemoveComponent = defineAsyncComponent(
@@ -571,7 +572,7 @@ function onArchiveRoute(e: Event) {
 }
 
 async function onExportKeychain() {
-  const keysJSON = await exportKeyPair()
+  const keysJSON = await keyPair.prepareKeyPair()
   if (keysJSON) {
     exportFile('keys.json', keysJSON)
   }

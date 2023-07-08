@@ -97,7 +97,10 @@
             <QIcon
               name="perm_media"
               size="240px"
-              class="absolute-center"
+              class="text-center full-width"
+              :style="{
+                height: '400px',
+              }"
               :class="{
                 grabbing: item.object.length > 1,
               }"

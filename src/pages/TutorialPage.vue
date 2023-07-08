@@ -175,8 +175,8 @@
                 rounded
                 outlined
                 square
-                @update:modelValue="setSolanaClusterApiUrl"
-                @newValue="setSolanaClusterApiUrl"
+                @update:model-value="setSolanaClusterApiUrl"
+                @new-value="setSolanaClusterApiUrl"
               >
                 <template #prepend>
                   <QIcon name="web" />
