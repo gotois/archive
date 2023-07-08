@@ -154,6 +154,18 @@ export interface CredentialSubject {
   sameAs?: string
 }
 
+export interface MyContract {
+  agent_email: string
+  agent_name: string
+  endTime?: Date | null
+  images: string[]
+  instrument_description?: string
+  instrument_name: string
+  participant_name: string
+  participant_email: string
+  startTime: Date
+}
+
 export type ContractData = {
   count: number
   recommendation: boolean

@@ -21,6 +21,7 @@ import {
   Credential,
   BaseContext,
   CredentialSubject,
+  MyContract,
 } from '../types/models'
 
 interface Store {
@@ -47,7 +48,7 @@ function getAgentType(name: string) {
   return orgNames.includes(name.toUpperCase()) ? 'Organization' : 'Person'
 }
 
-function createContractLD(contractData: ContractTable) {
+function createContractLD(contractData: MyContract) {
   const context = new Map()
   context.set('OrganizeAction', BaseContext.schemaOrg + '/OrganizeAction')
   context.set('agent', BaseContext.schemaOrg + '/agent')
@@ -91,7 +92,7 @@ function createContractLD(contractData: ContractTable) {
   if (contractData.images) {
     credentialSubject.set(
       'object',
-      contractData.images.map((contentUrl) => ({
+      contractData.images.map((contentUrl: string) => ({
         encodingFormat: getMimeType(contentUrl),
         contentUrl: contentUrl,
       })),
@@ -142,7 +143,7 @@ export default defineStore('contracts', {
       contractData,
       usePod = false,
     }: {
-      contractData: ContractTable
+      contractData: MyContract
       usePod: boolean
     }) {
       const walletStore = useWalletStore()
@@ -151,8 +152,12 @@ export default defineStore('contracts', {
       const id = uid()
       const jsldContract = createContractLD(contractData)
 
-      jsldContract.id =
-        'did:gic:' + walletStore.publicKey.toString() + '?contract=' + id
+      const idName = 'Contract'
+      jsldContract.credentialSubject.identifier.push({
+        value: id,
+        name: idName,
+      })
+      jsldContract.id = `did:gic:${walletStore.publicKey.toString()}?${idName.toLowerCase()}=${id}`
       jsldContract.credentialSubject.url =
         'https://archive.gotointeractive.com/' + id // fixme поддержать открытие договора в браузере через ссылку по его id
 

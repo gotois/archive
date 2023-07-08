@@ -206,7 +206,7 @@
         v-model="files"
         :label="$t('files.type')"
         :counter="!!files.length"
-        accept="image/*, .pdf"
+        accept="image/png, image/jpeg, .pdf"
         color="secondary"
         :hide-hint="!$q.platform.is.desktop"
         :hide-bottom-space="!$q.platform.is.desktop"
@@ -283,7 +283,6 @@ import { storeToRefs } from 'pinia'
 import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
-import { ContractTable } from '../types/models'
 import { readFilesPromise } from '../helpers/fileHelper'
 import { formatDate } from '../helpers/dateHelper'
 
@@ -452,7 +451,7 @@ async function onSubmit() {
   try {
     const images = await readFilesPromise(files.value)
     const person = profileStore.getPersonLD
-    const newContract: ContractTable = {
+    const newContract = {
       agent_name: person.name,
       agent_email: person.email,
       participant_name: customer.value,

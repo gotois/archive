@@ -226,7 +226,7 @@ async function onPaginate(page: number) {
 async function removeContract(item: FormatContract) {
   try {
     await contractStore.removeContract({
-      contractData: item,
+      contract: item,
       usePod: isLoggedIn.value,
     })
     $q.notify({

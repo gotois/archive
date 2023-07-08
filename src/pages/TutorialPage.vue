@@ -399,7 +399,7 @@ import solidAuth from '../services/authService'
 import { WalletType } from '../services/cryptoService'
 import { keyPair } from '../services/databaseService'
 import { getSolana } from '../services/phantomWalletService'
-import { ContractTable, DIDTable } from '../types/models'
+import { DIDTable } from '../types/models'
 
 const OIDCIssuerComponent = defineAsyncComponent(
   () => import('components/OIDCIssuerComponent.vue'),
@@ -681,7 +681,7 @@ async function onFinish() {
     const html = parse(md)
     const pdfFile = await createContractPDF(html)
     const contractPDF = await readFilesPromise([pdfFile])
-    const newContract: ContractTable = {
+    const newContract = {
       agent_name: consumer.value,
       agent_email: email.value,
       participant_name: pkg.author.name,

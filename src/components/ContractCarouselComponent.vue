@@ -15,7 +15,9 @@
       <div class="q-pa-md non-selectable">
         <QIcon
           v-if="
-            item.object[navProps.index].encodingFormat === 'application/pdf'
+            ['application/pdf'].includes(
+              item.object[navProps.index].encodingFormat,
+            )
           "
           name="picture_as_pdf"
           size="64px"

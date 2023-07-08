@@ -13,7 +13,12 @@ async function resizeImageA4(dataUrl: string) {
 
   const img = new Image()
   img.src = dataUrl
-  await img.decode()
+  try {
+    await img.decode()
+  } catch (error) {
+    console.error('Cannot decode the image')
+    throw error
+  }
   let { width, height } = img
 
   // resizing logic portrait
@@ -63,7 +68,7 @@ export async function createPDF(object: FormatContract) {
     author: object.agent.name,
     creator: productName,
   })
-  const files = []
+  const files: File[] = []
   let docLength = 0
 
   for (const { contentUrl, encodingFormat } of object.object) {
