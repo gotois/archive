@@ -22,7 +22,7 @@ export default defineStore('auth', {
     openIdSessionId: '',
     openIdExpirationDate: null,
     openIdIsLoggedIn: false,
-    webId: getDefaultSession().info.webId,
+    webId: getDefaultSession().info.webId ?? 'did:gic:demo',
   }),
   actions: {
     async setCode(value: string) {

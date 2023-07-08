@@ -12,17 +12,12 @@ import {
   getThingAll,
   saveSolidDatasetAt,
   setThing,
+  createThing,
 } from '@inrupt/solid-client'
-import { FOAF, SCHEMA_INRUPT } from '@inrupt/vocab-common-rdf'
+import { RDF, FOAF, SCHEMA_INRUPT } from '@inrupt/vocab-common-rdf'
 import useAuthStore from 'stores/auth'
-import { sign } from '../services/cryptoService'
-import {
-  formatterContract,
-  formatterLDContract,
-  formatterDatasetContract,
-} from '../helpers/schemaHelper'
-import { db } from '../services/databaseService'
-import { ContractTable, FormatContract } from '../types/models'
+import { ProofCredential, CredentialTypes } from '../helpers/schemaHelper'
+import { FormatContract } from '../types/models'
 import pkg from '../../package.json'
 
 const { name } = pkg
@@ -70,6 +65,75 @@ export default defineStore('pod', {
         })
       }
     },
+
+    formatterDatasetContract(signedVC: ProofCredential) {
+      const resourceUrl =
+        this.getResourceBaseUrl + signedVC.proof.created + '.ttl'
+      const types = signedVC['@context'][1] as unknown as CredentialTypes
+      const item = signedVC.credentialSubject
+
+      const agent = buildThing(createThing({ url: resourceUrl + '#agent' }))
+        .addStringNoLocale(SCHEMA_INRUPT.name, item.agent.name)
+        .addUrl(RDF.type, types.agent)
+      const endTime = buildThing(createThing({ url: resourceUrl + '#endTime' }))
+      if (item.endTime) {
+        endTime
+          .addDate(SCHEMA_INRUPT.endTime, new Date(item.endTime))
+          .addUrl(RDF.type, types.endTime)
+      }
+      const identifier = buildThing(
+        createThing({ url: resourceUrl + '#identifier' }),
+      )
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+      item.identifier.forEach((ident) => {
+        identifier
+          .addStringNoLocale(SCHEMA_INRUPT.name, ident.name)
+          .addStringNoLocale(SCHEMA_INRUPT.productID, ident.propertyID)
+          .addStringNoLocale(SCHEMA_INRUPT.value, ident.value)
+      })
+      const instrument = buildThing(
+        createThing({ url: resourceUrl + '#instrument' }),
+      )
+        .addStringNoLocale(
+          SCHEMA_INRUPT.description,
+          item.instrument.description,
+        )
+        .addStringNoLocale(SCHEMA_INRUPT.name, item.instrument.name)
+        .addUrl(RDF.type, types.instrument)
+      const objectThing = buildThing(
+        createThing({ url: resourceUrl + '#object' }),
+      )
+      item.object.forEach((object) => {
+        objectThing.addStringNoLocale(
+          SCHEMA_INRUPT.identifier,
+          object.encodingFormat,
+        )
+        objectThing.addUrl(SCHEMA_INRUPT.image, object.contentUrl)
+      })
+      objectThing.addUrl(RDF.type, types.object)
+      const participant = buildThing(
+        createThing({ url: resourceUrl + '#participant' }),
+      )
+        .addStringNoLocale(SCHEMA_INRUPT.name, item.participant.name)
+        .addUrl(RDF.type, types.participant)
+      const startTime = buildThing(
+        createThing({ url: resourceUrl + '#startTime' }),
+      )
+        .addDate(SCHEMA_INRUPT.startTime, new Date(item.startTime))
+        .addUrl(RDF.type, types.startTime)
+
+      let dataset = createSolidDataset()
+      dataset = setThing(dataset, agent.build())
+      dataset = setThing(dataset, endTime.build())
+      dataset = setThing(dataset, identifier.build())
+      dataset = setThing(dataset, instrument.build())
+      dataset = setThing(dataset, participant.build())
+      dataset = setThing(dataset, startTime.build())
+      dataset = setThing(dataset, objectThing.build())
+
+      return dataset
+    },
+
     removeFromPod(url: string) {
       const separator = '.'
       const oidcIssuer: string = this.getOidcIssuer
@@ -153,35 +217,17 @@ export default defineStore('pod', {
         fetch,
       })
     },
-    async uploadContract(contractData: ContractTable) {
-      const authStore = useAuthStore()
-      // Step 1: JS
-      const resourceName =
-        this.getResourceBaseUrl + contractData.startTime.toJSON() + '.ttl'
-      contractData.resource_url = resourceName
-      if (contractData.id) {
-        await db.contracts.where('id').equals(contractData.id).modify({
-          resource_url: contractData.resource_url,
-        })
-      }
-
-      // Step 2: JSON-LD
-      const jsldContract = formatterContract(contractData)
-
-      // Step 3: Signed LD
-      const credential = formatterLDContract(authStore.webId, jsldContract)
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const signedVC = await sign({
-        credential: credential,
-      })
-      const solidDatasetContract = formatterDatasetContract(
-        resourceName,
+    async uploadContract(signedVC: ProofCredential) {
+      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands,@typescript-eslint/no-unsafe-member-access
+      const url = this.getResourceBaseUrl + signedVC.proof.created + '.ttl'
+      const solidDatasetContract = this.formatterDatasetContract(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         signedVC,
       )
-
-      return saveSolidDatasetAt(resourceName, solidDatasetContract, {
+      await saveSolidDatasetAt(url, solidDatasetContract, {
         fetch,
       })
+      return url
     },
   },
   getters: {

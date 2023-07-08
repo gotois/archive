@@ -37,6 +37,7 @@ export default defineStore('profile', {
       if (!avatarURL.length) {
         return
       }
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       if (Reflect.has(URL, 'canParse') && !URL.canParse(avatarURL)) {
         return
       }

@@ -627,8 +627,13 @@ function onLoadKeyPairFile(file: File) {
   reader.readAsText(file)
 }
 
+// example: did:gic:<SolanaPubKey>
+function getResolver() {
+  return `did:gic:${walletStore.publicKey.toString()}`
+}
+
 async function onGenerateKeyPair() {
-  const resolver = `did:sol:${walletStore.publicKey.toString()}`
+  const resolver = getResolver()
   const key = await keyPair.generateNewKeyPair(resolver)
   await keyPair.setKeyPair(key)
   did.value = key.id
@@ -667,7 +672,7 @@ async function onFinish() {
   $q.loading.show()
 
   if (!authStore.webId) {
-    authStore.webId = 'did:demo_user'
+    authStore.webId = 'did:gic:demo'
   }
 
   try {

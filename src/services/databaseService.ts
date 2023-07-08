@@ -30,7 +30,9 @@ class KeyPairDatabase extends Dexie {
   }
 
   async prepareKeyPair() {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const keys = await this.last()
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
     const exportKeys = keys.export({
       publicKey: true,
       privateKey: true,
@@ -43,8 +45,8 @@ class KeyPairDatabase extends Dexie {
     if (!keysTable) {
       throw new Error('KeyPair not found')
     }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-    return Ed25519VerificationKey2020.from(keysTable) as DIDTable
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return
+    return Ed25519VerificationKey2020.from(keysTable)
   }
 
   generateNewKeyPair(controller: string) {
@@ -132,11 +134,29 @@ class ContractDatabase extends Dexie {
     if (!Platform.has.webStorage) {
       throw new Error('webStorage not supported')
     }
+    const contracts = [
+      '++id',
+      'context',
+      'type',
+      'issuer',
+      'issuanceDate',
+      'identifier',
+      'proof',
+      'agent_name',
+      'agent_email',
+      'participant_name',
+      'participant_email',
+      'instrument_name',
+      'instrument_description',
+      'startTime',
+      'endTime',
+      '*images',
+      '*resource_url',
+    ]
 
     this.version(2)
       .stores({
-        contracts:
-          '++id, agent_name, agent_email, participant_name, participant_email, instrument_name, instrument_description, startTime, endTime, *images, *resource_url',
+        contracts: contracts.join(','),
       })
       .upgrade((/* trans */) => {
         return

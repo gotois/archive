@@ -1,5 +1,11 @@
 export interface ContractTable {
   id?: number
+  context: any[]
+  type: string[]
+  issuer: string
+  issuanceDate: Date
+  identifier: ContractIdentifier[]
+  proof: Proof
   agent_name: string
   agent_email: string
   participant_name: string
@@ -8,7 +14,10 @@ export interface ContractTable {
   instrument_description?: string
   startTime: Date
   endTime?: Date | null
-  images?: string[]
+  images?: {
+    contentUrl: string
+    encodingFormat: string
+  }[]
   resource_url?: string
 }
 
@@ -48,16 +57,17 @@ interface BaseCredentialSubject {
   id: string
 }
 
-interface Issuer {
-  id: string
-}
-
 export interface Credential {
   '@context': credentialContextType
+  'id': string
   'type': string[]
-  'issuer': Issuer
+  'issuer': string
   'issuanceDate': string
-  'credentialSubject': credentialSubjectType
+  'credentialSubject': CredentialSubject
+}
+
+export enum BaseContext {
+  schemaOrg = 'https://schema.org',
 }
 
 export interface ProofCredential extends Credential {
@@ -96,9 +106,9 @@ interface Person {
 }
 
 interface ContractIdentifier {
-  propertyID: string
-  value: string
-  name?: string // здесь может храниться signature от Phantom Solana
+  value: string | number
+  propertyID?: number
+  name?: string
 }
 
 interface ContractInstrument {
@@ -116,7 +126,7 @@ export interface FormatContract extends BaseSchemaType {
   'agent': FormatContractAgent
   'participant': FormatContractParticipant
   'instrument': FormatContractInstrument
-  'identifier': FormatContractIdentifier
+  'identifier': FormatContractIdentifier[]
   'startTime': Date
   'endTime'?: Date
   'object': {
@@ -131,14 +141,14 @@ interface FormatContractIdentifier extends BaseSchemaType, ContractIdentifier {}
 interface FormatContractInstrument extends BaseSchemaType, ContractInstrument {}
 
 export interface CredentialSubject {
-  id: string
   agent: Person
   participant: Person
   instrument: ContractInstrument
-  identifier: ContractIdentifier
+  identifier: ContractIdentifier[]
   startTime: Date
   endTime?: Date
   object: string[]
+  url: string
 }
 
 export type ContractData = {
