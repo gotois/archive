@@ -10,8 +10,10 @@ import {
   KeysTable,
   DIDTable,
   ContractData,
+  MyContract,
 } from '../types/models'
 import { WalletType } from './cryptoService'
+import { createContractLD, getContractFromLD } from '../helpers/schemaHelper'
 
 class KeyPairDatabase extends Dexie {
   public keyPair: Dexie.Table<DIDTable, number>
@@ -158,8 +160,18 @@ class ContractDatabase extends Dexie {
       .stores({
         contracts: contracts.join(','),
       })
-      .upgrade((/* trans */) => {
-        return
+      .upgrade(async (trans) => {
+        return trans
+          .table('contracts')
+          .toCollection()
+          .modify((contract) => {
+            const ld = createContractLD(contract as MyContract)
+            const ct = getContractFromLD(ld)
+            Object.keys(ct).forEach((key) => {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+              contract[key] = ct[key] as unknown
+            })
+          })
       })
     this.contracts = this.table('contracts')
   }

@@ -233,8 +233,8 @@ async function removeContract(item: FormatContract) {
       type: 'positive',
       message: `Контракт "${item.instrument.name}" успешно удален.`,
     })
-  } catch (e) {
-    console.error(e)
+  } catch (error) {
+    console.error(error)
     $q.notify({
       type: 'negative',
       message: 'Произошла проблема с удалением данных',

@@ -42,8 +42,8 @@ export default route(() => {
         restorePreviousSession: true,
         oidcIssuer: podStore.getOidcIssuer,
       })
-    } catch (e) {
-      console.error(e)
+    } catch (error) {
+      console.error(error)
     }
     Loading.hide()
   })

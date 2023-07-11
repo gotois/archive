@@ -8,7 +8,8 @@
         :max-file-size="1024 * 1024 * 1024 * 2"
         filled
         outlined
-        @rejected="rejectedEntries"
+        @update:model-value="onFileSelected"
+        @rejected="onRejectedEntries"
       >
         <QTooltip>
           {{ $t('database.fileSize') }}
@@ -80,7 +81,20 @@ const contractStore = useContractStore()
 const file = ref<File>()
 const contractsCount = computed(() => contractStore.contracts.length)
 
-function rejectedEntries() {
+function onFileSelected() {
+  const dialog = $q.dialog({
+    title: 'Импорт договоров',
+    message: 'Нажмите Ок чтобы начать процедуру импорта',
+    cancel: true,
+    persistent: false,
+  })
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  dialog.onOk(async () => {
+    await onImportDB()
+  })
+}
+
+function onRejectedEntries() {
   $q.notify({
     type: 'error',
     color: 'negative',

@@ -222,8 +222,8 @@ async function shareURl(url: string) {
       type: 'positive',
       message: 'Ссылка скопирована в буфер обмена',
     })
-  } catch (e) {
-    console.error(e)
+  } catch (error) {
+    console.error(error)
     $q.notify({
       type: 'negative',
       message: 'Ошибка копирования',

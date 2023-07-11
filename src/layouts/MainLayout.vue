@@ -350,9 +350,9 @@
           :expand-separator="settingsOpen"
           :label="$t('settings.native.title')"
         >
-          <QItemSection class="q-pa-md">
+          <QItemSection v-if="settingsOpen" class="q-pa-md">
             <p>{{ $t('settings.native.description') }}</p>
-            <DatabaseComponent v-if="settingsOpen" />
+            <DatabaseComponent />
           </QItemSection>
           <template v-if="$q.platform.is.desktop">
             <QSeparator />
@@ -642,8 +642,8 @@ function onOTPChange(value: string) {
         type: 'positive',
         message: 'Ключ отключен',
       })
-    } catch (e) {
-      console.error(e)
+    } catch (error) {
+      console.error(error)
       $q.notify({
         type: 'negative',
         message: 'Произошла ошибка',
@@ -667,8 +667,8 @@ function onOTPHandleComplete(code: string) {
         type: 'positive',
         message: 'PIN сохранен',
       })
-    } catch (e) {
-      console.error(e)
+    } catch (error) {
+      console.error(error)
       $q.notify({
         type: 'negative',
         message: 'Ошибка в сохранении PIN',

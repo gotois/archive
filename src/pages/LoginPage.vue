@@ -78,8 +78,8 @@ async function tryLogin() {
       oidcIssuer: getOidcIssuer.value,
       restorePreviousSession: false,
     })
-  } catch (e) {
-    console.error(e)
+  } catch (error) {
+    console.error(error)
     $q.sessionStorage.remove('restorePreviousSession')
   } finally {
     $q.loading.hide()

@@ -481,8 +481,8 @@ async function onSubmit() {
       ],
     })
     onResetForm()
-  } catch (e) {
-    console.error(e)
+  } catch (error) {
+    console.error(error)
     $q.notify({
       type: 'negative',
       message: 'Запись не удалась',

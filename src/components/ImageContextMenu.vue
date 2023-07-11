@@ -51,8 +51,8 @@ async function onCopy(contentUrl: string) {
       type: 'positive',
       message: 'Данные сохранены в буфер обмена',
     })
-  } catch (e) {
-    console.error(e)
+  } catch (error) {
+    console.error(error)
     Notify.create({
       type: 'negative',
       message: 'Произошла ошибка',

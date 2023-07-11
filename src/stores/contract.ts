@@ -12,15 +12,15 @@ import {
   sign,
 } from '../services/cryptoService'
 import { db, keys, keyPair } from '../services/databaseService'
-import { getMimeType } from '../helpers/dataHelper'
-import { formatterContracts, getEmailProperty } from '../helpers/schemaHelper'
+import {
+  formatterContracts,
+  createContractLD,
+  getContractFromLD,
+} from '../helpers/schemaHelper'
 import {
   ContractData,
   ContractTable,
   FormatContract,
-  Credential,
-  BaseContext,
-  CredentialSubject,
   MyContract,
 } from '../types/models'
 
@@ -41,75 +41,6 @@ if (LocalStorage.has('contractNames')) {
     'contractNames',
     Array.from(contractNames).filter((key) => !!key),
   )
-}
-
-function getAgentType(name: string) {
-  const orgNames = ['ОРГАНИЗАЦИЯ', 'ООО', 'АО', 'DAO', 'LLC', 'INC', 'COMPANY']
-  return orgNames.includes(name.toUpperCase()) ? 'Organization' : 'Person'
-}
-
-function createContractLD(contractData: MyContract) {
-  const context = new Map()
-  context.set('OrganizeAction', BaseContext.schemaOrg + '/OrganizeAction')
-  context.set('agent', BaseContext.schemaOrg + '/agent')
-  context.set('name', BaseContext.schemaOrg + '/name')
-  context.set('email', BaseContext.schemaOrg + '/email')
-  context.set('instrument', BaseContext.schemaOrg + '/instrument')
-  context.set('description', BaseContext.schemaOrg + '/description')
-  context.set(
-    'participant',
-    BaseContext.schemaOrg + '/' + getAgentType(contractData.participant_name),
-  )
-  context.set('identifier', BaseContext.schemaOrg + '/identifier')
-  context.set('startTime', BaseContext.schemaOrg + '/startTime')
-  context.set('endTime', BaseContext.schemaOrg + '/endTime')
-  context.set('propertyID', BaseContext.schemaOrg + '/propertyID')
-  context.set('value', BaseContext.schemaOrg + '/PropertyValue')
-  context.set('object', BaseContext.schemaOrg + '/ImageObject')
-  context.set('encodingFormat', BaseContext.schemaOrg + '/encodingFormat')
-  context.set('contentUrl', BaseContext.schemaOrg + '/contentUrl')
-  context.set('value', BaseContext.schemaOrg + '/value')
-  context.set('url', BaseContext.schemaOrg + '/url')
-
-  const credentialSubject = new Map()
-  credentialSubject.set('agent', {
-    name: contractData.agent_name,
-    email: getEmailProperty(contractData.agent_email),
-  })
-  credentialSubject.set('instrument', {
-    name: contractData.instrument_name,
-    description: contractData.instrument_description,
-  })
-  credentialSubject.set('startTime', contractData.startTime.toJSON())
-  credentialSubject.set('participant', {
-    name: contractData.participant_name,
-    email: getEmailProperty(contractData.participant_email),
-  })
-  credentialSubject.set('identifier', [])
-  if (contractData.endTime) {
-    credentialSubject.set('endTime', contractData.endTime.toJSON())
-  }
-  if (contractData.images) {
-    credentialSubject.set(
-      'object',
-      contractData.images.map((contentUrl: string) => ({
-        encodingFormat: getMimeType(contentUrl),
-        contentUrl: contentUrl,
-      })),
-    )
-  }
-  return {
-    '@context': [
-      'https://www.w3.org/2018/credentials/v1',
-      Object.fromEntries(context),
-    ],
-    'type': ['VerifiableCredential', 'OrganizeAction'],
-    'issuer': 'https://archive.gotointeractive.com',
-    'issuanceDate': new Date().toISOString(),
-    'credentialSubject': Object.fromEntries(
-      credentialSubject,
-    ) as CredentialSubject,
-  } as Credential
 }
 
 function getMessageFromContract(contract: ContractTable) {
@@ -151,15 +82,16 @@ export default defineStore('contracts', {
       // Step 1: JSON-LD
       const id = uid()
       const jsldContract = createContractLD(contractData)
-
       const idName = 'Contract'
+      jsldContract.id = `did:gic:${walletStore.publicKey.toString()}?${idName.toLowerCase()}=${id}`
       jsldContract.credentialSubject.identifier.push({
         value: id,
         name: idName,
       })
-      jsldContract.id = `did:gic:${walletStore.publicKey.toString()}?${idName.toLowerCase()}=${id}`
-      jsldContract.credentialSubject.url =
-        'https://archive.gotointeractive.com/' + id // fixme поддержать открытие договора в браузере через ссылку по его id
+      // fixme поддержать открытие договора в браузере через ссылку по его url
+      // jsldContract.credentialSubject.url =
+      //   'https://archive.gotointeractive.com/' + id
+      const contract = getContractFromLD(jsldContract)
 
       // Save to IndexedDb
       const contract = {
@@ -248,7 +180,8 @@ export default defineStore('contracts', {
       this.contracts.push(contract)
     },
     async editContract(contract: FormatContract) {
-      const id = contract.identifier.find(({ name }) => name === 'Dexie').value
+      const id = contract.identifier.find(({ name }) => name === 'Dexie')
+        .value as number
       const count = await db.contracts.where('id').equals(id).modify({
         instrument_description: contract.instrument.description,
       })

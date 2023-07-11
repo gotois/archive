@@ -537,8 +537,8 @@ async function onOnlineAuthorize(oidcIssuer: string) {
       oidcIssuer: oidcIssuer,
       restorePreviousSession: false,
     })
-  } catch (e) {
-    console.error(e)
+  } catch (error) {
+    console.error(error)
     $q.notify({
       color: 'negative',
       message: 'Произошла ошибка входа через OIDC',
@@ -562,8 +562,8 @@ async function onWalletComplete() {
       clusterApiUrl: prefix.value + solanaClusterApiURL.value,
     })
     stepper.value.next()
-  } catch (e) {
-    console.error(e)
+  } catch (error) {
+    console.error(error)
     $q.notify({
       color: 'negative',
       message: 'Произошла ошибка привязки крипто кошелька',
@@ -710,12 +710,12 @@ async function onFinish() {
         page: 1,
       },
     })
-  } catch (e) {
-    console.error(e)
+  } catch (error) {
+    console.error(error)
     $q.notify({
       type: 'error',
       color: 'negative',
-      message: 'Что-то пошло не так: ' + String(e.message),
+      message: 'Что-то пошло не так: ' + String(error.message),
       position: 'center',
       progress: false,
       timeout: 99999999999,
