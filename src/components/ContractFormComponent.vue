@@ -263,7 +263,7 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType, ref } from 'vue'
+import { PropType, ref, getCurrentInstance } from 'vue'
 import {
   useQuasar,
   date,
@@ -291,11 +291,6 @@ interface Duration {
   to: Date | string
 }
 
-const $q = useQuasar()
-
-const now = new Date()
-const afterYearDate = new Date(now.setFullYear(now.getFullYear() + 1))
-
 const emit = defineEmits(['onCreate'])
 const props = defineProps({
   contractTypeName: {
@@ -303,6 +298,13 @@ const props = defineProps({
     default: '',
   },
 })
+
+// eslint-disable-next-line @typescript-eslint/unbound-method
+const $t = getCurrentInstance().appContext.config.globalProperties.$t
+const $q = useQuasar()
+
+const now = new Date()
+const afterYearDate = new Date(now.setFullYear(now.getFullYear() + 1))
 
 const authStore = useAuthStore()
 const contractStore = useContractStore()
@@ -350,7 +352,7 @@ function resetForm() {
 function onResetForm(confirm = false) {
   if (confirm) {
     const dialog = $q.dialog({
-      message: 'Вы действительно хотите очистить форму?',
+      message: $t('components.contractForm.resetDialog.message'),
       cancel: true,
       persistent: true,
     })
@@ -366,7 +368,7 @@ function onSelectDate(value: string | Duration) {
   if (value === null) {
     $q.notify({
       type: 'warning',
-      message: 'Начало даты не может быть позже сегодняшней',
+      message: $t('components.contractForm.selectDate.fail'),
     })
     duration.value = { from: new Date(), to: afterYearDate }
     return
@@ -393,7 +395,7 @@ function onSelectDate(value: string | Duration) {
     default: {
       $q.notify({
         type: 'warning',
-        message: 'Неизвестный тип даты',
+        message: $t('components.contractForm.wrongDate.fail'),
       })
       break
     }
@@ -408,14 +410,14 @@ async function onSubmit() {
   if (!date.isValid(String(duration.value.from))) {
     $q.notify({
       type: 'negative',
-      message: 'Неверная дата подачи заявления',
+      message: $t('components.contractForm.submitDate.invalidStartDate'),
     })
     return
   }
   if (!dateNoLimit.value && !date.isValid(String(duration.value.to))) {
     $q.notify({
       type: 'negative',
-      message: 'Неверная дата окончания заявления',
+      message: $t('components.contractForm.submitDate.invalidEndDate'),
     })
     return
   }
@@ -430,7 +432,7 @@ async function onSubmit() {
   if (startDate.valueOf() >= endDate.valueOf()) {
     $q.notify({
       type: 'negative',
-      message: 'Начальная дата не может быть старше конечной даты',
+      message: $t('components.contractForm.submitDate.invalidSelectDate'),
     })
     return
   }
@@ -468,11 +470,13 @@ async function onSubmit() {
       usePod: isLoggedIn.value,
     })
     $q.notify({
-      message: `Запись "${newContract.instrument_name.toLocaleLowerCase()}" добавлена`,
+      message: $t('components.contractForm.submitDate.success', {
+        id: newContract.instrument_name.toLocaleLowerCase(),
+      }),
       type: 'positive',
       actions: [
         {
-          label: 'Перейти',
+          label: $t('components.contractForm.submitDate.redirect'),
           color: 'white',
           handler() {
             emit('onCreate', newContract.instrument_name)
@@ -485,7 +489,7 @@ async function onSubmit() {
     console.error(error)
     $q.notify({
       type: 'negative',
-      message: 'Запись не удалась',
+      message: $t('components.contractForm.submitDate.fail'),
     })
   } finally {
     loadingForm.value = false

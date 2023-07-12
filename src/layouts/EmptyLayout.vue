@@ -12,7 +12,7 @@
           flat
           unelevated
         >
-          <QTooltip>Вернуться</QTooltip>
+          <QTooltip>{{ $t('navigation.back') }}</QTooltip>
         </QBtn>
         <ToolbarTitleComponent class="text-center" />
       </QToolbar>

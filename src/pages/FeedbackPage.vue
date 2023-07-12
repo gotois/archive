@@ -15,14 +15,22 @@
   </QPage>
 </template>
 <script lang="ts" setup>
-import { onMounted } from 'vue'
-import { QPage, Platform, openURL } from 'quasar'
+import { getCurrentInstance, onMounted } from 'vue'
+import { useMeta, QPage, Platform, openURL } from 'quasar'
 import { useRouter } from 'vue-router'
 import { packageId } from '../../twa-manifest.json'
 
 const iframeURL =
   'https://docs.google.com/forms/d/e/1FAIpQLSdVkv7OPOU2n20YKhl3sBwwhjAV_KuFqFncNNfnIgUTp3_8RA/viewform?embedded=true'
 const router = useRouter()
+
+// eslint-disable-next-line @typescript-eslint/unbound-method
+const $t = getCurrentInstance().appContext.config.globalProperties.$t
+
+const metaData = {
+  'title': $t('pages.create.title'),
+  'og:title': $t('pages.create.title'),
+}
 
 onMounted(() => {
   if (Platform.is.android) {
@@ -41,4 +49,6 @@ onMounted(() => {
     })
   }
 })
+
+useMeta(metaData)
 </script>

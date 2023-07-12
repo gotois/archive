@@ -10,15 +10,18 @@
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent } from 'vue'
+import { defineAsyncComponent, getCurrentInstance } from 'vue'
 import { useMeta, QScrollArea, QPage } from 'quasar'
+
+// eslint-disable-next-line @typescript-eslint/unbound-method
+const $t = getCurrentInstance().appContext.config.globalProperties.$t
 
 const PrivacyComponent = defineAsyncComponent(
   () => import('components/PrivacyComponent.vue'),
 )
 const metaData = {
-  'title': 'Пользовательское соглашение',
-  'og:title': 'Пользовательское соглашение',
+  'title': $t('pages.privacy.title'),
+  'og:title': $t('pages.privacy.title'),
 }
 
 useMeta(metaData)

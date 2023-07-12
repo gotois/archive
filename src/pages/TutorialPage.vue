@@ -160,7 +160,7 @@
                 v-model="solanaClusterApiURL"
                 :options="solanaClusters"
                 :prefix="prefix"
-                label="Solana Cluster"
+                :label="'Solana Cluster'"
                 popup-content-class="q-pt-sm"
                 new-value-mode="add-unique"
                 input-debounce="50"
@@ -168,6 +168,7 @@
                 autocomplete="on"
                 spellcheck="false"
                 color="secondary"
+                class="q-mb-md"
                 :hide-bottom-space="!$q.platform.is.desktop"
                 use-input
                 hide-selected
@@ -189,7 +190,6 @@
                 "
                 color="accent"
                 :label="$t('tutorial.wallet.ok')"
-                class="q-mt-md"
                 :class="{
                   'full-width': !$q.platform.is.desktop,
                 }"
@@ -218,32 +218,7 @@
           <QInput v-if="did" :model-value="did" readonly />
           <QStepperNavigation>
             <template v-if="!did">
-              <QBtn
-                color="accent"
-                label="Сгенерировать ключ"
-                :class="{
-                  'full-width': !$q.platform.is.desktop,
-                }"
-                @click="onGenerateKeyPair"
-              >
-                <QTooltip>Сгенерировать новый ключ</QTooltip>
-              </QBtn>
-              <QFile
-                v-model="keyPairFile"
-                color="accent"
-                filled
-                accept=".json"
-                label="Импортировать файл ключа"
-                :class="{
-                  'full-width': !$q.platform.is.desktop,
-                }"
-                @update:model-value="onLoadKeyPairFile"
-              >
-                <template #prepend>
-                  <QIcon name="cloud_upload" @click.stop.prevent />
-                </template>
-                <QTooltip>Импортировать существующий ключ</QTooltip>
-              </QFile>
+              <KeypairComponent @on-key="(key: DIDTable) => (did = key.id)" />
             </template>
             <template v-else>
               <QBtn
@@ -361,7 +336,14 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue'
+import {
+  computed,
+  getCurrentInstance,
+  defineAsyncComponent,
+  onMounted,
+  ref,
+  watch,
+} from 'vue'
 import { useRouter } from 'vue-router'
 import {
   exportFile,
@@ -373,7 +355,6 @@ import {
   QInput,
   QPage,
   QScrollArea,
-  QFile,
   QSpace,
   QStep,
   QStepper,
@@ -404,7 +385,12 @@ import { DIDTable } from '../types/models'
 const OIDCIssuerComponent = defineAsyncComponent(
   () => import('components/OIDCIssuerComponent.vue'),
 )
+const KeypairComponent = defineAsyncComponent(
+  () => import('components/KeypairComponent.vue'),
+)
 
+// eslint-disable-next-line @typescript-eslint/unbound-method
+const $t = getCurrentInstance().appContext.config.globalProperties.$t
 const $q = useQuasar()
 const router = useRouter()
 const podStore = usePodStore()
@@ -443,16 +429,15 @@ const walletPrivateKey = ref('')
 const solanaClusterApiURL = ref('')
 const solanaClusters = ref(
   [
+    clusterApiUrl('mainnet-beta'),
     clusterApiUrl('devnet'),
     clusterApiUrl('testnet'),
-    clusterApiUrl('mainnet-beta'),
   ].map((url) => {
     return url.replace(prefix.value, '').replace(/\/$/, '')
   }),
 )
 const walletPublicKey = ref('')
 const did = ref('')
-const keyPairFile = ref<File>(null)
 const walletType = ref<WalletType>(WalletType.Unknown)
 const isPwd = ref(true)
 const { isLoggedIn } = storeToRefs(authStore)
@@ -472,29 +457,50 @@ function setMeta(value: number) {
   switch (value) {
     case STEP.WELCOME: {
       useMeta({
-        'title': `Добро пожаловать в сервис "${pkg.productName}"`,
-        'og:title': `Добро пожаловать в сервис "${pkg.productName}"`,
+        'title': $t('pages.tutorial.welcome.title'),
+        'og:title': $t('pages.tutorial.welcome.title'),
       })
       break
     }
     case STEP.INFO: {
       useMeta({
-        'title': 'Как работает наш сервис',
-        'og:title': 'Как работает наш сервис',
+        'title': $t('pages.tutorial.info.title'),
+        'og:title': $t('pages.tutorial.info.title'),
       })
       break
     }
     case STEP.AGREEMENT: {
       useMeta({
-        'title': 'Пользовательское соглашение',
-        'og:title': 'Пользовательское соглашение',
+        'title': $t('pages.tutorial.agreement.title'),
+        'og:title': $t('pages.tutorial.agreement.title'),
+      })
+      break
+    }
+    case STEP.WALLET: {
+      useMeta({
+        'title': $t('pages.tutorial.wallet.title'),
+        'og:title': $t('pages.tutorial.wallet.title'),
+      })
+      break
+    }
+    case STEP.CRYPTO: {
+      useMeta({
+        'title': $t('pages.tutorial.crypto.title'),
+        'og:title': $t('pages.tutorial.crypto.title'),
+      })
+      break
+    }
+    case STEP.OIDC: {
+      useMeta({
+        'title': $t('pages.tutorial.oidc.title'),
+        'og:title': $t('pages.tutorial.oidc.title'),
       })
       break
     }
     case STEP.FINAL: {
       useMeta({
-        'title': 'Договор на использование',
-        'og:title': 'Договор на использование',
+        'title': $t('pages.tutorial.final.title'),
+        'og:title': $t('pages.tutorial.final.title'),
       })
       break
     }
@@ -510,10 +516,8 @@ function setMeta(value: number) {
 
 async function onOnlineAuthorize(oidcIssuer: string) {
   if (!oidcIssuer) {
-    const confirmMessage =
-      'Ваши договоры не будут сохраняться на сервере SOLiD. Вы не сможете создавать токены ваших документов. Продолжить?'
     const dialog = $q.dialog({
-      message: confirmMessage,
+      message: $t('components.oidcIssuer.authorizeDialog.message'),
       cancel: true,
       persistent: true,
     })
@@ -541,7 +545,7 @@ async function onOnlineAuthorize(oidcIssuer: string) {
     console.error(error)
     $q.notify({
       color: 'negative',
-      message: 'Произошла ошибка входа через OIDC',
+      message: $t('components.oidcIssuer.authorizeDialog.fail'),
     })
   } finally {
     $q.loading.hide()
@@ -566,7 +570,7 @@ async function onWalletComplete() {
     console.error(error)
     $q.notify({
       color: 'negative',
-      message: 'Произошла ошибка привязки крипто кошелька',
+      message: $t('wallet.fail'),
     })
   } finally {
     $q.loading.hide()
@@ -598,50 +602,9 @@ async function tryToLoginPhantomWallet() {
   stepper.value.next()
 }
 
-function onLoadKeyPairFile(file: File) {
-  const reader = new FileReader()
-  reader.addEventListener(
-    'load',
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    async () => {
-      try {
-        const key = JSON.parse(reader.result as string) as DIDTable
-        await keyPair.setKeyPair({
-          id: key.id,
-          controller: key.controller,
-          type: key.type,
-          publicKeyMultibase: key.publicKeyMultibase,
-          privateKeyMultibase: key.privateKeyMultibase,
-        })
-        did.value = key.id
-      } catch (error) {
-        console.error(error)
-        $q.notify({
-          type: 'negative',
-          message: 'Произошла ошибка чтения файла',
-        })
-      }
-    },
-    false,
-  )
-  reader.readAsText(file)
-}
-
-// example: did:gic:<SolanaPubKey>
-function getResolver() {
-  return `did:gic:${walletStore.publicKey.toString()}`
-}
-
-async function onGenerateKeyPair() {
-  const resolver = getResolver()
-  const key = await keyPair.generateNewKeyPair(resolver)
-  await keyPair.setKeyPair(key)
-  did.value = key.id
-}
-
 function exportKeyPair() {
   const dialog = $q.dialog({
-    message: 'Вы хотите сохранить файл ключа локально?',
+    message: $t('components.keypair.export.dialog.message'),
     cancel: true,
     persistent: true,
   })
@@ -656,12 +619,12 @@ function exportKeyPair() {
       if (status) {
         $q.notify({
           type: 'positive',
-          message: 'Ключи сгенерированы и хранятся в памяти Вашего устройства.',
+          message: $t('components.keypair.export.dialog.success'),
         })
       } else {
         $q.notify({
           type: 'warning',
-          message: 'Ваш ключ не удалось сохранить локально на устройстве.',
+          message: $t('components.keypair.export.dialog.fail'),
         })
       }
     }
@@ -686,7 +649,7 @@ async function onFinish() {
       agent_email: email.value,
       participant_name: pkg.author.name,
       participant_email: pkg.author.email,
-      instrument_name: 'Пользовательское соглашение',
+      instrument_name: $t('pages.privacy.title'),
       instrument_description: `${pkg.productName}: ${pkg.description} v.${pkg.version}`,
       startTime: new Date(),
       images: contractPDF,
@@ -715,7 +678,7 @@ async function onFinish() {
     $q.notify({
       type: 'error',
       color: 'negative',
-      message: 'Что-то пошло не так: ' + String(error.message),
+      message: String(error.message),
       position: 'center',
       progress: false,
       timeout: 99999999999,

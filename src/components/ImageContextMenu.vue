@@ -3,7 +3,7 @@
     <QList :dense="$q.platform.is.desktop" style="min-width: 100px">
       <QItem v-close-popup clickable @click="onWindowOpenImage(contentUrl)">
         <QItemSection>
-          {{ $t('archiveList.openFile') }}
+          {{ $t('components.imageContextMenu.open') }}
         </QItemSection>
       </QItem>
       <QSeparator />
@@ -14,16 +14,16 @@
         @click="onCopy(contentUrl)"
       >
         <QItemSection>
-          {{ $t('archiveList.copyFile') }}
+          {{ $t('components.imageContextMenu.copy') }}
         </QItemSection>
       </QItem>
     </QList>
   </QMenu>
 </template>
 <script lang="ts" setup>
-import { PropType, ref } from 'vue'
+import { PropType, getCurrentInstance, ref } from 'vue'
 import {
-  Notify,
+  useQuasar,
   QMenu,
   QList,
   QItem,
@@ -39,6 +39,10 @@ defineProps({
   },
 })
 
+// eslint-disable-next-line @typescript-eslint/unbound-method
+const $t = getCurrentInstance().appContext.config.globalProperties.$t
+const $q = useQuasar()
+
 const canWrite = ref(Reflect.has(navigator.clipboard, 'write'))
 
 async function onCopy(contentUrl: string) {
@@ -47,15 +51,15 @@ async function onCopy(contentUrl: string) {
   const clipboardItem = new ClipboardItem({ [blob.type]: blob })
   try {
     await navigator.clipboard.write([clipboardItem])
-    Notify.create({
+    $q.notify({
       type: 'positive',
-      message: 'Данные сохранены в буфер обмена',
+      message: $t('components.imageContextMenu.success'),
     })
   } catch (error) {
     console.error(error)
-    Notify.create({
+    $q.notify({
       type: 'negative',
-      message: 'Произошла ошибка',
+      message: $t('components.imageContextMenu.fail'),
     })
   }
 }

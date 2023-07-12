@@ -31,7 +31,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent, h, ref } from 'vue'
+import { defineAsyncComponent, getCurrentInstance, h, ref } from 'vue'
 import {
   useMeta,
   QPage,
@@ -52,14 +52,15 @@ const ContractFormComponent = defineAsyncComponent({
   }),
 })
 
+// eslint-disable-next-line @typescript-eslint/unbound-method
+const $t = getCurrentInstance().appContext.config.globalProperties.$t
 const router = useRouter()
 const contractForm = ref<InstanceType<typeof ContractFormComponent> | null>(
   null,
 )
-
 const metaData = {
-  'title': 'Создание договора',
-  'og:title': 'Создание договора',
+  'title': $t('pages.create.title'),
+  'og:title': $t('pages.create.title'),
 }
 
 async function onCreate(value: string) {

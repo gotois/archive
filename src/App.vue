@@ -13,6 +13,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
+import { getCurrentInstance } from 'vue'
 import { RouterView } from 'vue-router'
 import { useMeta, useQuasar } from 'quasar'
 import { EVENTS } from '@inrupt/solid-client-authn-core'
@@ -28,6 +29,8 @@ import { isTWA } from './helpers/twaHelper'
 import pkg from '../package.json'
 import twaMinifest from '../twa-manifest.json'
 
+// eslint-disable-next-line @typescript-eslint/unbound-method
+const $t = getCurrentInstance().appContext.config.globalProperties.$t
 const $q = useQuasar()
 const router = useRouter()
 const podStore = usePodStore()
@@ -95,13 +98,13 @@ const metaData = {
     },
   },
   noscript: {
-    default: '<strong>Включите JavaScript для запуска приложения.</strong>',
+    default: `<strong>${$t('navigation.noscript')}</strong>`,
   },
   link: {
     opensearch: {
       rel: 'search',
       type: 'application/opensearchdescription+xml',
-      title: 'Поиск по архиву договоров',
+      title: $t('opensearch.title'),
       href: pkg.homepage + 'opensearch.xml',
     },
   },
@@ -144,16 +147,14 @@ events.on(EVENTS.ERROR, (error) => {
 /* eslint-disable */
 const solana = getSolana()
 if (solana) {
-  // todo - поддержать
-  // solana.on('connect', (publicKey) => {
-  //   console.warn('connected to phantom account')
-  //   // walletStore.setPublicKey(publicKey)
-  // })
+  solana.on('connect', (/*publicKey*/) => {
+    console.warn('connected to phantom account')
+  })
   solana.on('disconnect', () => {
     console.warn('Phantom disconnect')
     $q.notify({
       type: 'warning',
-      message: 'Wallet disconnected',
+      message: $t('wallet.disconnected'),
     })
   })
   solana.on('accountChanged', async (publicKey: any) => {
@@ -161,6 +162,10 @@ if (solana) {
     await walletStore.setKeypare({
       publicKey: publicKey,
       type: WalletType.Phantom,
+    })
+    $q.notify({
+      type: 'warning',
+      message: $t('wallet.accountChanged'),
     })
   })
 }

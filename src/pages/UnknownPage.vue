@@ -4,10 +4,10 @@
   >
     <div>
       <div style="font-size: 30vh">
-        {{ $t('error404.title') }}
+        {{ $t('pages.unknown.title') }}
       </div>
       <div class="text-h2" style="opacity: 0.4">
-        {{ $t('error404.description') }}
+        {{ $t('pages.unknown.description') }}
       </div>
       <QBtn
         class="q-mt-xl"
@@ -17,7 +17,7 @@
         push
         unelevated
         :to="{ name: 'archive', query: { page: 1 } }"
-        :label="$t('error404.submit')"
+        :label="$t('pages.unknown.submit')"
         no-caps
       />
     </div>
@@ -25,11 +25,15 @@
 </template>
 
 <script lang="ts" setup>
+import { getCurrentInstance } from 'vue'
 import { useMeta, QBtn } from 'quasar'
 
+// eslint-disable-next-line @typescript-eslint/unbound-method
+const $t = getCurrentInstance().appContext.config.globalProperties.$t
+
 const metaData = {
-  'title': 'Страница не найдена',
-  'og:title': 'Страница не найдена',
+  'title': $t('pages.unknown.seo.title'),
+  'og:title': $t('pages.unknown.seo.title'),
 }
 
 useMeta(metaData)

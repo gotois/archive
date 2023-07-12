@@ -108,13 +108,13 @@ export default route(() => {
         if (!LocalStorage.has('tutorialCompleted')) {
           if (to.path !== '/') {
             Notify.create({
-              message: 'Страница недоступна без авторизации.',
+              message: 'HTTP 403',
               type: 'warning',
               timeout: 99999999999,
               multiLine: true,
               actions: [
                 {
-                  label: 'Вернуться на страницу',
+                  label: 'Try again',
                   handler() {
                     void Router.replace(to.fullPath)
                   },

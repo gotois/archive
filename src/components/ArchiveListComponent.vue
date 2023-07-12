@@ -181,11 +181,10 @@ const props = defineProps({
     required: true,
   },
 })
-
+const emit = defineEmits(['onPaginate', 'onRemove', 'onEdit'])
 const authStore = useAuthStore()
 const contractStore = useContractStore()
 const podStore = usePodStore()
-const emit = defineEmits(['onPaginate', 'onRemove', 'onEdit'])
 
 const contracts = toRef(props, 'contracts', [])
 const page = ref(props.page)
@@ -215,18 +214,18 @@ function prettyDate(item: FormatContract) {
   )
 }
 
-async function shareURl(url: string) {
+async function shareURL(url: string) {
   try {
     await copyToClipboard(url)
     $q.notify({
       type: 'positive',
-      message: 'Ссылка скопирована в буфер обмена',
+      message: $t('components.archiveList.sheet.link.success'),
     })
   } catch (error) {
     console.error(error)
     $q.notify({
       type: 'negative',
-      message: 'Ошибка копирования',
+      message: $t('components.archiveList.sheet.link.fail'),
     })
   }
 }
@@ -246,14 +245,14 @@ function onSheet(item: FormatContract) {
   // Group 1 - Share local
   if (item.sameAs) {
     actions.push({
-      label: 'Поделиться ссылкой',
+      label: $t('components.archiveList.sheet.link.label'),
       icon: 'link',
       id: SheetAction.LINK,
     })
   }
   if (nativeShareAvailable) {
     actions.push({
-      label: 'Поделиться документом',
+      label: $t('components.archiveList.sheet.share.label'),
       icon: $q.platform.is.android ? 'share' : 'ios_share',
       id: SheetAction.SHARE,
     })
@@ -263,14 +262,14 @@ function onSheet(item: FormatContract) {
     actions.push({})
   }
   actions.push({
-    label: 'Скачать ICS',
+    label: $t('components.archiveList.sheet.event.native.label'),
     icon: 'event',
     color: 'primary',
     id: SheetAction.CALENDAR,
   })
   if ($q.platform.is.android) {
     actions.push({
-      label: 'Добавить в Google календарь',
+      label: $t('components.archiveList.sheet.event.google.label'),
       icon: 'event',
       color: 'secondary',
       id: SheetAction.GOOGLE_CALENDAR,
@@ -278,7 +277,7 @@ function onSheet(item: FormatContract) {
   }
   if (!item.sameAs && isLoggedIn.value) {
     actions.push({
-      label: 'Загрузить на POD',
+      label: $t('components.archiveList.sheet.upload.label'),
       icon: 'cloud_upload',
       color: 'primary',
       id: SheetAction.UPLOAD,
@@ -288,7 +287,7 @@ function onSheet(item: FormatContract) {
   if (item.participant.email) {
     actions.push({})
     actions.push({
-      label: 'Отправить сообщение',
+      label: $t('components.archiveList.sheet.mail.label'),
       icon: 'contact_mail',
       color: 'secondary',
       id: SheetAction.MAIL,
@@ -297,7 +296,7 @@ function onSheet(item: FormatContract) {
   const icalId = $t('organization.prodid')
 
   $q.bottomSheet({
-    title: 'Выберите действие',
+    title: $t('components.archiveList.sheet.title'),
     grid: !$q.platform.is.mobile,
     class: $q.platform.is.desktop ? 'text-center' : '',
     actions: actions,
@@ -309,7 +308,7 @@ function onSheet(item: FormatContract) {
         return shareFile(item.instrument.name, icalFile)
       }
       case SheetAction.LINK: {
-        return shareURl(item.sameAs)
+        return shareURL(item.sameAs)
       }
       case SheetAction.GOOGLE_CALENDAR: {
         const url = googleMailUrl(item).toString()
@@ -317,13 +316,7 @@ function onSheet(item: FormatContract) {
       }
       case SheetAction.CALENDAR: {
         const file = await createCal(icalId, item)
-        const [dataURI] = await readFilesPromise([file])
-        const link = document.createElement('a')
-        link.href = dataURI
-        link.setAttribute('download', file.name)
-        link.setAttribute('target', '_blank')
-        link.click()
-        return
+        return saveIcal(file)
       }
       case SheetAction.UPLOAD: {
         return uploadArchive(item)
@@ -333,6 +326,23 @@ function onSheet(item: FormatContract) {
       }
     }
   })
+}
+
+async function saveIcal(file: File) {
+  try {
+    const [dataURI] = await readFilesPromise([file])
+    const link = document.createElement('a')
+    link.href = dataURI
+    link.setAttribute('download', file.name)
+    link.setAttribute('target', '_blank')
+    link.click()
+  } catch (error) {
+    console.error(error)
+    $q.notify({
+      type: 'negative',
+      message: $t('components.archiveList.sheet.share.fail'),
+    })
+  }
 }
 
 async function shareFile(title: string, file: File) {
@@ -348,7 +358,7 @@ async function shareFile(title: string, file: File) {
     }
     $q.notify({
       type: 'negative',
-      message: 'Произошла ошибка шеринга файла',
+      message: $t('components.archiveList.sheet.share.fail'),
     })
   }
 }
@@ -356,19 +366,19 @@ async function shareFile(title: string, file: File) {
 async function uploadArchive(item: FormatContract) {
   const currentContract = contractStore.contracts.find(
     (c: ContractTable) => String(c.id) === String(item.identifier.value),
-  ) as ContractTable
+  ) as ContractTable // todo поменять тип
 
   try {
     await podStore.uploadContract(currentContract)
     $q.notify({
       type: 'positive',
-      message: 'Данные записаны на Ваш Pod',
+      message: $t('components.archiveList.sheet.upload.success'),
     })
   } catch (error) {
-    console.error('Upload failed', error)
+    console.error('Uploading failed', error)
     $q.notify({
       type: 'negative',
-      message: 'Произошла ошибка записи данных',
+      message: $t('components.archiveList.sheet.upload.fail'),
     })
   }
 }

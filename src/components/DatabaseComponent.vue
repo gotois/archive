@@ -59,7 +59,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import { ref, computed, getCurrentInstance } from 'vue'
 import {
   useQuasar,
   QBtn,
@@ -70,11 +70,12 @@ import {
   exportFile,
 } from 'quasar'
 import { exportDB, importInto } from 'dexie-export-import'
-import { BulkError } from 'dexie'
 import useContractStore from 'stores/contract'
 import { db } from '../services/databaseService'
 import { getContent, generate } from '../helpers/zipHelper'
 
+// eslint-disable-next-line @typescript-eslint/unbound-method
+const $t = getCurrentInstance().appContext.config.globalProperties.$t
 const $q = useQuasar()
 const contractStore = useContractStore()
 
@@ -83,8 +84,8 @@ const contractsCount = computed(() => contractStore.contracts.length)
 
 function onFileSelected() {
   const dialog = $q.dialog({
-    title: 'Импорт договоров',
-    message: 'Нажмите Ок чтобы начать процедуру импорта',
+    title: $t('components.database.fileImportDialog.title'),
+    message: $t('components.database.fileImportDialog.message'),
     cancel: true,
     persistent: false,
   })
@@ -98,7 +99,7 @@ function onRejectedEntries() {
   $q.notify({
     type: 'error',
     color: 'negative',
-    message: 'Выбранный файл слишком велик',
+    message: $t('components.database.fileRejected'),
   })
 }
 
@@ -130,11 +131,10 @@ async function onImportDB() {
     $q.localStorage.remove('contractNames')
     location.reload()
   } catch (error) {
-    const msg = (error as BulkError).message
     console.error(error)
     $q.loading.hide()
     $q.notify({
-      message: msg,
+      message: $t('components.database.fileImportDialog.fail'),
       type: 'negative',
     })
   }
@@ -142,8 +142,8 @@ async function onImportDB() {
 
 function onExportDB() {
   const dialog = $q.dialog({
-    title: 'Экспорт договоров',
-    message: 'Введите название файла договоров:',
+    title: $t('components.database.fileExportDialog.title'),
+    message: $t('components.database.fileExportDialog.prompt'),
     prompt: {
       model: '',
       isValid: (val) => val.length > 2,
@@ -158,13 +158,13 @@ function onExportDB() {
     if (status) {
       $q.notify({
         type: 'positive',
-        message: 'Файл сохранен',
+        message: $t('components.database.fileExportDialog.success'),
       })
     } else {
       $q.notify({
         type: 'error',
         color: 'negative',
-        message: 'Ошибка при экспорте файла',
+        message: $t('components.database.fileExportDialog.fail'),
       })
     }
   })
@@ -175,7 +175,7 @@ async function databaseExport(exportName: string) {
     return
   }
   const dialog = $q.dialog({
-    message: 'Подготовка...',
+    message: $t('components.database.fileExportDialog.message'),
     progress: true,
     persistent: true,
     ok: false,
@@ -187,7 +187,9 @@ async function databaseExport(exportName: string) {
   const content = await generate(blob, (metadata) => {
     const percentage = metadata.percent
     dialog.update({
-      message: `Создание... ${percentage}%`,
+      message: $t('components.database.fileExportDialog.progress', {
+        percentage,
+      }),
     })
     if (percentage === 100 && metadata.currentFile !== null) {
       dialog.hide()

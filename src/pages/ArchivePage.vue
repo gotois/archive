@@ -123,6 +123,7 @@
 import {
   ref,
   computed,
+  getCurrentInstance,
   defineAsyncComponent,
   h,
   onMounted,
@@ -160,13 +161,15 @@ const ArchiveListComponent = defineAsyncComponent({
   }),
 })
 
+// eslint-disable-next-line @typescript-eslint/unbound-method
+const $t = getCurrentInstance().appContext.config.globalProperties.$t
 const $q = useQuasar()
 const contractStore = useContractStore()
 const podStore = usePodStore()
 
 const metaData = {
-  'title': 'Архив договоров',
-  'og:title': 'Архив договоров',
+  'title': $t('pages.archive.title'),
+  'og:title': $t('pages.archive.title'),
 }
 const LIMIT = 5
 
@@ -231,24 +234,25 @@ async function removeContract(item: FormatContract) {
     })
     $q.notify({
       type: 'positive',
-      message: `Контракт "${item.instrument.name}" успешно удален.`,
+      message: $t('contract.removeDialog.success', {
+        name: item.instrument.name,
+      }),
     })
   } catch (error) {
     console.error(error)
     $q.notify({
       type: 'negative',
-      message: 'Произошла проблема с удалением данных',
+      message: $t('contract.removeDialog.fail'),
     })
   }
 }
 
 function onRemove(item: FormatContract) {
-  let message = 'Действительно удалить? Отменить удаление будет невозможно.'
-  if (!isLoggedIn.value && item.sameAs) {
-    message += '\nВнимание: данные не будут удалены с вашего Pod.'
-  }
   $q.notify({
-    message: message,
+    message:
+      !isLoggedIn.value && item.sameAs
+        ? $t('contract.removeDialog.message')
+        : $t('contract.removeDialog.isLoginMessage'),
     type: 'negative',
     position: 'center',
     group: false,
@@ -261,7 +265,7 @@ function onRemove(item: FormatContract) {
     actions: [
       {
         icon: 'check_circle',
-        label: 'Удалить',
+        label: $t('contract.removeDialog.ok'),
         color: 'white',
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         async handler() {
@@ -270,7 +274,7 @@ function onRemove(item: FormatContract) {
       },
       {
         icon: 'cancel',
-        label: 'Отмена',
+        label: $t('contract.removeDialog.cancel'),
         color: 'white',
       },
     ],
@@ -279,7 +283,7 @@ function onRemove(item: FormatContract) {
 
 function onEdit(item: FormatContract) {
   const dialog = $q.dialog({
-    message: 'Введите новое описание:',
+    message: $t('contract.editDialog.message'),
     prompt: {
       model: item.instrument.description ?? '',
       type: 'text',
@@ -293,13 +297,13 @@ function onEdit(item: FormatContract) {
       await editContract(item)
       $q.notify({
         type: 'positive',
-        message: 'Данные обновлены',
+        message: $t('contract.editDialog.success'),
       })
     } catch (error) {
       console.error(error)
       $q.notify({
         color: 'negative',
-        message: 'Ошибка в обновлении',
+        message: $t('contract.editDialog.fail'),
       })
     }
   })

@@ -468,7 +468,13 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, defineAsyncComponent, onMounted } from 'vue'
+import {
+  ref,
+  computed,
+  getCurrentInstance,
+  defineAsyncComponent,
+  onMounted,
+} from 'vue'
 import {
   useQuasar,
   QDialog,
@@ -531,6 +537,8 @@ const AndroidBarComponent = defineAsyncComponent(
   () => import('components/AndroidBarComponent.vue'),
 )
 
+// eslint-disable-next-line @typescript-eslint/unbound-method
+const $t = getCurrentInstance().appContext.config.globalProperties.$t
 const $q = useQuasar()
 const router = useRouter()
 const authStore = useAuthStore()
@@ -605,7 +613,7 @@ async function logOutFromPod() {
   $q.sessionStorage.remove('restorePreviousSession')
   $q.sessionStorage.remove('connect')
   $q.notify({
-    message: 'Вы отключили привязку к вашему Pod',
+    message: $t('database.pod.disconnected'),
     type: 'positive',
   })
 }
@@ -621,7 +629,7 @@ async function onFinishProfile() {
   profileStore.consumerEmail(email.value)
   await profileStore.setAvatar(email.value)
   $q.notify({
-    message: 'Профиль обновлен',
+    message: $t('consumer.success'),
     type: 'positive',
   })
 }
@@ -631,7 +639,7 @@ function onOTPChange(value: string) {
     return
   }
   const dialog = $q.dialog({
-    message: 'Действительно удалить пин?',
+    message: $t('components.otp.pinDialog.message'),
     cancel: true,
     persistent: true,
   })
@@ -640,13 +648,13 @@ function onOTPChange(value: string) {
       authStore.removeCode()
       $q.notify({
         type: 'positive',
-        message: 'Ключ отключен',
+        message: $t('components.otp.pinDialog.success'),
       })
     } catch (error) {
       console.error(error)
       $q.notify({
         type: 'negative',
-        message: 'Произошла ошибка',
+        message: $t('components.otp.pinDialog.fail'),
       })
     }
   })
@@ -655,7 +663,7 @@ function onOTPChange(value: string) {
 
 function onOTPHandleComplete(code: string) {
   const dialog = $q.dialog({
-    message: 'Действительно сохранить PIN?',
+    message: $t('components.otp.saveDialog.message'),
     cancel: true,
     persistent: true,
   })
@@ -665,13 +673,13 @@ function onOTPHandleComplete(code: string) {
       await authStore.setCode(code)
       $q.notify({
         type: 'positive',
-        message: 'PIN сохранен',
+        message: $t('components.otp.saveDialog.success'),
       })
     } catch (error) {
       console.error(error)
       $q.notify({
         type: 'negative',
-        message: 'Ошибка в сохранении PIN',
+        message: $t('components.otp.saveDialog.fail'),
       })
     }
   })

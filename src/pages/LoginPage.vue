@@ -33,9 +33,12 @@
         />
       </template>
       <template v-else>
-        <OIDCIssuerComponent label="Адрес URL" @on-complete="onOnlineAuthorize">
+        <OIDCIssuerComponent
+          :label="$t('components.oidcIssuer.label')"
+          @on-complete="onOnlineAuthorize"
+        >
           <QTooltip>
-            {{ $t('login.oidcIssuerInput') }}
+            {{ $t('components.oidcIssuer.input') }}
           </QTooltip>
         </OIDCIssuerComponent>
       </template>
@@ -43,17 +46,24 @@
   </QPage>
 </template>
 <script lang="ts" setup>
-import { onMounted } from 'vue'
-import { useQuasar, QBtn, QChip, QPage, QCard, QTooltip } from 'quasar'
+import { onMounted, getCurrentInstance } from 'vue'
+import { useMeta, useQuasar, QBtn, QChip, QPage, QCard, QTooltip } from 'quasar'
 import { storeToRefs } from 'pinia'
 import usePodStore from 'stores/pod'
 import OIDCIssuerComponent from 'components/OIDCIssuerComponent.vue'
 import solidAuth from '../services/authService'
 
+// eslint-disable-next-line @typescript-eslint/unbound-method
+const $t = getCurrentInstance().appContext.config.globalProperties.$t
 const $q = useQuasar()
 const podStore = usePodStore()
 
 const { getOidcIssuer } = storeToRefs(podStore)
+
+const metaData = {
+  'title': $t('pages.create.title'),
+  'og:title': $t('pages.create.title'),
+}
 
 function onRemove() {
   podStore.removeOIDCIssuer()
@@ -67,7 +77,7 @@ async function onLogin() {
 async function tryLogin() {
   try {
     $q.loading.show({
-      message: 'Идет аутентификация. Пожалуйста, подождите...',
+      message: $t('components.oidcIssuer.processing'),
       boxClass: $q.dark.isActive
         ? 'bg-black text-white'
         : 'bg-grey-2 text-grey-9',
@@ -90,7 +100,7 @@ function onOnlineAuthorize(oidcIssuer: string) {
   if (!oidcIssuer) {
     $q.notify({
       type: 'negative',
-      message: 'OIDC Issuer cannot be empty',
+      message: $t('components.oidcIssuer.fail'),
     })
     return
   }
@@ -102,4 +112,6 @@ onMounted(async () => {
     await tryLogin()
   }
 })
+
+useMeta(metaData)
 </script>

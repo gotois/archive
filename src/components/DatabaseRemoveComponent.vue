@@ -35,14 +35,16 @@
 </template>
 
 <script lang="ts" setup>
+import { getCurrentInstance } from 'vue'
 import { useQuasar, QBtn, QCardActions, QCardSection, QCard } from 'quasar'
 import { storeToRefs } from 'pinia'
-import { BulkError } from 'dexie'
 import useAuthStore from 'stores/auth'
 import usePodStore from 'stores/pod'
 import { db } from '../services/databaseService'
 
 const emit = defineEmits(['onClear'])
+// eslint-disable-next-line @typescript-eslint/unbound-method
+const $t = getCurrentInstance().appContext.config.globalProperties.$t
 const $q = useQuasar()
 const podStore = usePodStore()
 const authStore = useAuthStore()
@@ -64,18 +66,17 @@ async function onClearDatabasePlus() {
       progress: false,
       spinner: true,
       timeout: timeout,
-      message: 'База данных удалена. Дождитесь перезагрузки.',
+      message: $t('components.databaseRemove.success'),
     })
     setTimeout(() => {
       location.reload()
     }, timeout)
   } catch (error) {
-    const msg = (error as BulkError).message
     console.error(error)
     $q.loading.hide()
     $q.notify({
-      message: msg,
       type: 'negative',
+      message: $t('components.databaseRemove.fail'),
     })
   }
 }
@@ -93,18 +94,17 @@ async function onClearDatabase() {
       progress: false,
       spinner: true,
       timeout: timeout,
-      message: 'База данных удалена. Дождитесь перезагрузки.',
+      message: $t('components.databaseRemove.success'),
     })
     setTimeout(() => {
       location.reload()
     }, timeout)
   } catch (error) {
-    const msg = (error as BulkError).message
     console.error(error)
     $q.loading.hide()
     $q.notify({
-      message: msg,
       type: 'negative',
+      message: $t('components.databaseRemove.fail'),
     })
   }
 }

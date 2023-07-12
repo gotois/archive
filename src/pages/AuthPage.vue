@@ -4,7 +4,7 @@
     :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'"
   >
     <p class="text-caption text-center">
-      {{ $t('auth.caption') }}
+      {{ $t('pages.auth.caption') }}
     </p>
     <QOtp
       ref="otp"
@@ -21,19 +21,21 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, getCurrentInstance } from 'vue'
 import { useMeta, useQuasar, QPage } from 'quasar'
 import { useRouter } from 'vue-router'
 import QOtp from 'quasar-app-extension-q-otp/src/component/QOtp.vue'
 import useAuthStore from 'stores/auth'
 
+// eslint-disable-next-line @typescript-eslint/unbound-method
+const $t = getCurrentInstance().appContext.config.globalProperties.$t
 const $q = useQuasar()
 const router = useRouter()
 const authStore = useAuthStore()
 
 const metaData = {
-  'title': 'Авторизация',
-  'og:title': 'Авторизация',
+  'title': 'pages.auth.title',
+  'og:title': 'pages.auth.title',
 }
 
 const otp = ref<InstanceType<typeof QOtp> | null>(null)
@@ -45,7 +47,7 @@ async function onHandleComplete(value: string) {
   if (authStore.pinIsLoggedIn) {
     await authStore.setCode(value)
     const dismiss = $q.notify({
-      message: 'Пожалуйста, подождите...',
+      message: $t('components.otp.processing'),
       timeout: 2000,
       spinner: true,
     })
@@ -60,7 +62,7 @@ async function onHandleComplete(value: string) {
     otp.value.blur()
     $q.notify({
       color: 'negative',
-      message: 'Неверный ключ',
+      message: $t('components.otp.fail'),
       progress: true,
       timeout: timeout,
     })
