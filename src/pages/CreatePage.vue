@@ -20,7 +20,7 @@
             :style="{
               minHeight: '460px',
             }"
-            :contract-type-name="$route.query.contractTypeName"
+            :contract-type-name="$route.query.contractTypeName as string"
             @on-create="onCreate"
           />
         </QCard>

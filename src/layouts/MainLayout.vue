@@ -437,7 +437,7 @@
         :selected="router.currentRoute.value.query.name === name"
         :color="value.recommendation ? 'orange' : ''"
         :removable="value.recommendation"
-        @remove="onRemoveArchiveName(name as String)"
+        @remove="onRemoveArchiveName(name as string)"
         @click="onSelectArchiveName(name, value)"
       >
         <QAvatar v-if="value.count > 1" color="secondary" text-color="white">

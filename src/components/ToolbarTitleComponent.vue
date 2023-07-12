@@ -27,9 +27,9 @@ import manifest from '../../twa-manifest.json'
 
 const launcherName = toRef(manifest, 'launcherName')
 const navigatorVersion = toRef(pkg, 'version')
+const [domain, repo] = pkg.repository.split(':')
 
 function onOpenRepo() {
-  const [domain, repo] = pkg.repository.split(':')
   openURL(`https://${domain}.com/${repo}`, undefined, {
     noopener: true,
     noreferrer: true,

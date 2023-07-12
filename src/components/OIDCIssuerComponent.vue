@@ -7,7 +7,7 @@
       type="url"
       use-input
       square
-      :options="['login.inrupt.com', 'login.inrupt.net']"
+      :options="loginOptions"
       autofocus
       bottom-slots
       :prefix="prefix"
@@ -55,6 +55,7 @@ defineProps({
   },
 })
 
+const loginOptions = ref(['login.inrupt.com', 'login.inrupt.net'])
 const oidcIssuer = ref('')
 const prefix = ref('https://')
 

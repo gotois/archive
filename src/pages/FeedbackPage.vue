@@ -2,7 +2,7 @@
   <QPage class="full-width full-height">
     <iframe
       v-if="!$q.platform.is.android"
-      src="https://docs.google.com/forms/d/e/1FAIpQLSdVkv7OPOU2n20YKhl3sBwwhjAV_KuFqFncNNfnIgUTp3_8RA/viewform?embedded=true"
+      :src="iframeURL"
       width="100%"
       height="100%"
       class="absolute-top absolute-bottom fit"
@@ -20,6 +20,8 @@ import { QPage, Platform, openURL } from 'quasar'
 import { useRouter } from 'vue-router'
 import { packageId } from '../../twa-manifest.json'
 
+const iframeURL =
+  'https://docs.google.com/forms/d/e/1FAIpQLSdVkv7OPOU2n20YKhl3sBwwhjAV_KuFqFncNNfnIgUTp3_8RA/viewform?embedded=true'
 const router = useRouter()
 
 onMounted(() => {

@@ -94,25 +94,6 @@ export default defineStore('contracts', {
       const contract = getContractFromLD(jsldContract)
 
       // Save to IndexedDb
-      const contract = {
-        context: jsldContract['@context'],
-        type: jsldContract.type,
-        issuer: jsldContract.issuer,
-        issuanceDate: jsldContract.issuanceDate,
-        identifier: jsldContract.credentialSubject.identifier,
-        agent_name: jsldContract.credentialSubject.agent.name,
-        agent_email: jsldContract.credentialSubject.agent.email,
-        participant_name: jsldContract.credentialSubject.participant.name,
-        participant_email: jsldContract.credentialSubject.participant.email,
-        instrument_name: jsldContract.credentialSubject.instrument.name,
-        instrument_description:
-          jsldContract.credentialSubject.instrument.description,
-        startTime: new Date(jsldContract.credentialSubject.startTime),
-        endTime: new Date(jsldContract.credentialSubject.endTime),
-        images: jsldContract.credentialSubject.object,
-        url: jsldContract.credentialSubject.url,
-      } as ContractTable
-
       const countIndex = await db.add(contract)
       if (countIndex === 0) {
         return Promise.reject('Cannot add this item')

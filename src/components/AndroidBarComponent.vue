@@ -16,8 +16,8 @@
 import { ref, toRef, onMounted, onUnmounted } from 'vue'
 import { date, QSpace, QBar, QIcon } from 'quasar'
 import manifest from '../../twa-manifest.json'
-const launcherName = toRef(manifest, 'launcherName')
 
+const launcherName = toRef(manifest, 'launcherName')
 const batteryCharging = ref(false)
 const batteryLevel = ref(-1)
 const connectionType = ref('')
@@ -29,7 +29,7 @@ const updateDate = setInterval(() => {
   now.value = new Date()
 }, 1000)
 
-function batteryIcon(batteryLevel, batteryCharging) {
+function batteryIcon(batteryLevel: number, batteryCharging: boolean) {
   if (batteryCharging) {
     return 'battery_charging_full'
   } else if (batteryLevel === 0) {

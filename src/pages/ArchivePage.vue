@@ -295,8 +295,8 @@ function onEdit(item: FormatContract) {
         type: 'positive',
         message: 'Данные обновлены',
       })
-    } catch (e) {
-      console.error(e)
+    } catch (error) {
+      console.error(error)
       $q.notify({
         color: 'negative',
         message: 'Ошибка в обновлении',
