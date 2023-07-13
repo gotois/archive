@@ -1,12 +1,14 @@
 {
   "name": "contracts",
   "version": "0.6.0",
-  "description": "Офлайн база договоров",
+  "description": "Take control of your contracts with our app",
   "keywords": [
     "archive",
     "my archive",
     "архив договоров",
     "мои договоры",
+    "contract master",
+    "contract keeper",
     "договоры оффлайн"
   ],
   "license": "GPL-3.0",
@@ -16,7 +18,7 @@
     "email": "baskovsky@yandex.ru"
   },
   "repository": "github:gotois/archive",
-  "productName": "Мои договоры",
+  "productName": "ContractKeeper",
   "author": {
     "name": "goto Interactive Communications DAO",
     "email": "support@gotointeractive.com",

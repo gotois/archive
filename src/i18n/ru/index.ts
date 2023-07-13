@@ -1,9 +1,10 @@
 import { format } from 'quasar'
-import { productName } from '../../../package.json'
 
+const productName = 'Мои договоры'
 const { humanStorageSize } = format
 
 export default {
+  productName,
   organization: {
     prodid: `-//GIC DAO//NONSGML ${productName}//RU`,
   },

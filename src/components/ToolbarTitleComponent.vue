@@ -11,7 +11,7 @@
       class="cursor-pointer text-center"
       @click="onOpenRepo"
     >
-      {{ launcherName }}
+      {{ $t('productName') }}
       <QTooltip>
         {{ $t('navigation.version', { version: navigatorVersion }) }}
       </QTooltip>
@@ -23,9 +23,7 @@
 import { toRef } from 'vue'
 import { QToolbarTitle, QTooltip, QIcon, openURL } from 'quasar'
 import pkg from '../../package.json'
-import manifest from '../../twa-manifest.json'
 
-const launcherName = toRef(manifest, 'launcherName')
 const navigatorVersion = toRef(pkg, 'version')
 const [domain, repo] = pkg.repository.split(':')
 

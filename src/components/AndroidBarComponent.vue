@@ -1,7 +1,7 @@
 <template>
   <QBar dense class="non-selectable bg-transparent text-primary">
-    <div>{{ launcherName }}</div>
-    <QIcon name="img:/icons/safari-pinned-tab.svg" />
+    <div>{{ $t('productName') }}</div>
+    <QIcon v-if="!$q.dark.isActive" name="img:/icons/safari-pinned-tab.svg" />
     <QSpace />
     <QIcon v-if="connectionSupports" :name="signalIcon(connectionType)" />
     <div v-if="batteryLevel >= 0" class="gt-xs">{{ batteryLevel * 100 }}%</div>
@@ -13,11 +13,9 @@
   </QBar>
 </template>
 <script lang="ts" setup>
-import { ref, toRef, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { date, QSpace, QBar, QIcon } from 'quasar'
-import manifest from '../../twa-manifest.json'
 
-const launcherName = toRef(manifest, 'launcherName')
 const batteryCharging = ref(false)
 const batteryLevel = ref(-1)
 const connectionType = ref('')

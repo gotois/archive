@@ -74,7 +74,7 @@ module.exports = configure((ctx) => {
       },
 
       // iconSet: 'material-icons', // Quasar icon set
-      lang: 'ru', // Quasar language pack
+      // lang: 'ru', // Quasar language pack
 
       // Quasar plugins
       plugins: [
@@ -99,10 +99,10 @@ module.exports = configure((ctx) => {
         start_url: '.',
         display: 'standalone',
         orientation: 'portrait',
+        // lang: 'ru',
         dir: 'auto',
         scope: '/',
         iarc_rating_id: 'e84b072d-71b3-4d3e-86ae-31a8ce4e53b7',
-        lang: 'ru',
         categories: ['productivity'],
         background_color: '#000000',
         theme_color: '#000000',

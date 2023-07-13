@@ -1,9 +1,10 @@
 import { format } from 'quasar'
-import { productName } from '../../../package.json'
 
+const productName = 'Contract Keeper'
 const { humanStorageSize } = format
 
 export default {
+  productName,
   organization: {
     prodid: `-//GIC DAO//NONSGML ${productName}//RU`,
   },
@@ -197,7 +198,7 @@ export default {
   },
   tutorial: {
     welcome: {
-      title: `Welcome to "${productName}"`,
+      title: `Welcome to ${productName}`,
       body: 'Convenient and secure recording of any agreements on your devices.',
       ok: 'Continue',
     },
@@ -244,7 +245,7 @@ export default {
     data: {
       title: 'Confirm Your Account',
       body: 'To use the application, use your name and email address.',
-      ok: 'Start using',
+      ok: 'Start',
     },
   },
   archiveList: {
