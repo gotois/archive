@@ -1,6 +1,6 @@
 <template>
   <div>
-    <QForm @submit="onImportDB">
+    <QForm greedy @submit="onImportDB">
       <QFile
         v-model="file"
         accept=".json,.zip"

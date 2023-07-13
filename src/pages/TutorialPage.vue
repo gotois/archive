@@ -125,28 +125,69 @@
             v-html="parse($t('tutorial.wallet.body'))"
           >
           </div>
-          <QInput
-            v-if="!hasPhantomWallet"
-            v-model.trim="walletPrivateKey"
-            :label="$t('wallet.label')"
-            :type="isPwd ? 'password' : 'text'"
-            :hint="$t('wallet.hint')"
-            :maxlength="88"
-            name="wallet"
-            autocomplete="off"
-            outlined
-          >
-            <template #prepend>
-              <QIcon name="key" />
-            </template>
-            <template #append>
-              <QIcon
-                :name="isPwd ? 'visibility_off' : 'visibility'"
-                class="cursor-pointer q-mr-md"
-                @click="isPwd = !isPwd"
-              />
-            </template>
-          </QInput>
+          <QForm greedy @submit="onWalletComplete">
+            <QInput
+              v-if="!hasPhantomWallet"
+              v-model.trim="walletPrivateKey"
+              :label="$t('wallet.label')"
+              :type="isPwd ? 'password' : 'text'"
+              :hint="$t('wallet.hint')"
+              :maxlength="88"
+              :hide-bottom-space="!$q.platform.is.desktop"
+              color="secondary"
+              name="wallet"
+              autocomplete="off"
+              autofocus
+              outlined
+            >
+              <template #prepend>
+                <QIcon name="key" />
+              </template>
+              <template #append>
+                <QIcon
+                  :name="isPwd ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer q-mr-md"
+                  @click="isPwd = !isPwd"
+                />
+              </template>
+            </QInput>
+            <QSelect
+              v-model="solanaClusterApiURL"
+              :options="solanaClusters"
+              :prefix="prefix"
+              :label="'Solana Cluster'"
+              :hide-bottom-space="!$q.platform.is.desktop"
+              :behavior="$q.platform.is.ios ? 'dialog' : 'menu'"
+              new-value-mode="add-unique"
+              name="contractType"
+              spellcheck="false"
+              color="secondary"
+              options-selected-class="text-secondary"
+              class="q-mt-md q-mb-md"
+              use-input
+              hide-dropdown-icon
+              hide-selected
+              fill-input
+              map-options
+              rounded
+              outlined
+              square
+              @update:model-value="setSolanaClusterApiUrl"
+              @new-value="setSolanaClusterApiUrl"
+            >
+              <template #prepend>
+                <QIcon name="web" />
+              </template>
+              <template #option="{ itemProps, opt }">
+                <QItem v-bind="itemProps">
+                  <QItemSection>
+                    <QItemLabel>{{ opt.label }}</QItemLabel>
+                    <QItemLabel caption>{{ opt.description }}</QItemLabel>
+                  </QItemSection>
+                </QItem>
+              </template>
+            </QSelect>
+          </QForm>
           <QStepperNavigation>
             <QBtn
               v-if="hasPhantomWallet"
@@ -155,47 +196,19 @@
               :label="$t('tutorial.wallet.ok')"
               @click="tryToLoginPhantomWallet"
             />
-            <template v-else>
-              <QSelect
-                v-model="solanaClusterApiURL"
-                :options="solanaClusters"
-                :prefix="prefix"
-                :label="'Solana Cluster'"
-                popup-content-class="q-pt-sm"
-                new-value-mode="add-unique"
-                input-debounce="50"
-                name="contractType"
-                autocomplete="on"
-                spellcheck="false"
-                color="secondary"
-                class="q-mb-md"
-                :hide-bottom-space="!$q.platform.is.desktop"
-                use-input
-                hide-selected
-                fill-input
-                rounded
-                outlined
-                square
-                @update:model-value="setSolanaClusterApiUrl"
-                @new-value="setSolanaClusterApiUrl"
-              >
-                <template #prepend>
-                  <QIcon name="web" />
-                </template>
-              </QSelect>
-              <QBtn
-                :disable="
-                  walletPrivateKey.length === 0 ||
-                  solanaClusterApiURL.length === 0
-                "
-                color="accent"
-                :label="$t('tutorial.wallet.ok')"
-                :class="{
-                  'full-width': !$q.platform.is.desktop,
-                }"
-                @click="onWalletComplete"
-              />
-            </template>
+            <QBtn
+              v-else
+              :disable="
+                walletPrivateKey.length === 0 ||
+                solanaClusterApiURL.length === 0
+              "
+              color="accent"
+              :label="$t('tutorial.wallet.ok')"
+              :class="{
+                'full-width': !$q.platform.is.desktop,
+              }"
+              @click="onWalletComplete"
+            />
             <QBtn
               color="secondary"
               :label="$t('tutorial.wallet.skip')"
@@ -369,6 +382,9 @@ import {
   QStepper,
   QStepperNavigation,
   QTooltip,
+  QItem,
+  QItemSection,
+  QItemLabel,
   useMeta,
   useQuasar,
 } from 'quasar'
@@ -435,16 +451,26 @@ const consumer = ref('')
 const email = ref('')
 const prefix = ref('https://')
 const walletPrivateKey = ref('')
-const solanaClusterApiURL = ref('')
 const solanaClusters = ref(
   [
-    clusterApiUrl('mainnet-beta'),
-    clusterApiUrl('devnet'),
-    clusterApiUrl('testnet'),
-  ].map((url) => {
-    return url.replace(prefix.value, '').replace(/\/$/, '')
-  }),
+    {
+      label: clusterApiUrl('mainnet-beta'),
+      description: 'Mainnet',
+    },
+    {
+      label: clusterApiUrl('devnet'),
+      description: 'Devnet',
+    },
+    {
+      label: clusterApiUrl('testnet'),
+      description: 'Testnet',
+    },
+  ].map((scope) => ({
+    ...scope,
+    label: scope.label.replace(prefix.value, '').replace(/\/$/, ''),
+  })),
 )
+const solanaClusterApiURL = ref(solanaClusters.value[0].label)
 const walletPublicKey = ref('')
 const did = ref('')
 const isPwd = ref(true)

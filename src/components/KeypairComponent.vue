@@ -1,16 +1,7 @@
 <template>
-  <QBtn
-    color="accent"
-    :label="$t('components.keypair.generate.label')"
-    :class="{
-      'full-width': !$q.platform.is.desktop,
-    }"
-    @click="onGenerateKeyPair"
-  >
-    <QTooltip>{{ $t('components.keypair.generate.tooltip') }}</QTooltip>
-  </QBtn>
   <QFile
     v-model="keyPairFile"
+    style="width: calc(300px - 32px)"
     color="accent"
     filled
     accept=".json"
@@ -25,6 +16,17 @@
     </template>
     <QTooltip>{{ $t('components.keypair.import.tooltip') }}</QTooltip>
   </QFile>
+  <QBtn
+    color="accent"
+    :label="$t('components.keypair.generate.label')"
+    class="q-mt-md"
+    :class="{
+      'full-width': !$q.platform.is.desktop,
+    }"
+    @click="onGenerateKeyPair"
+  >
+    <QTooltip>{{ $t('components.keypair.generate.tooltip') }}</QTooltip>
+  </QBtn>
 </template>
 <script lang="ts" setup>
 import { getCurrentInstance, ref } from 'vue'

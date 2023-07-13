@@ -20,6 +20,7 @@
             ? $t('contract.hint.mobile')
             : $t('contract.hint.desktop')
         "
+        :behavior="$q.platform.is.ios ? 'dialog' : 'menu'"
         :rules="[(val) => val && val.length > 0]"
         :error-message="$t('contract.rules')"
         popup-content-class="q-pt-sm"

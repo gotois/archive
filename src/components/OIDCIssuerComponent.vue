@@ -4,15 +4,16 @@
       v-model.trim="oidcIssuer"
       class="full-width"
       :label="label"
-      type="url"
-      use-input
-      square
+      :behavior="$q.platform.is.ios ? 'dialog' : 'menu'"
       :options="loginOptions"
-      autofocus
-      bottom-slots
       :prefix="prefix"
       :rules="[checkUrl]"
       :hint="$t('oidc.issuerHint')"
+      type="url"
+      use-input
+      square
+      autofocus
+      bottom-slots
       hide-dropdown-icon
       input-debounce="0"
       clearable
@@ -24,7 +25,6 @@
       color="accent"
       type="button"
       :label="$t('oidc.login')"
-      icon="login"
       class="q-mt-md"
       :class="{
         'full-width': $q.platform.is.mobile,

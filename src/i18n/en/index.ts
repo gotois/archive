@@ -151,8 +151,8 @@ export default {
     },
   },
   consumer: {
-    type: 'Your full name',
-    email: 'Your email',
+    type: 'Full name',
+    email: 'Email',
     emailRules: 'Enter email address',
     rules: 'Enter consumer (client) of the service',
     save: 'Save',

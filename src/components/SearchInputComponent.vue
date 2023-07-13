@@ -10,6 +10,7 @@
     :options="searchOptions"
     :label="label"
     :loading="searching"
+    :behavior="$q.platform.is.ios ? 'dialog' : 'menu'"
     input-class="text-right q-pb-md"
     use-input
     hide-dropdown-icon
