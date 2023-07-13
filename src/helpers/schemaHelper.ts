@@ -27,17 +27,19 @@ export function getContractFromLD(jsldContract: Credential) {
     context: jsldContract['@context'],
     type: jsldContract.type,
     issuer: jsldContract.issuer,
-    issuanceDate: jsldContract.issuanceDate,
-    identifier: jsldContract.credentialSubject.identifier,
-    agent_name: jsldContract.credentialSubject.agent.name,
-    agent_email: jsldContract.credentialSubject.agent.email,
-    participant_name: jsldContract.credentialSubject.participant.name,
-    participant_email: jsldContract.credentialSubject.participant.email,
+    issuanceDate: new Date(jsldContract.issuanceDate),
+    identifier: jsldContract.credentialSubject?.identifier,
+    agent_name: jsldContract.credentialSubject.agent?.name,
+    agent_email: jsldContract.credentialSubject.agent?.email,
+    participant_name: jsldContract.credentialSubject.participant?.name,
+    participant_email: jsldContract.credentialSubject.participant?.email,
     instrument_name: jsldContract.credentialSubject.instrument.name,
     instrument_description:
-      jsldContract.credentialSubject.instrument.description,
+      jsldContract.credentialSubject.instrument.description ?? null,
     startTime: new Date(jsldContract.credentialSubject.startTime),
-    endTime: new Date(jsldContract.credentialSubject.endTime),
+    endTime: jsldContract.credentialSubject.endTime
+      ? new Date(jsldContract.credentialSubject.endTime)
+      : null,
     images: jsldContract.credentialSubject.object,
     url: jsldContract.credentialSubject.url,
   } as ContractTable
@@ -152,10 +154,10 @@ export function formatterContract(contract: ContractTable) {
     'description': contract.instrument_description,
   }
   const identifier = contract.identifier
-  const object = contract.images.map((image) => ({
+  const object = contract.images.map(({ encodingFormat, contentUrl }) => ({
     '@type': 'ImageObject',
-    'encodingFormat': image.encodingFormat,
-    'contentUrl': image.contentUrl,
+    'encodingFormat': encodingFormat,
+    'contentUrl': contentUrl,
   }))
   return {
     '@context': BaseContext.schemaOrg,
@@ -165,8 +167,8 @@ export function formatterContract(contract: ContractTable) {
     'participant': participant,
     'instrument': instrument,
     'identifier': identifier,
-    'startTime': new Date(contract.startTime),
-    'endTime': new Date(contract.endTime),
+    'startTime': contract.startTime,
+    'endTime': contract.endTime,
     'object': object,
   } as FormatContract
 }

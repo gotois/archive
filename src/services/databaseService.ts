@@ -100,15 +100,22 @@ class SolanaKeysDatabase extends Dexie {
           publicKey: new PublicKey(keysTable.publicKey),
         }
       }
-      case WalletType.Unknown: {
+      case WalletType.Secret: {
         if (!keysTable.privateKey) {
           throw new Error('Error privateKey')
         }
         return {
-          type: WalletType.Unknown,
+          type: WalletType.Secret,
           secretKey: keysTable.privateKey,
           publicKey: new PublicKey(keysTable.publicKey),
           clusterApiUrl: keysTable.clusterApiUrl,
+        }
+      }
+      case WalletType.Unknown: {
+        return {
+          publicKey: null,
+          secretKey: null,
+          type: WalletType.Unknown,
         }
       }
       default: {
@@ -141,8 +148,8 @@ class ContractDatabase extends Dexie {
       'context',
       'type',
       'issuer',
-      'issuanceDate',
-      'identifier',
+      '&issuanceDate',
+      '*identifier',
       'proof',
       'agent_name',
       'agent_email',

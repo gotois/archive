@@ -72,7 +72,8 @@ function onLoadKeyPairFile(file: File) {
 }
 
 async function onGenerateKeyPair() {
-  const resolver = `did:gic:${walletStore.publicKey.toString()}`
+  const gicId = walletStore?.publicKey?.toString() ?? 'demo'
+  const resolver = `did:gic:${gicId}`
   const key = await keyPair.generateNewKeyPair(resolver)
   await keyPair.setKeyPair(key)
   emit('onKey', key)

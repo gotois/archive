@@ -82,7 +82,9 @@
           />
           <template
             v-else-if="
-              !$q.platform.is.safari && encodingFormat === 'application/pdf'
+              $q.platform.is.desktop &&
+              !$q.platform.is.safari &&
+              encodingFormat === 'application/pdf'
             "
           >
             <object

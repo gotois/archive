@@ -5,7 +5,7 @@ export interface ContractTable {
   issuer: string
   issuanceDate: Date
   identifier: ContractIdentifier[]
-  proof: Proof
+  proof?: Proof
   agent_name: string
   agent_email: string
   participant_name: string
@@ -62,7 +62,7 @@ export interface Credential {
   'id': string
   'type': string[]
   'issuer': string
-  'issuanceDate': string
+  'issuanceDate': Date
   'credentialSubject': CredentialSubject
 }
 
@@ -157,13 +157,13 @@ export interface CredentialSubject {
 export interface MyContract {
   agent_email: string
   agent_name: string
-  endTime?: Date | null
-  images: string[]
+  images?: string[]
   instrument_description?: string
   instrument_name: string
   participant_name: string
   participant_email: string
   startTime: Date
+  endTime?: Date
 }
 
 export type ContractData = {

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { Connection, PublicKey, Keypair } from '@solana/web3.js'
+import { Connection, Keypair, PublicKey } from '@solana/web3.js'
 import useAuthStore from 'stores/auth'
 import useProfileStore from 'stores/profile'
 import { keys } from '../services/databaseService'
@@ -40,7 +40,7 @@ export default defineStore('wallet', {
           })
           break
         }
-        default: {
+        case WalletType.Secret: {
           this.type = type
           const key = decode(privateKey)
           const keypair = Keypair.fromSecretKey(key)
@@ -59,6 +59,10 @@ export default defineStore('wallet', {
             publicKey: this.getMultibase,
             clusterApiUrl: clusterApiUrl,
           })
+          break
+        }
+        default: {
+          this.type = WalletType.Unknown
           break
         }
       }

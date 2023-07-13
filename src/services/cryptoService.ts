@@ -35,7 +35,8 @@ export const encode: (x: Uint8Array) => string = base68.encode
 
 export enum WalletType {
   Phantom = 'Phantom Wallet',
-  Unknown = 'Unknown Wallet', // Solana base58
+  Secret = 'Unknown Wallet', // Solana base58
+  Unknown = 'No Wallet',
 }
 
 export function sign({

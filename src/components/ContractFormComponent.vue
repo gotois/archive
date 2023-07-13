@@ -464,7 +464,6 @@ async function onSubmit() {
       endTime: dateNoLimit.value ? null : endDate,
       images: images,
     }
-
     await contractStore.addContract({
       contractData: newContract,
       usePod: isLoggedIn.value,

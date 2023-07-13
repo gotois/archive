@@ -83,7 +83,8 @@ export default defineStore('contracts', {
       const id = uid()
       const jsldContract = createContractLD(contractData)
       const idName = 'Contract'
-      jsldContract.id = `did:gic:${walletStore.publicKey.toString()}?${idName.toLowerCase()}=${id}`
+      const gicId = walletStore?.publicKey?.toString() ?? 'demo'
+      jsldContract.id = `did:gic:${gicId}?${idName.toLowerCase()}=${id}`
       jsldContract.credentialSubject.identifier.push({
         value: id,
         name: idName,
@@ -117,12 +118,12 @@ export default defineStore('contracts', {
           })
           break
         }
-        case WalletType.Unknown: {
+        case WalletType.Secret: {
           const { secretKey } = await keys.last()
           const { signature } = signMessageUseSolana(message, secretKey)
           jsldContract.credentialSubject.identifier.push({
             value: signature,
-            name: WalletType.Unknown,
+            name: WalletType.Secret,
           })
           break
         }

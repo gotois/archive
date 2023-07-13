@@ -196,6 +196,15 @@
                 @click="onWalletComplete"
               />
             </template>
+            <QBtn
+              color="secondary"
+              :label="$t('tutorial.wallet.skip')"
+              class="q-ml-md"
+              :class="{
+                'full-width': !$q.platform.is.desktop,
+              }"
+              @click="onSkipWallet"
+            />
           </QStepperNavigation>
         </QStep>
         <QStep
@@ -438,7 +447,6 @@ const solanaClusters = ref(
 )
 const walletPublicKey = ref('')
 const did = ref('')
-const walletType = ref<WalletType>(WalletType.Unknown)
 const isPwd = ref(true)
 const { isLoggedIn } = storeToRefs(authStore)
 const hasPhantomWallet = computed(() => Reflect.has(window, 'phantom'))
@@ -556,13 +564,24 @@ function setSolanaClusterApiUrl(value: string) {
   solanaClusterApiURL.value = value
 }
 
+function onSkipWallet() {
+  const dialog = $q.dialog({
+    message: $t('wallet.skipDialog.message'),
+    cancel: true,
+    persistent: true,
+  })
+  dialog.onOk(() => {
+    stepper.value.next()
+  })
+}
+
 async function onWalletComplete() {
   $q.loading.show()
   try {
     await walletStore.setKeypare({
       privateKey: walletPrivateKey.value,
       publicKey: walletPublicKey.value,
-      type: walletType.value,
+      type: WalletType.Secret,
       clusterApiUrl: prefix.value + solanaClusterApiURL.value,
     })
     stepper.value.next()
@@ -650,7 +669,7 @@ async function onFinish() {
       participant_name: pkg.author.name,
       participant_email: pkg.author.email,
       instrument_name: $t('pages.privacy.title'),
-      instrument_description: `${pkg.productName}: ${pkg.description} v.${pkg.version}`,
+      instrument_description: `${pkg.productName}: ${pkg.description} v${pkg.version}`,
       startTime: new Date(),
       images: contractPDF,
     }
