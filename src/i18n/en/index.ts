@@ -362,6 +362,9 @@ export default {
         mail: {
           label: 'Send message',
         },
+        law: {
+          label: 'Challenge in court',
+        },
       },
     },
     contractForm: {

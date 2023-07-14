@@ -237,6 +237,7 @@ enum SheetAction {
   GOOGLE_CALENDAR = 'google-calendar',
   UPLOAD = 'upload',
   MAIL = 'mail',
+  LAW = 'law',
 }
 
 function onSheet(item: FormatContract) {
@@ -292,6 +293,12 @@ function onSheet(item: FormatContract) {
       color: 'secondary',
       id: SheetAction.MAIL,
     })
+    actions.push({
+      label: $t('components.archiveList.sheet.law.label'),
+      icon: 'gavel',
+      color: 'secondary',
+      id: SheetAction.LAW,
+    })
   }
   const icalId = $t('organization.prodid')
 
@@ -324,7 +331,21 @@ function onSheet(item: FormatContract) {
       case SheetAction.MAIL: {
         return openURL(mailUrl(item))
       }
+      case SheetAction.LAW: {
+        return sendToCourt()
+      }
+      default: {
+        console.warn('Unknown id')
+        break
+      }
     }
+  })
+}
+
+function sendToCourt() {
+  $q.dialog({
+    message: 'This functionality is under development.',
+    persistent: true,
   })
 }
 

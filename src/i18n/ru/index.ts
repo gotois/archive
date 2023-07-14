@@ -364,6 +364,9 @@ export default {
         mail: {
           label: 'Отправить сообщение',
         },
+        law: {
+          label: 'Оспорить в суде',
+        },
       },
     },
     contractForm: {

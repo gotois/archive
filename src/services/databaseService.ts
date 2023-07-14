@@ -26,7 +26,8 @@ class KeyPairDatabase extends Dexie {
     }
 
     this.version(1).stores({
-      keyPair: 'id, controller, type, publicKeyMultibase, privateKeyMultibase',
+      keyPair:
+        '&id, controller, type, &publicKeyMultibase, privateKeyMultibase',
     })
     this.keyPair = this.table('keyPair')
   }
@@ -78,7 +79,7 @@ class SolanaKeysDatabase extends Dexie {
     }
 
     this.version(1).stores({
-      keys: '++id, publicKey, privateKey, type, clusterApiUrl',
+      keys: ', &publicKey, privateKey, type, clusterApiUrl',
     })
     this.keys = this.table('keys')
   }

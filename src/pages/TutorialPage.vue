@@ -125,9 +125,8 @@
             v-html="parse($t('tutorial.wallet.body'))"
           >
           </div>
-          <QForm greedy @submit="onWalletComplete">
+          <QForm v-if="!hasPhantomWallet" greedy @submit="onWalletComplete">
             <QInput
-              v-if="!hasPhantomWallet"
               v-model.trim="walletPrivateKey"
               :label="$t('wallet.label')"
               :type="isPwd ? 'password' : 'text'"
