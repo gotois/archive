@@ -195,28 +195,29 @@
               :label="$t('tutorial.wallet.ok')"
               @click="tryToLoginPhantomWallet"
             />
-            <QBtn
-              v-else
-              :disable="
-                walletPrivateKey.length === 0 ||
-                solanaClusterApiURL.length === 0
-              "
-              color="accent"
-              :label="$t('tutorial.wallet.ok')"
-              :class="{
-                'full-width': !$q.platform.is.desktop,
-              }"
-              @click="onWalletComplete"
-            />
-            <QBtn
-              color="secondary"
-              :label="$t('tutorial.wallet.skip')"
-              class="q-ml-md"
-              :class="{
-                'full-width': !$q.platform.is.desktop,
-              }"
-              @click="onSkipWallet"
-            />
+            <template v-else>
+              <QBtn
+                :disable="
+                  walletPrivateKey.length === 0 ||
+                  solanaClusterApiURL.length === 0
+                "
+                color="accent"
+                :label="$t('tutorial.wallet.ok')"
+                :class="{
+                  'full-width': !$q.platform.is.desktop,
+                }"
+                @click="onWalletComplete"
+              />
+              <QBtn
+                color="secondary"
+                :label="$t('tutorial.wallet.skip')"
+                class="q-ml-md"
+                :class="{
+                  'full-width': !$q.platform.is.desktop,
+                }"
+                @click="onSkipWallet"
+              />
+            </template>
           </QStepperNavigation>
         </QStep>
         <QStep

@@ -1,36 +1,36 @@
 <template>
-  <QFile
-    v-model="keyPairFile"
-    style="width: calc(300px - 32px)"
-    color="accent"
-    filled
-    accept=".json"
-    :label="$t('components.keypair.import.label')"
-    :class="{
-      'full-width': !$q.platform.is.desktop,
-    }"
-    @update:model-value="onLoadKeyPairFile"
-  >
-    <template #prepend>
-      <QIcon name="cloud_upload" @click.stop.prevent />
-    </template>
-    <QTooltip>{{ $t('components.keypair.import.tooltip') }}</QTooltip>
-  </QFile>
-  <QBtn
-    color="accent"
-    :label="$t('components.keypair.generate.label')"
-    class="q-mt-md"
-    :class="{
-      'full-width': !$q.platform.is.desktop,
-    }"
-    @click="onGenerateKeyPair"
-  >
-    <QTooltip>{{ $t('components.keypair.generate.tooltip') }}</QTooltip>
-  </QBtn>
+  <QBtnGroup spread class="q-mt-md">
+    <QFile
+      v-model="keyPairFile"
+      color="accent"
+      filled
+      accept=".json"
+      :label="$t('components.keypair.import.label')"
+      :class="{
+        'full-width': !$q.platform.is.desktop,
+      }"
+      @update:model-value="onLoadKeyPairFile"
+    >
+      <template #prepend>
+        <QIcon name="cloud_upload" @click.stop.prevent />
+      </template>
+      <QTooltip>{{ $t('components.keypair.import.tooltip') }}</QTooltip>
+    </QFile>
+    <QBtn
+      color="accent"
+      :label="$t('components.keypair.generate.label')"
+      :class="{
+        'full-width': !$q.platform.is.desktop,
+      }"
+      @click="onGenerateKeyPair"
+    >
+      <QTooltip>{{ $t('components.keypair.generate.tooltip') }}</QTooltip>
+    </QBtn>
+  </QBtnGroup>
 </template>
 <script lang="ts" setup>
 import { getCurrentInstance, ref } from 'vue'
-import { QBtn, QIcon, QFile, QTooltip, useQuasar } from 'quasar'
+import { QBtn, QIcon, QBtnGroup, QFile, QTooltip, useQuasar } from 'quasar'
 import useWalletStore from 'stores/wallet'
 import { DIDTable } from '../types/models'
 import { keyPair } from '../services/databaseService'
