@@ -16,6 +16,7 @@ import {
 } from '@inrupt/solid-client'
 import { RDF, FOAF, SCHEMA_INRUPT } from '@inrupt/vocab-common-rdf'
 import useAuthStore from 'stores/auth'
+import useProfileStore from 'stores/profile'
 import {
   ProofCredential,
   CredentialTypes,
@@ -56,9 +57,7 @@ export default defineStore('pod', {
           fetch,
         })
       }
-      const myBaseDataset = await getSolidDataset(resourceBaseUrl, {
-        fetch,
-      })
+      const myBaseDataset = await this.getDataset(resourceBaseUrl)
       const hasAnyContracts = getThingAll(myBaseDataset).some(({ url }) =>
         url.includes(name),
       )
@@ -68,22 +67,49 @@ export default defineStore('pod', {
         })
       }
     },
-
     formatterDatasetContract(signedVC: ProofCredential) {
       const resourceUrl =
         this.getResourceBaseUrl + signedVC.proof.created + '.ttl'
       const types = signedVC['@context'][1] as unknown as CredentialTypes
       const item = signedVC.credentialSubject
-
+      // context
+      const context = buildThing(createThing({ url: resourceUrl + '#context' }))
+      context.addStringNoLocale('context', JSON.stringify(signedVC['@context']))
+      // type
+      const type = buildThing(createThing({ url: resourceUrl + '#type' }))
+      signedVC.type.forEach((t) => {
+        type.addStringNoLocale(SCHEMA_INRUPT.name, t)
+      })
+      // issuer
+      const issuer = buildThing(
+        createThing({ url: resourceUrl + '#issuer' }),
+      ).addStringNoLocale(SCHEMA_INRUPT.name, signedVC.issuer)
+      // issuanceDate
+      const issuanceDate = buildThing(
+        createThing({ url: resourceUrl + '#issuanceDate' }),
+      ).addDate(SCHEMA_INRUPT.dateModified, signedVC.issuanceDate)
+      // proof
+      const proof = buildThing(createThing({ url: resourceUrl + '#issuer' }))
+        .addStringNoLocale('type', signedVC.proof.type)
+        .addStringNoLocale('created', signedVC.proof.created)
+        .addStringNoLocale(
+          'verificationMethod',
+          signedVC.proof.verificationMethod,
+        )
+        .addStringNoLocale('proofPurpose', signedVC.proof.proofPurpose)
+        .addStringNoLocale('proofValue', signedVC.proof.proofValue)
+      // Agent: agent_name, agent_email,
       const agent = buildThing(createThing({ url: resourceUrl + '#agent' }))
         .addStringNoLocale(SCHEMA_INRUPT.name, item.agent.name)
         .addUrl(RDF.type, types.agent)
+      // EndTime
       const endTime = buildThing(createThing({ url: resourceUrl + '#endTime' }))
       if (item.endTime) {
         endTime
           .addDate(SCHEMA_INRUPT.endTime, new Date(item.endTime))
           .addUrl(RDF.type, types.endTime)
       }
+      // Identifier
       const identifier = buildThing(
         createThing({ url: resourceUrl + '#identifier' }),
       )
@@ -94,6 +120,7 @@ export default defineStore('pod', {
           .addStringNoLocale(SCHEMA_INRUPT.productID, ident.propertyID)
           .addStringNoLocale(SCHEMA_INRUPT.value, ident.value)
       })
+      // Instrument: instrument_name, instrument_description
       const instrument = buildThing(
         createThing({ url: resourceUrl + '#instrument' }),
       )
@@ -103,6 +130,7 @@ export default defineStore('pod', {
         )
         .addStringNoLocale(SCHEMA_INRUPT.name, item.instrument.name)
         .addUrl(RDF.type, types.instrument)
+      // Object
       const objectThing = buildThing(
         createThing({ url: resourceUrl + '#object' }),
       )
@@ -114,11 +142,13 @@ export default defineStore('pod', {
         objectThing.addUrl(SCHEMA_INRUPT.image, object.contentUrl)
       })
       objectThing.addUrl(RDF.type, types.object)
+      // Participant: participant_name, participant_email
       const participant = buildThing(
         createThing({ url: resourceUrl + '#participant' }),
       )
         .addStringNoLocale(SCHEMA_INRUPT.name, item.participant.name)
         .addUrl(RDF.type, types.participant)
+      // StartTime
       const startTime = buildThing(
         createThing({ url: resourceUrl + '#startTime' }),
       )
@@ -126,7 +156,12 @@ export default defineStore('pod', {
         .addUrl(RDF.type, types.startTime)
 
       let dataset = createSolidDataset()
+      dataset = setThing(dataset, context.build())
       dataset = setThing(dataset, agent.build())
+      dataset = setThing(dataset, type.build())
+      dataset = setThing(dataset, proof.build())
+      dataset = setThing(dataset, issuer.build())
+      dataset = setThing(dataset, issuanceDate.build())
       dataset = setThing(dataset, endTime.build())
       dataset = setThing(dataset, identifier.build())
       dataset = setThing(dataset, instrument.build())
@@ -136,7 +171,6 @@ export default defineStore('pod', {
 
       return dataset
     },
-
     removeFromPod(url: string) {
       const separator = '.'
       const oidcIssuer: string = this.getOidcIssuer
@@ -155,9 +189,7 @@ export default defineStore('pod', {
     },
     async removeContractsDataset() {
       const resourceBaseUrl = this.getResourceBaseUrl
-      const myDataset = await getSolidDataset(resourceBaseUrl, {
-        fetch,
-      })
+      const myDataset = await this.getDataset(resourceBaseUrl)
 
       const allThing = getThingAll(myDataset)
         .filter((thing) => {
@@ -188,26 +220,65 @@ export default defineStore('pod', {
       // }
       this.resourceRootUrl = podsUrl[selectedPod]
     },
-    async getProfileName() {
+    async getProfileFOAF() {
       if (!this.resourceRootUrl) {
         throw new Error('Empty resourceRootUrl')
       }
-      const resourceProfileUrl = this.resourceRootUrl + 'profile'
-      const profileDataset = await getSolidDataset(resourceProfileUrl, {
-        fetch,
-      })
+      // 'profile/card' for inrupt.net
+      // todo 'profile' for inrupt.com
+      const resourceProfileUrl = this.resourceRootUrl + 'profile/card'
+      const profileDataset = await this.getDataset(resourceProfileUrl)
       const authStore = useAuthStore()
       const profile = getThing(profileDataset, authStore.webId)
       if (profile) {
-        return getStringNoLocale(profile, FOAF.name)
+        return {
+          name: getStringNoLocale(profile, FOAF.name),
+          email: getStringNoLocale(profile, FOAF.mbox),
+          avatar: getStringNoLocale(profile, FOAF.img),
+        }
       }
-      return ''
+      return {
+        name: null,
+        email: null,
+        avatar: null,
+      }
+    },
+    getDataset(resource: string) {
+      if (!this.resourceRootUrl) {
+        throw new Error('Empty Resource Root Url')
+      }
+      if (!resource) {
+        throw new Error('Empty Resource Folder')
+      }
+      return getSolidDataset(resource, {
+        fetch,
+      })
+    },
+    async setProfileFOAF() {
+      const resourceProfileUrl = this.resourceRootUrl + 'profile'
+      const profileDataset = await this.getDataset(resourceProfileUrl)
+      const authStore = useAuthStore()
+      const profileStore = useProfileStore()
+
+      const profile = buildThing(createThing({ url: authStore.webId }))
+      if (profileStore.consumer) {
+        profile.addStringNoLocale(FOAF.name, profileStore.consumer)
+      }
+      if (profileStore.email) {
+        profile.addStringNoLocale(FOAF.mbox, profileStore.email)
+      }
+      if (profileStore.avatar) {
+        profile.addUrl(FOAF.img, profileStore.avatar)
+      }
+      const updProfileDataset = setThing(profileDataset, profile.build())
+
+      return saveSolidDatasetAt(resourceProfileUrl, updProfileDataset, {
+        fetch,
+      })
     },
     async updateIntoPod(item: FormatContract) {
       const resourceUrl = item.sameAs
-      let dataset = await getSolidDataset(resourceUrl, {
-        fetch,
-      })
+      let dataset = await this.getDataset(resourceUrl)
       const instrument = getThing(dataset, resourceUrl + '#instrument')
 
       const modify = buildThing(instrument).addStringNoLocale(

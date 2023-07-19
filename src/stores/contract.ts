@@ -5,6 +5,7 @@ import { defineStore } from 'pinia'
 import { Ed25519Signature2020 } from '@digitalbazaar/ed25519-signature-2020'
 import usePodStore from './pod'
 import useWalletStore from './wallet'
+import { demoUserWebId } from './auth'
 import {
   signMessageUsePhantom,
   signMessageUseSolana,
@@ -83,8 +84,9 @@ export default defineStore('contracts', {
       const id = uid()
       const jsldContract = createContractLD(contractData)
       const idName = 'Contract'
-      const gicId = walletStore?.publicKey?.toString() ?? 'demo'
-      jsldContract.id = `did:gic:${gicId}?${idName.toLowerCase()}=${id}`
+      const gicId = walletStore?.publicKey?.toString()
+      const resolver = gicId ? `did:gic:${gicId}` : demoUserWebId
+      jsldContract.id = `${resolver}?${idName.toLowerCase()}=${id}`
       jsldContract.credentialSubject.identifier.push({
         value: id,
         name: idName,

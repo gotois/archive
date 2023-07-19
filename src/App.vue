@@ -127,10 +127,15 @@ events.on(EVENTS.SESSION_RESTORED, async (urlString) => {
 events.on(EVENTS.LOGIN, async () => {
   authStore.openIdHandleIncoming()
   await podStore.setResourceRootUrl()
-  const { name } = profileStore.getPersonLD
-  if (!name) {
-    const profileName = await podStore.getProfileName()
-    profileStore.consumerName(profileName)
+  const { name, email, avatar } = await podStore.getProfileFOAF()
+  if (name) {
+    profileStore.consumerName(name)
+  }
+  if (email) {
+    profileStore.consumerEmail(email)
+  }
+  if (avatar) {
+    profileStore.consumerImg(avatar)
   }
   $q.sessionStorage.remove('connect')
   $q.sessionStorage.set('restorePreviousSession', true)

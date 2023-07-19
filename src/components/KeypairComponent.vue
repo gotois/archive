@@ -32,6 +32,7 @@
 import { getCurrentInstance, ref } from 'vue'
 import { QBtn, QIcon, QBtnGroup, QFile, QTooltip, useQuasar } from 'quasar'
 import useWalletStore from 'stores/wallet'
+import { demoUserWebId } from 'stores/auth'
 import { DIDTable } from '../types/models'
 import { keyPair } from '../services/databaseService'
 
@@ -74,8 +75,8 @@ function onLoadKeyPairFile(file: File) {
 }
 
 async function onGenerateKeyPair() {
-  const gicId = walletStore?.publicKey?.toString() ?? 'demo'
-  const resolver = `did:gic:${gicId}`
+  const gicId = walletStore?.publicKey?.toString()
+  const resolver = gicId ? `did:gic:${gicId}` : demoUserWebId
   const key = await keyPair.generateNewKeyPair(resolver)
   await keyPair.setKeyPair(key)
   emit('onKey', key)

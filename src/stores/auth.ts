@@ -14,6 +14,8 @@ interface Store {
   tryAuth: boolean
 }
 
+export const demoUserWebId = 'did:gic:demo' as WebId
+
 export default defineStore('auth', {
   state: (): Store => ({
     tryAuth: LocalStorage.getItem('tryAuth') ?? false,
@@ -22,7 +24,7 @@ export default defineStore('auth', {
     openIdSessionId: '',
     openIdExpirationDate: null,
     openIdIsLoggedIn: false,
-    webId: getDefaultSession().info.webId ?? 'did:gic:demo',
+    webId: getDefaultSession().info.webId ?? demoUserWebId,
   }),
   actions: {
     async setCode(value: string) {

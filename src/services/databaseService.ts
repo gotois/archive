@@ -59,12 +59,20 @@ class KeyPairDatabase extends Dexie {
     }) as Promise<DIDTable>
   }
   async setKeyPair(keyPair: DIDTable) {
-    await this.destroy()
+    await this.keyPair.clear()
     return this.keyPair.add(keyPair)
   }
 
-  public destroy() {
-    return this.keyPair.clear()
+  // eslint-disable-next-line @typescript-eslint/require-await
+  public async destroy() {
+    this.close()
+    try {
+      void this.delete()
+    } catch (error) {
+      console.error(error)
+    } finally {
+      void this.open()
+    }
   }
 }
 
@@ -126,12 +134,20 @@ class SolanaKeysDatabase extends Dexie {
   }
 
   public async add(keyPair: KeysTable) {
-    await this.destroy()
+    await this.keys.clear()
     return this.keys.add(keyPair)
   }
 
-  public destroy() {
-    return this.keys.clear()
+  // eslint-disable-next-line @typescript-eslint/require-await
+  public async destroy() {
+    this.close()
+    try {
+      void this.delete()
+    } catch (error) {
+      console.error(error)
+    } finally {
+      void this.open()
+    }
   }
 }
 
@@ -189,13 +205,17 @@ class ContractDatabase extends Dexie {
     recommendationContractTypes.forEach((contractName) => {
       map.set(contractName, { count: 0, recommendation: true })
     })
-    await this.contracts.each((value) => {
-      let count = 1
-      if (map.get(value.instrument_name)) {
-        count += map.get(value.instrument_name).count
-      }
-      map.set(value.instrument_name, { count, recommendation: false })
-    })
+    try {
+      await this.contracts.each((value) => {
+        let count = 1
+        if (map.get(value.instrument_name)) {
+          count += map.get(value.instrument_name).count
+        }
+        map.set(value.instrument_name, { count, recommendation: false })
+      })
+    } catch (error) {
+      console.error(error)
+    }
     return map
   }
 
@@ -227,8 +247,17 @@ class ContractDatabase extends Dexie {
     return this.contracts.where('id').equals(id).delete()
   }
 
-  public destroy() {
-    return this.contracts.clear()
+  public async destroy() {
+    try {
+      await this.contracts.clear()
+    } catch (e) {
+      if (e.name === 'DatabaseClosedError') {
+        this.close()
+        await this.delete()
+      }
+    } finally {
+      await this.open()
+    }
   }
 }
 

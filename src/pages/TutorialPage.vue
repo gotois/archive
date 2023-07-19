@@ -304,7 +304,7 @@
             <QInput
               v-model.trim="consumer"
               :label="$t('consumer.type')"
-              :rules="[(val) => val && val.length > 0]"
+              :rules="[(val) => val && val.length > 3]"
               name="consumer"
               type="text"
               autocomplete="on"
@@ -388,9 +388,11 @@ import {
   useMeta,
   useQuasar,
 } from 'quasar'
+import patterns from 'quasar/src/utils/patterns'
 import { storeToRefs } from 'pinia'
 import { clusterApiUrl } from '@solana/web3.js'
 import useAuthStore from 'stores/auth'
+import { demoUserWebId } from 'stores/auth'
 import tutorialStore from 'stores/tutorial'
 import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
@@ -447,8 +449,7 @@ function getCurrentStep() {
 const scroll = ref<InstanceType<typeof QScrollArea> | null>(null)
 const stepper = ref<InstanceType<typeof QStepper> | null>(null)
 const step = ref(getCurrentStep() ?? STEP.WELCOME)
-const consumer = ref('')
-const email = ref('')
+
 const prefix = ref('https://')
 const walletPrivateKey = ref('')
 const solanaClusters = ref(
@@ -475,9 +476,13 @@ const walletPublicKey = ref('')
 const did = ref('')
 const isPwd = ref(true)
 const { isLoggedIn } = storeToRefs(authStore)
+const { consumer, email } = storeToRefs(profileStore)
 const hasPhantomWallet = computed(() => Reflect.has(window, 'phantom'))
 const consumerValid = computed(() => {
-  return Boolean(consumer.value.length && email.value.length)
+  return Boolean(
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+    consumer.value.length > 3 && patterns.testPattern.email(email.value),
+  )
 })
 
 watch(
@@ -680,7 +685,7 @@ async function onFinish() {
   $q.loading.show()
 
   if (!authStore.webId) {
-    authStore.webId = 'did:gic:demo'
+    authStore.webId = demoUserWebId
   }
 
   try {
@@ -710,6 +715,11 @@ async function onFinish() {
     profileStore.consumerEmail(email.value)
     profileStore.consumerDID(did.value)
     await profileStore.setAvatar(email.value)
+
+    if (isLoggedIn.value) {
+      await podStore.setProfileFOAF()
+    }
+
     tutorialStore().tutorialComplete()
     await router.push({
       name: ROUTE_NAMES.FILTER,
@@ -758,6 +768,9 @@ onMounted(() => {
   }
   if (step.value > STEP.WALLET && walletStore.getMultibase?.length === 0) {
     step.value = STEP.WALLET
+  }
+  if (isLoggedIn.value && query.code && query.state) {
+    step.value = STEP.FINAL
   }
 })
 </script>

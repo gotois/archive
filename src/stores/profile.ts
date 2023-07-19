@@ -32,6 +32,10 @@ export default defineStore('profile', {
       LocalStorage.set('email', email)
       this.email = email
     },
+    consumerImg(value: string) {
+      LocalStorage.set('avatar', value)
+      this.avatar = value
+    },
     async setAvatar(email: string) {
       const avatarURL = await getGravatarURL(email)
       if (!avatarURL.length) {
@@ -41,8 +45,7 @@ export default defineStore('profile', {
       if (Reflect.has(URL, 'canParse') && !URL.canParse(avatarURL)) {
         return
       }
-      LocalStorage.set('avatar', avatarURL)
-      this.avatar = avatarURL
+      this.consumerImg(avatarURL)
     },
   },
   getters: {
