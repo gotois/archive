@@ -132,6 +132,10 @@ export async function getGravatarURL(email: string) {
   return ''
 }
 
+export function getIdentifierMessage(item: CredentialSubject) {
+  return item.instrument.name + '\n' + item.instrument.description
+}
+
 export function formatterContract(contract: ContractTable) {
   const agent: FormatContractAgent = {
     '@type': 'Person',

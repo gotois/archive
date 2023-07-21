@@ -17,6 +17,7 @@ import {
   formatterContracts,
   createContractLD,
   getContractFromLD,
+  getIdentifierMessage,
 } from '../helpers/schemaHelper'
 import {
   ContractData,
@@ -42,10 +43,6 @@ if (LocalStorage.has('contractNames')) {
     'contractNames',
     Array.from(contractNames).filter((key) => !!key),
   )
-}
-
-function getMessageFromContract(contract: ContractTable) {
-  return contract.instrument_name + '\n' + contract.instrument_description
 }
 
 export default defineStore('contracts', {
@@ -110,7 +107,7 @@ export default defineStore('contracts', {
       })
 
       // подписываем документ и обновляем идентификатор подписи
-      const message = getMessageFromContract(contract)
+      const message = getIdentifierMessage(jsldContract.credentialSubject)
       switch (walletStore.type) {
         case WalletType.Phantom: {
           const { signature } = await signMessageUsePhantom(message)

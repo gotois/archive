@@ -14,6 +14,5 @@ declare module 'pinia' {
 }
 
 export default store(() => {
-  const pinia = createPinia()
-  return pinia
+  return createPinia()
 })

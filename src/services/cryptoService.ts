@@ -97,6 +97,18 @@ export async function signMessageUsePhantom(message: string) {
   }
 }
 
+export function verifySign(
+  message: string,
+  signature: string,
+  publicKey: string,
+) {
+  return tweetnacl.sign.detached.verify(
+    encodeMessage(message),
+    decode(signature),
+    decode(publicKey),
+  )
+}
+
 export function signMessageUseSolana(message: string, secretKey: Uint8Array) {
   const fromWallet = Keypair.fromSecretKey(secretKey)
   const signature = tweetnacl.sign(encodeMessage(message), fromWallet.secretKey)

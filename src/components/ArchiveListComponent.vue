@@ -31,7 +31,14 @@
                   item.instrument.description && !$q.platform.is.desktop,
                 'ellipsis': $q.platform.is.desktop,
               }"
-              >{{ item.instrument.name }}
+            >
+              <template v-if="isVerified(item)">
+                <QIcon name="verified" />
+              </template>
+              <template v-else>
+                <QIcon name="error" color="warning" />
+              </template>
+              {{ item.instrument.name }}
             </p>
             <p
               v-if="item.instrument.description"
@@ -137,6 +144,7 @@ import { PropType, ref, toRef, watch, getCurrentInstance } from 'vue'
 import {
   useQuasar,
   QBtn,
+  QIcon,
   QItemLabel,
   QSeparator,
   QSpace,
@@ -156,12 +164,15 @@ import { storeToRefs } from 'pinia'
 import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
 import usePodStore from 'stores/pod'
+import useWalletStore from 'stores/wallet'
 import ContractCarouselComponent from 'components/ContractCarouselComponent.vue'
 import { FormatContract, ContractTable } from '../types/models'
 import { isDateNotOk, formatterDate } from '../helpers/dateHelper'
 import { readFilesPromise } from '../helpers/fileHelper'
 import createCal from '../helpers/calendarHelper'
+import { getIdentifierMessage } from '../helpers/schemaHelper'
 import { mailUrl, googleMailUrl } from '../helpers/mailHelper'
+import { verifySign, WalletType } from '../services/cryptoService'
 
 const $q = useQuasar()
 // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -185,6 +196,7 @@ const emit = defineEmits(['onPaginate', 'onRemove', 'onEdit'])
 const authStore = useAuthStore()
 const contractStore = useContractStore()
 const podStore = usePodStore()
+const walletStore = useWalletStore()
 
 const contracts = toRef(props, 'contracts', [])
 const page = ref(props.page)
@@ -196,6 +208,21 @@ watch(
     page.value = value
   },
 )
+
+function isVerified(item: FormatContract) {
+  const cryptoData = item.identifier.find(({ name }) =>
+    [WalletType.Phantom, WalletType.Secret].includes(name),
+  )
+  if (cryptoData) {
+    const message = getIdentifierMessage(item)
+    return verifySign(
+      message,
+      cryptoData.value,
+      walletStore.publicKey.toString(),
+    )
+  }
+  return false
+}
 
 function prettyDate(item: FormatContract) {
   if (

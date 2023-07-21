@@ -9,7 +9,7 @@
       v-if="batterySupports"
       :name="batteryIcon(batteryLevel, batteryCharging)"
     />
-    <div>{{ date.formatDate(now, 'HH:mm') }}</div>
+    <div>{{ date.formatDate(now as Date, 'HH:mm') }}</div>
   </QBar>
 </template>
 <script lang="ts" setup>
