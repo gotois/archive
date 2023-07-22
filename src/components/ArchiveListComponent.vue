@@ -32,7 +32,7 @@
                 'ellipsis': $q.platform.is.desktop,
               }"
             >
-              <template v-if="isVerified(item)">
+              <template v-if="isVerified(item, publicKey)">
                 <QIcon name="verified" />
               </template>
               <template v-else>
@@ -170,9 +170,8 @@ import { FormatContract, ContractTable } from '../types/models'
 import { isDateNotOk, formatterDate } from '../helpers/dateHelper'
 import { readFilesPromise } from '../helpers/fileHelper'
 import createCal from '../helpers/calendarHelper'
-import { getIdentifierMessage } from '../helpers/schemaHelper'
 import { mailUrl, googleMailUrl } from '../helpers/mailHelper'
-import { verifySign, WalletType } from '../services/cryptoService'
+import { isVerified } from '../helpers/contractHelper'
 
 const $q = useQuasar()
 // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -200,6 +199,7 @@ const walletStore = useWalletStore()
 
 const contracts = toRef(props, 'contracts', [])
 const page = ref(props.page)
+const { publicKey } = storeToRefs(walletStore)
 const { isLoggedIn } = storeToRefs(authStore)
 
 watch(
@@ -208,21 +208,6 @@ watch(
     page.value = value
   },
 )
-
-function isVerified(item: FormatContract) {
-  const cryptoData = item.identifier.find(({ name }) =>
-    [WalletType.Phantom, WalletType.Secret].includes(name),
-  )
-  if (cryptoData) {
-    const message = getIdentifierMessage(item)
-    return verifySign(
-      message,
-      cryptoData.value,
-      walletStore.publicKey.toString(),
-    )
-  }
-  return false
-}
 
 function prettyDate(item: FormatContract) {
   if (
@@ -320,12 +305,14 @@ function onSheet(item: FormatContract) {
       color: 'secondary',
       id: SheetAction.MAIL,
     })
-    actions.push({
-      label: $t('components.archiveList.sheet.law.label'),
-      icon: 'gavel',
-      color: 'secondary',
-      id: SheetAction.LAW,
-    })
+    if (isVerified(item, publicKey.value)) {
+      actions.push({
+        label: $t('components.archiveList.sheet.law.label'),
+        icon: 'gavel',
+        color: 'secondary',
+        id: SheetAction.LAW,
+      })
+    }
   }
   const icalId = $t('organization.prodid')
 

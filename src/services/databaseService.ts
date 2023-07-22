@@ -167,7 +167,7 @@ class ContractDatabase extends Dexie {
       'issuer',
       '&issuanceDate',
       '*identifier',
-      'proof',
+      '*proof',
       'agent_name',
       'agent_email',
       'participant_name',

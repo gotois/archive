@@ -1,7 +1,6 @@
 export interface ContractTable {
   id?: number
-  // eslint-disable-next-line
-  context: any[] // fixme change type
+  context: credentialContextType
   type: string[]
   issuer: string
   issuanceDate: Date
@@ -99,6 +98,14 @@ export interface CredentialTypes {
   object: string
   participant: string
   startTime: string
+  identifier: string
+  contentUrl: string
+  description: string
+  email: string
+  encodingFormat: string
+  name: string
+  propertyID: string
+  url: string
 }
 
 interface Person {
@@ -108,8 +115,8 @@ interface Person {
 
 interface ContractIdentifier {
   value: string | number
+  name: string
   propertyID?: number
-  name?: string
 }
 
 interface ContractInstrument {

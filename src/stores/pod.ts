@@ -19,6 +19,7 @@ import useAuthStore from 'stores/auth'
 import useProfileStore from 'stores/profile'
 import {
   ProofCredential,
+  CredentialSubject,
   CredentialTypes,
   FormatContract,
 } from '../types/models'
@@ -68,13 +69,10 @@ export default defineStore('pod', {
       }
     },
     formatterDatasetContract(signedVC: ProofCredential) {
-      const resourceUrl =
-        this.getResourceBaseUrl + signedVC.proof.created + '.ttl'
+      const id = this.getContractId(signedVC.credentialSubject)
+      const resourceUrl = this.getResourceBaseUrl + id + '.ttl'
       const types = signedVC['@context'][1] as unknown as CredentialTypes
       const item = signedVC.credentialSubject
-      // context
-      const context = buildThing(createThing({ url: resourceUrl + '#context' }))
-      context.addStringNoLocale('context', JSON.stringify(signedVC['@context']))
       // type
       const type = buildThing(createThing({ url: resourceUrl + '#type' }))
       signedVC.type.forEach((t) => {
@@ -87,17 +85,33 @@ export default defineStore('pod', {
       // issuanceDate
       const issuanceDate = buildThing(
         createThing({ url: resourceUrl + '#issuanceDate' }),
-      ).addDate(SCHEMA_INRUPT.dateModified, signedVC.issuanceDate)
+      ).addDate(SCHEMA_INRUPT.dateModified, new Date(signedVC.issuanceDate))
+      // .addUrl(RDF.type, ...) // todo add type
+
       // proof
-      const proof = buildThing(createThing({ url: resourceUrl + '#issuer' }))
-        .addStringNoLocale('type', signedVC.proof.type)
-        .addStringNoLocale('created', signedVC.proof.created)
+      const proof = buildThing(createThing({ url: resourceUrl + '#proof' }))
         .addStringNoLocale(
-          'verificationMethod',
+          'https://purl.org/dc/terms/type',
+          signedVC.proof.type,
+        )
+        .addStringNoLocale(
+          'https://purl.org/dc/terms/created',
+          signedVC.proof.created,
+        )
+        .addStringNoLocale(
+          'https://w3id.org/security/suites/ed25519-2020/v1',
           signedVC.proof.verificationMethod,
         )
-        .addStringNoLocale('proofPurpose', signedVC.proof.proofPurpose)
-        .addStringNoLocale('proofValue', signedVC.proof.proofValue)
+        .addStringNoLocale(
+          'https://w3c.github.io/vc-data-integrity/vocab/security/vocabulary.html#proofPurpose',
+          signedVC.proof.proofPurpose,
+        )
+        .addStringNoLocale(
+          'https://w3c.github.io/vc-data-integrity/vocab/security/vocabulary.html#proofValue',
+          signedVC.proof.proofValue,
+        )
+      // .addUrl(RDF.type, ...) // todo add type
+
       // Agent: agent_name, agent_email,
       const agent = buildThing(createThing({ url: resourceUrl + '#agent' }))
         .addStringNoLocale(SCHEMA_INRUPT.name, item.agent.name)
@@ -115,11 +129,14 @@ export default defineStore('pod', {
       )
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
       item.identifier.forEach((ident) => {
-        identifier
-          .addStringNoLocale(SCHEMA_INRUPT.name, ident.name)
-          .addStringNoLocale(SCHEMA_INRUPT.productID, ident.propertyID)
-          .addStringNoLocale(SCHEMA_INRUPT.value, ident.value)
+        identifier.addStringNoLocale(SCHEMA_INRUPT.name, ident.name)
+        if (ident.propertyID) {
+          identifier.addStringNoLocale(SCHEMA_INRUPT.text, ident.propertyID)
+        }
+        identifier.addStringNoLocale(SCHEMA_INRUPT.value, ident.value)
       })
+      identifier.addUrl(RDF.type, types.identifier)
+
       // Instrument: instrument_name, instrument_description
       const instrument = buildThing(
         createThing({ url: resourceUrl + '#instrument' }),
@@ -156,7 +173,6 @@ export default defineStore('pod', {
         .addUrl(RDF.type, types.startTime)
 
       let dataset = createSolidDataset()
-      dataset = setThing(dataset, context.build())
       dataset = setThing(dataset, agent.build())
       dataset = setThing(dataset, type.build())
       dataset = setThing(dataset, proof.build())
@@ -291,9 +307,13 @@ export default defineStore('pod', {
         fetch,
       })
     },
+    getContractId(credentialSubject: CredentialSubject) {
+      return credentialSubject.identifier.find((v) => v.name === 'Contract')
+        .value as string
+    },
     async uploadContract(signedVC: ProofCredential) {
-      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands,@typescript-eslint/no-unsafe-member-access
-      const url = this.getResourceBaseUrl + signedVC.proof.created + '.ttl'
+      const id = this.getContractId(signedVC.credentialSubject)
+      const url = this.getResourceBaseUrl + id + '.ttl'
       const solidDatasetContract = this.formatterDatasetContract(
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         signedVC,
