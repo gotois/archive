@@ -1,7 +1,7 @@
 import { LocalStorage, SessionStorage } from 'quasar'
 import { defineStore } from 'pinia'
 import { WebId } from '@inrupt/solid-client'
-import { getDefaultSession } from '@inrupt/solid-client-authn-browser/src/defaultSession'
+import { getDefaultSession } from '@inrupt/solid-client-authn-browser'
 import { getHash } from '../services/cryptoService'
 
 interface Store {
@@ -10,7 +10,7 @@ interface Store {
   openIdSessionId: string
   openIdExpirationDate: null | number
   openIdIsLoggedIn: boolean
-  webId: WebId | string
+  webId: WebId
   tryAuth: boolean
 }
 

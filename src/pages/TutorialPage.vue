@@ -766,7 +766,10 @@ onMounted(() => {
   if (isLoggedIn.value) {
     step.value = STEP.FINAL
   }
-  if (step.value > STEP.WALLET && walletStore.getMultibase?.length === 0) {
+  if (
+    step.value > Number(STEP.WALLET) &&
+    walletStore.getMultibase?.length === 0
+  ) {
     step.value = STEP.WALLET
   }
   if (isLoggedIn.value && query.code && query.state) {

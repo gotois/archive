@@ -3,7 +3,7 @@ import {
   getDefaultSession,
   handleIncomingRedirect,
   login,
-} from '@inrupt/solid-client-authn-browser/src/defaultSession'
+} from '@inrupt/solid-client-authn-browser'
 
 const CLIENT_NAME = 'Contracts'
 const TOKEN_TYPE = 'DPoP'

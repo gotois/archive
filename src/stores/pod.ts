@@ -1,6 +1,6 @@
 import { LocalStorage } from 'quasar'
 import { defineStore } from 'pinia'
-import { fetch } from '@inrupt/solid-client-authn-browser/src/defaultSession'
+import { fetch } from '@inrupt/solid-client-authn-browser'
 import {
   buildThing,
   createSolidDataset,

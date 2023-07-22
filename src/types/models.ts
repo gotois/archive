@@ -1,6 +1,7 @@
 export interface ContractTable {
   id?: number
-  context: any[]
+  // eslint-disable-next-line
+  context: any[] // fixme change type
   type: string[]
   issuer: string
   issuanceDate: Date

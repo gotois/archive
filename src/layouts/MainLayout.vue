@@ -507,7 +507,7 @@ import {
 } from 'quasar'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { logout } from '@inrupt/solid-client-authn-browser/src/defaultSession'
+import { logout } from '@inrupt/solid-client-authn-browser'
 import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'

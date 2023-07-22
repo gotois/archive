@@ -1,7 +1,7 @@
 <template>
   <QVirtualScroll :items="contracts as FormatContract[]" separator>
     <template
-      #default="{ item, index }: { item: FormatContract, index: number }"
+      #default="{ item, index }: { item: FormatContract; index: number }"
     >
       <QCard
         :key="index"
