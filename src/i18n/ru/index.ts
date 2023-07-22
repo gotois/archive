@@ -124,6 +124,7 @@ export default {
     tutorialHint: 'OIDC Issuer это URL Вашего SOLID провайдера',
     label: 'Адрес OIDC Issuer',
     login: 'Авторизоваться',
+    skip: 'Пропустить',
     issuerTooltipEmpty: 'Данные необходимы для подписания договоров.',
     issuerTooltipLogin: 'Войдите через {oidcIssuer}.',
   },

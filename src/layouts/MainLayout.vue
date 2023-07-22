@@ -310,7 +310,6 @@
                 square
                 ripple
                 stretch
-                rounded
                 icon="key"
                 color="secondary"
                 :label="$t('settings.otp.addCode')"
@@ -363,7 +362,6 @@
                 ripple
                 square
                 stretch
-                rounded
                 color="secondary"
                 :dense="$q.platform.is.desktop"
                 icon="key"

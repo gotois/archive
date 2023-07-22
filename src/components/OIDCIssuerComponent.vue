@@ -14,21 +14,24 @@
       square
       autofocus
       bottom-slots
+      filled
       hide-dropdown-icon
+      map-options
       input-debounce="0"
       clearable
       new-value-mode="add-unique"
+      @clear="() => (oidcIssuer = '')"
     >
       <slot></slot>
     </QSelect>
     <QBtn
-      color="accent"
       type="button"
-      :label="$t('oidc.login')"
       class="q-mt-md"
       :class="{
         'full-width': $q.platform.is.mobile,
       }"
+      :color="oidcIssuer.length ? 'accent' : 'secondary'"
+      :label="oidcIssuer ? $t('oidc.login') : $t('oidc.skip')"
       :loading="$q.loading.isActive"
       no-caps
       @click="onComplete"

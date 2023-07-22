@@ -168,7 +168,6 @@
               hide-selected
               fill-input
               map-options
-              rounded
               outlined
               square
               @update:model-value="setSolanaClusterApiUrl"
@@ -195,29 +194,30 @@
               :label="$t('tutorial.wallet.ok')"
               @click="tryToLoginPhantomWallet"
             />
-            <template v-else>
-              <QBtn
-                :disable="
-                  walletPrivateKey.length === 0 ||
-                  solanaClusterApiURL.length === 0
-                "
-                color="accent"
-                :label="$t('tutorial.wallet.ok')"
-                :class="{
-                  'full-width': !$q.platform.is.desktop,
-                }"
-                @click="onWalletComplete"
-              />
-              <QBtn
-                color="secondary"
-                :label="$t('tutorial.wallet.skip')"
-                class="q-ml-md"
-                :class="{
-                  'full-width': !$q.platform.is.desktop,
-                }"
-                @click="onSkipWallet"
-              />
-            </template>
+            <QBtn
+              v-else
+              :color="
+                walletPrivateKey.length === 0 ||
+                solanaClusterApiURL.length === 0
+                  ? 'secondary'
+                  : 'accent'
+              "
+              :label="
+                walletPrivateKey.length === 0 ||
+                solanaClusterApiURL.length === 0
+                  ? $t('tutorial.wallet.skip')
+                  : $t('tutorial.wallet.ok')
+              "
+              :class="{
+                'full-width': !$q.platform.is.desktop,
+              }"
+              @click="
+                walletPrivateKey.length === 0 ||
+                solanaClusterApiURL.length === 0
+                  ? onSkipWallet()
+                  : onWalletComplete()
+              "
+            />
           </QStepperNavigation>
         </QStep>
         <QStep

@@ -124,6 +124,7 @@ export default {
     tutorialHint: 'OIDC Issuer is the URL of your SOLID provider',
     label: 'OIDC Issuer Address',
     login: 'Log in',
+    skip: 'Skip',
     issuerTooltipEmpty: 'Data is required to sign contracts.',
     issuerTooltipLogin: 'Log in through {oidcIssuer}.',
   },

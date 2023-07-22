@@ -35,7 +35,6 @@
         hide-selected
         :hide-bottom-space="!$q.platform.is.desktop"
         fill-input
-        rounded
         outlined
         square
         @filter="filterOptions"
@@ -247,7 +246,6 @@
           ripple
           square
           stretch
-          rounded
           :class="{
             'full-width': !$q.platform.is.desktop,
           }"

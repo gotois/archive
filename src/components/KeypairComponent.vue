@@ -1,14 +1,18 @@
 <template>
-  <QBtnGroup spread class="q-mt-md">
+  <QBtnGroup
+    spread
+    class="flex q-mt-md"
+    :class="{
+      'full-width': !$q.platform.is.desktop,
+    }"
+  >
     <QFile
       v-model="keyPairFile"
       color="accent"
       filled
       accept=".json"
+      class="col"
       :label="$t('components.keypair.import.label')"
-      :class="{
-        'full-width': !$q.platform.is.desktop,
-      }"
       @update:model-value="onLoadKeyPairFile"
     >
       <template #prepend>
@@ -19,9 +23,8 @@
     <QBtn
       color="accent"
       :label="$t('components.keypair.generate.label')"
-      :class="{
-        'full-width': !$q.platform.is.desktop,
-      }"
+      class="col"
+      round
       @click="onGenerateKeyPair"
     >
       <QTooltip>{{ $t('components.keypair.generate.tooltip') }}</QTooltip>

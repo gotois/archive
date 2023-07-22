@@ -14,8 +14,8 @@
     input-class="text-right q-pb-md"
     use-input
     hide-dropdown-icon
-    rounded
     hide-selected
+    stack-label
     autofocus
     filled
     outlined

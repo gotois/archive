@@ -28,7 +28,6 @@
         ripple
         square
         stretch
-        rounded
         :dense="$q.platform.is.desktop"
         class="full-width"
       >
@@ -45,7 +44,6 @@
       ripple
       square
       stretch
-      rounded
       :dense="$q.platform.is.desktop"
       :disable="contractsCount === 0"
       :outline="contractsCount === 0"
