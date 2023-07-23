@@ -22,6 +22,7 @@ import {
 import {
   ContractData,
   ContractTable,
+  Credential,
   FormatContract,
   MyContract,
 } from '../types/models'
@@ -68,6 +69,18 @@ export default defineStore('contracts', {
       this.contractNames.delete(name)
       LocalStorage.set('contractNames', this.getArchiveNames)
     },
+    // Save to IndexedDb
+    async insertContract(credential: Credential) {
+      const contract = getContractFromLD(credential)
+
+      const index = await db.add(contract)
+      if (index === 0) {
+        return Promise.reject('Cannot add this item')
+      }
+      this.addContractName(contract.instrument_name)
+
+      return { contract, index }
+    },
     async addContract({
       contractData,
       usePod = false,
@@ -91,19 +104,13 @@ export default defineStore('contracts', {
       // fixme поддержать открытие договора в браузере через ссылку по его url
       // jsldContract.credentialSubject.url =
       //   'https://archive.gotointeractive.com/' + id
-      const contract = getContractFromLD(jsldContract)
-
-      // Save to IndexedDb
-      const countIndex = await db.add(contract)
-      if (countIndex === 0) {
-        return Promise.reject('Cannot add this item')
-      }
+      const { contract, index } = await this.insertContract(jsldContract)
 
       // после первичной записи обновляем идентификатор Dexie
       jsldContract.credentialSubject.identifier.push({
         name: 'Dexie',
         propertyID: db.verno, // используемая версия движка
-        value: countIndex,
+        value: index,
       })
 
       // подписываем документ и обновляем идентификатор подписи
@@ -130,7 +137,6 @@ export default defineStore('contracts', {
 
       const count = await db.contracts.count()
       this.setContractsCount(count)
-      this.addContractName(contractData.instrument_name)
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const key = await keyPair.last()
@@ -153,7 +159,7 @@ export default defineStore('contracts', {
         contract.resource_url = await podStore.uploadContract(signedVC)
       }
       // обновляем запись в БД
-      await db.contracts.where('id').equals(countIndex).modify({
+      await db.contracts.where('id').equals(index).modify({
         resource_url: contract.resource_url,
         identifier: contract.identifier,
         proof: contract.proof,
@@ -181,7 +187,10 @@ export default defineStore('contracts', {
     }) {
       // Step 1: JS
       const id = contract.identifier.find(({ name }) => name === 'Dexie')
-        .value as number
+        ?.value as number
+      if (!id) {
+        throw new Error('Unknown Dexie ID')
+      }
       const i = this.contracts.map((item) => item.id).indexOf(id)
       this.contracts.splice(i, 1)
       this.removeContractName(contract.instrument.name)

@@ -261,9 +261,11 @@ export default {
     fileSize: 'Select a file up to ' + humanStorageSize(1024 * 1024 * 1024 * 2),
     fileImport: 'Start database import procedure',
     fileExport: 'Export database to file',
-    loading: 'Loading...',
     removeDatabase: 'Perform database deletion',
-    pod: { disconnected: 'You have disconnected from your Pod' },
+    pod: {
+      disconnected: 'You have disconnected from your Pod',
+      sync: 'Sync with Pod',
+    },
   },
   searchDialog: {
     searchText: 'Contract type or performer',

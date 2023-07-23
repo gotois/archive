@@ -41,7 +41,7 @@ export function getContractFromLD(jsldContract: Credential) {
       ? new Date(jsldContract.credentialSubject.endTime)
       : null,
     images: jsldContract.credentialSubject.object,
-    url: jsldContract.credentialSubject.url,
+    // url: jsldContract.credentialSubject.url,
   } as ContractTable
 }
 
@@ -158,7 +158,7 @@ export function formatterContract(contract: ContractTable) {
     'description': contract.instrument_description,
   }
   const identifier = contract.identifier
-  const object = contract.images.map(({ encodingFormat, contentUrl }) => ({
+  const object = contract?.images?.map(({ encodingFormat, contentUrl }) => ({
     '@type': 'ImageObject',
     'encodingFormat': encodingFormat,
     'contentUrl': contentUrl,
@@ -173,6 +173,7 @@ export function formatterContract(contract: ContractTable) {
     'identifier': identifier,
     'startTime': contract.startTime,
     'endTime': contract.endTime,
-    'object': object,
+    'object': object ?? [],
+    // 'url': contract.url, // todo поддержать url
   } as FormatContract
 }

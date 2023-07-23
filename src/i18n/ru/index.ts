@@ -263,9 +263,11 @@ export default {
       'Выберите файл размером до ' + humanStorageSize(1024 * 1024 * 1024 * 2),
     fileImport: 'Начать процедуру импорта базы данных',
     fileExport: 'Экспортировать базу в файл',
-    loading: 'Загрузка...',
     removeDatabase: 'Произвести удаление базы договоров',
-    pod: { disconnected: 'Вы отключили привязку к вашему Pod' },
+    pod: {
+      disconnected: 'Вы отключили привязку к вашему Pod',
+      sync: 'Синхронизировать с Pod',
+    },
   },
   searchDialog: {
     searchText: 'Тип или исполнитель договора',

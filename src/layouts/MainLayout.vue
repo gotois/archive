@@ -349,8 +349,14 @@
           :expand-separator="settingsOpen"
           :label="$t('settings.native.title')"
         >
+          <p class="q-pt-md q-pl-md q-pr-md">{{
+            $t('settings.native.description')
+          }}</p>
           <QItemSection v-if="settingsOpen" class="q-pa-md">
-            <p>{{ $t('settings.native.description') }}</p>
+            <PodImporter />
+          </QItemSection>
+          <QSeparator />
+          <QItemSection v-if="settingsOpen" class="q-pa-md">
             <DatabaseComponent />
           </QItemSection>
           <template v-if="$q.platform.is.desktop">
@@ -521,6 +527,9 @@ const DatabaseRemoveComponent = defineAsyncComponent(
 )
 const DatabaseComponent = defineAsyncComponent(
   () => import('components/DatabaseComponent.vue'),
+)
+const PodImporter = defineAsyncComponent(
+  () => import('components/PodImporter.vue'),
 )
 const SearchInputComponent = defineAsyncComponent(
   () => import('components/SearchInputComponent.vue'),

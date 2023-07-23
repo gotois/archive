@@ -2,13 +2,16 @@ import { LocalStorage } from 'quasar'
 import { defineStore } from 'pinia'
 import { fetch } from '@inrupt/solid-client-authn-browser'
 import {
+  SolidDataset,
   buildThing,
   createSolidDataset,
   deleteSolidDataset,
   getSolidDataset,
   getStringNoLocale,
+  getStringNoLocaleAll,
   getThing,
   getPodUrlAll,
+  getDate,
   getThingAll,
   saveSolidDatasetAt,
   setThing,
@@ -54,18 +57,14 @@ export default defineStore('pod', {
       // hack - у inrupt.net и других провайдеров, при первичной инициализации падает getSolidDataset
       if (!resourceBaseUrl.includes('inrupt.com')) {
         const dataset = createSolidDataset()
-        return saveSolidDatasetAt(resourceBaseUrl, dataset, {
-          fetch,
-        })
+        return this.saveDataset(resourceBaseUrl, dataset)
       }
       const myBaseDataset = await this.getDataset(resourceBaseUrl)
       const hasAnyContracts = getThingAll(myBaseDataset).some(({ url }) =>
         url.includes(name),
       )
       if (!hasAnyContracts) {
-        return saveSolidDatasetAt(resourceBaseUrl, myBaseDataset, {
-          fetch,
-        })
+        return this.saveDataset(resourceBaseUrl, myBaseDataset)
       }
     },
     formatterDatasetContract(signedVC: ProofCredential) {
@@ -130,9 +129,7 @@ export default defineStore('pod', {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
       item.identifier.forEach((ident) => {
         identifier.addStringNoLocale(SCHEMA_INRUPT.name, ident.name)
-        if (ident.propertyID) {
-          identifier.addStringNoLocale(SCHEMA_INRUPT.text, ident.propertyID)
-        }
+        identifier.addStringNoLocale(SCHEMA_INRUPT.text, ident.propertyID)
         identifier.addStringNoLocale(SCHEMA_INRUPT.value, ident.value)
       })
       identifier.addUrl(RDF.type, types.identifier)
@@ -270,6 +267,11 @@ export default defineStore('pod', {
         fetch,
       })
     },
+    saveDataset(resource: string, dataset: SolidDataset) {
+      return saveSolidDatasetAt(resource, dataset, {
+        fetch,
+      })
+    },
     async setProfileFOAF() {
       const resourceProfileUrl = this.resourceRootUrl + 'profile'
       const profileDataset = await this.getDataset(resourceProfileUrl)
@@ -288,9 +290,7 @@ export default defineStore('pod', {
       }
       const updProfileDataset = setThing(profileDataset, profile.build())
 
-      return saveSolidDatasetAt(resourceProfileUrl, updProfileDataset, {
-        fetch,
-      })
+      return this.saveDataset(resourceProfileUrl, updProfileDataset)
     },
     async updateIntoPod(item: FormatContract) {
       const resourceUrl = item.sameAs
@@ -303,9 +303,7 @@ export default defineStore('pod', {
       )
       dataset = setThing(dataset, modify.build())
 
-      return saveSolidDatasetAt(resourceUrl, dataset, {
-        fetch,
-      })
+      return this.saveDataset(resourceUrl, dataset)
     },
     getContractId(credentialSubject: CredentialSubject) {
       return credentialSubject.identifier.find((v) => v.name === 'Contract')
@@ -318,10 +316,135 @@ export default defineStore('pod', {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         signedVC,
       )
-      await saveSolidDatasetAt(url, solidDatasetContract, {
-        fetch,
-      })
+      await this.saveDataset(url, solidDatasetContract)
       return url
+    },
+    async getContractsLink() {
+      const myBaseDataset = await this.getDataset(this.getResourceBaseUrl)
+      return getThingAll(myBaseDataset)
+        .map(({ url }) => {
+          return url
+        })
+        .filter((url: string) => {
+          return url.endsWith('.ttl')
+        })
+    },
+    // конвертация всех things в формат читаемых контрактов
+    async getContract(url: string) {
+      const ds = await this.getDataset(url)
+
+      const type = getThing(ds, ds.internal_resourceInfo.sourceIri + '#type')
+      const issuer = getThing(
+        ds,
+        ds.internal_resourceInfo.sourceIri + '#issuer',
+      )
+      const issuanceDate = getThing(
+        ds,
+        ds.internal_resourceInfo.sourceIri + '#issuanceDate',
+      )
+      const proof = getThing(ds, ds.internal_resourceInfo.sourceIri + '#proof')
+
+      const credentialSubject = new Map()
+      const agent = getThing(ds, ds.internal_resourceInfo.sourceIri + '#agent')
+      credentialSubject.set('agent', {
+        name: getStringNoLocale(agent, SCHEMA_INRUPT.name),
+        email: getStringNoLocale(agent, SCHEMA_INRUPT.email),
+      })
+      const instrument = getThing(
+        ds,
+        ds.internal_resourceInfo.sourceIri + '#instrument',
+      )
+      credentialSubject.set('instrument', {
+        name: getStringNoLocale(instrument, SCHEMA_INRUPT.name),
+        description: getStringNoLocale(instrument, SCHEMA_INRUPT.description),
+      })
+      const startTime = getThing(
+        ds,
+        ds.internal_resourceInfo.sourceIri + '#startTime',
+      )
+      credentialSubject.set(
+        'startTime',
+        getDate(startTime, SCHEMA_INRUPT.startTime),
+      )
+      const participant = getThing(
+        ds,
+        ds.internal_resourceInfo.sourceIri + '#participant',
+      )
+      credentialSubject.set('participant', {
+        name: getStringNoLocale(participant, SCHEMA_INRUPT.name),
+        email: getStringNoLocale(participant, SCHEMA_INRUPT.email),
+      })
+      const endTime = getThing(
+        ds,
+        ds.internal_resourceInfo.sourceIri + '#endTime',
+      )
+      credentialSubject.set('endTime', getDate(endTime, SCHEMA_INRUPT.endDate))
+
+      const identifier = getThing(
+        ds,
+        ds.internal_resourceInfo.sourceIri + '#identifier',
+      )
+      // todo refactoring
+      credentialSubject.set('identifier', [
+        {
+          value: getStringNoLocaleAll(identifier, SCHEMA_INRUPT.value)[0],
+          name: getStringNoLocaleAll(identifier, SCHEMA_INRUPT.name)[0],
+          propertyID: getStringNoLocaleAll(identifier, SCHEMA_INRUPT.text)[0],
+        },
+        {
+          value: getStringNoLocaleAll(identifier, SCHEMA_INRUPT.value)[1],
+          name: getStringNoLocaleAll(identifier, SCHEMA_INRUPT.name)[1],
+          propertyID: getStringNoLocaleAll(identifier, SCHEMA_INRUPT.text)[1],
+        },
+      ])
+
+      // todo images
+      const object = getThing(
+        ds,
+        ds.internal_resourceInfo.sourceIri + '#object',
+      )
+      getStringNoLocaleAll(object, SCHEMA_INRUPT.ImageObject)
+      credentialSubject.set('images', [])
+      // object.addStringNoLocale(
+      //     SCHEMA_INRUPT.identifier,
+      //     object.encodingFormat,
+      //   )
+      //   objectThing.addUrl(SCHEMA_INRUPT.image, object.contentUrl)
+
+      return {
+        '@context': [
+          'https://www.w3.org/2018/credentials/v1',
+          'https://schema.org',
+        ],
+        'type': getStringNoLocaleAll(type, SCHEMA_INRUPT.name),
+        'proof': {
+          type: getStringNoLocale(proof, 'https://purl.org/dc/terms/type'),
+          created: getStringNoLocale(
+            proof,
+            'https://purl.org/dc/terms/created',
+          ),
+          verificationMethod: getStringNoLocale(
+            proof,
+            'https://w3id.org/security/suites/ed25519-2020/v1',
+          ),
+          proofPurpose: getStringNoLocale(
+            proof,
+            'https://w3c.github.io/vc-data-integrity/vocab/security/vocabulary.html#proofPurpose',
+          ),
+          proofValue: getStringNoLocale(
+            proof,
+            'https://w3c.github.io/vc-data-integrity/vocab/security/vocabulary.html#proofValue',
+          ),
+        },
+        'issuer': getStringNoLocale(issuer, SCHEMA_INRUPT.name),
+        'issuanceDate': getDate(
+          issuanceDate,
+          SCHEMA_INRUPT.dateModified,
+        ).toISOString(),
+        'credentialSubject': Object.fromEntries(
+          credentialSubject,
+        ) as CredentialSubject,
+      } as Credential
     },
   },
   getters: {
