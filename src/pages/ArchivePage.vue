@@ -123,7 +123,6 @@
 import {
   ref,
   computed,
-  getCurrentInstance,
   defineAsyncComponent,
   h,
   onMounted,
@@ -131,6 +130,7 @@ import {
   toRef,
   watch,
 } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter, LocationQuery } from 'vue-router'
 import {
   useMeta,
@@ -161,8 +161,7 @@ const ArchiveListComponent = defineAsyncComponent({
   }),
 })
 
-// eslint-disable-next-line @typescript-eslint/unbound-method
-const $t = getCurrentInstance().appContext.config.globalProperties.$t
+const $t = useI18n().t
 const $q = useQuasar()
 const contractStore = useContractStore()
 const podStore = usePodStore()

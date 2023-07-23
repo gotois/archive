@@ -126,6 +126,7 @@ export default defineStore('pod', {
       const identifier = buildThing(
         createThing({ url: resourceUrl + '#identifier' }),
       )
+      // todo - упростить доступ к идентификатору по ключам
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
       item.identifier.forEach((ident) => {
         identifier.addStringNoLocale(SCHEMA_INRUPT.name, ident.name)

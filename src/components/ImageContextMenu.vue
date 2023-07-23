@@ -21,7 +21,8 @@
   </QMenu>
 </template>
 <script lang="ts" setup>
-import { PropType, getCurrentInstance, ref } from 'vue'
+import { PropType, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import {
   useQuasar,
   QMenu,
@@ -39,8 +40,7 @@ defineProps({
   },
 })
 
-// eslint-disable-next-line @typescript-eslint/unbound-method
-const $t = getCurrentInstance().appContext.config.globalProperties.$t
+const $t = useI18n().t
 const $q = useQuasar()
 
 const canWrite = ref(Reflect.has(navigator.clipboard, 'write'))

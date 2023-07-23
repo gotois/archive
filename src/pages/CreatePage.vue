@@ -31,7 +31,8 @@
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent, getCurrentInstance, h, ref } from 'vue'
+import { defineAsyncComponent, h, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import {
   useMeta,
   QPage,
@@ -52,9 +53,9 @@ const ContractFormComponent = defineAsyncComponent({
   }),
 })
 
-// eslint-disable-next-line @typescript-eslint/unbound-method
-const $t = getCurrentInstance().appContext.config.globalProperties.$t
+const $t = useI18n().t
 const router = useRouter()
+
 const contractForm = ref<InstanceType<typeof ContractFormComponent> | null>(
   null,
 )

@@ -25,11 +25,10 @@
 </template>
 
 <script lang="ts" setup>
-import { getCurrentInstance } from 'vue'
 import { useMeta, QBtn } from 'quasar'
+import { useI18n } from 'vue-i18n'
 
-// eslint-disable-next-line @typescript-eslint/unbound-method
-const $t = getCurrentInstance().appContext.config.globalProperties.$t
+const $t = useI18n().t
 
 const metaData = {
   'title': $t('pages.unknown.seo.title'),

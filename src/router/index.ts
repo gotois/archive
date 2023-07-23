@@ -29,7 +29,6 @@ export default route(() => {
       await db.destroy()
       await keyPair.destroy()
     }
-
     if (error || !(code && state)) {
       return
     }

@@ -1,4 +1,5 @@
 import { boot } from 'quasar/wrappers'
+import { LocalStorage } from 'quasar'
 import { createI18n } from 'vue-i18n'
 import messages from '../i18n'
 
@@ -22,7 +23,7 @@ declare module 'vue-i18n' {
 
 export default boot(({ app }) => {
   const i18n = createI18n({
-    locale: navigator.language,
+    locale: LocalStorage.getItem('locale') ?? navigator.language,
     fallbackLocale: 'ru',
     legacy: false,
     messages,

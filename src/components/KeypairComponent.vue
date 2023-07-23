@@ -32,7 +32,8 @@
   </QBtnGroup>
 </template>
 <script lang="ts" setup>
-import { getCurrentInstance, ref } from 'vue'
+import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { QBtn, QIcon, QBtnGroup, QFile, QTooltip, useQuasar } from 'quasar'
 import useWalletStore from 'stores/wallet'
 import { demoUserWebId } from 'stores/auth'
@@ -41,8 +42,7 @@ import { keyPair } from '../services/databaseService'
 
 const emit = defineEmits(['onKey'])
 
-// eslint-disable-next-line @typescript-eslint/unbound-method
-const $t = getCurrentInstance().appContext.config.globalProperties.$t
+const $t = useI18n().t
 const $q = useQuasar()
 const walletStore = useWalletStore()
 

@@ -358,14 +358,8 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  computed,
-  getCurrentInstance,
-  defineAsyncComponent,
-  onMounted,
-  ref,
-  watch,
-} from 'vue'
+import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import {
   exportFile,
@@ -416,8 +410,7 @@ const KeypairComponent = defineAsyncComponent(
   () => import('components/KeypairComponent.vue'),
 )
 
-// eslint-disable-next-line @typescript-eslint/unbound-method
-const $t = getCurrentInstance().appContext.config.globalProperties.$t
+const $t = useI18n().t
 const $q = useQuasar()
 const router = useRouter()
 const podStore = usePodStore()

@@ -35,7 +35,7 @@
 </template>
 
 <script lang="ts" setup>
-import { getCurrentInstance } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useQuasar, QBtn, QCardActions, QCardSection, QCard } from 'quasar'
 import { storeToRefs } from 'pinia'
 import useAuthStore from 'stores/auth'
@@ -43,8 +43,7 @@ import usePodStore from 'stores/pod'
 import { db } from '../services/databaseService'
 
 const emit = defineEmits(['onClear'])
-// eslint-disable-next-line @typescript-eslint/unbound-method
-const $t = getCurrentInstance().appContext.config.globalProperties.$t
+const $t = useI18n().t
 const $q = useQuasar()
 const podStore = usePodStore()
 const authStore = useAuthStore()

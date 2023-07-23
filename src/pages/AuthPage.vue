@@ -21,14 +21,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, getCurrentInstance } from 'vue'
+import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useMeta, useQuasar, QPage } from 'quasar'
 import { useRouter } from 'vue-router'
 import QOtp from 'quasar-app-extension-q-otp/src/component/QOtp.vue'
 import useAuthStore from 'stores/auth'
 
-// eslint-disable-next-line @typescript-eslint/unbound-method
-const $t = getCurrentInstance().appContext.config.globalProperties.$t
+const $t = useI18n().t
 const $q = useQuasar()
 const router = useRouter()
 const authStore = useAuthStore()

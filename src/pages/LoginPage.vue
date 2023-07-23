@@ -46,15 +46,15 @@
   </QPage>
 </template>
 <script lang="ts" setup>
-import { onMounted, getCurrentInstance } from 'vue'
+import { onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useMeta, useQuasar, QBtn, QChip, QPage, QCard, QTooltip } from 'quasar'
 import { storeToRefs } from 'pinia'
 import usePodStore from 'stores/pod'
 import OIDCIssuerComponent from 'components/OIDCIssuerComponent.vue'
 import solidAuth from '../services/authService'
 
-// eslint-disable-next-line @typescript-eslint/unbound-method
-const $t = getCurrentInstance().appContext.config.globalProperties.$t
+const $t = useI18n().t
 const $q = useQuasar()
 const podStore = usePodStore()
 

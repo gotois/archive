@@ -262,7 +262,8 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType, ref, getCurrentInstance } from 'vue'
+import { PropType, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import {
   useQuasar,
   date,
@@ -298,16 +299,14 @@ const props = defineProps({
   },
 })
 
-// eslint-disable-next-line @typescript-eslint/unbound-method
-const $t = getCurrentInstance().appContext.config.globalProperties.$t
+const $t = useI18n().t
 const $q = useQuasar()
-
-const now = new Date()
-const afterYearDate = new Date(now.setFullYear(now.getFullYear() + 1))
-
 const authStore = useAuthStore()
 const contractStore = useContractStore()
 const profileStore = useProfileStore()
+
+const now = new Date()
+const afterYearDate = new Date(now.setFullYear(now.getFullYear() + 1))
 
 const { isLoggedIn } = storeToRefs(authStore)
 const contractType = ref(props.contractTypeName)

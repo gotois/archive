@@ -140,7 +140,8 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType, ref, toRef, watch, getCurrentInstance } from 'vue'
+import { PropType, ref, toRef, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import {
   useQuasar,
   QBtn,
@@ -174,8 +175,7 @@ import { mailUrl, googleMailUrl } from '../helpers/mailHelper'
 import { isVerified } from '../helpers/contractHelper'
 
 const $q = useQuasar()
-// eslint-disable-next-line @typescript-eslint/unbound-method
-const $t = getCurrentInstance().appContext.config.globalProperties.$t
+const $t = useI18n().t
 
 const props = defineProps({
   paginationCount: {

@@ -398,6 +398,7 @@
           </QItemSection>
         </QExpansionItem>
         <QSeparator class="q-mb-md" />
+        <LocaleComponent />
         <QSpace class="col" />
         <QChip
           icon="link"
@@ -472,13 +473,8 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  ref,
-  computed,
-  getCurrentInstance,
-  defineAsyncComponent,
-  onMounted,
-} from 'vue'
+import { ref, computed, defineAsyncComponent, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import {
   useQuasar,
   QDialog,
@@ -517,6 +513,7 @@ import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
 import useWalletStore from 'stores/wallet'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
+import LocaleComponent from 'components/LocaleComponent.vue'
 import { indexAllDocuments } from '../services/searchService'
 import { isTWA } from '../helpers/twaHelper'
 import { keyPair } from '../services/databaseService'
@@ -544,8 +541,7 @@ const AndroidBarComponent = defineAsyncComponent(
   () => import('components/AndroidBarComponent.vue'),
 )
 
-// eslint-disable-next-line @typescript-eslint/unbound-method
-const $t = getCurrentInstance().appContext.config.globalProperties.$t
+const $t = useI18n().t
 const $q = useQuasar()
 const router = useRouter()
 const authStore = useAuthStore()

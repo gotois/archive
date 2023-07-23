@@ -10,11 +10,11 @@
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent, getCurrentInstance } from 'vue'
+import { defineAsyncComponent } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useMeta, QScrollArea, QPage } from 'quasar'
 
-// eslint-disable-next-line @typescript-eslint/unbound-method
-const $t = getCurrentInstance().appContext.config.globalProperties.$t
+const $t = useI18n().t
 
 const PrivacyComponent = defineAsyncComponent(
   () => import('components/PrivacyComponent.vue'),

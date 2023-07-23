@@ -13,7 +13,7 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import { getCurrentInstance } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { RouterView } from 'vue-router'
 import { useMeta, useQuasar } from 'quasar'
 import { EVENTS } from '@inrupt/solid-client-authn-core'
@@ -29,8 +29,7 @@ import { isTWA } from './helpers/twaHelper'
 import pkg from '../package.json'
 import twaMinifest from '../twa-manifest.json'
 
-// eslint-disable-next-line @typescript-eslint/unbound-method
-const $t = getCurrentInstance().appContext.config.globalProperties.$t
+const $t = useI18n().t
 const $q = useQuasar()
 const router = useRouter()
 const podStore = usePodStore()

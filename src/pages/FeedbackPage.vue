@@ -15,17 +15,17 @@
   </QPage>
 </template>
 <script lang="ts" setup>
-import { getCurrentInstance, onMounted } from 'vue'
+import { onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useMeta, QPage, Platform, openURL } from 'quasar'
 import { useRouter } from 'vue-router'
 import { packageId } from '../../twa-manifest.json'
 
 const iframeURL =
   'https://docs.google.com/forms/d/e/1FAIpQLSdVkv7OPOU2n20YKhl3sBwwhjAV_KuFqFncNNfnIgUTp3_8RA/viewform?embedded=true'
-const router = useRouter()
 
-// eslint-disable-next-line @typescript-eslint/unbound-method
-const $t = getCurrentInstance().appContext.config.globalProperties.$t
+const $t = useI18n().t
+const router = useRouter()
 
 const metaData = {
   'title': $t('pages.create.title'),

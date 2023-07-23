@@ -57,7 +57,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, getCurrentInstance } from 'vue'
+import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import {
   useQuasar,
   QBtn,
@@ -72,8 +73,7 @@ import useContractStore from 'stores/contract'
 import { db } from '../services/databaseService'
 import { getContent, generate } from '../helpers/zipHelper'
 
-// eslint-disable-next-line @typescript-eslint/unbound-method
-const $t = getCurrentInstance().appContext.config.globalProperties.$t
+const $t = useI18n().t
 const $q = useQuasar()
 const contractStore = useContractStore()
 
