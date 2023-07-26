@@ -346,9 +346,11 @@
                 :class="{
                   'full-width': !$q.platform.is.desktop,
                 }"
+                :dense="$q.platform.is.desktop"
                 :loading="$q.loading.isActive"
                 icon="login"
               />
+              <PodImporter v-if="isLoggedIn" class="q-ml-md" />
             </QStepperNavigation>
           </QForm>
         </QStep>
@@ -408,6 +410,9 @@ const OIDCIssuerComponent = defineAsyncComponent(
 )
 const KeypairComponent = defineAsyncComponent(
   () => import('components/KeypairComponent.vue'),
+)
+const PodImporter = defineAsyncComponent(
+  () => import('components/PodImporter.vue'),
 )
 
 const $t = useI18n().t

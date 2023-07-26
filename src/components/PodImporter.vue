@@ -2,12 +2,12 @@
   <QBtn
     :label="$t('database.pod.sync')"
     icon="cloud_download"
-    color="secondary"
-    ripple
+    color="accent"
     square
-    stretch
     :dense="$q.platform.is.desktop"
-    class="full-width"
+    :class="{
+      'full-width': !$q.platform.is.desktop,
+    }"
     @click="onImportData"
   />
 </template>
@@ -37,6 +37,10 @@ async function onImportData() {
       })
       await contractStore.insertContract(credential)
     }
+    $q.notify({
+      type: 'positive',
+      message: 'Ok',
+    })
   } catch (error) {
     console.error(error)
     $q.notify({
