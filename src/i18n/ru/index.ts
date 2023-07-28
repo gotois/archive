@@ -165,6 +165,7 @@ export default {
   },
   wallet: {
     label: 'Private Key Solana',
+    open: 'Открыть диалог Solana',
     disconnected: 'Кошелек отключен',
     accountChanged: 'Аккаунт изменен',
     fail: 'Произошла ошибка привязки крипто кошелька',

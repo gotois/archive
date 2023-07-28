@@ -103,7 +103,7 @@
       class="scroll-y"
       :show-if-above="bigScreen"
       :mini-to-overlay="bigScreen"
-      :width="300"
+      :width="320"
       :mini="miniState"
       no-mini-animation
       bordered
@@ -240,20 +240,23 @@
                 </template>
               </QInput>
               <QField
-                v-if="getWalletLD.id"
+                v-if="!getWalletLD.id"
                 label="DID"
                 color="secondary"
                 class="q-pb-md full-width"
                 outlined
                 stack-label
+                hide-bottom-space
               >
                 <template #prepend>
                   <QIcon name="wallet" />
                 </template>
                 <template #control>
-                  <div class="self-center no-outline ellipsis">
+                  <p
+                    class="self-center no-outline ellipsis no-margin no-padding"
+                  >
                     {{ getWalletLD.id }}
-                  </div>
+                  </p>
                 </template>
                 <template #append>
                   <QIcon
@@ -263,6 +266,7 @@
                   />
                 </template>
               </QField>
+              <PhantomWalletLogin v-else />
               <QBtn
                 :label="$t('consumer.save')"
                 icon="save"
@@ -550,6 +554,9 @@ const ArchiveSearchComponent = defineAsyncComponent(
 )
 const QOtp = defineAsyncComponent(
   () => import('quasar-app-extension-q-otp/src/component/QOtp.vue'),
+)
+const PhantomWalletLogin = defineAsyncComponent(
+  () => import('components/PhantomWalletLogin.vue'),
 )
 const AndroidBarComponent = defineAsyncComponent(
   () => import('components/AndroidBarComponent.vue'),

@@ -15,6 +15,14 @@ import {
 } from '../types/models'
 import { createContractLD, getContractFromLD } from '../helpers/schemaHelper'
 
+export function reset() {
+  return Promise.all([
+    Dexie.delete('KeyPairDatabase'),
+    Dexie.delete('SolanaKeysDatabase'),
+    Dexie.delete('ContractDatabase'),
+  ])
+}
+
 class KeyPairDatabase extends Dexie {
   public keyPair: Dexie.Table<DIDTable, number>
 
@@ -86,8 +94,8 @@ class SolanaKeysDatabase extends Dexie {
       throw new Error('webStorage not supported')
     }
 
-    this.version(1).stores({
-      keys: ', &publicKey, privateKey, type, clusterApiUrl',
+    this.version(2).stores({
+      keys: '&publicKey, privateKey, type, *clusterApiUrl',
     })
     this.keys = this.table('keys')
   }

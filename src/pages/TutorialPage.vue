@@ -125,98 +125,10 @@
             v-html="parse($t('tutorial.wallet.body'))"
           >
           </div>
-          <QForm v-if="!hasPhantomWallet" greedy @submit="onWalletComplete">
-            <QInput
-              v-model.trim="walletPrivateKey"
-              :label="$t('wallet.label')"
-              :type="isPwd ? 'password' : 'text'"
-              :hint="$t('wallet.hint')"
-              :maxlength="88"
-              :hide-bottom-space="!$q.platform.is.desktop"
-              color="secondary"
-              name="wallet"
-              autocomplete="off"
-              autofocus
-              outlined
-            >
-              <template #prepend>
-                <QIcon name="key" />
-              </template>
-              <template #append>
-                <QIcon
-                  :name="isPwd ? 'visibility_off' : 'visibility'"
-                  class="cursor-pointer q-mr-md"
-                  @click="isPwd = !isPwd"
-                />
-              </template>
-            </QInput>
-            <QSelect
-              v-model="solanaClusterApiURL"
-              :options="solanaClusters"
-              :prefix="prefix"
-              :label="'Solana Cluster'"
-              :hide-bottom-space="!$q.platform.is.desktop"
-              :behavior="$q.platform.is.ios ? 'dialog' : 'menu'"
-              new-value-mode="add-unique"
-              name="contractType"
-              spellcheck="false"
-              color="secondary"
-              options-selected-class="text-secondary"
-              class="q-mt-md q-mb-md"
-              use-input
-              hide-dropdown-icon
-              hide-selected
-              fill-input
-              map-options
-              outlined
-              square
-              @update:model-value="setSolanaClusterApiUrl"
-              @new-value="setSolanaClusterApiUrl"
-            >
-              <template #prepend>
-                <QIcon name="web" />
-              </template>
-              <template #option="{ itemProps, opt }">
-                <QItem v-bind="itemProps">
-                  <QItemSection>
-                    <QItemLabel>{{ opt.label }}</QItemLabel>
-                    <QItemLabel caption>{{ opt.description }}</QItemLabel>
-                  </QItemSection>
-                </QItem>
-              </template>
-            </QSelect>
-          </QForm>
           <QStepperNavigation>
-            <QBtn
-              v-if="hasPhantomWallet"
-              color="accent"
-              icon="wallet"
-              :label="$t('tutorial.wallet.ok')"
-              @click="tryToLoginPhantomWallet"
-            />
-            <QBtn
-              v-else
-              :color="
-                walletPrivateKey.length === 0 ||
-                solanaClusterApiURL.length === 0
-                  ? 'secondary'
-                  : 'accent'
-              "
-              :label="
-                walletPrivateKey.length === 0 ||
-                solanaClusterApiURL.length === 0
-                  ? $t('tutorial.wallet.skip')
-                  : $t('tutorial.wallet.ok')
-              "
-              :class="{
-                'full-width': !$q.platform.is.desktop,
-              }"
-              @click="
-                walletPrivateKey.length === 0 ||
-                solanaClusterApiURL.length === 0
-                  ? onSkipWallet()
-                  : onWalletComplete()
-              "
+            <PhantomWalletLogin
+              @skip="onSkipWallet"
+              @complete="stepper.next()"
             />
           </QStepperNavigation>
         </QStep>
@@ -365,11 +277,9 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import {
   exportFile,
-  openURL,
   QBtn,
   QForm,
   QIcon,
-  QSelect,
   QInput,
   QPage,
   QScrollArea,
@@ -378,15 +288,11 @@ import {
   QStepper,
   QStepperNavigation,
   QTooltip,
-  QItem,
-  QItemSection,
-  QItemLabel,
   useMeta,
   useQuasar,
 } from 'quasar'
 import patterns from 'quasar/src/utils/patterns'
 import { storeToRefs } from 'pinia'
-import { clusterApiUrl } from '@solana/web3.js'
 import useAuthStore from 'stores/auth'
 import { demoUserWebId } from 'stores/auth'
 import tutorialStore from 'stores/tutorial'
@@ -401,8 +307,7 @@ import { createContractPDF } from '../helpers/pdfHelper'
 import { readFilesPromise } from '../helpers/fileHelper'
 import solidAuth from '../services/authService'
 import { keyPair } from '../services/databaseService'
-import { getSolana } from '../services/phantomWalletService'
-import { DIDTable, WalletType } from '../types/models'
+import { DIDTable } from '../types/models'
 
 const OIDCIssuerComponent = defineAsyncComponent(
   () => import('components/OIDCIssuerComponent.vue'),
@@ -412,6 +317,9 @@ const KeypairComponent = defineAsyncComponent(
 )
 const PodImporter = defineAsyncComponent(
   () => import('components/PodImporter.vue'),
+)
+const PhantomWalletLogin = defineAsyncComponent(
+  () => import('components/PhantomWalletLogin.vue'),
 )
 
 const $t = useI18n().t
@@ -447,34 +355,9 @@ const scroll = ref<InstanceType<typeof QScrollArea> | null>(null)
 const stepper = ref<InstanceType<typeof QStepper> | null>(null)
 const step = ref(getCurrentStep() ?? STEP.WELCOME)
 
-const prefix = ref('https://')
-const walletPrivateKey = ref('')
-const solanaClusters = ref(
-  [
-    {
-      label: clusterApiUrl('mainnet-beta'),
-      description: 'Mainnet',
-    },
-    {
-      label: clusterApiUrl('devnet'),
-      description: 'Devnet',
-    },
-    {
-      label: clusterApiUrl('testnet'),
-      description: 'Testnet',
-    },
-  ].map((scope) => ({
-    ...scope,
-    label: scope.label.replace(prefix.value, '').replace(/\/$/, ''),
-  })),
-)
-const solanaClusterApiURL = ref(solanaClusters.value[0].label)
-const walletPublicKey = ref('')
 const did = ref('')
-const isPwd = ref(true)
 const { isLoggedIn } = storeToRefs(authStore)
 const { consumer, email } = storeToRefs(profileStore)
-const hasPhantomWallet = computed(() => Reflect.has(window, 'phantom'))
 const consumerValid = computed(() => {
   return Boolean(
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
@@ -588,10 +471,6 @@ async function onOnlineAuthorize(oidcIssuer: string) {
   }
 }
 
-function setSolanaClusterApiUrl(value: string) {
-  solanaClusterApiURL.value = value
-}
-
 function onSkipWallet() {
   const dialog = $q.dialog({
     message: $t('wallet.skipDialog.message'),
@@ -601,52 +480,6 @@ function onSkipWallet() {
   dialog.onOk(() => {
     stepper.value.next()
   })
-}
-
-async function onWalletComplete() {
-  $q.loading.show()
-  try {
-    await walletStore.setKeypare({
-      privateKey: walletPrivateKey.value,
-      publicKey: walletPublicKey.value,
-      type: WalletType.Secret,
-      clusterApiUrl: prefix.value + solanaClusterApiURL.value,
-    })
-    stepper.value.next()
-  } catch (error) {
-    console.error(error)
-    $q.notify({
-      color: 'negative',
-      message: $t('wallet.fail'),
-    })
-  } finally {
-    $q.loading.hide()
-  }
-}
-
-async function tryToLoginPhantomWallet() {
-  const solana = getSolana()
-  if (!solana) {
-    return openURL('https://phantom.app', undefined, {
-      noopener: true,
-      noreferrer: true,
-    })
-  }
-  /* eslint-disable */
-  if (solana.isConnected) {
-    await walletStore.setKeypare({
-      publicKey: solana.publicKey.toBase58(),
-      type: WalletType.Phantom,
-    })
-  } else {
-    const { publicKey } = await solana.connect({ onlyIfTrusted: false })
-    await walletStore.setKeypare({
-      publicKey: publicKey.toBase58(),
-      type: WalletType.Phantom,
-    })
-  }
-  /* eslint-enable */
-  stepper.value.next()
 }
 
 function exportKeyPair() {

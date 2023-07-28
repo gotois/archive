@@ -164,6 +164,7 @@ export default {
   },
   wallet: {
     label: 'Private Key Solana',
+    open: 'Open Solana Dialog',
     disconnected: 'Wallet disconnected',
     accountChanged: 'Account changed',
     fail: 'Error binding crypto wallet',
