@@ -352,10 +352,10 @@
           <p class="q-pt-md q-pl-md q-pr-md">{{
             $t('settings.native.description')
           }}</p>
-          <QItemSection v-if="settingsOpen" class="q-pa-md">
+          <QItemSection v-if="settingsOpen && isLoggedIn" class="q-pa-md">
             <PodImporter />
+            <QSeparator />
           </QItemSection>
-          <QSeparator />
           <QItemSection v-if="settingsOpen" class="q-pa-md">
             <DatabaseComponent />
           </QItemSection>
@@ -397,8 +397,22 @@
             </QBtn>
           </QItemSection>
         </QExpansionItem>
+        <QSeparator />
+        <QExpansionItem
+          v-model="languageOpen"
+          group="backupgroup"
+          icon="translate"
+          expand-icon-class="text-primary"
+          class="column non-selectable"
+          :dense="$q.platform.is.desktop"
+          :expand-separator="languageOpen"
+          :label="$t('settings.language.title')"
+        >
+          <QItemSection class="q-pa-md">
+            <LocaleComponent />
+          </QItemSection>
+        </QExpansionItem>
         <QSeparator class="q-mb-md" />
-        <LocaleComponent />
         <QSpace class="col" />
         <QChip
           icon="link"
@@ -562,6 +576,7 @@ const showOTPDialog = ref(false)
 const leftDrawerOpen = ref(false)
 const rightDrawerOpen = ref(false)
 const settingsOpen = ref(false)
+const languageOpen = ref(false)
 const profileOpen = ref(false)
 const otpOpen = ref(false)
 const confirm = ref(false)

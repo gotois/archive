@@ -1,3 +1,9 @@
+export enum WalletType {
+  Phantom = 'Phantom Wallet',
+  Secret = 'Unknown Wallet', // Solana base58
+  Unknown = 'No Wallet',
+}
+
 export interface ContractTable {
   id?: number
   context: credentialContextType
@@ -115,7 +121,7 @@ interface Person {
 
 interface ContractIdentifier {
   value: string | number
-  name: string
+  name: string | WalletType
   propertyID?: number
 }
 

@@ -1,9 +1,9 @@
 import Dexie from 'dexie'
 import { Platform } from 'quasar'
+import { PublicKey } from '@solana/web3.js'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020'
-import { PublicKey } from '@solana/web3.js'
 import recommendationContractTypes from './recommendationContractEnum'
 import {
   ContractTable,
@@ -11,8 +11,8 @@ import {
   DIDTable,
   ContractData,
   MyContract,
+  WalletType,
 } from '../types/models'
-import { WalletType } from './cryptoService'
 import { createContractLD, getContractFromLD } from '../helpers/schemaHelper'
 
 class KeyPairDatabase extends Dexie {
@@ -196,6 +196,9 @@ class ContractDatabase extends Dexie {
               contract[key] = ct[key] as unknown
             })
           })
+          .catch((error) => {
+            console.error(error)
+          })
       })
     this.contracts = this.table('contracts')
   }
@@ -205,17 +208,17 @@ class ContractDatabase extends Dexie {
     recommendationContractTypes.forEach((contractName) => {
       map.set(contractName, { count: 0, recommendation: true })
     })
-    try {
-      await this.contracts.each((value) => {
+    await this.contracts
+      .each((value) => {
         let count = 1
         if (map.get(value.instrument_name)) {
           count += map.get(value.instrument_name).count
         }
         map.set(value.instrument_name, { count, recommendation: false })
       })
-    } catch (error) {
-      console.error(error)
-    }
+      .catch((error) => {
+        console.error(error)
+      })
     return map
   }
 

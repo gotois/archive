@@ -9,7 +9,6 @@ import { demoUserWebId } from './auth'
 import {
   signMessageUsePhantom,
   signMessageUseSolana,
-  WalletType,
   sign,
 } from '../services/cryptoService'
 import { db, keys, keyPair } from '../services/databaseService'
@@ -25,6 +24,7 @@ import {
   Credential,
   FormatContract,
   MyContract,
+  WalletType,
 } from '../types/models'
 
 interface Store {

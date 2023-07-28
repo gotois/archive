@@ -400,10 +400,9 @@ import { parse } from '../helpers/markdownHelper'
 import { createContractPDF } from '../helpers/pdfHelper'
 import { readFilesPromise } from '../helpers/fileHelper'
 import solidAuth from '../services/authService'
-import { WalletType } from '../services/cryptoService'
 import { keyPair } from '../services/databaseService'
 import { getSolana } from '../services/phantomWalletService'
-import { DIDTable } from '../types/models'
+import { DIDTable, WalletType } from '../types/models'
 
 const OIDCIssuerComponent = defineAsyncComponent(
   () => import('components/OIDCIssuerComponent.vue'),

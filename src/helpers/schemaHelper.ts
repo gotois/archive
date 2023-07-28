@@ -95,10 +95,18 @@ export function createContractLD(contractData: MyContract) {
   if (contractData.images) {
     credentialSubject.set(
       'object',
-      contractData.images.map((contentUrl: string) => ({
-        encodingFormat: getMimeType(contentUrl),
-        contentUrl: contentUrl,
-      })),
+      contractData.images.map((content: unknown) => {
+        if (typeof content === 'string') {
+          return {
+            encodingFormat: getMimeType(content),
+            contentUrl: content,
+          }
+        } else if (typeof content === 'object') {
+          return content
+        } else {
+          throw new Error('Unknown content images')
+        }
+      }),
     )
   }
   return {
@@ -106,9 +114,12 @@ export function createContractLD(contractData: MyContract) {
       'https://www.w3.org/2018/credentials/v1',
       Object.fromEntries(context),
     ],
-    'type': ['VerifiableCredential', 'OrganizeAction'],
-    'issuer': 'https://archive.gotointeractive.com',
-    'issuanceDate': new Date().toISOString(),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    'type': contractData.type ?? ['VerifiableCredential', 'OrganizeAction'],
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    'issuer': contractData.issuer ?? 'https://archive.gotointeractive.com',
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    'issuanceDate': contractData.issuanceDate ?? new Date().toISOString(),
     'credentialSubject': Object.fromEntries(
       credentialSubject,
     ) as CredentialSubject,

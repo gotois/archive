@@ -118,6 +118,9 @@ export default {
       cancel: 'Отмена',
       submit: 'Произвести очистку',
     },
+    language: {
+      title: 'Язык',
+    },
   },
   oidc: {
     issuerHint: 'Выберите URL адрес',

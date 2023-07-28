@@ -118,6 +118,9 @@ export default {
       cancel: 'Cancel',
       submit: 'Perform Cleanup',
     },
+    language: {
+      title: 'Language',
+    },
   },
   oidc: {
     issuerHint: 'Select URL address',

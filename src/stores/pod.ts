@@ -77,10 +77,14 @@ export default defineStore('pod', {
       signedVC.type.forEach((t) => {
         type.addStringNoLocale(SCHEMA_INRUPT.name, t)
       })
+      // type.addUrl(RDF.type, ...) // todo add type
+
       // issuer
       const issuer = buildThing(
         createThing({ url: resourceUrl + '#issuer' }),
       ).addStringNoLocale(SCHEMA_INRUPT.name, signedVC.issuer)
+      // .addUrl(RDF.type, ...) // todo add type
+
       // issuanceDate
       const issuanceDate = buildThing(
         createThing({ url: resourceUrl + '#issuanceDate' }),

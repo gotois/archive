@@ -1,11 +1,14 @@
 import { PublicKey } from '@solana/web3.js'
 import { getIdentifierMessage } from './schemaHelper'
-import { verifySign, WalletType } from '../services/cryptoService'
-import { FormatContract } from '../types/models'
+import { verifySign } from '../services/cryptoService'
+import { FormatContract, WalletType } from '../types/models'
 
 export function isVerified(item: FormatContract, publicKey: PublicKey) {
+  if (!Array.isArray(item.identifier)) {
+    return false
+  }
   const cryptoData = item.identifier.find(({ name }) =>
-    [WalletType.Phantom, WalletType.Secret].includes(name),
+    [WalletType.Phantom, WalletType.Secret].includes(name as WalletType),
   )
   if (cryptoData) {
     const message = getIdentifierMessage(item)

@@ -1,4 +1,6 @@
 import { uid } from 'quasar'
+import tweetnacl from 'tweetnacl'
+import { Keypair } from '@solana/web3.js'
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
@@ -15,8 +17,6 @@ import { Ed25519Signature2020 } from '@digitalbazaar/ed25519-signature-2020'
 import { JsonLdDocumentLoader } from 'jsonld-document-loader'
 // @ts-ignore
 import * as base68 from 'base58-universal'
-import tweetnacl from 'tweetnacl'
-import { Keypair } from '@solana/web3.js'
 import { Credential, ProofCredential } from '../types/models'
 
 const jdl = new JsonLdDocumentLoader()
@@ -32,12 +32,6 @@ const documentLoader = jdl.build()
 export const decode: (str: string) => Uint8Array = base68.decode
 
 export const encode: (x: Uint8Array) => string = base68.encode
-
-export enum WalletType {
-  Phantom = 'Phantom Wallet',
-  Secret = 'Unknown Wallet', // Solana base58
-  Unknown = 'No Wallet',
-}
 
 export function sign({
   credential,
