@@ -69,7 +69,7 @@
         v-model.trim="email"
         :label="$t('customer.email')"
         :hint="$t('customer.hintEmail')"
-        :rules="['email']"
+        :rules="email ? ['email'] : []"
         autocomplete="off"
         type="email"
         name="email"

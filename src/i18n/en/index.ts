@@ -164,7 +164,7 @@ export default {
   },
   wallet: {
     label: 'Private Key Solana',
-    open: 'Open Solana Dialog',
+    open: 'Solana Wallet Dialog',
     disconnected: 'Wallet disconnected',
     accountChanged: 'Account changed',
     fail: 'Error binding crypto wallet',
@@ -205,7 +205,7 @@ export default {
     welcome: {
       title: `Welcome to ${productName}`,
       body: 'Convenient and secure recording of any agreements on your devices.',
-      ok: 'Continue',
+      ok: 'Accept and Continue',
     },
     info: {
       title: 'How our service works',
@@ -213,7 +213,6 @@ export default {
         'Our service works as follows: we record the terms of agreements in a reliable storage accessible only to you, either on your physical device or on your SOLID server.' +
         "<br><br>To ensure the security and confidentiality of your information, our application uses the browser's internal storage, which is only accessible from your current device. Your data never leaves your device without your explicit permission." +
         '<br><br>Therefore, when you use our service, you can be confident in the safety and control of your data.',
-      ok: 'Next',
     },
     agreement: {
       title: 'User Agreement',
@@ -224,7 +223,6 @@ export default {
         '<br><br>The [source code of the application](https://github.com/gotois/archive) is distributed under the license:' +
         '<br>[GNU General Public License v3.0](https://github.com/gotois/archive/blob/master/LICENSE).' +
         '<br><br>The full user agreement is available at: [User Agreement](https://archive.gotointeractive.com/privacy). We recommend that you carefully read it to fully understand the terms of use of our service.',
-      ok: 'Accept',
     },
     wallet: {
       title: 'Connecting Crypto Wallet',
@@ -303,7 +301,7 @@ export default {
     },
     keypair: {
       generate: {
-        label: 'Generate Key',
+        label: 'Generate new DID',
         tooltip: 'Generate a new key',
       },
       import: {

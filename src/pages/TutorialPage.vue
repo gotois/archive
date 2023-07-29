@@ -42,64 +42,46 @@
             style="white-space: break-spaces"
             v-html="parse($t('tutorial.welcome.body'))"
           ></div>
+          <QList class="q-mb-md">
+            <QExpansionItem
+              :label="$t('tutorial.info.title')"
+              icon="create_new_folder"
+              :dense="$q.platform.is.desktop"
+              :dense-toggle="$q.platform.is.desktop"
+            >
+              <QCard>
+                <QCardSection>
+                  <div
+                    class="text-body1"
+                    style="white-space: break-spaces"
+                    v-html="parse($t('tutorial.info.body'))"
+                  ></div>
+                </QCardSection>
+              </QCard>
+            </QExpansionItem>
+            <QExpansionItem
+              :label="$t('tutorial.agreement.title')"
+              :caption="$t('tutorial.agreement.caption')"
+              icon="article"
+              :dense="$q.platform.is.desktop"
+              :dense-toggle="$q.platform.is.desktop"
+            >
+              <QCard>
+                <QCardSection>
+                  <div
+                    class="text-body1"
+                    style="white-space: break-spaces"
+                    v-html="parse($t('tutorial.agreement.body'))"
+                  >
+                  </div>
+                </QCardSection>
+              </QCard>
+            </QExpansionItem>
+          </QList>
           <QStepperNavigation>
             <QBtn
               color="secondary"
               :label="$t('tutorial.welcome.ok')"
-              :class="{
-                'full-width': !$q.platform.is.desktop,
-              }"
-              @click="$refs.stepper.next()"
-            />
-          </QStepperNavigation>
-        </QStep>
-        <QStep
-          :name="STEP.INFO"
-          :title="$t('tutorial.info.title')"
-          icon="create_new_folder"
-          done-color="positive"
-          :done="step > STEP.INFO"
-        >
-          <p v-show="$q.platform.is.desktop" class="text-h4">
-            {{ $t('tutorial.info.title') }}
-          </p>
-          <div
-            class="text-body1"
-            style="white-space: break-spaces"
-            v-html="parse($t('tutorial.info.body'))"
-          ></div>
-          <QStepperNavigation>
-            <QBtn
-              color="secondary"
-              :label="$t('tutorial.info.ok')"
-              :class="{
-                'full-width': !$q.platform.is.desktop,
-              }"
-              @click="$refs.stepper.next()"
-            />
-          </QStepperNavigation>
-        </QStep>
-        <QStep
-          :name="STEP.AGREEMENT"
-          :title="$t('tutorial.agreement.title')"
-          :caption="$t('tutorial.agreement.caption')"
-          icon="article"
-          done-color="positive"
-          :done="step > STEP.AGREEMENT"
-        >
-          <p v-show="$q.platform.is.desktop" class="text-h4">
-            {{ $t('tutorial.agreement.title') }}
-          </p>
-          <div
-            class="text-body1"
-            style="white-space: break-spaces"
-            v-html="parse($t('tutorial.agreement.body'))"
-          >
-          </div>
-          <QStepperNavigation>
-            <QBtn
-              color="secondary"
-              :label="$t('tutorial.agreement.ok')"
               :class="{
                 'full-width': !$q.platform.is.desktop,
               }"
@@ -280,6 +262,8 @@ import {
   QBtn,
   QForm,
   QIcon,
+  QCard,
+  QCardSection,
   QInput,
   QPage,
   QScrollArea,
@@ -288,6 +272,8 @@ import {
   QStepper,
   QStepperNavigation,
   QTooltip,
+  QList,
+  QExpansionItem,
   useMeta,
   useQuasar,
 } from 'quasar'
@@ -333,12 +319,10 @@ const walletStore = useWalletStore()
 
 enum STEP {
   WELCOME = 1,
-  INFO = 2,
-  AGREEMENT = 3,
-  WALLET = 4,
-  CRYPTO = 5,
-  OIDC = 6,
-  FINAL = 7,
+  WALLET = 2,
+  CRYPTO = 3,
+  OIDC = 4,
+  FINAL = 5,
 }
 
 const stepParam = 'step'
@@ -378,20 +362,6 @@ function setMeta(value: number) {
       useMeta({
         'title': $t('pages.tutorial.welcome.title'),
         'og:title': $t('pages.tutorial.welcome.title'),
-      })
-      break
-    }
-    case STEP.INFO: {
-      useMeta({
-        'title': $t('pages.tutorial.info.title'),
-        'og:title': $t('pages.tutorial.info.title'),
-      })
-      break
-    }
-    case STEP.AGREEMENT: {
-      useMeta({
-        'title': $t('pages.tutorial.agreement.title'),
-        'og:title': $t('pages.tutorial.agreement.title'),
       })
       break
     }

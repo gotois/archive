@@ -13,6 +13,20 @@ export default async (id: string, object: FormatContract) => {
     console.warn('object sameAs is empty')
   }
   const uid = object.identifier.find((i) => i.name === 'Contract').value
+  const organizer = []
+  if (object.agent.name && object.agent.email) {
+    organizer.push({
+      name: object.agent.name,
+      email: object.agent.email,
+    })
+  }
+  const attendee = []
+  if (object.participant.name && object.participant.email) {
+    attendee.push({
+      name: object.participant.name,
+      email: object.participant.email,
+    })
+  }
   const event = createEvent({
     uid: uid as string,
     url: object.sameAs ? new URL(object.sameAs) : null,
@@ -22,18 +36,8 @@ export default async (id: string, object: FormatContract) => {
     start: object.startTime,
     end: object.endTime,
     attach: attach,
-    organizer: [
-      {
-        name: object.agent.name,
-        email: object.agent.email,
-      },
-    ],
-    attendee: [
-      {
-        name: object.participant.name,
-        email: object.participant.email,
-      },
-    ],
+    organizer: organizer,
+    attendee: attendee,
   })
 
   return icalendar(id, object.instrument.name, event)

@@ -176,7 +176,6 @@
               autocapitalize="off"
               autocomplete="off"
               greedy
-              style="max-width: calc(300px - 32px)"
               @submit="onFinishProfile"
             >
               <QField
