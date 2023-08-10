@@ -77,6 +77,10 @@ export default {
     register: 'Registration',
     signout: 'Exit from SOLiD',
     signin: 'Login with WebID',
+    support: {
+      label: 'Support',
+      tooltip: 'Support',
+    },
     feedback: {
       label: 'Leave a review',
       tooltip: 'If you find an error, please write to us about it.',

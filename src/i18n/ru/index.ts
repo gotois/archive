@@ -77,6 +77,10 @@ export default {
     register: 'Регистрация',
     signout: 'Выйти из Solid',
     signin: 'Войти через WebID',
+    support: {
+      label: 'Поддержка',
+      tooltip: 'Поддержка',
+    },
     feedback: {
       label: 'Оставить отзыв о приложении',
       tooltip: 'Если вы нашли ошибку, напишите нам об этом',

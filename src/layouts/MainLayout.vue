@@ -418,6 +418,24 @@
         <QSeparator class="q-mb-md" />
         <QSpace class="col" />
         <QChip
+          v-if="
+            $q.platform.is.mac || $q.platform.is.linux || $q.platform.is.win
+          "
+          icon="support"
+          class="cursor-pointer full-width q-pa-md self-end"
+          color="transparent"
+          :dense="$q.platform.is.desktop"
+          square
+          clickable
+          :disable="router.currentRoute.value.name === ROUTE_NAMES.SUPPORT"
+          :label="miniState ? '' : $t('navigation.support.label')"
+          @click="onOpenSupport"
+        >
+          <QTooltip>
+            {{ $t('navigation.support.tooltip') }}
+          </QTooltip>
+        </QChip>
+        <QChip
           icon="link"
           class="cursor-pointer full-width q-pa-md self-end"
           color="transparent"
@@ -639,6 +657,12 @@ async function logOutFromPod() {
   $q.notify({
     message: $t('database.pod.disconnected'),
     type: 'positive',
+  })
+}
+
+function onOpenSupport() {
+  return router.push({
+    name: ROUTE_NAMES.SUPPORT,
   })
 }
 
