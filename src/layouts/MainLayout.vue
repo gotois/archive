@@ -239,10 +239,11 @@
                 </template>
               </QInput>
               <QField
-                v-if="!getWalletLD.id"
+                v-if="getWalletLD.id"
                 label="DID"
                 color="secondary"
                 class="q-pb-md full-width"
+                :style="{ maxWidth: 320 - 30 + 'px' }"
                 outlined
                 stack-label
                 hide-bottom-space
@@ -265,7 +266,12 @@
                   />
                 </template>
               </QField>
-              <PhantomWalletLogin v-else />
+              <PhantomWalletLogin
+                v-else
+                :label="$t('tutorial.wallet.title')"
+                icon="wallet"
+                content-class="full-width q-mb-md"
+              />
               <QBtn
                 :label="$t('consumer.save')"
                 icon="save"

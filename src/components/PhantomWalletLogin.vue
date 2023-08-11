@@ -2,25 +2,27 @@
   <QBtn
     v-if="hasPhantomWallet"
     color="accent"
-    icon="wallet"
-    :label="$t('tutorial.wallet.ok')"
+    :icon="icon"
+    :class="contentClass"
+    :label="label"
     @click="tryToLoginPhantomWallet"
   />
   <template v-else>
     <QBtn
       size="md"
-      class="q-ml-auto q-mr-auto q-mt-none full-width q-mb-md"
-      :class="{
-        'full-width': !$q.platform.is.desktop,
-      }"
-      round
+      class="q-pl-md q-pr-md q-ml-auto q-mr-auto q-mt-none q-mb-md"
+      :class="contentClass"
+      :label="label"
       :dense="$q.platform.is.desktop"
       color="accent"
       square
-      :label="$t('wallet.open')"
-      icon="wallet"
+      :icon="icon"
       @click="showDialog = true"
-    />
+    >
+      <QTooltip>
+        {{ $t('wallet.open') }}
+      </QTooltip>
+    </QBtn>
     <QDialog v-model="showDialog" square persistent>
       <QCard flat class="q-pa-md">
         <QForm v-if="!hasPhantomWallet" greedy @submit="onWalletComplete">
@@ -109,8 +111,9 @@
   </template>
 </template>
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import { ref, computed, PropType } from 'vue'
 import {
+  VueClassProp,
   useQuasar,
   QBtn,
   QForm,
@@ -121,6 +124,7 @@ import {
   QDialog,
   QItem,
   QItemSection,
+  QTooltip,
   QItemLabel,
   openURL,
 } from 'quasar'
@@ -131,6 +135,22 @@ import { getSolana } from '../services/phantomWalletService'
 import { WalletType } from '../types/models'
 
 const emit = defineEmits(['skip', 'complete'])
+defineProps({
+  icon: {
+    type: undefined as PropType<string | undefined>,
+    default: undefined,
+  },
+  label: {
+    type: String as PropType<string>,
+    required: false,
+    default: '',
+  },
+  contentClass: {
+    type: undefined as PropType<VueClassProp>,
+    required: false,
+    default: undefined,
+  },
+})
 
 const $t = useI18n().t
 const walletStore = useWalletStore()

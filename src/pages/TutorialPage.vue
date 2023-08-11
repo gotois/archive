@@ -77,38 +77,31 @@
                 </QCardSection>
               </QCard>
             </QExpansionItem>
+            <QExpansionItem
+              :label="$t('tutorial.wallet.title')"
+              :caption="$t('tutorial.wallet.caption')"
+              icon="wallet"
+              :dense="$q.platform.is.desktop"
+              :dense-toggle="$q.platform.is.desktop"
+            >
+              <QCard>
+                <QCardSection>
+                  <div
+                    class="text-body1"
+                    style="white-space: break-spaces"
+                    v-html="parse($t('tutorial.wallet.body'))"
+                  >
+                  </div>
+                </QCardSection>
+              </QCard>
+            </QExpansionItem>
           </QList>
           <QStepperNavigation>
-            <QBtn
-              color="secondary"
+            <PhantomWalletLogin
               :label="$t('tutorial.welcome.ok')"
-              :class="{
+              :content-class="{
                 'full-width': !$q.platform.is.desktop,
               }"
-              @click="$refs.stepper.next()"
-            />
-          </QStepperNavigation>
-        </QStep>
-        <QStep
-          :name="STEP.WALLET"
-          :title="$t('tutorial.wallet.title')"
-          :caption="$t('tutorial.wallet.caption')"
-          done-color="positive"
-          icon="assignment"
-          class="q-pb-md"
-          :done="step > STEP.WALLET"
-        >
-          <p v-show="$q.platform.is.desktop" class="text-h4">
-            {{ $t('tutorial.wallet.title') }}
-          </p>
-          <div
-            class="text-body1"
-            style="white-space: break-spaces"
-            v-html="parse($t('tutorial.wallet.body'))"
-          >
-          </div>
-          <QStepperNavigation>
-            <PhantomWalletLogin
               @skip="onSkipWallet"
               @complete="stepper.next()"
             />
@@ -204,7 +197,6 @@
               autocomplete="on"
               autofocus
               :error-message="$t('consumer.rules')"
-              clearable
               outlined
               no-error-icon
               @focus="(e) => e.target.scrollIntoView()"
@@ -222,7 +214,6 @@
               :error-message="$t('consumer.emailRules')"
               autocomplete="off"
               lazy-rules
-              clearable
               no-error-icon
               outlined
             >
@@ -273,11 +264,11 @@ import {
   QStepperNavigation,
   QTooltip,
   QList,
+  patterns,
   QExpansionItem,
   useMeta,
   useQuasar,
 } from 'quasar'
-import patterns from 'quasar/src/utils/patterns'
 import { storeToRefs } from 'pinia'
 import useAuthStore from 'stores/auth'
 import { demoUserWebId } from 'stores/auth'
@@ -319,10 +310,9 @@ const walletStore = useWalletStore()
 
 enum STEP {
   WELCOME = 1,
-  WALLET = 2,
-  CRYPTO = 3,
-  OIDC = 4,
-  FINAL = 5,
+  CRYPTO = 2,
+  OIDC = 3,
+  FINAL = 4,
 }
 
 const stepParam = 'step'
@@ -362,13 +352,6 @@ function setMeta(value: number) {
       useMeta({
         'title': $t('pages.tutorial.welcome.title'),
         'og:title': $t('pages.tutorial.welcome.title'),
-      })
-      break
-    }
-    case STEP.WALLET: {
-      useMeta({
-        'title': $t('pages.tutorial.wallet.title'),
-        'og:title': $t('pages.tutorial.wallet.title'),
       })
       break
     }
@@ -567,12 +550,11 @@ onMounted(() => {
     step.value = STEP.FINAL
   }
   if (
-    step.value > Number(STEP.WALLET) &&
+    step.value > Number(STEP.CRYPTO) &&
     walletStore.getMultibase?.length === 0
   ) {
-    step.value = STEP.WALLET
-  }
-  if (isLoggedIn.value && query.code && query.state) {
+    step.value = STEP.WELCOME
+  } else if (isLoggedIn.value && query.code && query.state) {
     step.value = STEP.FINAL
   }
 })
