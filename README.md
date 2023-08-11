@@ -1,5 +1,6 @@
 [![Website](https://img.shields.io/website/https/archive.gotointeractive.com.svg?link=https://archive.gotointeractive.com)](https://archive.gotointeractive.com)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/f467de0f-4773-4f8a-ac3b-5d4aeca0ea83/deploy-status)](https://app.netlify.com/sites/my-archive/deploys)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fgotois%2Farchive.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fgotois%2Farchive?ref=badge_shield)
 
 # Мои договоры
 > Персональная безопасная база договоров.
@@ -93,3 +94,7 @@ bubblewrap install
 
 ---
 Сделано на принципах [gotois](https://gotointeractive.com/mantra).
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fgotois%2Farchive.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fgotois%2Farchive?ref=badge_large)
