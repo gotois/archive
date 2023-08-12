@@ -25,7 +25,7 @@ export default defineStore('wallet', {
       type,
       clusterApiUrl,
     }: {
-      privateKey: string
+      privateKey?: string
       publicKey?: string
       type: WalletType
       clusterApiUrl?: string

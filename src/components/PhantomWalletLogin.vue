@@ -153,8 +153,8 @@ defineProps({
 })
 
 const $t = useI18n().t
-const walletStore = useWalletStore()
 const $q = useQuasar()
+const walletStore = useWalletStore()
 
 const hasPhantomWallet = computed(() => Reflect.has(window, 'phantom'))
 
@@ -200,20 +200,30 @@ async function tryToLoginPhantomWallet() {
       noreferrer: true,
     })
   }
+  let publicKey = ''
   /* eslint-disable */
   if (solana.isConnected) {
-    await walletStore.setKeypare({
-      publicKey: solana.publicKey.toBase58(),
-      type: WalletType.Phantom,
-    })
+    publicKey = solana.publicKey.toBase58()
+    /* eslint-enable */
   } else {
-    const { publicKey } = await solana.connect({ onlyIfTrusted: false })
-    await walletStore.setKeypare({
-      publicKey: publicKey.toBase58(),
-      type: WalletType.Phantom,
-    })
+    try {
+      /* eslint-disable */
+      const result = await solana.connect({ onlyIfTrusted: false })
+      publicKey = result.publicKey.toBase58()
+      /* eslint-enable */
+    } catch (error) {
+      console.error(error)
+      $q.notify({
+        type: 'negative',
+        message: error.message as string,
+      })
+      return
+    }
   }
-  /* eslint-enable */
+  await walletStore.setKeypare({
+    publicKey,
+    type: WalletType.Phantom,
+  })
   closeDialog()
   emit('complete')
 }
