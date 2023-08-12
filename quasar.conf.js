@@ -7,6 +7,9 @@ const { configure } = require('quasar/wrappers')
 const pkg = require('./package.json')
 
 module.exports = configure((ctx) => {
+  if (ctx.dev) {
+    require('dotenv').config()
+  }
   return {
     eslint: {
       fix: !ctx.prod,
@@ -40,6 +43,9 @@ module.exports = configure((ctx) => {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
+      env: {
+        google_client_id: process.env.GOOGLE_CLIENT_ID,
+      },
       target: {
         browser: 'esnext',
       },

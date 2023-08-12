@@ -54,6 +54,8 @@ npm i
 
 ### Cборка и запуск PWA
 
+- Установите `GOOGLE_CLIENT_ID` ([google-one-tap](https://developers.google.com/identity/gsi/web/guides/display-google-one-tap)) в качестве переменной среды.
+
 #### Запуск в режиме разработки (hot-code reloading, error reporting, etc.)
 ```bash
 npm run dev

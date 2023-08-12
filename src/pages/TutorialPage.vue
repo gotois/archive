@@ -179,65 +179,7 @@
           </p>
           <p class="text-body1">{{ $t('tutorial.data.body') }}</p>
           <QSpace class="q-pa-xs" />
-          <QForm
-            ref="nameForm"
-            class="q-gutter-md q-mt-md"
-            autocapitalize="off"
-            autocomplete="off"
-            autofocus
-            greedy
-            @submit="onFinish"
-          >
-            <QInput
-              v-model.trim="consumer"
-              :label="$t('consumer.type')"
-              :rules="[(val) => val && val.length > 3]"
-              name="consumer"
-              type="text"
-              autocomplete="on"
-              autofocus
-              :error-message="$t('consumer.rules')"
-              outlined
-              no-error-icon
-              @focus="(e) => e.target.scrollIntoView()"
-            >
-              <template #prepend>
-                <QIcon name="face" />
-              </template>
-            </QInput>
-            <QInput
-              v-model.trim="email"
-              :label="$t('consumer.email')"
-              name="email"
-              type="email"
-              :rules="['email']"
-              :error-message="$t('consumer.emailRules')"
-              autocomplete="off"
-              lazy-rules
-              no-error-icon
-              outlined
-            >
-              <template #prepend>
-                <QIcon name="email" />
-              </template>
-            </QInput>
-            <QStepperNavigation class="q-pa-md no-margin">
-              <QBtn
-                color="accent"
-                type="submit"
-                square
-                :disable="!consumerValid"
-                :label="$t('tutorial.data.ok')"
-                :class="{
-                  'full-width': !$q.platform.is.desktop,
-                }"
-                :dense="$q.platform.is.desktop"
-                :loading="$q.loading.isActive"
-                icon="login"
-              />
-              <PodImporter v-if="isLoggedIn" class="q-ml-md" />
-            </QStepperNavigation>
-          </QForm>
+          <IdComponent @finish="onFinish" />
         </QStep>
       </QStepper>
     </QScrollArea>
@@ -245,13 +187,12 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue'
+import { defineAsyncComponent, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import {
   exportFile,
   QBtn,
-  QForm,
   QIcon,
   QCard,
   QCardSection,
@@ -264,7 +205,6 @@ import {
   QStepperNavigation,
   QTooltip,
   QList,
-  patterns,
   QExpansionItem,
   useMeta,
   useQuasar,
@@ -292,11 +232,11 @@ const OIDCIssuerComponent = defineAsyncComponent(
 const KeypairComponent = defineAsyncComponent(
   () => import('components/KeypairComponent.vue'),
 )
-const PodImporter = defineAsyncComponent(
-  () => import('components/PodImporter.vue'),
-)
 const PhantomWalletLogin = defineAsyncComponent(
   () => import('components/PhantomWalletLogin.vue'),
+)
+const IdComponent = defineAsyncComponent(
+  () => import('components/IdComponent.vue'),
 )
 
 const $t = useI18n().t
@@ -332,12 +272,6 @@ const step = ref(getCurrentStep() ?? STEP.WELCOME)
 const did = ref('')
 const { isLoggedIn } = storeToRefs(authStore)
 const { consumer, email } = storeToRefs(profileStore)
-const consumerValid = computed(() => {
-  return Boolean(
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-    consumer.value.length > 3 && patterns.testPattern.email(email.value),
-  )
-})
 
 watch(
   () => step.value,
