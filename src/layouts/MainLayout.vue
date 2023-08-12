@@ -243,7 +243,7 @@
                 label="DID"
                 color="secondary"
                 class="q-pb-md full-width"
-                :style="{ maxWidth: 320 - 30 + 'px' }"
+                :style="{ maxWidth: 320 - 34 + 'px' }"
                 outlined
                 stack-label
                 hide-bottom-space

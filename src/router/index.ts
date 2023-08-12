@@ -5,7 +5,7 @@ import useAuthStore from 'stores/auth'
 import usePodStore from 'stores/pod'
 import routes from './routes'
 import { ROUTE_NAMES } from './routes'
-import { reset } from '../services/databaseService'
+import { reset, deleteDatabases } from '../services/databaseService'
 import solidAuth from '../services/authService'
 
 export default route(() => {
@@ -26,6 +26,7 @@ export default route(() => {
       LocalStorage.clear()
       SessionStorage.clear()
       await reset()
+      deleteDatabases()
     }
     if (error || !(code && state)) {
       return

@@ -23,6 +23,12 @@ export function reset() {
   ])
 }
 
+export function deleteDatabases() {
+  indexedDB.deleteDatabase('KeysDatabase')
+  indexedDB.deleteDatabase('SolanaKeysDatabase')
+  indexedDB.deleteDatabase('ContractDatabase')
+}
+
 class KeyPairDatabase extends Dexie {
   public keyPair: Dexie.Table<DIDTable, number>
 
