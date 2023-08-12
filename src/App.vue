@@ -85,6 +85,13 @@ const metaData = {
       content: '#ffffff',
       media: '(prefers-color-scheme: light)',
     },
+    'referrer': {
+      name: 'referrer',
+      content:
+        window.location.hostname === 'localhost'
+          ? 'no-referrer-when-downgrade'
+          : 'strict-origin',
+    },
   },
   script: {
     webSite: {

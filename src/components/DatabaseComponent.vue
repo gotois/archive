@@ -127,7 +127,7 @@ async function onImportDB() {
       clearTablesBeforeImport: false,
     })
     $q.localStorage.remove('contractNames')
-    location.reload()
+    window.location.reload()
   } catch (error) {
     console.error(error)
     $q.loading.hide()

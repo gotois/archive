@@ -68,7 +68,7 @@ async function onClearDatabasePlus() {
       message: $t('components.databaseRemove.success'),
     })
     setTimeout(() => {
-      location.reload()
+      window.location.reload()
     }, timeout)
   } catch (error) {
     console.error(error)
@@ -96,7 +96,7 @@ async function onClearDatabase() {
       message: $t('components.databaseRemove.success'),
     })
     setTimeout(() => {
-      location.reload()
+      window.location.reload()
     }, timeout)
   } catch (error) {
     console.error(error)
