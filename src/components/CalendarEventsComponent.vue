@@ -5,8 +5,8 @@
     :options="options"
     default-view="Calendar"
     first-day-of-week="1"
-    event-color="primary"
-    color="secondary"
+    event-color="secondary"
+    color="primary"
     minimal
     landscape
     @navigation="updateEvents"
@@ -39,20 +39,33 @@ function selectDate(date: string) {
   emit('select', filtered)
 }
 
-function fillDates(dates: { start: number; end?: number }[]) {
+function fillDates(
+  dates: { start: number; end?: number }[],
+  year: number,
+  month: number,
+) {
   const res = new Set()
   for (let i = 0; i < dates.length; i++) {
     if (dates[i].start && dates[i].end) {
-      const from = new Date(dates[i].start)
-      const until = new Date(dates[i].end)
+      const start = new Date(dates[i].start)
+      const end = new Date(dates[i].end)
+      const current =
+        start.getFullYear() === year && start.getMonth() + 1 === month
+          ? start
+          : date.startOfDate(date.buildDate({ year, month }), 'month')
       const duration = Math.abs(
         date.getDateDiff(
-          from,
-          date.getMinDate(date.endOfDate(from, 'month'), until),
+          current,
+          date.getMinDate(date.endOfDate(current, 'month'), end),
         ),
       )
-      for (let j = 0; j < duration; j++) {
-        const newDate = date.addToDate(from, { days: j })
+      const currentDate = current.getDate()
+      for (let j = currentDate; j <= currentDate + duration; j++) {
+        const newDate = date.buildDate({
+          year: year,
+          month: month,
+          days: j,
+        })
         res.add(date.formatDate(newDate, 'YYYY/MM/DD'))
       }
     } else if (dates[i].start) {
@@ -70,7 +83,7 @@ async function updateEvents({ year, month }: { year: number; month: number }) {
     from: startOfMonth,
     to: endOfMonth,
   })
-  options.value = fillDates(contractDates)
+  options.value = fillDates(contractDates, year, month)
   events.value = contractDates.map(({ start }) => start)
 }
 

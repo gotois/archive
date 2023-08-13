@@ -260,8 +260,18 @@ export default defineStore('contracts', {
     },
     async getCalendarContracts({ from, to }: { from: Date; to: Date }) {
       const contracts = await db.contracts
-        .where('startTime')
-        .between(from, to, true, true)
+        .filter((c) => {
+          if (date.isBetweenDates(c.startTime, from, to)) {
+            return true
+          }
+          if (date.isBetweenDates(c.endTime, from, to)) {
+            return true
+          }
+          if (c.startTime <= from) {
+            return c.endTime > to
+          }
+          return false
+        })
         .toArray()
       return contracts.map((contract) => {
         return {
