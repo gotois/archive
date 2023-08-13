@@ -242,8 +242,11 @@
                 v-if="getWalletLD.id"
                 label="DID"
                 color="secondary"
-                class="q-pb-md full-width"
-                :style="{ maxWidth: 320 - 34 + 'px' }"
+                class="q-pb-md"
+                :style="{
+                  maxWidth:
+                    ($q.platform.is.mobile ? 306 - 34 : 320 - 34) + 'px',
+                }"
                 outlined
                 stack-label
                 hide-bottom-space
@@ -425,7 +428,10 @@
         <QSpace class="col" />
         <QChip
           v-if="
-            $q.platform.is.mac || $q.platform.is.linux || $q.platform.is.win
+            $q.platform.is.mac ||
+            $q.platform.is.linux ||
+            $q.platform.is.win ||
+            $q.platform.is.safari
           "
           icon="support"
           class="cursor-pointer full-width q-pa-md self-end"

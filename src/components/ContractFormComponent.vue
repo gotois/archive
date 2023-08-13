@@ -112,10 +112,10 @@
           color="grey-6"
           class="my-dropdown col"
         >
-          <template v-if="$q.platform.is.mobile" #label>
+          <template #label>
             <div class="row no-wrap">
               <QIcon left name="event" color="grey-6" />
-              <span class="text-caption text-grey-8">
+              <span class="text-caption text-grey-8" style="align-self: center">
                 {{ duration.from }}
                 <template v-if="!dateNoLimit && duration.from !== duration.to">
                   - {{ duration.to }}
@@ -130,47 +130,7 @@
               size="lg"
             />
           </template>
-          <template v-if="dateNoLimit">
-            <QDate
-              v-model="duration.from"
-              default-view="Calendar"
-              :class="
-                $q.platform.is.mobile ? 'fullscreen full-width full-height' : ''
-              "
-              first-day-of-week="1"
-              @update:model-value="onSelectDate"
-            >
-              <div class="row items-center justify-end">
-                <QBtn
-                  v-close-popup
-                  :label="$t('duration.close')"
-                  color="primary"
-                  flat
-                />
-              </div>
-            </QDate>
-          </template>
-          <template v-else>
-            <QDate
-              v-model="duration"
-              default-view="Months"
-              first-day-of-week="1"
-              :class="{
-                'fullscreen full-width full-height': $q.platform.is.mobile,
-              }"
-              range
-              @update:model-value="onSelectDate"
-            >
-              <div class="row items-center justify-end">
-                <QBtn
-                  v-close-popup
-                  :label="$t('duration.close')"
-                  color="primary"
-                  flat
-                />
-              </div>
-            </QDate>
-          </template>
+          <DateComponent :range="!dateNoLimit" @select="onSelectDate" />
         </QBtnDropdown>
         <QInput
           v-if="!$q.platform.is.mobile"
@@ -260,9 +220,8 @@
     </QForm>
   </div>
 </template>
-
 <script lang="ts" setup>
-import { PropType, ref } from 'vue'
+import { PropType, ref, defineAsyncComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   useQuasar,
@@ -274,7 +233,6 @@ import {
   QBtn,
   QIcon,
   QInput,
-  QDate,
   QTooltip,
   QToggle,
   QFile,
@@ -285,6 +243,10 @@ import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
 import { readFilesPromise } from '../helpers/fileHelper'
 import { formatDate } from '../helpers/dateHelper'
+
+const DateComponent = defineAsyncComponent(
+  () => import('components/DateComponent.vue'),
+)
 
 interface Duration {
   from: Date | string

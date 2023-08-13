@@ -107,7 +107,7 @@ const PodImporter = defineAsyncComponent(
 
 const emit = defineEmits(['finish'])
 const $q = useQuasar()
-const locale = useI18n().locale
+const { locale } = useI18n()
 const profileStore = useProfileStore()
 const authStore = useAuthStore()
 
