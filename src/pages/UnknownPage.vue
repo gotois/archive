@@ -23,7 +23,6 @@
     </div>
   </div>
 </template>
-
 <script lang="ts" setup>
 import { useMeta, QBtn } from 'quasar'
 import { useI18n } from 'vue-i18n'

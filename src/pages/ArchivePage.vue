@@ -114,11 +114,26 @@
           :label="$t('list.create')"
           :to="{ name: 'create' }"
         />
+        <QFabAction
+          push
+          icon="event"
+          square
+          outline
+          color="primary"
+          :class="{
+            'bg-white': !$q.dark.isActive,
+            'bg-dark': $q.dark.isActive,
+          }"
+          :label="$t('list.calendar')"
+        >
+          <QPopupProxy cover transition-show="scale" transition-hide="scale">
+            <CalendarEventsComponent @select="onFilterById" />
+          </QPopupProxy>
+        </QFabAction>
       </QFab>
     </QPageSticky>
   </QPage>
 </template>
-
 <script lang="ts" setup>
 import {
   ref,
@@ -144,6 +159,7 @@ import {
   QPageSticky,
   QFab,
   QFabAction,
+  QPopupProxy,
 } from 'quasar'
 import { storeToRefs } from 'pinia'
 import useAuthStore from 'stores/auth'
@@ -153,6 +169,9 @@ import contractTypes from '../services/contractEnum'
 import { ROUTE_NAMES } from '../router/routes'
 import { FormatContract } from '../types/models'
 
+const CalendarEventsComponent = defineAsyncComponent(
+  () => import('components/CalendarEventsComponent.vue'),
+)
 const ArchiveListComponent = defineAsyncComponent({
   loader: () => import('components/ArchiveListComponent.vue'),
   delay: 0,
@@ -211,6 +230,17 @@ watch(
 )
 
 useMeta(metaData)
+
+async function onFilterById(ids: number[]) {
+  if (!ids) {
+    return
+  }
+  $q.loading.show()
+  await contractStore.filteredByIds({
+    ids: ids,
+  })
+  $q.loading.hide()
+}
 
 async function onPaginate(page: number) {
   $q.loading.show()

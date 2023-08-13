@@ -29,7 +29,6 @@
     </QScrollArea>
   </QPage>
 </template>
-
 <script lang="ts" setup>
 import { defineAsyncComponent, h, ref } from 'vue'
 import { useI18n } from 'vue-i18n'

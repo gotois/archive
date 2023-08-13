@@ -56,6 +56,7 @@ export default {
   list: {
     explore: 'Clear Search',
     create: 'Create contract',
+    calendar: 'Open calendar',
   },
   archive: {
     search: 'Search',

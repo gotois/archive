@@ -56,6 +56,7 @@ export default {
   list: {
     explore: 'Очистить поиск',
     create: 'Создать документ',
+    calendar: 'Открыть календарь',
   },
   archive: {
     search: 'Поиск договора',

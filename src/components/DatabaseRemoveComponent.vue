@@ -33,7 +33,6 @@
     </QCardActions>
   </QCard>
 </template>
-
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
 import { useQuasar, QBtn, QCardActions, QCardSection, QCard } from 'quasar'

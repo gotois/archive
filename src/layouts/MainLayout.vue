@@ -518,7 +518,6 @@
     </QPageContainer>
   </QLayout>
 </template>
-
 <script lang="ts" setup>
 import { ref, computed, defineAsyncComponent, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'

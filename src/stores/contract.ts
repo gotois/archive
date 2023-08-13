@@ -1,4 +1,4 @@
-import { uid, LocalStorage, SessionStorage } from 'quasar'
+import { uid, date, LocalStorage, SessionStorage } from 'quasar'
 import { defineStore } from 'pinia'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -221,6 +221,9 @@ export default defineStore('contracts', {
         .reverse()
         .sortBy('startTime')
     },
+    async filteredByIds({ ids }: { ids: number[] }) {
+      this.contracts = await db.contracts.bulkGet(ids)
+    },
     async searchFromContracts({
       query,
       offset,
@@ -254,6 +257,19 @@ export default defineStore('contracts', {
       }
       const contracts = await db.contracts.bulkGet(ids)
       this.contracts = contracts.slice(offset, offset + limit)
+    },
+    async getCalendarContracts({ from, to }: { from: Date; to: Date }) {
+      const contracts = await db.contracts
+        .where('startTime')
+        .between(from, to, true, true)
+        .toArray()
+      return contracts.map((contract) => {
+        return {
+          id: contract.id,
+          start: date.formatDate(contract.startTime, 'YYYY/MM/DD'),
+          end: date.formatDate(contract.endTime, 'YYYY/MM/DD'),
+        }
+      })
     },
     async loadAllContracts({
       offset = 0,

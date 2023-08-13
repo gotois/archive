@@ -45,7 +45,6 @@
     </QBtn>
   </div>
 </template>
-
 <script lang="ts" setup>
 import { ref, PropType } from 'vue'
 import { QSelect, QBtn, QTooltip } from 'quasar'
