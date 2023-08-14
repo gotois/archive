@@ -4,7 +4,8 @@
     :events="events"
     :options="options"
     default-view="Calendar"
-    first-day-of-week="1"
+    :first-day-of-week="locale === 'ru' ? 1 : null"
+    :locale="calendarLocale"
     event-color="secondary"
     color="primary"
     minimal
@@ -16,8 +17,18 @@
 </template>
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { QDate, date } from 'quasar'
 import useContractStore from 'stores/contract'
+import { ContractDate } from '../types/models'
+
+interface NavigationDate {
+  year: number
+  month: number
+}
+
+const $t = useI18n().t
+const { locale } = useI18n()
 
 const emit = defineEmits(['select'])
 const contractStore = useContractStore()
@@ -25,25 +36,29 @@ const contractStore = useContractStore()
 const events = ref([])
 const options = ref([])
 const model = ref(new Date())
+const calendarLocale = ref<unknown>(
+  locale.value === 'ru'
+    ? {
+        days: $t('calendar.days').split('_'),
+        daysShort: $t('calendar.daysShort').split('_'),
+        months: $t('calendar.months').split('_'),
+        monthsShort: $t('calendar.monthsShort').split('_'),
+      }
+    : null,
+)
 
-let contractDates = []
+let contractDates: ContractDate[] = []
 
 function selectDate(date: string) {
   const filtered = contractDates
     .filter(({ start, end }) => {
       return start >= date || date <= end
     })
-    .map(({ id }) => {
-      return id as number
-    })
+    .map(({ id }) => id)
   emit('select', filtered)
 }
 
-function fillDates(
-  dates: { start: number; end?: number }[],
-  year: number,
-  month: number,
-) {
+function fillDates(dates: ContractDate[], { month, year }: NavigationDate) {
   const res = new Set()
   for (let i = 0; i < dates.length; i++) {
     if (dates[i].start && dates[i].end) {
@@ -75,15 +90,15 @@ function fillDates(
   return Array.from(res)
 }
 
-async function updateEvents({ year, month }: { year: number; month: number }) {
-  const buildDate = date.buildDate({ year: year, month: month })
+async function updateEvents(navigationDate: NavigationDate) {
+  const buildDate = date.buildDate(navigationDate)
   const startOfMonth = date.startOfDate(buildDate, 'month')
   const endOfMonth = date.endOfDate(buildDate, 'month')
   contractDates = await contractStore.getCalendarContracts({
     from: startOfMonth,
     to: endOfMonth,
   })
-  options.value = fillDates(contractDates, year, month)
+  options.value = fillDates(contractDates, navigationDate)
   events.value = contractDates.map(({ start }) => start)
 }
 

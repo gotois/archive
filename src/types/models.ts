@@ -4,6 +4,12 @@ export enum WalletType {
   Unknown = 'No Wallet',
 }
 
+export interface ContractDate {
+  id: number
+  start: string
+  end?: string
+}
+
 export interface ContractTable {
   id?: number
   context: credentialContextType

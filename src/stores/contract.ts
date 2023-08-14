@@ -20,6 +20,7 @@ import {
 } from '../helpers/schemaHelper'
 import {
   ContractData,
+  ContractDate,
   ContractTable,
   Credential,
   FormatContract,
@@ -279,7 +280,7 @@ export default defineStore('contracts', {
           start: date.formatDate(contract.startTime, 'YYYY/MM/DD'),
           end: date.formatDate(contract.endTime, 'YYYY/MM/DD'),
         }
-      })
+      }) as ContractDate[]
     },
     async loadAllContracts({
       offset = 0,

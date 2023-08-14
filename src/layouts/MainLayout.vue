@@ -569,12 +569,14 @@ import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
 import useWalletStore from 'stores/wallet'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
-import LocaleComponent from 'components/LocaleComponent.vue'
 import { indexAllDocuments } from '../services/searchService'
 import { isTWA } from '../helpers/twaHelper'
 import { keyPair } from '../services/databaseService'
 import { ROUTE_NAMES } from '../router/routes'
 
+const LocaleComponent = defineAsyncComponent(
+  () => import('components/LocaleComponent.vue'),
+)
 const DatabaseRemoveComponent = defineAsyncComponent(
   () => import('components/DatabaseRemoveComponent.vue'),
 )
