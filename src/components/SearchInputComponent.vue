@@ -9,7 +9,6 @@
     input-debounce="50"
     :options="searchOptions"
     :label="label"
-    :loading="searching"
     :behavior="$q.platform.is.ios ? 'dialog' : 'menu'"
     input-class="text-right q-pb-md"
     use-input
@@ -26,9 +25,12 @@
     @update:model-value="onSearchText"
     @filter="onFilterSelect"
   >
-    <template v-if="!searching" #append>
+    <template v-if="!searching" #prepend>
       <QIcon v-if="!hasText" name="search" />
       <QIcon v-else name="clear" class="cursor-pointer" @click="clearText" />
+    </template>
+    <template v-else-if="searching" #prepend>
+      <QSpinner color="primary" />
     </template>
     <template #no-option>
       <QItem>
@@ -41,7 +43,7 @@
 </template>
 <script lang="ts" setup>
 import { ref, onMounted, PropType } from 'vue'
-import { QSelect, QItem, QItemSection, QIcon } from 'quasar'
+import { QSelect, QItem, QItemSection, QSpinner, QIcon } from 'quasar'
 import { miniSearch } from '../services/searchService'
 
 const select = ref<InstanceType<typeof QSelect> | null>(null)

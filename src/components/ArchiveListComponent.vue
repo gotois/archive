@@ -39,6 +39,7 @@
                 <QIcon name="error" color="warning" />
               </template>
               {{ item.instrument.name }}
+              <QTooltip>{{ item.instrument.name }}</QTooltip>
             </p>
             <p
               v-if="item.instrument.description"

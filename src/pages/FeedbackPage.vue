@@ -1,5 +1,5 @@
 <template>
-  <QPage class="full-width full-height">
+  <QPage class="full-height">
     <iframe
       v-if="!$q.platform.is.android"
       :src="iframeURL"
