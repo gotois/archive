@@ -59,7 +59,7 @@ export default {
     calendar: 'Открыть календарь',
   },
   archive: {
-    search: 'Поиск договора',
+    search: 'Поиск договоров',
     tooltip: 'Начните вводить текст',
     empty: 'Добавьте свой первый договор.',
     example: 'Например:',
@@ -103,7 +103,7 @@ export default {
       otp: 'Вход по паролю',
     },
     consumer: {
-      description: 'Измените Ваше ФИО или почту в новых договорах.',
+      description: 'Измените Ваше ФИО или почту в договорах.',
     },
     otp: {
       removeCode: 'Удалить PIN',
@@ -277,7 +277,7 @@ export default {
     },
   },
   searchDialog: {
-    searchText: 'Тип или исполнитель договора',
+    searchText: 'Тип или исполнитель договоров',
     cancel: 'Закрыть',
   },
   calendar: {

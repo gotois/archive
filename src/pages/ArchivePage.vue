@@ -23,6 +23,7 @@
           :style="{
             'max-width': $q.platform.is.desktop ? '720px' : 'auto',
           }"
+          :limit="LIMIT"
           :page="Number(currentPage)"
           :pagination-count="paginationCount"
           @on-paginate="onPaginate"

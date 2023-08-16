@@ -1,5 +1,5 @@
 <template>
-  <QVirtualScroll :items="contracts as FormatContract[]" separator>
+  <QVirtualScroll :items-fn="getItems" :items-size="limit" separator>
     <template
       #default="{ item, index }: { item: FormatContract; index: number }"
     >
@@ -182,6 +182,10 @@ const props = defineProps({
     type: Number as PropType<number>,
     required: true,
   },
+  limit: {
+    type: Number as PropType<number>,
+    required: true,
+  },
   page: {
     type: Number as PropType<number>,
     required: true,
@@ -208,6 +212,10 @@ watch(
     page.value = value
   },
 )
+
+function getItems(from: number, size: number): FormatContract[] {
+  return contracts.value.slice(from, size)
+}
 
 function prettyDate(item: FormatContract) {
   if (
