@@ -644,6 +644,14 @@ function onArchiveRoute(e: Event) {
   })
 }
 
+async function onCopyDID() {
+  await copyToClipboard(getWalletLD.value.id)
+  $q.notify({
+    type: 'positive',
+    message: $t('copy.success'),
+  })
+}
+
 async function onExportKeychain() {
   const keysJSON = await keyPair.prepareKeyPair()
   if (keysJSON) {

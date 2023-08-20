@@ -323,7 +323,6 @@ export default {
         },
       },
     },
-
     database: {
       fileImportDialog: {
         title: 'Import Contracts',

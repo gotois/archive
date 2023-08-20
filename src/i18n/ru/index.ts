@@ -332,7 +332,6 @@ export default {
         },
       },
     },
-
     database: {
       fileImportDialog: {
         title: 'Импорт договоров',
