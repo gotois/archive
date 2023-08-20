@@ -105,11 +105,17 @@
               @skip="onSkipWallet"
               @complete="stepper.next()"
             />
-            <QSpace />
+            <QSpace class="q-pa-xs" />
             <QBtn
               :label="$t('tutorial.welcome.demo')"
+              :content-class="{
+                'full-width': !$q.platform.is.desktop,
+              }"
               :dense="$q.platform.is.desktop"
-              square
+              no-caps
+              stack
+              no-wrap
+              align="left"
               flat
               @click="onDemoSign"
             />

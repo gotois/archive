@@ -3,18 +3,16 @@
     <QBtn
       label="en"
       class="full-width"
-      :color="$q.dark.isActive ? 'white' : 'secondary'"
       :dense="$q.platform.is.desktop"
-      :flat="locale !== 'en'"
+      :outline="locale.startsWith('en')"
       @click="changeLocale('en')"
     />
     <QSeparator vertical />
     <QBtn
       label="ru"
       class="full-width"
-      :color="$q.dark.isActive ? 'white' : 'secondary'"
       :dense="$q.platform.is.desktop"
-      :flat="locale !== 'ru'"
+      :outline="locale.startsWith('ru')"
       @click="changeLocale('ru')"
     />
   </QBtnGroup>
