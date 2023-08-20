@@ -332,7 +332,6 @@ export default {
         },
       },
     },
-
     database: {
       fileImportDialog: {
         title: 'Импорт договоров',
@@ -412,5 +411,8 @@ export default {
       success: 'Данные сохранены в буфер обмена',
       fail: 'Произошла ошибка',
     },
+  },
+  copy: {
+    success: 'Скопировано в буфер обмена',
   },
 }

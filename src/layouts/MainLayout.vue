@@ -242,11 +242,7 @@
                 v-if="getWalletLD.id"
                 label="DID"
                 color="secondary"
-                class="q-pb-md"
-                :style="{
-                  maxWidth:
-                    ($q.platform.is.mobile ? 306 - 34 : 320 - 34) + 'px',
-                }"
+                class="q-pb-md full-width"
                 outlined
                 stack-label
                 hide-bottom-space
@@ -256,7 +252,8 @@
                 </template>
                 <template #control>
                   <p
-                    class="self-center no-outline ellipsis no-margin no-padding"
+                    class="self-center no-outline no-margin no-padding non-selectable ellipsis absolute"
+                    style="left: 0; right: 0"
                   >
                     {{ getWalletLD.id }}
                   </p>
@@ -265,7 +262,7 @@
                   <QIcon
                     name="content_copy"
                     class="cursor-pointer"
-                    @click="copyToClipboard(getWalletLD.id)"
+                    @click="onCopyDID"
                   />
                 </template>
               </QField>
@@ -641,6 +638,14 @@ function onArchiveRoute(e: Event) {
     query: {
       page: 1,
     },
+  })
+}
+
+async function onCopyDID() {
+  await copyToClipboard(getWalletLD.value.id)
+  $q.notify({
+    type: 'positive',
+    message: $t('copy.success'),
   })
 }
 

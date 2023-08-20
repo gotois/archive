@@ -323,7 +323,6 @@ export default {
         },
       },
     },
-
     database: {
       fileImportDialog: {
         title: 'Import Contracts',
@@ -403,5 +402,8 @@ export default {
       success: 'Data copied to clipboard',
       fail: 'Error occurred',
     },
+  },
+  copy: {
+    success: 'Copied successfull',
   },
 }
