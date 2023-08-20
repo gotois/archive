@@ -105,6 +105,14 @@
               @skip="onSkipWallet"
               @complete="stepper.next()"
             />
+            <QSpace />
+            <QBtn
+              :label="$t('tutorial.welcome.demo')"
+              :dense="$q.platform.is.desktop"
+              square
+              flat
+              @click="onDemoSign"
+            />
           </QStepperNavigation>
         </QStep>
         <QStep
@@ -394,6 +402,19 @@ function exportKeyPair() {
         })
       }
     }
+  })
+}
+
+async function onDemoSign() {
+  const key = await keyPair.generateNewKeyPair(demoUserWebId)
+  await keyPair.setKeyPair(key)
+  profileStore.consumerName('Test User')
+  profileStore.consumerEmail('tester@gotointeractive.com')
+  profileStore.consumerDID(key.id)
+  authStore.webId = demoUserWebId
+  tutorialStore().tutorialComplete()
+  await router.push({
+    name: ROUTE_NAMES.CREATE,
   })
 }
 

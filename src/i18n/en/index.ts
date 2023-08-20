@@ -211,6 +211,7 @@ export default {
       title: `Welcome to ${productName}`,
       body: 'Convenient and secure recording of any agreements on your devices.',
       ok: 'Accept and Continue',
+      demo: 'Demo login',
     },
     info: {
       title: 'How our service works',
