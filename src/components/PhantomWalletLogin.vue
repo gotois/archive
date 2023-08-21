@@ -184,8 +184,8 @@ const solanaClusterApiURL = ref(solanaClusters.value[0].label)
 const walletPublicKey = ref('')
 const isPwd = ref(true)
 
-function setSolanaClusterApiUrl(value: string) {
-  solanaClusterApiURL.value = value
+function setSolanaClusterApiUrl(value: { description: string; label: string }) {
+  solanaClusterApiURL.value = value.label
 }
 
 function closeDialog() {

@@ -144,7 +144,7 @@ export async function getGravatarURL(email: string) {
 }
 
 export function getIdentifierMessage(item: CredentialSubject) {
-  return item.instrument.name + '\n' + item.instrument.description
+  return item.instrument.name + '-' + new Date(item.startTime).toJSON()
 }
 
 export function formatterContract(contract: ContractTable) {

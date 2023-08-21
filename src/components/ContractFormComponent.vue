@@ -11,6 +11,27 @@
       @submit="onSubmit"
       @reset="onResetForm"
     >
+      <QFile
+        v-model="files"
+        :label="$t('files.type')"
+        :counter="Boolean(files.length)"
+        accept="image/png, image/jpeg, .pdf"
+        color="secondary"
+        :hide-hint="!$q.platform.is.desktop"
+        :hide-bottom-space="!$q.platform.is.desktop"
+        :hint="$t('files.hint')"
+        outlined
+        multiple
+        square
+      >
+        <template #prepend>
+          <QIcon name="attach_file" />
+        </template>
+        <template #append>
+          <QIcon name="add" @click.stop />
+        </template>
+        <QTooltip>{{ $t('files.hint') }}</QTooltip>
+      </QFile>
       <QSelect
         v-model="contractType"
         :options="contractOptions"
@@ -162,27 +183,6 @@
           </QToggle>
         </QInput>
       </div>
-      <QFile
-        v-model="files"
-        :label="$t('files.type')"
-        :counter="!!files.length"
-        accept="image/png, image/jpeg, .pdf"
-        color="secondary"
-        :hide-hint="!$q.platform.is.desktop"
-        :hide-bottom-space="!$q.platform.is.desktop"
-        :hint="$t('files.hint')"
-        outlined
-        multiple
-        square
-      >
-        <template #prepend>
-          <QIcon name="attach_file" />
-        </template>
-        <template #append>
-          <QIcon name="add" @click.stop />
-        </template>
-        <QTooltip>{{ $t('files.hint') }}</QTooltip>
-      </QFile>
       <QInput
         v-model.trim="description"
         :label="$t('description.type')"

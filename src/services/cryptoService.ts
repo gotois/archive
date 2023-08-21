@@ -1,6 +1,6 @@
 import { uid } from 'quasar'
 import tweetnacl from 'tweetnacl'
-import { Keypair } from '@solana/web3.js'
+import { Keypair, PublicKey } from '@solana/web3.js'
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
@@ -80,35 +80,43 @@ export async function signMessageUsePhantom(message: string) {
   if (!globalThis?.phantom?.solana?.isConnected) {
     await globalThis?.phantom?.solana.connect({ onlyIfTrusted: false })
   }
-  const signed = await globalThis?.phantom?.solana?.signMessage(
-    encodeMessage(message),
-    'utf8',
-  )
-  const signature = encode(signed.signature as Uint8Array)
+  const signed: { signature: Uint8Array; publicKey: PublicKey } =
+    await globalThis?.phantom?.solana?.signMessage(
+      encodeMessage(message),
+      'utf8',
+    )
   return {
-    signature,
-    publicKey: signed.publicKey.toString(),
+    signature: encode(signed.signature),
+    publicKey: signed.publicKey.toBase58(),
   }
 }
 
 export function verifySign(
   message: string,
   signature: string,
-  publicKey: string,
+  publicKey: PublicKey,
 ) {
-  return tweetnacl.sign.detached.verify(
-    encodeMessage(message),
-    decode(signature),
-    decode(publicKey),
-  )
+  try {
+    return tweetnacl.sign.detached.verify(
+      encodeMessage(message),
+      decode(signature),
+      decode(publicKey.toBase58()),
+    )
+  } catch (e) {
+    console.error(e)
+    return false
+  }
 }
 
 export function signMessageUseSolana(message: string, secretKey: Uint8Array) {
-  const fromWallet = Keypair.fromSecretKey(secretKey)
-  const signature = tweetnacl.sign(encodeMessage(message), fromWallet.secretKey)
+  const fromWallet = tweetnacl.sign.keyPair.fromSecretKey(secretKey)
+  const signature = tweetnacl.sign.detached(
+    encodeMessage(message),
+    fromWallet.secretKey,
+  )
   return {
     signature: encode(signature),
-    publicKey: fromWallet.publicKey.toString(),
+    publicKey: fromWallet.publicKey,
   }
 }
 

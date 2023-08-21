@@ -12,7 +12,7 @@ export function isVerified(item: FormatContract, publicKey: PublicKey) {
   )
   if (cryptoData) {
     const message = getIdentifierMessage(item)
-    return verifySign(message, cryptoData.value as string, publicKey.toString())
+    return verifySign(message, cryptoData.value as string, publicKey)
   }
   return false
 }
