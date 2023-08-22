@@ -10,6 +10,13 @@ export function mailUrl(item: FormatContract) {
   if (item.instrument.name) {
     str += '&subject=' + item.instrument.name
   }
+  let body = `Hello ${item.participant.name}.\n\n`
+  if (item.sameAs) {
+    body += `Link: ${item.sameAs}`
+  }
+  if (body) {
+    str += '&body=' + encodeURIComponent(body)
+  }
   return str
 }
 
