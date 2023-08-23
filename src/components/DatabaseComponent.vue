@@ -37,6 +37,7 @@
       </QBtn>
     </QForm>
     <QBtn
+      v-if="contractsCount > 0"
       color="secondary"
       icon="file_download"
       :label="$t('settings.native.export')"
@@ -45,8 +46,6 @@
       square
       stretch
       :dense="$q.platform.is.desktop"
-      :disable="contractsCount === 0"
-      :outline="contractsCount === 0"
       @click="onExportDB"
     >
       <QTooltip>

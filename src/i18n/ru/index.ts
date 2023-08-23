@@ -188,7 +188,7 @@ export default {
   },
   description: {
     type: 'Примечание',
-    hint: 'Используйте текст для примечания',
+    hint: 'Используйте текст или Markdown для примечания',
   },
   duration: {
     noLimit: 'Не имеет срока завершения',

@@ -187,7 +187,7 @@ export default {
   },
   description: {
     type: 'Note',
-    hint: 'Use text for note',
+    hint: 'Use Plain Text or Markdown for note',
   },
   duration: {
     noLimit: 'No expiration',

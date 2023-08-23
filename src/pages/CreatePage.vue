@@ -17,9 +17,6 @@
             :class="{
               'col-xs-6': $q.platform.is.desktop,
             }"
-            :style="{
-              minHeight: '460px',
-            }"
             :contract-type-name="$route.query.contractTypeName as string"
             @on-create="onCreate"
           />

@@ -388,23 +388,25 @@
               </QBtn>
             </QItemSection>
           </template>
-          <QSeparator />
-          <QItemSection class="q-pa-md">
-            <p>{{ $t('settings.clean.description') }}</p>
-            <QBtn
-              :label="$t('settings.clean.submit')"
-              color="negative"
-              :dense="$q.platform.is.desktop"
-              round
-              square
-              icon="delete_outline"
-              @click="confirm = true"
-            >
-              <QTooltip>
-                {{ $t('database.removeDatabase') }}
-              </QTooltip>
-            </QBtn>
-          </QItemSection>
+          <template v-if="contractsCount > 0">
+            <QSeparator />
+            <QItemSection class="q-pa-md">
+              <p>{{ $t('settings.clean.description') }}</p>
+              <QBtn
+                :label="$t('settings.clean.submit')"
+                color="negative"
+                :dense="$q.platform.is.desktop"
+                round
+                square
+                icon="delete_outline"
+                @click="confirm = true"
+              >
+                <QTooltip>
+                  {{ $t('database.removeDatabase') }}
+                </QTooltip>
+              </QBtn>
+            </QItemSection>
+          </template>
         </QExpansionItem>
         <QSeparator />
         <QExpansionItem

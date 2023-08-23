@@ -19,12 +19,6 @@
           >
             <p
               class="full-width q-pt-md text-subtitle1 text-uppercase text-weight-bold no-margin"
-              :style="{
-                'text-decoration':
-                  item.endTime !== null && item.endTime < new Date()
-                    ? 'line-through'
-                    : '',
-              }"
               :class="{
                 'q-pb-md': !item.instrument.description,
                 'q-pb-none':
@@ -41,11 +35,11 @@
               {{ item.instrument.name }}
               <QTooltip>{{ item.instrument.name }}</QTooltip>
             </p>
-            <p
+            <div
               v-if="item.instrument.description"
               class="full-width text-caption q-pb-md text-grey no-margin"
-              >{{ item.instrument.description }}
-            </p>
+              v-html="parse(item.instrument.description)"
+            ></div>
           </div>
           <QSpace />
           <QBtn
@@ -109,9 +103,19 @@
               {{ $t('archiveList.shareFile') }}
             </QTooltip>
           </QBtn>
-          <p class="text-overline text-orange-9 no-margin q-pt-sm">
-            {{ prettyDate(item) }}
-          </p>
+          <div class="flex content-center text-overline no-margin q-pt-sm">
+            <QIcon
+              style="align-self: center"
+              class="q-pr-xs"
+              :name="itemScheduled(item) ? 'history_toggle_off' : 'schedule'"
+              :color="itemScheduled(item) ? 'negative' : 'orange-9'"
+            />
+            <span
+              :class="itemScheduled(item) ? 'text-negative' : 'text-orange-9'"
+            >
+              {{ prettyDate(item) }}
+            </span>
+          </div>
           <div class="row items-center">
             <p class="text-black-9 text-weight-light no-margin">
               {{ item.participant.name }}
@@ -169,6 +173,7 @@ import useWalletStore from 'stores/wallet'
 import ContractCarouselComponent from 'components/ContractCarouselComponent.vue'
 import { FormatContract, ContractTable } from '../types/models'
 import { isDateNotOk, formatterDate } from '../helpers/dateHelper'
+import { parse } from '../helpers/markdownHelper'
 import { readFilesPromise } from '../helpers/fileHelper'
 import createCal from '../helpers/calendarHelper'
 import { mailUrl, googleMailUrl } from '../helpers/mailHelper'
@@ -212,6 +217,10 @@ watch(
     page.value = value
   },
 )
+
+function itemScheduled(item: FormatContract) {
+  return item.endTime !== null && item.endTime < new Date()
+}
 
 function getItems(from: number, size: number): FormatContract[] {
   return contracts.value.slice(from, size)
