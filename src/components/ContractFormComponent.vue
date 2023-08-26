@@ -23,6 +23,7 @@
         outlined
         multiple
         square
+        @update:model-value="onFileSelect"
       >
         <template #prepend>
           <QIcon name="attach_file" />
@@ -33,6 +34,11 @@
         <QTooltip>{{ $t('files.hint') }}</QTooltip>
       </QFile>
       <template v-if="Boolean(files.length)">
+        <template v-for="(url, urlIndex) in filesUrls" :key="urlIndex">
+          <img :src="url" class="full-width" />
+          <QSeparator spaced inset />
+        </template>
+
         <QSelect
           v-model="contractType"
           :options="contractOptions"
@@ -302,6 +308,7 @@ const contractOptions = ref(contractStore.getArchiveKeys)
 const contractForm = ref<QForm>()
 const dateNoLimit = ref(false)
 const loadingForm = ref(false)
+const filesUrls = ref([])
 
 function filterOptions(val: string, update: (callback: () => void) => void) {
   update(() => {
@@ -310,6 +317,13 @@ function filterOptions(val: string, update: (callback: () => void) => void) {
       (v: string) => v.toLowerCase().indexOf(needle) > -1,
     )
   })
+}
+
+function onFileSelect(files: File[]) {
+  for (const file of files) {
+    const url = URL.createObjectURL(file)
+    filesUrls.value.push(url)
+  }
 }
 
 function resetForm() {
