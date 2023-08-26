@@ -181,6 +181,7 @@ export default {
   customer: {
     rules: 'Enter performer',
     type: 'Performer',
+    hintType: 'Set Entity or Individual',
     hint: 'Performer full name, INN, or WebID',
     hintEmail: 'Performer email',
     email: 'Email',

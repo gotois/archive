@@ -440,6 +440,7 @@ async function onFinish() {
     const newContract = {
       agent_name: consumer.value,
       agent_email: email.value,
+      agent_legal: true,
       participant_name: pkg.author.name,
       participant_email: pkg.author.email,
       instrument_name: $t('pages.privacy.title'),

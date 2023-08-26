@@ -177,6 +177,7 @@ export interface CredentialSubject {
 export interface MyContract {
   agent_email: string
   agent_name: string
+  agent_legal: boolean
   images?: string[]
   instrument_description?: string
   instrument_name: string

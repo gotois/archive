@@ -86,6 +86,15 @@
           <template #prepend>
             <QIcon name="assignment_ind" />
           </template>
+          <template #append>
+            <QCheckbox
+              v-model="isCustomerOrg"
+              size="md"
+              :dense="$q.platform.is.desktop"
+            >
+              <QTooltip>{{ $t('customer.hintType') }}</QTooltip>
+            </QCheckbox>
+          </template>
         </QInput>
         <QInput
           v-model.trim="email"
@@ -135,7 +144,7 @@
             class="my-dropdown col"
           >
             <template #label>
-              <div class="row no-wrap">
+              <div class="row no-wrap" style="flex: 1">
                 <QIcon left name="event" color="grey-6" />
                 <span
                   class="text-caption text-grey-8"
@@ -240,6 +249,7 @@ import {
   QBtn,
   QIcon,
   QInput,
+  QCheckbox,
   QTooltip,
   QToggle,
   QFile,
@@ -280,6 +290,7 @@ const afterYearDate = new Date(now.setFullYear(now.getFullYear() + 1))
 const { isLoggedIn } = storeToRefs(authStore)
 const contractType = ref(props.contractTypeName)
 const customer = ref('')
+const isCustomerOrg = ref(true)
 const email = ref('')
 const description = ref('')
 const duration = ref<Duration>({
@@ -423,6 +434,7 @@ async function onSubmit() {
     const newContract = {
       agent_name: person.name,
       agent_email: person.email,
+      agent_legal: isCustomerOrg.value,
       participant_name: customer.value,
       participant_email: email.value,
       instrument_name: contractType.value,

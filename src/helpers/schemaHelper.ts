@@ -17,11 +17,6 @@ export function formatterContracts(
   return contracts.map((contract: ContractTable) => formatterContract(contract))
 }
 
-function getAgentType(name: string) {
-  const orgNames = ['ОРГАНИЗАЦИЯ', 'ООО', 'АО', 'DAO', 'LLC', 'INC', 'COMPANY']
-  return orgNames.includes(name.toUpperCase()) ? 'Organization' : 'Person'
-}
-
 export function getContractFromLD(jsldContract: Credential) {
   return {
     context: jsldContract['@context'],
@@ -55,7 +50,9 @@ export function createContractLD(contractData: MyContract) {
   context.set('description', BaseContext.schemaOrg + '/description')
   context.set(
     'participant',
-    BaseContext.schemaOrg + '/' + getAgentType(contractData.participant_name),
+    BaseContext.schemaOrg +
+      '/' +
+      (contractData.agent_legal ? 'Organization' : 'Person'),
   )
   context.set('identifier', BaseContext.schemaOrg + '/identifier')
   context.set('startTime', BaseContext.schemaOrg + '/startTime')

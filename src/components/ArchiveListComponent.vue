@@ -117,6 +117,10 @@
             </span>
           </div>
           <div class="row items-center">
+            <QIcon
+              :name="itemIsOrganization(item) ? 'group' : 'face'"
+              class="q-mr-xs"
+            />
             <p class="text-black-9 text-weight-light no-margin">
               {{ item.participant.name }}
             </p>
@@ -220,6 +224,10 @@ watch(
 
 function itemScheduled(item: FormatContract) {
   return item.endTime !== null && item.endTime < new Date()
+}
+
+function itemIsOrganization(item: FormatContract) {
+  return item.participant['@type'] === 'https://schema.org/Organization'
 }
 
 function getItems(from: number, size: number): FormatContract[] {
