@@ -1,246 +1,257 @@
 <template>
-  <div>
-    <QForm
-      ref="contractForm"
-      class="q-gutter-md"
-      autocapitalize="off"
-      autocomplete="off"
-      spellcheck="true"
-      greedy
-      autofocus
-      @submit="onSubmit"
-      @reset="onResetForm"
+  <QForm
+    ref="contractForm"
+    class="q-gutter-md"
+    autocapitalize="off"
+    autocomplete="off"
+    spellcheck="true"
+    greedy
+    autofocus
+    @submit="onSubmit"
+    @reset="onResetForm"
+  >
+    <QFile
+      v-model="files"
+      :label="$t('files.type')"
+      :counter="Boolean(files.length)"
+      accept="image/png, image/jpeg, .pdf"
+      color="secondary"
+      :hide-hint="!$q.platform.is.desktop"
+      :hide-bottom-space="!$q.platform.is.desktop"
+      :hint="$t('files.hint')"
+      :dense="$q.platform.is.desktop"
+      outlined
+      multiple
+      square
+      @update:model-value="onFileSelect"
     >
-      <QFile
-        v-model="files"
-        :label="$t('files.type')"
-        :counter="Boolean(files.length)"
-        accept="image/png, image/jpeg, .pdf"
-        color="secondary"
-        :hide-hint="!$q.platform.is.desktop"
-        :hide-bottom-space="!$q.platform.is.desktop"
-        :hint="$t('files.hint')"
-        outlined
-        multiple
-        square
-        @update:model-value="onFileSelect"
-      >
-        <template #prepend>
-          <QIcon name="attach_file" />
-        </template>
-        <template #append>
-          <QIcon name="add" @click.stop />
-        </template>
-        <QTooltip>{{ $t('files.hint') }}</QTooltip>
-      </QFile>
-      <template v-if="Boolean(files.length)">
-        <template v-for="(url, urlIndex) in filesUrls" :key="urlIndex">
-          <img :src="url" class="full-width" />
+      <template #prepend>
+        <QIcon name="attach_file" />
+      </template>
+      <template #append>
+        <QIcon name="add" @click.stop />
+      </template>
+      <QTooltip>{{ $t('files.hint') }}</QTooltip>
+    </QFile>
+    <template v-if="Boolean(files.length)">
+      <div v-if="filesUrls.length">
+        <template
+          v-for="({ url, name }, urlIndex) in filesUrls"
+          :key="urlIndex"
+        >
+          <QImg
+            :src="url"
+            no-transition
+            :draggable="false"
+            :alt="name"
+            fit="scale-down"
+            :placeholder-src="name"
+            class="full-width"
+          >
+            <div class="absolute-top-right text-caption">
+              {{ name }}
+            </div>
+          </QImg>
           <QSeparator spaced inset />
         </template>
+      </div>
 
-        <QSelect
-          v-model="contractType"
-          :options="contractOptions"
-          :label="$t('contract.type')"
-          :hint="
-            $q.platform.is.mobile
-              ? $t('contract.hint.mobile')
-              : $t('contract.hint.desktop')
-          "
-          :behavior="$q.platform.is.ios ? 'dialog' : 'menu'"
-          :rules="[(val) => val && val.length > 0]"
-          :error-message="$t('contract.rules')"
-          popup-content-class="q-pt-sm"
-          new-value-mode="add-unique"
-          input-debounce="50"
-          name="contractType"
-          autocomplete="on"
-          spellcheck="false"
-          color="secondary"
-          use-input
-          lazy-rules
-          hide-selected
-          :hide-bottom-space="!$q.platform.is.desktop"
-          fill-input
-          outlined
-          square
-          @filter="filterOptions"
-        >
-          <template #prepend>
-            <QIcon name="assignment" />
-          </template>
-        </QSelect>
+      <QSelect
+        v-model="contractType"
+        :options="contractOptions"
+        :label="$t('contract.type')"
+        :hint="
+          $q.platform.is.mobile
+            ? $t('contract.hint.mobile')
+            : $t('contract.hint.desktop')
+        "
+        :behavior="$q.platform.is.ios ? 'dialog' : 'menu'"
+        :rules="[(val) => val && val.length > 0]"
+        :error-message="$t('contract.rules')"
+        popup-content-class="q-pt-sm"
+        new-value-mode="add-unique"
+        input-debounce="50"
+        name="contractType"
+        autocomplete="on"
+        spellcheck="false"
+        color="secondary"
+        use-input
+        lazy-rules
+        hide-selected
+        :hide-bottom-space="!$q.platform.is.desktop"
+        fill-input
+        outlined
+        square
+        @filter="filterOptions"
+      >
+        <template #prepend>
+          <QIcon name="assignment" />
+        </template>
+      </QSelect>
+      <QInput
+        v-model.trim="customer"
+        :label="$t('customer.type')"
+        :hint="$t('customer.hint')"
+        :rules="[(val) => val && val.length > 0]"
+        :error-message="$t('customer.rules')"
+        autocomplete="on"
+        name="customer"
+        type="text"
+        spellcheck="true"
+        :hide-bottom-space="!$q.platform.is.desktop"
+        :hide-hint="!$q.platform.is.desktop"
+        outlined
+        lazy-rules
+        square
+        color="secondary"
+        @focus="onFocusInput"
+      >
+        <template #prepend>
+          <QIcon name="assignment_ind" />
+        </template>
+        <template #append>
+          <QCheckbox
+            v-model="isCustomerOrg"
+            size="md"
+            :dense="$q.platform.is.desktop"
+          >
+            <QTooltip>{{ $t('customer.hintType') }}</QTooltip>
+          </QCheckbox>
+        </template>
+      </QInput>
+      <QInput
+        v-model.trim="email"
+        :label="$t('customer.email')"
+        :hint="$t('customer.hintEmail')"
+        :rules="email ? ['email'] : []"
+        autocomplete="off"
+        type="email"
+        name="email"
+        spellcheck="false"
+        lazy-rules
+        :error-message="$t('consumer.emailRules')"
+        :hide-hint="!$q.platform.is.desktop"
+        :hide-bottom-space="!$q.platform.is.desktop"
+        outlined
+        square
+        color="secondary"
+        @focus="onFocusInput"
+      >
+        <template #prepend>
+          <QIcon name="email" />
+        </template>
+      </QInput>
+      <div class="row justify-center items-center">
         <QInput
-          v-model.trim="customer"
-          :label="$t('customer.type')"
-          :hint="$t('customer.hint')"
-          :rules="[(val) => val && val.length > 0]"
-          :error-message="$t('customer.rules')"
-          autocomplete="on"
-          name="customer"
-          type="text"
-          spellcheck="true"
-          :hide-bottom-space="!$q.platform.is.desktop"
-          :hide-hint="!$q.platform.is.desktop"
-          outlined
-          lazy-rules
-          square
-          color="secondary"
-          @focus="onFocusInput"
-        >
-          <template #prepend>
-            <QIcon name="assignment_ind" />
-          </template>
-          <template #append>
-            <QCheckbox
-              v-model="isCustomerOrg"
-              size="md"
-              :dense="$q.platform.is.desktop"
-            >
-              <QTooltip>{{ $t('customer.hintType') }}</QTooltip>
-            </QCheckbox>
-          </template>
-        </QInput>
-        <QInput
-          v-model.trim="email"
-          :label="$t('customer.email')"
-          :hint="$t('customer.hintEmail')"
-          :rules="email ? ['email'] : []"
-          autocomplete="off"
-          type="email"
-          name="email"
-          spellcheck="false"
-          lazy-rules
-          :error-message="$t('consumer.emailRules')"
-          :hide-hint="!$q.platform.is.desktop"
-          :hide-bottom-space="!$q.platform.is.desktop"
+          v-if="!$q.platform.is.mobile"
+          v-model="duration.from"
+          :label="$t('duration.from')"
+          class="col no-padding"
+          :type="typeof duration.from === 'string' ? 'text' : 'date'"
+          :rules="typeof duration.from === 'string' ? ['date'] : []"
+          mask="date"
           outlined
           square
           color="secondary"
-          @focus="onFocusInput"
         >
-          <template #prepend>
-            <QIcon name="email" />
-          </template>
+          <QTooltip>{{ $t('duration.fromHint') }}</QTooltip>
         </QInput>
-        <div class="row justify-center items-center">
-          <QInput
-            v-if="!$q.platform.is.mobile"
-            v-model="duration.from"
-            :label="$t('duration.from')"
-            class="col no-padding"
-            :type="typeof duration.from === 'string' ? 'text' : 'date'"
-            :rules="typeof duration.from === 'string' ? ['date'] : []"
-            mask="date"
-            outlined
-            square
-            color="secondary"
-          >
-            <QTooltip>{{ $t('duration.fromHint') }}</QTooltip>
-          </QInput>
-          <QBtnDropdown
-            v-if="$q.platform.is.mobile"
-            square
-            outline
-            cover
-            no-wrap
-            no-icon-animation
-            color="grey-6"
-            class="my-dropdown col"
-          >
-            <template #label>
-              <div class="row no-wrap" style="flex: 1">
-                <QIcon left name="event" color="grey-6" />
-                <span
-                  class="text-caption text-grey-8"
-                  style="align-self: center"
-                >
-                  {{ duration.from }}
-                  <template
-                    v-if="!dateNoLimit && duration.from !== duration.to"
-                  >
-                    - {{ duration.to }}
-                  </template>
-                </span>
-              </div>
-              <QSeparator vertical spaced inset />
-              <QToggle
-                v-model="dateNoLimit"
-                checked-icon="hourglass_disabled"
-                unchecked-icon="date_range"
-                size="lg"
-              />
-            </template>
-            <DateComponent :range="!dateNoLimit" @select="onSelectDate" />
-          </QBtnDropdown>
-          <QInput
-            v-if="!$q.platform.is.mobile"
-            v-model="duration.to"
-            :type="typeof duration.to === 'string' ? 'text' : 'date'"
-            :rules="typeof duration.to === 'string' ? ['date'] : []"
-            :label="$t('duration.to')"
-            :readonly="dateNoLimit"
-            class="col no-padding"
-            mask="date"
-            outlined
-            square
-            color="secondary"
-          >
-            <QTooltip v-if="!dateNoLimit">{{ $t('duration.toHint') }}</QTooltip>
-            <QSeparator v-if="!dateNoLimit" vertical spaced inset />
+        <QBtnDropdown
+          v-if="$q.platform.is.mobile"
+          square
+          outline
+          cover
+          no-wrap
+          no-icon-animation
+          color="grey-6"
+          class="my-dropdown col"
+        >
+          <template #label>
+            <div class="row no-wrap" style="flex: 1">
+              <QIcon left name="event" color="grey-6" />
+              <span class="text-caption text-grey-8" style="align-self: center">
+                {{ duration.from }}
+                <template v-if="!dateNoLimit && duration.from !== duration.to">
+                  - {{ duration.to }}
+                </template>
+              </span>
+            </div>
+            <QSeparator vertical spaced inset />
             <QToggle
-              v-if="!$q.platform.is.mobile"
               v-model="dateNoLimit"
-              color="secondary"
-              class="non-selectable"
-              :class="{
-                'text-grey-14': !dateNoLimit,
-                'text-secondary': dateNoLimit,
-              }"
-              :label="$t('duration.infinity')"
-            >
-              <QTooltip>{{ $t('duration.noLimit') }}</QTooltip>
-            </QToggle>
-          </QInput>
-        </div>
+              checked-icon="hourglass_disabled"
+              unchecked-icon="date_range"
+              size="lg"
+            />
+          </template>
+          <DateComponent :range="!dateNoLimit" @select="onSelectDate" />
+        </QBtnDropdown>
         <QInput
-          v-model.trim="description"
-          :label="$t('description.type')"
-          :hint="$t('description.hint')"
-          type="textarea"
-          class="no-padding"
-          color="primary"
-          :hide-hint="!$q.platform.is.desktop"
-          hide-bottom-space
+          v-if="!$q.platform.is.mobile"
+          v-model="duration.to"
+          :type="typeof duration.to === 'string' ? 'text' : 'date'"
+          :rules="typeof duration.to === 'string' ? ['date'] : []"
+          :label="$t('duration.to')"
+          :readonly="dateNoLimit"
+          class="col no-padding"
+          mask="date"
           outlined
           square
-          autogrow
-          @focus="onFocusInput"
+          color="secondary"
         >
-          <template #prepend>
-            <QIcon name="sticky_note_2" />
-          </template>
-        </QInput>
-        <div class="text-left">
-          <QBtn
-            ripple
-            square
-            stretch
+          <QTooltip v-if="!dateNoLimit">{{ $t('duration.toHint') }}</QTooltip>
+          <QSeparator v-if="!dateNoLimit" vertical spaced inset />
+          <QToggle
+            v-if="!$q.platform.is.mobile"
+            v-model="dateNoLimit"
+            color="secondary"
+            class="non-selectable"
             :class="{
-              'full-width': !$q.platform.is.desktop,
+              'text-grey-14': !dateNoLimit,
+              'text-secondary': dateNoLimit,
             }"
-            :label="$t('contractForm.submit')"
-            icon-right="save"
-            type="submit"
-            color="accent"
-            :loading="loadingForm"
-            :disable="loadingForm"
-          />
-        </div>
-      </template>
-    </QForm>
-  </div>
+            :label="$t('duration.infinity')"
+          >
+            <QTooltip>{{ $t('duration.noLimit') }}</QTooltip>
+          </QToggle>
+        </QInput>
+      </div>
+      <QInput
+        v-model.trim="description"
+        :label="$t('description.type')"
+        :hint="$t('description.hint')"
+        type="textarea"
+        class="no-padding"
+        color="primary"
+        :hide-hint="!$q.platform.is.desktop"
+        hide-bottom-space
+        outlined
+        square
+        autogrow
+        @focus="onFocusInput"
+      >
+        <template #prepend>
+          <QIcon name="sticky_note_2" />
+        </template>
+      </QInput>
+      <div class="text-left">
+        <QBtn
+          ripple
+          square
+          stretch
+          :class="{
+            'full-width': !$q.platform.is.desktop,
+          }"
+          :label="$t('contractForm.submit')"
+          icon-right="save"
+          type="submit"
+          color="accent"
+          :loading="loadingForm"
+          :disable="loadingForm"
+        />
+      </div>
+    </template>
+  </QForm>
 </template>
 <script lang="ts" setup>
 import { PropType, ref, defineAsyncComponent } from 'vue'
@@ -252,6 +263,7 @@ import {
   QBtnDropdown,
   QSelect,
   QSeparator,
+  QImg,
   QBtn,
   QIcon,
   QInput,
@@ -320,9 +332,10 @@ function filterOptions(val: string, update: (callback: () => void) => void) {
 }
 
 function onFileSelect(files: File[]) {
+  filesUrls.value = []
   for (const file of files) {
     const url = URL.createObjectURL(file)
-    filesUrls.value.push(url)
+    filesUrls.value.push({ url, name: file.name })
   }
 }
 
@@ -338,6 +351,7 @@ function resetForm() {
     to: $q.platform.is.mobile ? formatDate(afterYearDate) : afterYearDate,
   }
   files.value = []
+  filesUrls.value = []
   dateNoLimit.value = false
 }
 
