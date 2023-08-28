@@ -141,7 +141,7 @@
           <QInput v-if="did" :model-value="did" readonly />
           <QStepperNavigation>
             <template v-if="!did">
-              <KeypairComponent @on-key="(key: DIDTable) => (did = key.id)" />
+              <KeypairComponent @on-key="onKeyDID" />
             </template>
             <template v-else>
               <QBtn
@@ -282,9 +282,8 @@ const scroll = ref<InstanceType<typeof QScrollArea> | null>(null)
 const stepper = ref<InstanceType<typeof QStepper> | null>(null)
 const step = ref(getCurrentStep() ?? STEP.WELCOME)
 
-const did = ref('')
 const { isLoggedIn } = storeToRefs(authStore)
-const { consumer, email } = storeToRefs(profileStore)
+const { did, consumer, email } = storeToRefs(profileStore)
 
 watch(
   () => step.value,
@@ -382,6 +381,10 @@ function onSkipWallet() {
   })
 }
 
+function onKeyDID(key: DIDTable) {
+  profileStore.consumerDID(key.id)
+}
+
 function exportKeyPair() {
   const dialog = $q.dialog({
     message: $t('components.keypair.export.dialog.message'),
@@ -432,6 +435,9 @@ async function onFinish() {
   }
 
   try {
+    if (!did.value) {
+      throw new Error('DID empty')
+    }
     const response = await fetch('docs/privacy.md')
     const md = await response.text()
     const html = parse(md)
@@ -457,7 +463,6 @@ async function onFinish() {
     })
     profileStore.consumerName(consumer.value)
     profileStore.consumerEmail(email.value)
-    profileStore.consumerDID(did.value)
     await profileStore.setAvatar(email.value)
 
     if (isLoggedIn.value) {

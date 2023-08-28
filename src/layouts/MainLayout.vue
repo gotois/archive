@@ -180,23 +180,27 @@
             >
               <QField
                 v-if="isLoggedIn"
-                outlined
                 label="WebId"
                 color="secondary"
                 class="q-pb-md full-width"
+                outlined
                 stack-label
               >
                 <template #prepend>
                   <QIcon name="web" />
                 </template>
                 <template #control>
-                  <div class="self-center no-outline ellipsis">{{ webId }}</div>
+                  <div
+                    class="self-center no-outline no-margin no-padding non-selectable ellipsis absolute"
+                    style="left: 0; right: 0"
+                    >{{ webId }}</div
+                  >
                 </template>
                 <template #append>
                   <QIcon
                     name="content_copy"
                     class="cursor-pointer"
-                    @click="copyToClipboard(webId)"
+                    @click="onCopyText(webId)"
                   />
                 </template>
               </QField>
@@ -251,18 +255,18 @@
                   <QIcon name="wallet" />
                 </template>
                 <template #control>
-                  <p
+                  <div
                     class="self-center no-outline no-margin no-padding non-selectable ellipsis absolute"
                     style="left: 0; right: 0"
                   >
                     {{ getWalletLD.id }}
-                  </p>
+                  </div>
                 </template>
                 <template #append>
                   <QIcon
                     name="content_copy"
                     class="cursor-pointer"
-                    @click="onCopyDID"
+                    @click="onCopyText(getWalletLD.id)"
                   />
                 </template>
               </QField>
@@ -643,10 +647,11 @@ function onArchiveRoute(e: Event) {
   })
 }
 
-async function onCopyDID() {
-  await copyToClipboard(getWalletLD.value.id)
+async function onCopyText(text: string) {
+  await copyToClipboard(text)
   $q.notify({
     type: 'positive',
+    group: false,
     message: $t('copy.success'),
   })
 }
