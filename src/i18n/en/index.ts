@@ -213,6 +213,7 @@ export default {
       body: 'Convenient and secure recording of any agreements on your devices.',
       ok: 'Accept and Continue',
       demo: 'Demo login',
+      demoHint: 'Start without authorization',
     },
     info: {
       title: 'How our service works',

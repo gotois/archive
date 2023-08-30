@@ -118,7 +118,9 @@
               align="left"
               flat
               @click="onDemoSign"
-            />
+            >
+              <QTooltip>{{ $t('tutorial.welcome.demoHint') }}</QTooltip>
+            </QBtn>
           </QStepperNavigation>
         </QStep>
         <QStep
