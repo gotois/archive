@@ -48,6 +48,7 @@
 <script lang="ts" setup>
 import { ref, PropType } from 'vue'
 import { QSelect, QBtn, QTooltip } from 'quasar'
+import { validUrlString } from '../helpers/dataHelper'
 
 const emit = defineEmits(['onComplete'])
 defineProps({
@@ -62,17 +63,17 @@ const oidcIssuer = ref('')
 const prefix = ref('https://')
 
 function onComplete() {
-  const url = oidcIssuer.value
-  if (url && url.length) {
-    emit('onComplete', prefix.value + url)
+  const url = prefix.value + oidcIssuer.value
+  if (validUrlString(url)) {
+    emit('onComplete', url)
     return
   }
   emit('onComplete')
 }
 
 function checkUrl(value?: string) {
-  if (value && value.length <= 3) {
-    return 'Введите валидный URL Вашего провайдера.'
+  if (validUrlString(value)) {
+    return 'Введите валидный URL SOLID провайдера.'
   }
   return true
 }

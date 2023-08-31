@@ -70,7 +70,7 @@
             outlined
             square
             @update:model-value="setSolanaClusterApiUrl"
-            @new-value="setSolanaClusterApiUrl"
+            @new-value="onNewSolanaClusterApiUrl"
           >
             <template #prepend>
               <QIcon name="web" />
@@ -182,6 +182,23 @@ const solanaClusters = ref(
 const solanaClusterApiURL = ref(solanaClusters.value[0].label)
 const walletPublicKey = ref('')
 const isPwd = ref(true)
+
+function onNewSolanaClusterApiUrl(
+  value: string,
+  done: (value: unknown, format: string) => void,
+) {
+  solanaClusters.value.unshift({
+    label: value,
+    description: 'Usernet',
+  })
+  done(
+    {
+      label: value,
+      description: 'user-mode',
+    },
+    'add-unique',
+  )
+}
 
 function setSolanaClusterApiUrl(value: { description: string; label: string }) {
   solanaClusterApiURL.value = value.label

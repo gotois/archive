@@ -1,6 +1,7 @@
 import { LocalStorage } from 'quasar'
 import { defineStore } from 'pinia'
 import { getEmailProperty, getGravatarURL } from '../helpers/schemaHelper'
+import { validUrlString } from '../helpers/dataHelper'
 
 interface State {
   did: string
@@ -38,14 +39,9 @@ export default defineStore('profile', {
     },
     async setAvatar(email: string) {
       const avatarURL = await getGravatarURL(email)
-      if (!avatarURL.length) {
-        return
+      if (validUrlString(avatarURL)) {
+        this.consumerImg(avatarURL)
       }
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      if (Reflect.has(URL, 'canParse') && !URL.canParse(avatarURL)) {
-        return
-      }
-      this.consumerImg(avatarURL)
     },
   },
   getters: {

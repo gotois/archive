@@ -55,7 +55,6 @@
           <QSeparator spaced inset />
         </template>
       </div>
-
       <QSelect
         v-model="contractType"
         :options="contractOptions"
