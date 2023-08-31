@@ -382,10 +382,10 @@ function onSheet(item: FormatContract) {
 }
 
 function sendToCourt() {
-  $q.dialog({
-    message: 'This functionality is under development.',
-    persistent: true,
-  })
+  console.warn('This functionality is under development.')
+  const botName = 'gotois_bot'
+  const myAction = 'start'
+  openURL(`https://t.me/${botName}?start=${myAction}`)
 }
 
 async function saveIcal(file: File) {

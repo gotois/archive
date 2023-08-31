@@ -57,7 +57,6 @@
             :label="'Solana Cluster'"
             :hide-bottom-space="!$q.platform.is.desktop"
             :behavior="$q.platform.is.ios ? 'dialog' : 'menu'"
-            new-value-mode="add-unique"
             name="contractType"
             spellcheck="false"
             color="secondary"
