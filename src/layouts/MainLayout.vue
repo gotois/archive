@@ -376,7 +376,6 @@
             <QSeparator />
             <p>{{ $t('settings.keychain.title') }}</p>
             <QItemSection class="q-pa-md">
-              <p>{{ $t('settings.keychain.title') }}</p>
               <QBtn
                 :label="$t('settings.keychain.label')"
                 ripple

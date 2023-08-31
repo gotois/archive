@@ -114,6 +114,10 @@
           <QCheckbox
             v-model="isCustomerOrg"
             size="md"
+            color="secondary"
+            keep-color
+            checked-icon="person"
+            unchecked-icon="group"
             :dense="$q.platform.is.desktop"
           >
             <QTooltip>{{ $t('customer.hintType') }}</QTooltip>
@@ -133,12 +137,14 @@
         :hide-hint="!$q.platform.is.desktop"
         :hide-bottom-space="!$q.platform.is.desktop"
         color="secondary"
+        :type="currentContactType"
         square
         outlined
         :error-message="$t('consumer.emailRules')"
         :behavior="$q.platform.is.ios === true ? 'dialog' : 'menu'"
         :dense="$q.platform.is.desktop"
         @new-value="onNewValueContact"
+        @input-value="onInputValueContact"
         @focus="onFocusInput"
       >
         <template #prepend>
@@ -148,7 +154,8 @@
           <QChip
             :icon="formatIconContact(item.opt)"
             :dense="$q.platform.is.desktop"
-            outline
+            color="transparent"
+            square
           >
             {{ item.opt.value }}
           </QChip>
@@ -302,12 +309,18 @@ const DateComponent = defineAsyncComponent(
   () => import('components/DateComponent.vue'),
 )
 
+enum InputType {
+  email = 'email',
+  url = 'url',
+  tel = 'tel',
+  text = 'text',
+}
 interface Duration {
   from: Date | string
   to: Date | string
 }
 interface MultiContact {
-  type: 'email' | 'url' | 'tel'
+  type: InputType
   value: string
 }
 
@@ -333,6 +346,7 @@ const contractType = ref(props.contractTypeName)
 const customer = ref('')
 const isCustomerOrg = ref(true)
 const modelContact = ref<MultiContact[]>([])
+const currentContactType = ref<InputType>(InputType.text)
 const description = ref('')
 const duration = ref<Duration>({
   from: $q.platform.is.mobile ? formatDate(new Date()) : new Date(),
@@ -371,6 +385,18 @@ function formatIconContact(contact: MultiContact) {
   }
 }
 
+function onInputValueContact(text: string) {
+  if (validTelString(text)) {
+    currentContactType.value = InputType.tel
+  } else if (validUrlString(text)) {
+    currentContactType.value = InputType.url
+  } else if (text.includes('@') && patterns.testPattern.email(text)) {
+    currentContactType.value = InputType.email
+  } else {
+    currentContactType.value = InputType.text
+  }
+}
+
 function onNewValueContact(
   text: string,
   done: (value: MultiContact, format: string) => void,
@@ -378,11 +404,11 @@ function onNewValueContact(
   text = text.toLowerCase()
   text = text.replaceAll(' ', '')
   if (validTelString(text)) {
-    return done({ type: 'tel', value: text }, 'add-unique')
+    return done({ type: InputType.tel, value: text }, 'add-unique')
   } else if (validUrlString(text)) {
-    return done({ type: 'url', value: text }, 'add-unique')
+    return done({ type: InputType.url, value: text }, 'add-unique')
   } else if (text.includes('@') && patterns.testPattern.email(text)) {
-    return done({ type: 'email', value: text }, 'add-unique')
+    return done({ type: InputType.email, value: text }, 'add-unique')
   }
   $q.notify({
     type: 'warning',
@@ -502,13 +528,13 @@ async function onSubmit() {
     return
   }
   const participantEmails = modelContact.value.filter(({ type }) => {
-    return type === 'email'
+    return type === InputType.email
   })
   const participantTels = modelContact.value.filter(({ type }) => {
-    return type === 'tel'
+    return type === InputType.tel
   })
   const participantUrls = modelContact.value.filter(({ type }) => {
-    return type === 'url'
+    return type === InputType.url
   })
 
   loadingForm.value = true
