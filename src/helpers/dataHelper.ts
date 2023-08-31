@@ -18,7 +18,7 @@ export function validTelString(tel: string) {
 }
 
 export function validUrlString(url: string) {
-  if (!url || !url.length) {
+  if (!url || url.length < 10) {
     return false
   }
   if (

@@ -184,8 +184,8 @@ export default {
     type: 'Исполнитель',
     hintType: 'Установить Юридическое или Физическое лицо',
     hint: 'ФИО исполнителя, ИНН или WebID',
-    hintEmail: 'Электронная почта исполнителя',
-    email: 'Почта',
+    contact: 'Контакты',
+    hintContact: 'Используйте Email, URL или Tel',
   },
   description: {
     type: 'Примечание',
@@ -382,6 +382,9 @@ export default {
         },
         mail: {
           label: 'Отправить сообщение',
+        },
+        telephone: {
+          label: 'Позвонить',
         },
         law: {
           label: 'Оспорить в суде',

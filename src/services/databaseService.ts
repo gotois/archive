@@ -182,10 +182,14 @@ class ContractDatabase extends Dexie {
       '&issuanceDate',
       '*identifier',
       '*proof',
+      // todo объединить name и email в один объект agent
       'agent_name',
       'agent_email',
+      // todo объединить name, email, tel, url в один participant
       'participant_name',
       'participant_email',
+      'participant_tel',
+      'participant_url',
       'instrument_name',
       'instrument_description',
       'startTime',

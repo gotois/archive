@@ -451,6 +451,7 @@ async function onFinish() {
       agent_legal: true,
       participant_name: pkg.author.name,
       participant_email: pkg.author.email,
+      participant_url: pkg.author.url,
       instrument_name: $t('pages.privacy.title'),
       instrument_description: `${pkg.productName}: ${pkg.description} v${pkg.version}`,
       startTime: new Date(),

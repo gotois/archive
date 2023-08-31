@@ -183,8 +183,8 @@ export default {
     type: 'Performer',
     hintType: 'Set Entity or Individual',
     hint: 'Performer full name, INN, or WebID',
-    hintEmail: 'Performer email',
-    email: 'Email',
+    contact: 'Contact',
+    hintContact: 'Use Email, URL or Tel',
   },
   description: {
     type: 'Note',
@@ -373,6 +373,9 @@ export default {
         },
         mail: {
           label: 'Send message',
+        },
+        telephone: {
+          label: 'Call',
         },
         law: {
           label: 'Challenge in court',

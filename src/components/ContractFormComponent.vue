@@ -78,6 +78,7 @@
         lazy-rules
         hide-selected
         :hide-bottom-space="!$q.platform.is.desktop"
+        :dense="$q.platform.is.desktop"
         fill-input
         outlined
         square
@@ -99,6 +100,7 @@
         spellcheck="true"
         :hide-bottom-space="!$q.platform.is.desktop"
         :hide-hint="!$q.platform.is.desktop"
+        :dense="$q.platform.is.desktop"
         outlined
         lazy-rules
         square
@@ -118,28 +120,40 @@
           </QCheckbox>
         </template>
       </QInput>
-      <QInput
-        v-model.trim="email"
-        :label="$t('customer.email')"
-        :hint="$t('customer.hintEmail')"
-        :rules="email ? ['email'] : []"
+      <QSelect
+        v-model="modelContact"
+        :label="$t('customer.contact')"
+        use-input
+        use-chips
+        multiple
+        hide-dropdown-icon
         autocomplete="off"
-        type="email"
-        name="email"
         spellcheck="false"
-        lazy-rules
-        :error-message="$t('consumer.emailRules')"
+        :hint="$t('customer.hintContact')"
         :hide-hint="!$q.platform.is.desktop"
         :hide-bottom-space="!$q.platform.is.desktop"
-        outlined
-        square
         color="secondary"
+        square
+        outlined
+        :error-message="$t('consumer.emailRules')"
+        :behavior="$q.platform.is.ios === true ? 'dialog' : 'menu'"
+        :dense="$q.platform.is.desktop"
+        @new-value="onNewValueContact"
         @focus="onFocusInput"
       >
         <template #prepend>
-          <QIcon name="email" />
+          <QIcon name="contacts" />
         </template>
-      </QInput>
+        <template #selected-item="item">
+          <QChip
+            :icon="formatIconContact(item.opt)"
+            :dense="$q.platform.is.desktop"
+            outline
+          >
+            {{ item.opt.value }}
+          </QChip>
+        </template>
+      </QSelect>
       <div class="row justify-center items-center">
         <QInput
           v-if="!$q.platform.is.mobile"
@@ -148,6 +162,7 @@
           class="col no-padding"
           :type="typeof duration.from === 'string' ? 'text' : 'date'"
           :rules="typeof duration.from === 'string' ? ['date'] : []"
+          :dense="$q.platform.is.desktop"
           mask="date"
           outlined
           square
@@ -192,6 +207,7 @@
           :rules="typeof duration.to === 'string' ? ['date'] : []"
           :label="$t('duration.to')"
           :readonly="dateNoLimit"
+          :dense="$q.platform.is.desktop"
           class="col no-padding"
           mask="date"
           outlined
@@ -223,6 +239,7 @@
         class="no-padding"
         color="primary"
         :hide-hint="!$q.platform.is.desktop"
+        :dense="$q.platform.is.desktop"
         hide-bottom-space
         outlined
         square
@@ -270,6 +287,8 @@ import {
   QTooltip,
   QToggle,
   QFile,
+  QChip,
+  patterns,
 } from 'quasar'
 import { storeToRefs } from 'pinia'
 import useAuthStore from 'stores/auth'
@@ -277,6 +296,7 @@ import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
 import { readFilesPromise } from '../helpers/fileHelper'
 import { formatDate } from '../helpers/dateHelper'
+import { validTelString, validUrlString } from '../helpers/dataHelper'
 
 const DateComponent = defineAsyncComponent(
   () => import('components/DateComponent.vue'),
@@ -285,6 +305,10 @@ const DateComponent = defineAsyncComponent(
 interface Duration {
   from: Date | string
   to: Date | string
+}
+interface MultiContact {
+  type: 'email' | 'url' | 'tel'
+  value: string
 }
 
 const emit = defineEmits(['onCreate'])
@@ -308,7 +332,7 @@ const { isLoggedIn } = storeToRefs(authStore)
 const contractType = ref(props.contractTypeName)
 const customer = ref('')
 const isCustomerOrg = ref(true)
-const email = ref('')
+const modelContact = ref<MultiContact[]>([])
 const description = ref('')
 const duration = ref<Duration>({
   from: $q.platform.is.mobile ? formatDate(new Date()) : new Date(),
@@ -330,6 +354,42 @@ function filterOptions(val: string, update: (callback: () => void) => void) {
   })
 }
 
+function formatIconContact(contact: MultiContact) {
+  switch (contact.type) {
+    case 'email': {
+      return 'alternate_email'
+    }
+    case 'url': {
+      return 'link'
+    }
+    case 'tel': {
+      return 'add_call'
+    }
+    default: {
+      return 'question_mark'
+    }
+  }
+}
+
+function onNewValueContact(
+  text: string,
+  done: (value: MultiContact, format: string) => void,
+) {
+  text = text.toLowerCase()
+  text = text.replaceAll(' ', '')
+  if (validTelString(text)) {
+    return done({ type: 'tel', value: text }, 'add-unique')
+  } else if (validUrlString(text)) {
+    return done({ type: 'url', value: text }, 'add-unique')
+  } else if (text.includes('@') && patterns.testPattern.email(text)) {
+    return done({ type: 'email', value: text }, 'add-unique')
+  }
+  $q.notify({
+    type: 'warning',
+    message: 'Unknown type text. Use Tel, Email or URL',
+  })
+}
+
 function onFileSelect(files: File[]) {
   filesUrls.value = []
   for (const file of files) {
@@ -344,7 +404,7 @@ function resetForm() {
   contractType.value = ''
   customer.value = ''
   description.value = ''
-  email.value = ''
+  modelContact.value = []
   duration.value = {
     from: $q.platform.is.mobile ? formatDate(new Date()) : new Date(),
     to: $q.platform.is.mobile ? formatDate(afterYearDate) : afterYearDate,
@@ -441,6 +501,16 @@ async function onSubmit() {
     })
     return
   }
+  const participantEmails = modelContact.value.filter(({ type }) => {
+    return type === 'email'
+  })
+  const participantTels = modelContact.value.filter(({ type }) => {
+    return type === 'tel'
+  })
+  const participantUrls = modelContact.value.filter(({ type }) => {
+    return type === 'url'
+  })
+
   loadingForm.value = true
 
   // Если дата совпадает с текущей, то считаем что договор подписан сегодняшним числом
@@ -463,7 +533,11 @@ async function onSubmit() {
       agent_email: person.email,
       agent_legal: isCustomerOrg.value,
       participant_name: customer.value,
-      participant_email: email.value,
+      participant_email: participantEmails.length
+        ? participantEmails[0].value // todo поддержать массив email
+        : null,
+      participant_tel: participantTels.length ? participantTels[0].value : null, // todo поддержать массив tel
+      participant_url: participantUrls.length ? participantUrls[0].value : null, // todo поддержать массив url
       instrument_name: contractType.value,
       instrument_description: description.value,
       startTime: startDate,

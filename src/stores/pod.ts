@@ -378,6 +378,8 @@ export default defineStore('pod', {
       credentialSubject.set('participant', {
         name: getStringNoLocale(participant, SCHEMA_INRUPT.name),
         email: getStringNoLocale(participant, SCHEMA_INRUPT.email),
+        url: getStringNoLocale(participant, SCHEMA_INRUPT.url),
+        tel: getStringNoLocale(participant, 'https://schema.org/telephone'),
       })
       const endTime = getThing(
         ds,

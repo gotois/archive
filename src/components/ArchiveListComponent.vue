@@ -117,13 +117,19 @@
             </span>
           </div>
           <div class="row items-center">
-            <QIcon
-              :name="itemIsOrganization(item) ? 'group' : 'face'"
-              class="q-mr-xs"
+            <QBtn
+              class="text-weight-light no-margin full-width"
+              dense
+              no-caps
+              flat
+              :icon="itemIsOrganization(item) ? 'group' : 'face'"
+              size="xm"
+              align="left"
+              :ripple="false"
+              text-color="black-9"
+              :label="item.participant.name"
+              :href="item.participant.url"
             />
-            <p class="text-black-9 text-weight-light no-margin">
-              {{ item.participant.name }}
-            </p>
           </div>
         </QCardSection>
       </QCard>
@@ -274,6 +280,7 @@ enum SheetAction {
   GOOGLE_CALENDAR = 'google-calendar',
   UPLOAD = 'upload',
   MAIL = 'mail',
+  TELEPHONE = 'telephone',
   LAW = 'law',
 }
 
@@ -322,14 +329,24 @@ function onSheet(item: FormatContract) {
     })
   }
   // Group 3 - Message
-  if (item.participant.email) {
+  if (item.participant.email || item.participant.telephone) {
     actions.push({})
-    actions.push({
-      label: $t('components.archiveList.sheet.mail.label'),
-      icon: 'contact_mail',
-      color: 'secondary',
-      id: SheetAction.MAIL,
-    })
+    if (item.participant.email) {
+      actions.push({
+        label: $t('components.archiveList.sheet.mail.label'),
+        icon: 'contact_mail',
+        color: 'secondary',
+        id: SheetAction.MAIL,
+      })
+    }
+    if (item.participant.telephone) {
+      actions.push({
+        label: $t('components.archiveList.sheet.telephone.label'),
+        icon: 'call',
+        color: 'secondary',
+        id: SheetAction.TELEPHONE,
+      })
+    }
     if (isVerified(item, publicKey.value)) {
       actions.push({
         label: $t('components.archiveList.sheet.law.label'),
@@ -369,6 +386,9 @@ function onSheet(item: FormatContract) {
       }
       case SheetAction.MAIL: {
         return openURL(mailUrl(item))
+      }
+      case SheetAction.TELEPHONE: {
+        return openURL(item.participant.telephone)
       }
       case SheetAction.LAW: {
         return sendToCourt()

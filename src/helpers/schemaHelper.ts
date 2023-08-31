@@ -26,8 +26,10 @@ export function getContractFromLD(jsldContract: Credential) {
     identifier: jsldContract.credentialSubject?.identifier,
     agent_name: jsldContract.credentialSubject.agent?.name,
     agent_email: jsldContract.credentialSubject.agent?.email,
-    participant_name: jsldContract.credentialSubject.participant?.name,
-    participant_email: jsldContract.credentialSubject.participant?.email,
+    participant_name: jsldContract.credentialSubject.participant?.name, // todo упростить схему
+    participant_email: jsldContract.credentialSubject.participant?.email, // todo упростить схему
+    participant_url: jsldContract.credentialSubject.participant?.url, // todo упростить схему
+    participant_tel: jsldContract.credentialSubject.participant?.telephone, // todo упростить схему
     instrument_name: jsldContract.credentialSubject.instrument.name,
     instrument_description:
       jsldContract.credentialSubject.instrument.description ?? null,
@@ -63,6 +65,7 @@ export function createContractLD(contractData: MyContract) {
   context.set('encodingFormat', BaseContext.schemaOrg + '/encodingFormat')
   context.set('contentUrl', BaseContext.schemaOrg + '/contentUrl')
   context.set('value', BaseContext.schemaOrg + '/value')
+  context.set('telephone', BaseContext.schemaOrg + '/telephone')
   context.set('url', BaseContext.schemaOrg + '/url')
 
   const credentialSubject = new Map()
@@ -84,6 +87,10 @@ export function createContractLD(contractData: MyContract) {
     email: contractData.participant_email
       ? getEmailProperty(contractData.participant_email)
       : null,
+    telephone: contractData.participant_tel
+      ? 'tel:' + contractData.participant_tel
+      : null,
+    url: contractData.participant_url,
   })
   credentialSubject.set('identifier', [])
   if (contractData.endTime) {
@@ -156,6 +163,8 @@ export function formatterContract(contract: ContractTable) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
     '@type': contract.context ? contract?.context[1]?.participant : 'Person',
     'name': contract.participant_name,
+    'url': contract.participant_url,
+    'telephone': contract.participant_tel,
   }
   if (contract.participant_email) {
     participant.email = getEmailProperty(contract.participant_email)

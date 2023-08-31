@@ -21,7 +21,9 @@ export interface ContractTable {
   agent_name: string
   agent_email: string
   participant_name: string
-  participant_email: string
+  participant_email: string // todo поддержать массив
+  participant_tel: string // todo поддержать массив
+  participant_url: string // todo поддержать массив
   instrument_name: string
   instrument_description?: string
   startTime: Date
@@ -123,6 +125,8 @@ export interface CredentialTypes {
 interface Person {
   name: string
   email?: string
+  telephone?: string
+  url?: string
 }
 
 interface ContractIdentifier {
@@ -182,7 +186,9 @@ export interface MyContract {
   instrument_description?: string
   instrument_name: string
   participant_name: string
-  participant_email: string
+  participant_email?: string
+  participant_tel?: string
+  participant_url?: string
   startTime: Date
   endTime?: Date
 }
