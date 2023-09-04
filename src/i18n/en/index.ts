@@ -35,8 +35,6 @@ export default {
       welcome: { title: `Welcome to "${productName}"` },
       info: { title: 'How we works' },
       agreement: { title: 'Terms of use' },
-      wallet: { title: 'Wallet' },
-      crypto: { title: 'Public Key' },
       oidc: { title: 'OIDC' },
       final: { title: 'Agreement for use' },
     },
@@ -173,9 +171,6 @@ export default {
     disconnected: 'Wallet disconnected',
     accountChanged: 'Account changed',
     fail: 'Error binding crypto wallet',
-    skipDialog: {
-      message: 'You will be able to connect your wallet later. Continue?',
-    },
     hint: 'Enter the address of your Private Key from Solana or log in through a wallet',
   },
   customer: {
@@ -212,8 +207,8 @@ export default {
       title: `Welcome to ${productName}`,
       body: 'Convenient and secure recording of any agreements on your devices.',
       ok: 'Accept and Continue',
-      demo: 'Demo login',
-      demoHint: 'Start without authorization',
+      demoHint:
+        'Start without authorization. You will be able to connect your wallet later. Continue?',
     },
     info: {
       title: 'How our service works',
@@ -239,12 +234,6 @@ export default {
       body: 'The application uses the [Solana](https://solana.com) blockchain. To confirm your transactions, use the [Phantom](https://phantom.app) wallet or enter your secret key.',
       ok: 'Next',
     },
-    crypto: {
-      title: 'DID',
-      caption: 'Add your cryptographic key',
-      body: 'To establish your contract identity, you need to know your DID. DID is a decentralized identifier based on your public cryptographic keys.',
-      ok: 'Apply',
-    },
     oidc: {
       title: 'Connecting WebID',
       caption: 'Provide your unique identifier',
@@ -255,7 +244,8 @@ export default {
     },
     data: {
       title: 'Confirm Your Account',
-      body: 'To use the application, use your name and email address.',
+      body: 'To use the application, use your name and email address. Add your cryptographic key DID',
+      hint: 'To establish your contract identity, you need to know your decentralized identifier.',
       ok: 'Start',
     },
   },
@@ -319,7 +309,7 @@ export default {
       },
       export: {
         dialog: {
-          message: 'Do you want to save the key file locally?',
+          message: 'Do you want to save the DID key locally?',
           success: "Keys are generated and stored in your device's memory.",
           fail: 'Your key could not be saved locally on the device.',
         },

@@ -133,7 +133,7 @@ import useWalletStore from 'stores/wallet'
 import { getSolana } from '../services/phantomWalletService'
 import { WalletType } from '../types/models'
 
-const emit = defineEmits(['skip', 'complete'])
+const emit = defineEmits(['skip', 'complete', 'error'])
 defineProps({
   icon: {
     type: undefined as PropType<string | undefined>,
@@ -229,19 +229,21 @@ async function tryToLoginPhantomWallet() {
       /* eslint-enable */
     } catch (error) {
       console.error(error)
-      $q.notify({
-        type: 'negative',
-        message: error.message as string,
-      })
+      emit('error', error)
       return
     }
   }
-  await walletStore.setKeypare({
-    publicKey,
-    type: WalletType.Phantom,
-  })
-  closeDialog()
-  emit('complete')
+  try {
+    await walletStore.setKeypare({
+      publicKey,
+      type: WalletType.Phantom,
+    })
+    closeDialog()
+    emit('complete')
+  } catch (error) {
+    console.error(error)
+    emit('error', error)
+  }
 }
 
 async function onWalletComplete() {
@@ -257,10 +259,7 @@ async function onWalletComplete() {
     emit('complete')
   } catch (error) {
     console.error(error)
-    $q.notify({
-      color: 'negative',
-      message: $t('wallet.fail'),
-    })
+    emit('error', error)
   } finally {
     $q.loading.hide()
   }

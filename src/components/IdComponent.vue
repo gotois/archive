@@ -33,6 +33,13 @@
     @submit="$emit('finish')"
   >
     <QInput
+      v-if="did"
+      :hint="$t('tutorial.data.hint')"
+      :model-value="did"
+      readonly
+    />
+    <KeypairComponent v-else @on-key="onKeyDID" />
+    <QInput
       v-model.trim="consumer"
       :label="$t('consumer.type')"
       :rules="[(val) => val && val.length > 3]"
@@ -79,12 +86,11 @@
         :loading="$q.loading.isActive"
         icon="login"
       />
-      <PodImporter v-if="isLoggedIn" class="q-ml-md" />
     </QStepperNavigation>
   </QForm>
 </template>
 <script lang="ts" setup>
-import { ref, defineAsyncComponent, computed, onMounted } from 'vue'
+import { ref, computed, defineAsyncComponent, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   useQuasar,
@@ -97,29 +103,29 @@ import {
 } from 'quasar'
 import { storeToRefs } from 'pinia'
 import useProfileStore from 'stores/profile'
-import useAuthStore from 'stores/auth'
 import { isTWA } from '../helpers/twaHelper'
 import { parseJwt } from '../helpers/dataHelper'
+import { DIDTable } from '../types/models'
 
-const PodImporter = defineAsyncComponent(
-  () => import('components/PodImporter.vue'),
+const KeypairComponent = defineAsyncComponent(
+  () => import('components/KeypairComponent.vue'),
 )
 
 const emit = defineEmits(['finish'])
 const $q = useQuasar()
 const { locale } = useI18n()
+const $t = useI18n().t
 const profileStore = useProfileStore()
-const authStore = useAuthStore()
 
 const useGoogleId = ref(false)
-const { consumer, email } = storeToRefs(profileStore)
-const { isLoggedIn } = storeToRefs(authStore)
+const { did, consumer, email } = storeToRefs(profileStore)
 
 const googleClientId = computed(() => process.env.google_client_id)
 const consumerValid = computed(() => {
   return Boolean(
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-    consumer.value.length > 3 && patterns.testPattern.email(email.value),
+    consumer.value.length > 3 &&
+      patterns.testPattern.email(email.value) &&
+      did.value,
   )
 })
 
@@ -128,6 +134,10 @@ function handleCredentialResponse(response: { credential: string }) {
   consumer.value = value.name
   email.value = value.email
   emit('finish')
+}
+
+function onKeyDID(key: DIDTable) {
+  profileStore.consumerDID(key.id)
 }
 
 function loadGoogleId(): Promise<unknown> {

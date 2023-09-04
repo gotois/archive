@@ -103,58 +103,9 @@
                 'full-width': !$q.platform.is.desktop,
               }"
               @skip="onSkipWallet"
+              @error="onWalletError"
               @complete="stepper.next()"
             />
-            <QSpace class="q-pa-xs" />
-            <QBtn
-              :label="$t('tutorial.welcome.demo')"
-              :content-class="{
-                'full-width': !$q.platform.is.desktop,
-              }"
-              :dense="$q.platform.is.desktop"
-              no-caps
-              stack
-              no-wrap
-              align="left"
-              flat
-              @click="onDemoSign"
-            >
-              <QTooltip>{{ $t('tutorial.welcome.demoHint') }}</QTooltip>
-            </QBtn>
-          </QStepperNavigation>
-        </QStep>
-        <QStep
-          :name="STEP.CRYPTO"
-          :title="$t('tutorial.crypto.title')"
-          :caption="$t('tutorial.crypto.caption')"
-          icon="article"
-          done-color="positive"
-          :done="step > STEP.CRYPTO"
-        >
-          <p v-show="$q.platform.is.desktop" class="text-h4">
-            {{ $t('tutorial.crypto.title') }}
-          </p>
-          <div
-            class="text-body1"
-            style="white-space: break-spaces"
-            v-html="parse($t('tutorial.crypto.body'))"
-          >
-          </div>
-          <QInput v-if="did" :model-value="did" readonly />
-          <QStepperNavigation>
-            <template v-if="!did">
-              <KeypairComponent @on-key="onKeyDID" />
-            </template>
-            <template v-else>
-              <QBtn
-                color="secondary"
-                :label="$t('tutorial.crypto.ok')"
-                :class="{
-                  'full-width': !$q.platform.is.desktop,
-                }"
-                @click="exportKeyPair"
-              />
-            </template>
           </QStepperNavigation>
         </QStep>
         <QStep
@@ -207,11 +158,9 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import {
   exportFile,
-  QBtn,
   QIcon,
   QCard,
   QCardSection,
-  QInput,
   QPage,
   QScrollArea,
   QSpace,
@@ -227,7 +176,7 @@ import {
 import { storeToRefs } from 'pinia'
 import useAuthStore from 'stores/auth'
 import { demoUserWebId } from 'stores/auth'
-import tutorialStore from 'stores/tutorial'
+import useTutorialStore from 'stores/tutorial'
 import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
 import usePodStore from 'stores/pod'
@@ -239,14 +188,12 @@ import { createContractPDF } from '../helpers/pdfHelper'
 import { readFilesPromise } from '../helpers/fileHelper'
 import solidAuth from '../services/authService'
 import { keyPair } from '../services/databaseService'
-import { DIDTable } from '../types/models'
+import { Credential } from '../types/models'
 
 const OIDCIssuerComponent = defineAsyncComponent(
   () => import('components/OIDCIssuerComponent.vue'),
 )
-const KeypairComponent = defineAsyncComponent(
-  () => import('components/KeypairComponent.vue'),
-)
+
 const PhantomWalletLogin = defineAsyncComponent(
   () => import('components/PhantomWalletLogin.vue'),
 )
@@ -262,12 +209,12 @@ const authStore = useAuthStore()
 const contractStore = useContractStore()
 const profileStore = useProfileStore()
 const walletStore = useWalletStore()
+const tutorialStore = useTutorialStore()
 
 enum STEP {
   WELCOME = 1,
-  CRYPTO = 2,
-  OIDC = 3,
-  FINAL = 4,
+  OIDC = 2,
+  FINAL = 3,
 }
 
 const stepParam = 'step'
@@ -303,13 +250,6 @@ function setMeta(value: number) {
       })
       break
     }
-    case STEP.CRYPTO: {
-      useMeta({
-        'title': $t('pages.tutorial.crypto.title'),
-        'og:title': $t('pages.tutorial.crypto.title'),
-      })
-      break
-    }
     case STEP.OIDC: {
       useMeta({
         'title': $t('pages.tutorial.oidc.title'),
@@ -342,8 +282,8 @@ async function onOnlineAuthorize(oidcIssuer: string) {
       persistent: true,
     })
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    dialog.onOk(() => {
-      stepper.value.next()
+    dialog.onOk(async () => {
+      await onDemoSign()
     })
     return
   }
@@ -372,19 +312,43 @@ async function onOnlineAuthorize(oidcIssuer: string) {
   }
 }
 
-function onSkipWallet() {
-  const dialog = $q.dialog({
-    message: $t('wallet.skipDialog.message'),
-    cancel: true,
-    persistent: true,
-  })
-  dialog.onOk(() => {
-    stepper.value.next()
+function onWalletError(error: Error) {
+  $q.notify({
+    color: 'negative',
+    message:
+      error.name === 'DatabaseClosedError' ? error.message : $t('wallet.fail'),
   })
 }
 
-function onKeyDID(key: DIDTable) {
-  profileStore.consumerDID(key.id)
+function onSkipWallet() {
+  const dialog = $q.dialog({
+    message: $t('tutorial.welcome.demoHint'),
+    cancel: true,
+    persistent: true,
+  })
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  dialog.onOk(async () => {
+    await onDemoSign()
+  })
+}
+
+function importContractsFromPod() {
+  const dialog = $q.dialog({
+    message: $t('database.pod.sync'),
+    cancel: true,
+    persistent: true,
+  })
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  dialog.onOk(async () => {
+    const links = await podStore.getContractsLink()
+    for (const id of links) {
+      const credential: Credential = await podStore.getContract(id)
+      dialog.update({
+        message: credential.credentialSubject.instrument.name,
+      })
+      await contractStore.insertContract(credential)
+    }
+  })
 }
 
 function exportKeyPair() {
@@ -393,9 +357,7 @@ function exportKeyPair() {
     cancel: true,
     persistent: true,
   })
-  dialog.onDismiss(() => {
-    stepper.value.next()
-  })
+  dialog.onDismiss(() => {})
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   dialog.onOk(async () => {
     const keysJSON = await keyPair.prepareKeyPair()
@@ -423,7 +385,7 @@ async function onDemoSign() {
   profileStore.consumerEmail('tester@gotointeractive.com')
   profileStore.consumerDID(key.id)
   authStore.webId = demoUserWebId
-  tutorialStore().tutorialComplete()
+  tutorialStore.tutorialComplete()
   await router.push({
     name: ROUTE_NAMES.CREATE,
   })
@@ -457,6 +419,7 @@ async function onFinish() {
       startTime: new Date(),
       images: contractPDF,
     }
+    exportKeyPair()
     if (isLoggedIn.value) {
       await podStore.initPod()
     }
@@ -470,9 +433,12 @@ async function onFinish() {
 
     if (isLoggedIn.value) {
       await podStore.setProfileFOAF()
+      importContractsFromPod()
+      // fixme - сохранять KeyPair DID на SOLID
+      // ...
     }
 
-    tutorialStore().tutorialComplete()
+    tutorialStore.tutorialComplete()
     await router.push({
       name: ROUTE_NAMES.FILTER,
       query: {
@@ -519,7 +485,7 @@ onMounted(() => {
     step.value = STEP.FINAL
   }
   if (
-    step.value > Number(STEP.CRYPTO) &&
+    step.value === Number(STEP.FINAL) &&
     walletStore.getMultibase?.length === 0
   ) {
     step.value = STEP.WELCOME
