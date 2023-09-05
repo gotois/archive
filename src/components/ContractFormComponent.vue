@@ -116,8 +116,8 @@
             size="md"
             color="secondary"
             keep-color
-            checked-icon="person"
-            unchecked-icon="group"
+            checked-icon="group"
+            unchecked-icon="person"
             :dense="$q.platform.is.desktop"
           >
             <QTooltip>{{ $t('customer.hintType') }}</QTooltip>
@@ -127,22 +127,22 @@
       <QSelect
         v-model="modelContact"
         :label="$t('customer.contact')"
-        use-input
-        use-chips
-        multiple
-        hide-dropdown-icon
         autocomplete="off"
         spellcheck="false"
         :hint="$t('customer.hintContact')"
         :hide-hint="!$q.platform.is.desktop"
         :hide-bottom-space="!$q.platform.is.desktop"
-        color="secondary"
         :type="currentContactType"
-        square
-        outlined
         :error-message="$t('consumer.emailRules')"
         :behavior="$q.platform.is.ios === true ? 'dialog' : 'menu'"
         :dense="$q.platform.is.desktop"
+        color="secondary"
+        use-input
+        use-chips
+        multiple
+        hide-dropdown-icon
+        square
+        outlined
         @new-value="onNewValueContact"
         @input-value="onInputValueContact"
         @focus="onFocusInput"
@@ -404,7 +404,13 @@ function onNewValueContact(
   text = text.toLowerCase()
   text = text.replaceAll(' ', '')
   if (validTelString(text)) {
-    return done({ type: InputType.tel, value: text }, 'add-unique')
+    return done(
+      {
+        type: InputType.tel,
+        value: text.replace(/\D/g, ''),
+      },
+      'add-unique',
+    )
   } else if (validUrlString(text)) {
     return done({ type: InputType.url, value: text }, 'add-unique')
   } else if (text.includes('@') && patterns.testPattern.email(text)) {
