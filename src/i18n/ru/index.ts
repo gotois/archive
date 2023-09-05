@@ -22,12 +22,6 @@ export default {
       title: 'Авторизация',
       caption: 'Введите ключ',
     },
-    feedback: {
-      title: 'Обратная связь',
-    },
-    login: {
-      title: 'Регистрация',
-    },
     privacy: {
       title: 'Пользовательское соглашение',
     },

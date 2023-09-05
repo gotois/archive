@@ -22,12 +22,6 @@ export default {
       title: 'Authorization',
       caption: 'Enter key',
     },
-    feedback: {
-      title: 'Feedback',
-    },
-    login: {
-      title: 'Registration',
-    },
     privacy: {
       title: 'Privacy policy',
     },

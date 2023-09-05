@@ -127,10 +127,13 @@
             :text-color="$q.dark.isActive ? 'dark' : 'white'"
             :dense="$q.platform.is.desktop"
             square
+            no-caps
             glossy
             push
             unelevated
-            class="full-width q-mb-md block"
+            align="left"
+            icon="app_registration"
+            class="full-width q-pl-md q-pr-md q-mb-md block"
             :label="$t('navigation.register')"
             @click="$router.push('/reset')"
           />
@@ -142,7 +145,9 @@
             glossy
             push
             unelevated
-            class="full-width q-mb-md block"
+            align="left"
+            icon="logout"
+            class="full-width q-pl-md q-pr-md q-mb-md block"
             :label="$t('navigation.signout')"
             @click="logOutFromPod"
           />
@@ -154,7 +159,9 @@
             glossy
             push
             unelevated
-            class="full-width q-mb-md block"
+            align="left"
+            icon="login"
+            class="full-width q-pl-md q-pr-md q-mb-md block"
             :label="$t('navigation.signin')"
             @click="loginToPod"
           />
@@ -369,13 +376,13 @@
             <PodImporter />
             <QSeparator />
           </QItemSection>
-          <QItemSection v-if="settingsOpen" class="q-pa-md">
+          <QItemSection v-if="settingsOpen" class="q-pl-md q-pr-md q-pb-md">
             <DatabaseComponent />
           </QItemSection>
           <template v-if="$q.platform.is.desktop">
             <QSeparator />
-            <p>{{ $t('settings.keychain.title') }}</p>
             <QItemSection class="q-pa-md">
+              <p>{{ $t('settings.keychain.title') }}</p>
               <QBtn
                 :label="$t('settings.keychain.label')"
                 ripple

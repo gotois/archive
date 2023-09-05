@@ -8,6 +8,7 @@
         :max-file-size="1024 * 1024 * 1024 * 2"
         filled
         outlined
+        :dense="$q.platform.is.desktop"
         @update:model-value="onFileSelected"
         @rejected="onRejectedEntries"
       >
@@ -19,12 +20,12 @@
         </template>
       </QFile>
       <QBtn
+        v-if="file"
         :label="$t('settings.native.submit')"
-        :disable="!file"
         type="submit"
         icon="file_upload"
         color="secondary"
-        :outline="!file"
+        outline
         ripple
         square
         stretch
