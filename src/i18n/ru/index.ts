@@ -71,7 +71,7 @@ export default {
     signout: 'Выйти из Solid',
     signin: 'Войти через WebID',
     support: {
-      label: 'Поддержка',
+      label: 'Поддержите разработку',
       tooltip: 'Поддержка',
     },
     feedback: {

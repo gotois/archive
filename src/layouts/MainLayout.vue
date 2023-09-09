@@ -444,7 +444,7 @@
             $q.platform.is.win ||
             $q.platform.is.safari
           "
-          icon="support"
+          icon="monetization_on"
           class="cursor-pointer full-width q-pa-md self-end"
           color="transparent"
           :dense="$q.platform.is.desktop"
@@ -789,7 +789,7 @@ async function onSelectArchiveName(
     await router.push({
       name: ROUTE_NAMES.CREATE,
       query: {
-        contractTypeName: name,
+        instrument_name: name,
       },
     })
     return

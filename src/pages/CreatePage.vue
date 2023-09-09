@@ -17,7 +17,19 @@
             :class="{
               'col-xs-6': $q.platform.is.desktop,
             }"
-            :contract-type-name="$route.query.contractTypeName as string"
+            :agent-legal="Boolean($route.query.agent_legal) as boolean"
+            :instrument-description="
+              $route.query.instrument_description as string
+            "
+            :instrument-name="$route.query.instrument_name as string"
+            :participant-email="$route.query.participant_email as string"
+            :participant-name="$route.query.participant_name as string"
+            :participant-url="$route.query.participant_url as string"
+            :start-time="
+              $route.query.startTime
+                ? new Date($route.query.startTime)
+                : new Date()
+            "
             @on-create="onCreate"
           />
         </QCard>

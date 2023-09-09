@@ -71,7 +71,7 @@ export default {
     signout: 'Exit from SOLiD',
     signin: 'Login with WebID',
     support: {
-      label: 'Support',
+      label: 'Support me',
       tooltip: 'Support',
     },
     feedback: {

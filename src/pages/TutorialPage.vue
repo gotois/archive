@@ -184,10 +184,9 @@ import useWalletStore from 'stores/wallet'
 import pkg from '../../package.json'
 import { ROUTE_NAMES } from '../router/routes'
 import { parse } from '../helpers/markdownHelper'
-import { createContractPDF } from '../helpers/pdfHelper'
-import { readFilesPromise } from '../helpers/fileHelper'
 import solidAuth from '../services/authService'
 import { keyPair } from '../services/databaseService'
+import { privacyContract } from '../services/contractGeneratorService'
 import { Credential } from '../types/models'
 
 const OIDCIssuerComponent = defineAsyncComponent(
@@ -402,31 +401,10 @@ async function onFinish() {
     if (!did.value) {
       throw new Error('DID empty')
     }
-    const response = await fetch('docs/privacy.md')
-    const md = await response.text()
-    const html = parse(md)
-    const pdfFile = await createContractPDF(html)
-    const contractPDF = await readFilesPromise([pdfFile])
-    const newContract = {
-      agent_name: consumer.value,
-      agent_email: email.value,
-      agent_legal: true,
-      participant_name: pkg.author.name,
-      participant_email: pkg.author.email,
-      participant_url: pkg.author.url,
-      instrument_name: $t('pages.privacy.title'),
-      instrument_description: `${pkg.productName}: ${pkg.description} v${pkg.version}`,
-      startTime: new Date(),
-      images: contractPDF,
-    }
     exportKeyPair()
     if (isLoggedIn.value) {
       await podStore.initPod()
     }
-    await contractStore.addContract({
-      contractData: newContract,
-      usePod: isLoggedIn.value,
-    })
     profileStore.consumerName(consumer.value)
     profileStore.consumerEmail(email.value)
     await profileStore.setAvatar(email.value)
@@ -438,12 +416,14 @@ async function onFinish() {
       // ...
     }
 
+    const contract = await privacyContract($t)
     tutorialStore.tutorialComplete()
     await router.push({
-      name: ROUTE_NAMES.FILTER,
+      name: ROUTE_NAMES.CREATE,
       query: {
-        name: newContract.instrument_name,
-        page: 1,
+        ...contract,
+        agent_name: consumer.value,
+        agent_email: email.value,
       },
     })
   } catch (error) {

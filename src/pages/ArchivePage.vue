@@ -60,7 +60,7 @@
             <QBtn
               :to="{
                 name: 'create',
-                query: { contractTypeName: archiveEmptyText },
+                query: { instrument_name: archiveEmptyText },
               }"
               padding="none"
               unelevated

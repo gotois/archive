@@ -33,7 +33,7 @@
       </template>
       <QTooltip>{{ $t('files.hint') }}</QTooltip>
     </QFile>
-    <template v-if="Boolean(files.length)">
+    <template v-if="Boolean(filesUrls.length)">
       <div v-if="filesUrls.length">
         <template
           v-for="({ url, name }, urlIndex) in filesUrls"
@@ -47,6 +47,8 @@
             fit="scale-down"
             :placeholder-src="name"
             class="full-width"
+            @mouseleave="onHideCaption"
+            @mouseenter="onShowCaption"
           >
             <div class="absolute-top-right text-caption">
               {{ name }}
@@ -277,7 +279,7 @@
   </QForm>
 </template>
 <script lang="ts" setup>
-import { PropType, ref, defineAsyncComponent } from 'vue'
+import { PropType, ref, defineAsyncComponent, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   useQuasar,
@@ -326,9 +328,41 @@ interface MultiContact {
 
 const emit = defineEmits(['onCreate'])
 const props = defineProps({
-  contractTypeName: {
+  agentLegal: {
+    type: Boolean as PropType<boolean>,
+    default: true,
+  },
+  images: {
+    type: Array as PropType<string[]>,
+    default: () => [],
+  },
+  instrumentDescription: {
     type: String as PropType<string>,
     default: '',
+  },
+  instrumentName: {
+    type: String as PropType<string>,
+    default: '',
+  },
+  participantEmail: {
+    type: String as PropType<string>,
+    default: '',
+  },
+  participantName: {
+    type: String as PropType<string>,
+    default: '',
+  },
+  participantUrl: {
+    type: String as PropType<string>,
+    default: '',
+  },
+  startTime: {
+    type: Date as PropType<Date>,
+    default: () => new Date(),
+  },
+  endTime: {
+    type: Date as PropType<string>,
+    default: null,
   },
 })
 
@@ -338,24 +372,30 @@ const authStore = useAuthStore()
 const contractStore = useContractStore()
 const profileStore = useProfileStore()
 
-const now = new Date()
-const afterYearDate = new Date(now.setFullYear(now.getFullYear() + 1))
-
 const { isLoggedIn } = storeToRefs(authStore)
-const contractType = ref(props.contractTypeName)
-const customer = ref('')
-const isCustomerOrg = ref(true)
+const contractType = ref(props.instrumentName)
+const customer = ref(props.participantName)
+const isCustomerOrg = ref(props.agentLegal)
 const modelContact = ref<MultiContact[]>([])
 const currentContactType = ref<InputType>(InputType.text)
-const description = ref('')
+const description = ref(props.instrumentDescription)
+
+const cloneDate = date.clone(props.startTime)
+const afterYearDate = new Date(
+  cloneDate.setFullYear(cloneDate.getFullYear() + 1),
+)
 const duration = ref<Duration>({
-  from: $q.platform.is.mobile ? formatDate(new Date()) : new Date(),
-  to: $q.platform.is.mobile ? formatDate(afterYearDate) : afterYearDate,
+  from: $q.platform.is.mobile
+    ? formatDate(props.startTime)
+    : formatDate(props.startTime),
+  to: $q.platform.is.mobile
+    ? formatDate(afterYearDate)
+    : formatDate(afterYearDate),
 })
 const files = ref([])
 const contractOptions = ref(contractStore.getArchiveKeys)
 const contractForm = ref<QForm>()
-const dateNoLimit = ref(false)
+const dateNoLimit = ref(Boolean(props.endTime))
 const loadingForm = ref(false)
 const filesUrls = ref([])
 
@@ -370,13 +410,13 @@ function filterOptions(val: string, update: (callback: () => void) => void) {
 
 function formatIconContact(contact: MultiContact) {
   switch (contact.type) {
-    case 'email': {
+    case InputType.email: {
       return 'alternate_email'
     }
-    case 'url': {
+    case InputType.url: {
       return 'link'
     }
-    case 'tel': {
+    case InputType.tel: {
       return 'add_call'
     }
     default: {
@@ -438,12 +478,24 @@ function resetForm() {
   description.value = ''
   modelContact.value = []
   duration.value = {
-    from: $q.platform.is.mobile ? formatDate(new Date()) : new Date(),
-    to: $q.platform.is.mobile ? formatDate(afterYearDate) : afterYearDate,
+    from: $q.platform.is.mobile
+      ? formatDate(props.startTime)
+      : formatDate(props.startTime),
+    to: $q.platform.is.mobile
+      ? formatDate(afterYearDate)
+      : formatDate(afterYearDate),
   }
   files.value = []
   filesUrls.value = []
   dateNoLimit.value = false
+}
+
+function onHideCaption({ target }: { target: HTMLElement }) {
+  target.querySelector('.text-caption')?.classList?.remove('invisible')
+}
+
+function onShowCaption({ target }: { target: HTMLElement }) {
+  target.querySelector('.text-caption')?.classList?.add('invisible')
 }
 
 function onResetForm(confirm = false) {
@@ -467,7 +519,7 @@ function onSelectDate(value: string | Duration) {
       type: 'warning',
       message: $t('components.contractForm.selectDate.fail'),
     })
-    duration.value = { from: new Date(), to: afterYearDate }
+    duration.value = { from: formatDate(props.startTime), to: afterYearDate }
     return
   }
   switch (typeof value) {
@@ -609,6 +661,21 @@ async function onSubmit() {
 
 defineExpose({
   resetForm: onResetForm,
+})
+
+onMounted(() => {
+  if (props.participantEmail) {
+    modelContact.value.push({
+      type: InputType.email,
+      value: props.participantEmail,
+    })
+  }
+  if (props.participantUrl) {
+    modelContact.value.push({
+      type: InputType.url,
+      value: props.participantUrl,
+    })
+  }
 })
 </script>
 <style lang="scss">
