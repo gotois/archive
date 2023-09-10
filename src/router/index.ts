@@ -27,6 +27,8 @@ export default route(() => {
       SessionStorage.clear()
       await reset()
       deleteDatabases()
+      location.replace(ROUTE_NAMES.TUTORIAL)
+      return
     }
     if (error || !(code && state)) {
       return
@@ -50,11 +52,6 @@ export default route(() => {
 
   Router.beforeEach((to, from) => {
     const authStore = useAuthStore()
-    if (to.path === '/reset') {
-      return {
-        name: ROUTE_NAMES.TUTORIAL,
-      }
-    }
     switch (to.name) {
       case ROUTE_NAMES.PRIVACY: {
         return true

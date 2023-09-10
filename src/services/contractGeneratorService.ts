@@ -1,26 +1,49 @@
-import pkg from '../../package.json'
 import { parse } from '../helpers/markdownHelper'
-import { createContractPDF } from '../helpers/pdfHelper'
-import { readFilesPromise } from '../helpers/fileHelper'
-import { MyContract } from '../types/models'
+import { createContractPDF, createPDF } from '../helpers/pdfHelper'
+import { OwnerContract } from '../types/models'
 
-// eslint-disable-next-line
-export async function privacyContract($t: any) {
-  const response = await fetch('docs/privacy.md')
-  const md = await response.text()
-  const html = parse(md)
-  const pdfFile = await createContractPDF(html)
-  const contractPDF = await readFilesPromise([pdfFile])
-  const newContract = {
-    agent_legal: true,
-    participant_name: pkg.author.name,
-    participant_email: pkg.author.email,
-    participant_url: pkg.author.url,
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
-    instrument_name: $t('pages.privacy.title'),
-    instrument_description: `${pkg.productName}: ${pkg.description} v${pkg.version}`,
-    startTime: new Date(),
-    images: contractPDF,
+export async function mintContract(contract: OwnerContract) {
+  const response = await fetch(contract.url)
+  const contentType = response.headers.get('content-type')
+
+  const output = {
+    agentLegal: Number(true),
+    agentName: contract.agent.name,
+    agentEmail: contract.agent.email,
+    participantName: contract.participant.name,
+    participantEmail: contract.participant.email,
+    participantUrl: contract.participant.url,
+    instrumentName: contract.instrument.name,
+    instrumentDescription: contract.instrument.description,
+    images: [],
+    startTime: new Date().toJSON(),
+    // todo: add endTime
   }
-  return newContract as MyContract
+
+  if (contentType.startsWith('text/markdown')) {
+    const md = await response.text()
+    const html = parse(md)
+    const pdfFile = await createContractPDF(html)
+    const url = URL.createObjectURL(pdfFile)
+    output.images.push(url)
+    return output
+  } else if (contentType.startsWith('image')) {
+    /* eslint-disable */
+    const [pdfFile] = await createPDF({
+      startTime: new Date(),
+      agent: contract.agent,
+      instrument: contract.instrument,
+      object: [
+        {
+          contentUrl: contract.url,
+          encodingFormat: contentType,
+        },
+      ],
+    })
+    /* eslint-enable */
+    const url = URL.createObjectURL(pdfFile)
+    output.images.push(url)
+    return output
+  }
+  throw new Error('Cannot mint unknown format: ' + contentType)
 }

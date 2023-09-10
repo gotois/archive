@@ -17,18 +17,24 @@
             :class="{
               'col-xs-6': $q.platform.is.desktop,
             }"
-            :agent-legal="Boolean($route.query.agent_legal) as boolean"
+            :agent-legal="Boolean($route.query.agentLegal) as boolean"
             :instrument-description="
-              $route.query.instrument_description as string
+              $route.query.instrumentDescription as string
             "
-            :instrument-name="$route.query.instrument_name as string"
-            :participant-email="$route.query.participant_email as string"
-            :participant-name="$route.query.participant_name as string"
-            :participant-url="$route.query.participant_url as string"
+            :instrument-name="$route.query.instrumentName as string"
+            :participant-email="$route.query.participantEmail as string"
+            :participant-name="$route.query.participantName as string"
+            :participant-url="$route.query.participantUrl as string"
+            :images="$route.query.images as string[]"
             :start-time="
               $route.query.startTime
-                ? new Date($route.query.startTime)
-                : new Date()
+                ? new Date($route.query.startTime as string)
+                : null
+            "
+            :end-time="
+              $route.query.endTime
+                ? new Date($route.query.endTime as string)
+                : null
             "
             @on-create="onCreate"
           />

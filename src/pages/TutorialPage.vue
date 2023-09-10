@@ -186,7 +186,7 @@ import { ROUTE_NAMES } from '../router/routes'
 import { parse } from '../helpers/markdownHelper'
 import solidAuth from '../services/authService'
 import { keyPair } from '../services/databaseService'
-import { privacyContract } from '../services/contractGeneratorService'
+import { mintContract } from '../services/contractGeneratorService'
 import { Credential } from '../types/models'
 
 const OIDCIssuerComponent = defineAsyncComponent(
@@ -416,15 +416,27 @@ async function onFinish() {
       // ...
     }
 
-    const contract = await privacyContract($t)
+    const contractPDF = await mintContract({
+      url: window.location.origin + '/docs/privacy.md',
+      agentLegal: Number(true), // todo - перенести в схему объекта agent
+      agent: {
+        name: consumer.value,
+        email: email.value,
+      },
+      participant: {
+        name: pkg.author.name,
+        email: pkg.author.email,
+        url: pkg.author.url,
+      },
+      instrument: {
+        name: $t('pages.privacy.title'),
+        description: `${pkg.productName}: ${pkg.description} v${pkg.version}`,
+      },
+    })
     tutorialStore.tutorialComplete()
     await router.push({
       name: ROUTE_NAMES.CREATE,
-      query: {
-        ...contract,
-        agent_name: consumer.value,
-        agent_email: email.value,
-      },
+      query: contractPDF,
     })
   } catch (error) {
     console.error(error)
@@ -432,7 +444,7 @@ async function onFinish() {
       type: 'error',
       color: 'negative',
       message: String(error.message),
-      position: 'center',
+      position: 'bottom',
       progress: false,
       timeout: 99999999999,
     })

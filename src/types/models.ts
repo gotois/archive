@@ -150,6 +150,13 @@ interface ImageType {
   'encodingFormat': string
 }
 
+export interface OwnerContract {
+  url: string // owner original link
+  agent: FormatContractAgent
+  participant: FormatContractParticipant
+  instrument: FormatContractInstrument
+}
+
 export interface FormatContract extends BaseSchemaType {
   '@context': string
   'sameAs'?: string

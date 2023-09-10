@@ -12,6 +12,7 @@
   >
     <QFile
       v-model="files"
+      :disable="Boolean(props.images.length)"
       :label="$t('files.type')"
       :counter="Boolean(files.length)"
       accept="image/png, image/jpeg, .pdf"
@@ -36,10 +37,18 @@
     <template v-if="Boolean(filesUrls.length)">
       <div v-if="filesUrls.length">
         <template
-          v-for="({ url, name }, urlIndex) in filesUrls"
+          v-for="({ url, type, name }, urlIndex) in filesUrls"
           :key="urlIndex"
         >
+          <object
+            v-if="type === 'application/pdf' || name.endsWith('.pdf')"
+            :data="url"
+            type="application/pdf"
+            class="full-width"
+            height="400"
+          ></object>
           <QImg
+            v-else
             :src="url"
             no-transition
             :draggable="false"
@@ -60,6 +69,7 @@
       <QSelect
         v-model="contractType"
         :options="contractOptions"
+        :disable="Boolean(props.instrumentName)"
         :label="$t('contract.type')"
         :hint="
           $q.platform.is.mobile
@@ -92,6 +102,7 @@
       </QSelect>
       <QInput
         v-model.trim="customer"
+        :disable="Boolean(props.participantName)"
         :label="$t('customer.type')"
         :hint="$t('customer.hint')"
         :rules="[(val) => val && val.length > 0]"
@@ -128,6 +139,9 @@
       </QInput>
       <QSelect
         v-model="modelContact"
+        :disable="
+          Boolean(props.participantEmail.length || props.participantUrl.length)
+        "
         :label="$t('customer.contact')"
         autocomplete="off"
         spellcheck="false"
@@ -167,6 +181,7 @@
         <QInput
           v-if="!$q.platform.is.mobile"
           v-model="duration.from"
+          :disable="Boolean(props.startTime)"
           :label="$t('duration.from')"
           class="col no-padding"
           :type="typeof duration.from === 'string' ? 'text' : 'date'"
@@ -181,6 +196,7 @@
         </QInput>
         <QBtnDropdown
           v-if="$q.platform.is.mobile"
+          :disable="Boolean(props.startTime)"
           square
           outline
           cover
@@ -212,6 +228,7 @@
         <QInput
           v-if="!$q.platform.is.mobile"
           v-model="duration.to"
+          :disable="Boolean(props.startTime || props.endTime)"
           :type="typeof duration.to === 'string' ? 'text' : 'date'"
           :rules="typeof duration.to === 'string' ? ['date'] : []"
           :label="$t('duration.to')"
@@ -242,11 +259,12 @@
       </div>
       <QInput
         v-model.trim="description"
+        :disable="Boolean(props.instrumentDescription)"
         :label="$t('description.type')"
         :hint="$t('description.hint')"
         type="textarea"
         class="no-padding"
-        color="primary"
+        color="secondary"
         :hide-hint="!$q.platform.is.desktop"
         :dense="$q.platform.is.desktop"
         hide-bottom-space
@@ -303,7 +321,7 @@ import { storeToRefs } from 'pinia'
 import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
-import { readFilesPromise } from '../helpers/fileHelper'
+import { readFilePromise } from '../helpers/fileHelper'
 import { formatDate } from '../helpers/dateHelper'
 import { validTelString, validUrlString } from '../helpers/dataHelper'
 
@@ -357,12 +375,12 @@ const props = defineProps({
     default: '',
   },
   startTime: {
-    type: Date as PropType<Date>,
-    default: () => new Date(),
+    type: Date as PropType<Date | null>,
+    default: () => null,
   },
   endTime: {
-    type: Date as PropType<string>,
-    default: null,
+    type: Date as PropType<Date | null>,
+    default: () => null,
   },
 })
 
@@ -380,7 +398,7 @@ const modelContact = ref<MultiContact[]>([])
 const currentContactType = ref<InputType>(InputType.text)
 const description = ref(props.instrumentDescription)
 
-const cloneDate = date.clone(props.startTime)
+const cloneDate = date.clone(props.startTime ?? new Date())
 const afterYearDate = new Date(
   cloneDate.setFullYear(cloneDate.getFullYear() + 1),
 )
@@ -397,7 +415,13 @@ const contractOptions = ref(contractStore.getArchiveKeys)
 const contractForm = ref<QForm>()
 const dateNoLimit = ref(Boolean(props.endTime))
 const loadingForm = ref(false)
-const filesUrls = ref([])
+const filesUrls = ref(
+  props.images.map((url) => ({
+    url,
+    type: 'application/pdf',
+    name: 'unknown', // todo - ставить необходимое имя
+  })),
+)
 
 function filterOptions(val: string, update: (callback: () => void) => void) {
   update(() => {
@@ -462,11 +486,18 @@ function onNewValueContact(
   })
 }
 
+function createFileUrl(file: File) {
+  const url = URL.createObjectURL(file)
+  return {
+    url,
+    name: file.name,
+  }
+}
+
 function onFileSelect(files: File[]) {
   filesUrls.value = []
   for (const file of files) {
-    const url = URL.createObjectURL(file)
-    filesUrls.value.push({ url, name: file.name })
+    filesUrls.value.push(createFileUrl(file))
   }
 }
 
@@ -610,7 +641,13 @@ async function onSubmit() {
   }
 
   try {
-    const images = await readFilesPromise(files.value)
+    const images = []
+    for (const file of filesUrls.value) {
+      const res = await fetch(file.url)
+      const blob = await res.blob()
+      const image = await readFilePromise(blob)
+      images.push(image)
+    }
     const person = profileStore.getPersonLD
     const newContract = {
       agent_name: person.name,

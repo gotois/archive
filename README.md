@@ -2,7 +2,7 @@
 [![Netlify Status](https://api.netlify.com/api/v1/badges/f467de0f-4773-4f8a-ac3b-5d4aeca0ea83/deploy-status)](https://app.netlify.com/sites/my-archive/deploys)
 
 # Мои договоры
-> Персональная безопасная база договоров.
+> Ваша персональная криптобезопасная база договоров.
 
 [![Android](https://img.shields.io/badge/Android-Install-green?style=for-the-badge&link=https://play.google.com/store/apps/details?id=ru.baskovsky.archive.twa)](https://play.google.com/store/apps/details?id=ru.baskovsky.archive.twa)
 [![Документация](https://img.shields.io/badge/%D0%94%D0%BE%D0%BA%D1%83%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D1%86%D0%B8%D1%8F-gray?style=for-the-badge&link=https://baskovsky.ru/2021/09/my-archive/)](https://baskovsky.ru/2021/09/my-archive/)
@@ -30,16 +30,21 @@
 
 - `Адаптивный дизайн` для мобильной, таблет и десктопной версии;
 - Доступ к договорам в режиме `Offline`;
-- Отсутствие контролируемого сервера;
+- Хранения договоров в семантическом формате `schema.org`;
 - Надежное хранилище договоров внутри `IndexDB`;
 - `Шифрование` передачи данных;
 - Цифровая подпись с помощью `Linked Data Proofs`;
-- Поддержка `Web3 Solana`;
-- `Полнотекстовый поиск` договоров;
-- Поддержка документов в популярных форматах `PDF, PNG, JPG`;
+- Авторизация через блокчейн-кошелек `Phantom` или нативный ключ `Solana`;
+- `Полнотекстовый поиск` документов;
+- Поиск документов через календарь;
+- Поиск документа через `OpenSearch`;
+- Поддержка импорта документов в форматах `PDF, PNG, JPG`;
 - Генерация договора в формате `PDF`;
+- Выгрузка событий в формате `ical`;
 - Шеринг договора через `navigator.share`
 - Безопасный вход через `цифровой пин`;
+- Мультиязычность через `i18n`;
+- Быстрая связь с агентом через `e-mail`, `tel`;
 - Поддержка Импорта/Экспорта базы данных в файл формате `zip`;
 - Загрузка/Выгрузка базы данных через `SOLiD сервер` на собственный `Pod`;
 - Отсутствие телеметрии;
@@ -84,8 +89,8 @@ npm run build
 ```bash
 bubblewrap build
 ```
-- Откройте проект в Android Studio
-- Установите Gradle
+- Откройте проект в `Android Studio`
+- Установите `Gradle`
 - Выполните шаги по сборке соответствующие настройке настоящего build.gradle
 
 ### Запуск TWA в эмуляторе

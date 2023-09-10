@@ -36,6 +36,7 @@
       v-if="did"
       :hint="$t('tutorial.data.hint')"
       :model-value="did"
+      color="secondary"
       readonly
     />
     <KeypairComponent v-else @on-key="onKeyDID" />
@@ -46,6 +47,7 @@
       name="consumer"
       type="text"
       autocomplete="on"
+      color="secondary"
       autofocus
       :error-message="$t('consumer.rules')"
       outlined
@@ -61,6 +63,7 @@
       :label="$t('consumer.email')"
       name="email"
       type="email"
+      color="secondary"
       :rules="['email']"
       :error-message="$t('consumer.emailRules')"
       autocomplete="off"
