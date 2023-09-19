@@ -216,7 +216,8 @@
                 color="secondary"
                 type="text"
                 outlined
-                clearable
+                :clearable="!isDemo"
+                :disable="isDemo"
                 stack-label
                 :hide-hint="!$q.platform.is.desktop"
                 :label="$t('consumer.type')"
@@ -235,7 +236,8 @@
                 color="secondary"
                 type="email"
                 outlined
-                clearable
+                :clearable="!isDemo"
+                :disable="isDemo"
                 stack-label
                 :hide-hint="!$q.platform.is.desktop"
                 :hide-bottom-space="!email"
@@ -284,6 +286,7 @@
                 content-class="full-width q-mb-md"
               />
               <QBtn
+                v-if="!isDemo"
                 :label="$t('consumer.save')"
                 icon="save"
                 class="full-width"
@@ -369,9 +372,9 @@
           :expand-separator="settingsOpen"
           :label="$t('settings.native.title')"
         >
-          <p class="q-pt-md q-pl-md q-pr-md">{{
-            $t('settings.native.description')
-          }}</p>
+          <p class="q-pt-md q-pl-md q-pr-md">
+            {{ $t('settings.native.description') }}
+          </p>
           <QItemSection v-if="settingsOpen && isLoggedIn" class="q-pa-md">
             <PodImporter />
             <QSeparator />
