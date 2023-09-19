@@ -68,7 +68,7 @@
     >
       <QScrollArea class="absolute-full fit">
         <SwipeToClose
-          :disabled="!fullscreen"
+          :disable="!fullscreen"
           :style="{
             'max-height': fullscreen ? '100dvh' : '400px',
           }"

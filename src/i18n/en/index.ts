@@ -32,6 +32,9 @@ export default {
       oidc: { title: 'OIDC' },
       final: { title: 'Agreement for use' },
     },
+    pricing: {
+      title: 'Pricing: plans for every',
+    },
     unknown: {
       seo: {
         title: 'Page not found',
@@ -241,6 +244,74 @@ export default {
       body: 'To use the application, use your name and email address. Add your cryptographic key DID',
       hint: 'To establish your contract identity, you need to know your decentralized identifier.',
       ok: 'Start',
+    },
+  },
+  pricing: {
+    free: {
+      title: 'Free',
+      description: 'Service: Contract storage',
+      price: 'per user/month',
+      ok: 'Start Free',
+      support: {
+        title: 'Support',
+        values: {
+          '1': 'Text feedback',
+          '2': 'Stories video',
+        },
+      },
+      functions: {
+        title: 'Base functions',
+        values: {
+          '1': 'Save and search contracts offline',
+          '2': 'Save to external SOLiD server',
+        },
+      },
+    },
+    premium: {
+      title: 'Premium',
+      description: 'Project: Full liability management service',
+      price: 'per user/month',
+      ok: 'Start a trial',
+      support: {
+        title: 'Premium Support',
+        values: {
+          '1': 'Everything included in Free, plus...',
+          '2': 'E-mail feedback',
+        },
+      },
+      functions: {
+        title: 'Extended functions',
+        values: {
+          '1': 'Everything included in Free, plus...',
+          '2': 'Crypto sign',
+          '3': '10gb space to SOLiD server',
+          '4': 'MINT NFT',
+          '5': 'Verification',
+          '6': 'PDF analyze',
+          '7': 'GIC Court',
+        },
+      },
+    },
+    vip: {
+      title: 'VIP',
+      description: 'Solution: “Pocket Lawyer”',
+      price: 'per user/month',
+      ok: 'Contact Sales',
+      support: {
+        title: 'Luxury Support',
+        values: {
+          '1': 'Everything included in Premium, plus...',
+          '2': 'Voice help 24/7',
+          '3': 'Privileged training events',
+        },
+      },
+      functions: {
+        title: 'Individual functions',
+        values: {
+          '1': 'Everything included in Free, plus...',
+          '2': 'Telemetry off',
+        },
+      },
     },
   },
   archiveList: {

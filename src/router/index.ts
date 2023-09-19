@@ -53,6 +53,7 @@ export default route(() => {
   Router.beforeEach((to, from) => {
     const authStore = useAuthStore()
     switch (to.name) {
+      case ROUTE_NAMES.PRICING:
       case ROUTE_NAMES.PRIVACY: {
         return true
       }
