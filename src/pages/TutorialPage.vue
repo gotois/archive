@@ -97,15 +97,39 @@
             </QExpansionItem>
           </QList>
           <QStepperNavigation>
-            <PhantomWalletLogin
+            <QBtn
               :label="$t('tutorial.welcome.ok')"
-              :content-class="{
-                'full-width': !$q.platform.is.desktop,
-              }"
-              @skip="onSkipWallet"
-              @error="onWalletError"
-              @complete="stepper.next()"
+              color="accent"
+              @click="pricing = true"
             />
+            <QDialog
+              v-model="pricing"
+              persistent
+              maximized
+              transition-show="slide-up"
+              transition-hide="slide-down"
+            >
+              <QCard
+                class="overflow-hidden-y q-pb-lg"
+                :class="{
+                  'bg-grey-4 text-white': !$q.dark.isActive,
+                  'bg-dark text-white': $q.dark.isActive,
+                }"
+              >
+                <QBar>
+                  <QSpace />
+                  <QBtn v-close-popup dense flat icon="close" />
+                </QBar>
+                <QCardSection class="full-height overflow-hidden-y">
+                  <PricingComponent
+                    @demo="onDemoSign"
+                    @free="stepper.next()"
+                    @premium="onPremium"
+                    @vip="onContactSale"
+                  />
+                </QCardSection>
+              </QCard>
+            </QDialog>
           </QStepperNavigation>
         </QStep>
         <QStep
@@ -158,6 +182,8 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import {
   exportFile,
+  useMeta,
+  useQuasar,
   QIcon,
   QCard,
   QCardSection,
@@ -170,8 +196,9 @@ import {
   QTooltip,
   QList,
   QExpansionItem,
-  useMeta,
-  useQuasar,
+  QBtn,
+  QDialog,
+  QBar,
 } from 'quasar'
 import { storeToRefs } from 'pinia'
 import useAuthStore from 'stores/auth'
@@ -189,13 +216,14 @@ import { keyPair } from '../services/databaseService'
 import { mintContract } from '../services/contractGeneratorService'
 import { Credential } from '../types/models'
 
+const PricingComponent = defineAsyncComponent(
+  () => import('components/PricingComponent.vue'),
+)
+
 const OIDCIssuerComponent = defineAsyncComponent(
   () => import('components/OIDCIssuerComponent.vue'),
 )
 
-const PhantomWalletLogin = defineAsyncComponent(
-  () => import('components/PhantomWalletLogin.vue'),
-)
 const IdComponent = defineAsyncComponent(
   () => import('components/IdComponent.vue'),
 )
@@ -229,6 +257,7 @@ function getCurrentStep() {
 const scroll = ref<InstanceType<typeof QScrollArea> | null>(null)
 const stepper = ref<InstanceType<typeof QStepper> | null>(null)
 const step = ref(getCurrentStep() ?? STEP.WELCOME)
+const pricing = ref(false)
 
 const { isLoggedIn } = storeToRefs(authStore)
 const { did, consumer, email } = storeToRefs(profileStore)
@@ -309,26 +338,6 @@ async function onOnlineAuthorize(oidcIssuer: string) {
   } finally {
     $q.loading.hide()
   }
-}
-
-function onWalletError(error: Error) {
-  $q.notify({
-    color: 'negative',
-    message:
-      error.name === 'DatabaseClosedError' ? error.message : $t('wallet.fail'),
-  })
-}
-
-function onSkipWallet() {
-  const dialog = $q.dialog({
-    message: $t('tutorial.welcome.demoHint'),
-    cancel: true,
-    persistent: true,
-  })
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  dialog.onOk(async () => {
-    await onDemoSign()
-  })
 }
 
 function importContractsFromPod() {
@@ -462,6 +471,14 @@ async function onStep(step: number) {
     replace: true,
   })
   scroll.value.setScrollPosition('vertical', step * 30, 100)
+}
+
+function onPremium() {
+  alert('Premium is under construction')
+}
+
+function onContactSale() {
+  alert('Contact Sale is under construction')
 }
 
 setMeta(step.value)

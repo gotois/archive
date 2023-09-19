@@ -204,8 +204,7 @@ export default {
       title: `Welcome to ${productName}`,
       body: 'Convenient and secure recording of any agreements on your devices.',
       ok: 'Accept and Continue',
-      demoHint:
-        'Start without authorization. You will be able to connect your wallet later. Continue?',
+      demoHint: 'Start without authorization you will be Demo sign. Continue?',
     },
     info: {
       title: 'How our service works',
@@ -269,7 +268,7 @@ export default {
     },
     premium: {
       title: 'Premium',
-      description: 'Project: Full liability management service',
+      description: 'Project: Full liability management',
       price: 'per user/month',
       ok: 'Start a trial',
       support: {

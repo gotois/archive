@@ -1,7 +1,8 @@
 <template>
   <QBtn
     v-if="hasPhantomWallet"
-    color="accent"
+    :color="color"
+    :text-color="textColor"
     :icon="icon"
     :class="contentClass"
     :label="label"
@@ -10,11 +11,12 @@
   <template v-else>
     <QBtn
       size="md"
-      class="q-pl-md q-pr-md q-ml-auto q-mr-auto q-mt-none q-mb-md"
+      class="q-pl-md q-pr-md q-ml-auto q-mr-auto q-mt-none"
       :class="contentClass"
       :label="label"
       :dense="$q.platform.is.desktop"
-      color="accent"
+      :color="color"
+      :text-color="textColor"
       square
       :icon="icon"
       @click="showDialog = true"
@@ -33,7 +35,7 @@
             :hint="$t('wallet.hint')"
             :maxlength="88"
             :hide-bottom-space="!$q.platform.is.desktop"
-            color="secondary"
+            :color="color"
             name="wallet"
             autocomplete="off"
             autofocus
@@ -59,7 +61,7 @@
             :behavior="$q.platform.is.ios ? 'dialog' : 'menu'"
             name="contractType"
             spellcheck="false"
-            color="secondary"
+            :color="color"
             options-selected-class="text-secondary"
             class="q-mt-md q-mb-md"
             use-input
@@ -143,6 +145,16 @@ defineProps({
     type: String as PropType<string>,
     required: false,
     default: '',
+  },
+  color: {
+    type: String as PropType<string>,
+    required: false,
+    default: 'secondary',
+  },
+  textColor: {
+    type: String as PropType<string>,
+    required: false,
+    default: 'white',
   },
   contentClass: {
     type: undefined as PropType<VueClassProp>,
