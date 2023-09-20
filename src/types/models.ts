@@ -204,3 +204,10 @@ export type ContractData = {
   count: number
   recommendation: boolean
 }
+
+export interface FullTextDocument {
+  id: number
+  instrument_name: string
+  endTime: Date
+  instrument_description: string
+}

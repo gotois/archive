@@ -12,6 +12,7 @@ import {
   ContractData,
   MyContract,
   WalletType,
+  FullTextDocument,
 } from '../types/models'
 import { createContractLD, getContractFromLD } from '../helpers/schemaHelper'
 
@@ -241,15 +242,12 @@ class ContractDatabase extends Dexie {
   }
 
   public async getFulltextDocument() {
-    const documents: {
-      id: number
-      instrument_name: string
-      instrument_description: string
-    }[] = []
+    const documents: FullTextDocument[] = []
     await this.contracts.each((contract) => {
       documents.push({
         id: contract.id,
         instrument_name: contract.instrument_name,
+        endTime: contract.endTime,
         instrument_description: contract.instrument_description,
       })
     })

@@ -166,6 +166,7 @@ import { storeToRefs } from 'pinia'
 import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
 import usePodStore from 'stores/pod'
+import useNotification from 'stores/notification'
 import contractTypes from '../services/contractEnum'
 import { ROUTE_NAMES } from '../router/routes'
 import { FormatContract } from '../types/models'
@@ -183,17 +184,18 @@ const ArchiveListComponent = defineAsyncComponent({
 
 const $t = useI18n().t
 const $q = useQuasar()
+const router = useRouter()
 const contractStore = useContractStore()
 const podStore = usePodStore()
+const authStore = useAuthStore()
+const notificationStore = useNotification()
 
 const metaData = {
   'title': $t('pages.archive.title'),
   'og:title': $t('pages.archive.title'),
 }
 const LIMIT = 5
-
-const router = useRouter()
-const authStore = useAuthStore()
+const NOTIFICATION_TIMER = 30000
 
 const currentPage = toRef(router.currentRoute.value.query, 'page')
 const scrollAreaRef = ref<InstanceType<typeof QScrollArea> | null>(null)
@@ -396,6 +398,9 @@ onBeforeMount(() => {
 })
 
 onMounted(async () => {
+  setTimeout(() => {
+    notificationStore.check()
+  }, NOTIFICATION_TIMER)
   await updateContracts(router.currentRoute.value.query)
 })
 </script>

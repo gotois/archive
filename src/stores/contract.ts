@@ -105,8 +105,9 @@ export default defineStore('contracts', {
       // fixme поддержать открытие договора в браузере через ссылку по его url
       // jsldContract.credentialSubject.url =
       //   'https://archive.gotointeractive.com/' + id
+      // todo: сейчас происходит сохранение в БД Dexie даже если не выполнились остальные условия.
+      //  Требуется сохранять во внутреннее хранилище и удалять тот контракт, что не прошел весь цикл обслуживания
       const { contract, index } = await this.insertContract(jsldContract)
-
       // после первичной записи обновляем идентификатор Dexie
       jsldContract.credentialSubject.identifier.push({
         name: 'Dexie',

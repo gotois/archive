@@ -217,7 +217,7 @@
                 type="text"
                 outlined
                 :clearable="!isDemo"
-                :disable="isDemo"
+                :readonly="isDemo"
                 stack-label
                 :hide-hint="!$q.platform.is.desktop"
                 :label="$t('consumer.type')"
@@ -237,7 +237,7 @@
                 type="email"
                 outlined
                 :clearable="!isDemo"
-                :disable="isDemo"
+                :readonly="isDemo"
                 stack-label
                 :hide-hint="!$q.platform.is.desktop"
                 :hide-bottom-space="!email"
@@ -257,6 +257,7 @@
                 color="secondary"
                 class="q-pb-md full-width"
                 outlined
+                readonly
                 stack-label
                 hide-bottom-space
               >
@@ -648,8 +649,11 @@ function onToggleLeftDrawer(): void {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
 
-function onArchiveRoute(e: Event) {
+async function onArchiveRoute(e: Event) {
   e.preventDefault()
+  if ('Notification' in window && Notification.permission === 'default') {
+    await Notification.requestPermission()
+  }
   return router.push({
     name: ROUTE_NAMES.ARCHIVE,
     query: {
