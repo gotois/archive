@@ -12,6 +12,9 @@
       filled
       accept=".json"
       class="col"
+      square
+      outlined
+      :dense="$q.platform.is.desktop"
       :label="$t('components.keypair.import.label')"
       @update:model-value="onLoadKeyPairFile"
     >

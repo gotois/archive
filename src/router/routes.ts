@@ -15,6 +15,12 @@ export enum ROUTE_NAMES {
   PRICING = 'pricing',
 }
 
+export enum STEP {
+  WELCOME = 1,
+  OIDC = 2,
+  FINAL = 3,
+}
+
 const routes: RouteRecordRaw[] = [
   {
     name: ROUTE_NAMES.ROOT,

@@ -209,7 +209,7 @@ import useProfileStore from 'stores/profile'
 import usePodStore from 'stores/pod'
 import useWalletStore from 'stores/wallet'
 import pkg from '../../package.json'
-import { ROUTE_NAMES } from '../router/routes'
+import { ROUTE_NAMES, STEP } from '../router/routes'
 import { parse } from '../helpers/markdownHelper'
 import solidAuth from '../services/authService'
 import { keyPair } from '../services/databaseService'
@@ -237,12 +237,6 @@ const contractStore = useContractStore()
 const profileStore = useProfileStore()
 const walletStore = useWalletStore()
 const tutorialStore = useTutorialStore()
-
-enum STEP {
-  WELCOME = 1,
-  OIDC = 2,
-  FINAL = 3,
-}
 
 const stepParam = 'step'
 
@@ -487,7 +481,7 @@ onMounted(() => {
   const { query } = router.currentRoute.value
 
   // Если пользователь отменил вход через WebId, возвращаем его на страницу подтверждения
-  if (query.error === 'access_denied') {
+  if (isLoggedIn.value && query.error === 'access_denied') {
     step.value = STEP.FINAL
   }
   if (isLoggedIn.value) {

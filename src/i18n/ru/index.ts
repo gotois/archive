@@ -66,7 +66,7 @@ export default {
     create: 'Создание',
     archive: 'Архив',
     demo: 'Демо',
-    free: 'Бесплатный режим',
+    free: 'Беспл.',
   },
   navigation: {
     version: 'v.{version}',

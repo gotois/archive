@@ -10,7 +10,8 @@ import {
   getStringNoLocale,
   getStringNoLocaleAll,
   getThing,
-  getPodUrlAll,
+  getProfileAll,
+  getPodUrlAllFrom,
   getDate,
   getThingAll,
   saveSolidDatasetAt,
@@ -50,26 +51,31 @@ export default defineStore('pod', {
       LocalStorage.set('oidcIssuer', oidcIssuer)
     },
     async initPod() {
-      const resourceBaseUrl = this.getResourceBaseUrl
-      if (!resourceBaseUrl) {
-        throw new Error('initPod cannot use empty resourceRootUrl')
+      const getResourceBaseUrl = this.getResourceBaseUrl
+      if (typeof getResourceBaseUrl !== 'string') {
+        return
       }
-      // hack - у inrupt.net и других провайдеров, при первичной инициализации падает getSolidDataset
-      if (!resourceBaseUrl.includes('inrupt.com')) {
+      try {
         const dataset = createSolidDataset()
-        return this.saveDataset(resourceBaseUrl, dataset)
+        await this.saveDataset(getResourceBaseUrl, dataset)
+      } catch (e) {
+        console.warn('already init', e)
       }
-      const myBaseDataset = await this.getDataset(resourceBaseUrl)
+      const myBaseDataset = await this.getDataset(getResourceBaseUrl)
       const hasAnyContracts = getThingAll(myBaseDataset).some(({ url }) =>
         url.includes(name),
       )
       if (!hasAnyContracts) {
-        return this.saveDataset(resourceBaseUrl, myBaseDataset)
+        return this.saveDataset(getResourceBaseUrl, myBaseDataset)
       }
     },
     formatterDatasetContract(signedVC: ProofCredential) {
+      const getResourceBaseUrl = this.getResourceBaseUrl
+      if (typeof getResourceBaseUrl !== 'string') {
+        return
+      }
       const id = this.getContractId(signedVC.credentialSubject)
-      const resourceUrl = this.getResourceBaseUrl + id + '.ttl'
+      const resourceUrl = getResourceBaseUrl + id + '.ttl'
       const types = signedVC['@context'][1] as unknown as CredentialTypes
       const item = signedVC.credentialSubject
       // type
@@ -206,8 +212,11 @@ export default defineStore('pod', {
       })
     },
     async removeContractsDataset() {
-      const resourceBaseUrl = this.getResourceBaseUrl
-      const myDataset = await this.getDataset(resourceBaseUrl)
+      const getResourceBaseUrl = this.getResourceBaseUrl
+      if (typeof getResourceBaseUrl !== 'string') {
+        return
+      }
+      const myDataset = await this.getDataset(getResourceBaseUrl)
 
       const allThing = getThingAll(myDataset)
         .filter((thing) => {
@@ -224,9 +233,10 @@ export default defineStore('pod', {
       if (!authStore.webId) {
         throw new Error('WebID is empty')
       }
-      const podsUrl = await getPodUrlAll(authStore.webId, {
+      const profile = await getProfileAll(authStore.webId, {
         fetch,
       })
+      const podsUrl = getPodUrlAllFrom(profile, authStore.webId)
       if (podsUrl.length === 0) {
         throw new Error('Pods is empty')
       }
@@ -239,12 +249,13 @@ export default defineStore('pod', {
       this.resourceRootUrl = podsUrl[selectedPod]
     },
     async getProfileFOAF() {
-      if (!this.resourceRootUrl) {
-        throw new Error('Empty resourceRootUrl')
+      const getResourceBaseUrl = this.getResourceBaseUrl
+      if (typeof getResourceBaseUrl !== 'string') {
+        return
       }
       // 'profile/card' for inrupt.net
       // todo 'profile' for inrupt.com
-      const resourceProfileUrl = this.resourceRootUrl + 'profile/card'
+      const resourceProfileUrl = getResourceBaseUrl + 'profile/card'
       const profileDataset = await this.getDataset(resourceProfileUrl)
       const authStore = useAuthStore()
       const profile = getThing(profileDataset, authStore.webId)
@@ -315,8 +326,12 @@ export default defineStore('pod', {
         .value as string
     },
     async uploadContract(signedVC: ProofCredential) {
+      const getResourceBaseUrl = this.getResourceBaseUrl
+      if (typeof getResourceBaseUrl !== 'string') {
+        return
+      }
       const id = this.getContractId(signedVC.credentialSubject)
-      const url = this.getResourceBaseUrl + id + '.ttl'
+      const url = getResourceBaseUrl + id + '.ttl'
       const solidDatasetContract = this.formatterDatasetContract(
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         signedVC,
@@ -325,7 +340,11 @@ export default defineStore('pod', {
       return url
     },
     async getContractsLink() {
-      const myBaseDataset = await this.getDataset(this.getResourceBaseUrl)
+      const getResourceBaseUrl = this.getResourceBaseUrl
+      if (typeof getResourceBaseUrl !== 'string') {
+        return
+      }
+      const myBaseDataset = await this.getDataset(getResourceBaseUrl)
       return getThingAll(myBaseDataset)
         .map(({ url }) => {
           return url
@@ -455,7 +474,7 @@ export default defineStore('pod', {
     },
   },
   getters: {
-    getResourceBaseUrl(state): string {
+    getResourceBaseUrl(state): string | Error {
       if (!state.resourceRootUrl) {
         throw new Error('resourceRootUrl is empty')
       }

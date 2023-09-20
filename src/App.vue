@@ -118,21 +118,38 @@ const metaData = {
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 events.on(EVENTS.SESSION_RESTORED, async (urlString) => {
-  $q.sessionStorage.remove('connect')
   const url = new URL(urlString)
+  $q.sessionStorage.remove('connect')
   authStore.openIdHandleIncoming()
-  await podStore.setResourceRootUrl()
-  await router.push({
-    path: url.pathname,
-    replace: true,
-  })
-  $q.loading.hide()
+  try {
+    await podStore.setResourceRootUrl()
+    await router.push({
+      path: url.pathname,
+      replace: true,
+    })
+  } catch (e) {
+    console.error(e)
+  } finally {
+    $q.loading.hide()
+  }
 })
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 events.on(EVENTS.LOGIN, async () => {
   authStore.openIdHandleIncoming()
-  await podStore.setResourceRootUrl()
+  try {
+    await podStore.setResourceRootUrl()
+  } catch (e) {
+    console.error(e)
+    $q.notify({
+      type: 'negative',
+      message: 'Login Failed',
+    })
+    $q.loading.show()
+    return
+  } finally {
+    $q.sessionStorage.remove('connect')
+  }
   const { name, email, avatar } = await podStore.getProfileFOAF()
   if (name) {
     profileStore.consumerName(name)
@@ -143,7 +160,6 @@ events.on(EVENTS.LOGIN, async () => {
   if (avatar) {
     profileStore.consumerImg(avatar)
   }
-  $q.sessionStorage.remove('connect')
   $q.sessionStorage.set('restorePreviousSession', true)
 })
 

@@ -25,7 +25,7 @@
   <QForm
     v-else
     ref="nameForm"
-    class="q-gutter-md q-mt-md"
+    class="q-gutter-md"
     autocapitalize="off"
     autocomplete="off"
     autofocus
@@ -37,7 +37,9 @@
       :hint="$t('tutorial.data.hint')"
       :model-value="did"
       color="secondary"
+      :dense="$q.platform.is.desktop"
       readonly
+      hide-bottom-space
     />
     <KeypairComponent v-else @on-key="onKeyDID" />
     <QInput
@@ -50,6 +52,10 @@
       color="secondary"
       autofocus
       :error-message="$t('consumer.rules')"
+      :dense="$q.platform.is.desktop"
+      square
+      hide-bottom-space
+      filled
       outlined
       no-error-icon
       @focus="(e) => e.target.scrollIntoView()"
@@ -67,25 +73,27 @@
       :rules="['email']"
       :error-message="$t('consumer.emailRules')"
       autocomplete="off"
+      :dense="$q.platform.is.desktop"
       lazy-rules
-      no-error-icon
+      hide-bottom-space
+      square
+      filled
       outlined
+      no-error-icon
     >
       <template #prepend>
         <QIcon name="email" />
       </template>
     </QInput>
-    <QStepperNavigation class="q-pa-md no-margin">
+    <QStepperNavigation class="no-margin q-pt-md q-pl-md">
       <QBtn
         color="accent"
         type="submit"
-        square
         :disable="!consumerValid"
         :label="$t('tutorial.data.ok')"
         :class="{
           'full-width': !$q.platform.is.desktop,
         }"
-        :dense="$q.platform.is.desktop"
         :loading="$q.loading.isActive"
         icon="login"
       />

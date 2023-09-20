@@ -69,7 +69,7 @@
       <QSelect
         v-model="contractType"
         :options="contractOptions"
-        :disable="Boolean(props.instrumentName)"
+        :readonly="Boolean(props.instrumentName)"
         :label="$t('contract.type')"
         :hint="
           $q.platform.is.mobile
@@ -102,7 +102,7 @@
       </QSelect>
       <QInput
         v-model.trim="customer"
-        :disable="Boolean(props.participantName)"
+        :readonly="Boolean(props.participantName)"
         :label="$t('customer.type')"
         :hint="$t('customer.hint')"
         :rules="[(val) => val && val.length > 0]"
@@ -126,6 +126,7 @@
         <template #append>
           <QCheckbox
             v-model="isCustomerOrg"
+            :disable="Boolean(props.participantName)"
             size="md"
             color="secondary"
             keep-color
@@ -139,7 +140,7 @@
       </QInput>
       <QSelect
         v-model="modelContact"
-        :disable="
+        :readonly="
           Boolean(props.participantEmail.length || props.participantUrl.length)
         "
         :label="$t('customer.contact')"
@@ -181,7 +182,7 @@
         <QInput
           v-if="!$q.platform.is.mobile"
           v-model="duration.from"
-          :disable="Boolean(props.startTime)"
+          :readonly="Boolean(props.startTime)"
           :label="$t('duration.from')"
           class="col no-padding"
           :type="typeof duration.from === 'string' ? 'text' : 'date'"
@@ -218,6 +219,7 @@
             <QSeparator vertical spaced inset />
             <QToggle
               v-model="dateNoLimit"
+              :disable="Boolean(props.startTime)"
               checked-icon="hourglass_disabled"
               unchecked-icon="date_range"
               size="lg"
@@ -228,11 +230,10 @@
         <QInput
           v-if="!$q.platform.is.mobile"
           v-model="duration.to"
-          :disable="Boolean(props.startTime || props.endTime)"
           :type="typeof duration.to === 'string' ? 'text' : 'date'"
           :rules="typeof duration.to === 'string' ? ['date'] : []"
           :label="$t('duration.to')"
-          :readonly="dateNoLimit"
+          :readonly="Boolean(props.startTime || props.endTime) || dateNoLimit"
           :dense="$q.platform.is.desktop"
           class="col no-padding"
           mask="date"
@@ -245,6 +246,7 @@
           <QToggle
             v-if="!$q.platform.is.mobile"
             v-model="dateNoLimit"
+            :disable="Boolean(props.startTime || props.endTime)"
             color="secondary"
             class="non-selectable"
             :class="{
@@ -259,7 +261,6 @@
       </div>
       <QInput
         v-model.trim="description"
-        :disable="Boolean(props.instrumentDescription)"
         :label="$t('description.type')"
         :hint="$t('description.hint')"
         type="textarea"
@@ -414,7 +415,7 @@ const contractForm = ref<QForm>()
 const dateNoLimit = ref(Boolean(props.endTime))
 const loadingForm = ref(false)
 const filesUrls = ref(
-  props.images.map((url) => ({
+  [props.images].flat().map((url: string) => ({
     url,
     type: 'application/pdf',
     name: 'unknown', // todo - ставить необходимое имя
