@@ -10,7 +10,7 @@
       :rules="[checkUrl]"
       :hint="$t('oidc.issuerHint')"
       type="url"
-      use-input
+      :use-input="!oidcIssuer"
       square
       autofocus
       bottom-slots
@@ -19,7 +19,7 @@
       map-options
       input-debounce="0"
       clearable
-      new-value-mode="add-unique"
+      @new-value="onNewValueIssuer"
       @clear="() => (oidcIssuer = '')"
     >
       <slot></slot>
@@ -61,6 +61,14 @@ defineProps({
 const loginOptions = ref(['login.inrupt.com', 'login.inrupt.net'])
 const oidcIssuer = ref('')
 const prefix = ref('https://')
+
+function onNewValueIssuer(value: string, done: (value: string) => void) {
+  if (loginOptions.value.includes(value)) {
+    return
+  }
+  loginOptions.value.unshift(value)
+  done(value)
+}
 
 function onComplete() {
   const url = prefix.value + oidcIssuer.value

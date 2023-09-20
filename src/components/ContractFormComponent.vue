@@ -398,17 +398,15 @@ const modelContact = ref<MultiContact[]>([])
 const currentContactType = ref<InputType>(InputType.text)
 const description = ref(props.instrumentDescription)
 
-const cloneDate = date.clone(props.startTime ?? new Date())
+const cloneStartDate = date.clone(props.startTime ?? new Date())
 const afterYearDate = new Date(
-  cloneDate.setFullYear(cloneDate.getFullYear() + 1),
+  date
+    .clone(cloneStartDate)
+    .setFullYear(date.clone(cloneStartDate).getFullYear() + 1),
 )
 const duration = ref<Duration>({
-  from: $q.platform.is.mobile
-    ? formatDate(props.startTime)
-    : formatDate(props.startTime),
-  to: $q.platform.is.mobile
-    ? formatDate(afterYearDate)
-    : formatDate(afterYearDate),
+  from: formatDate(cloneStartDate),
+  to: formatDate(afterYearDate),
 })
 const files = ref([])
 const contractOptions = ref(contractStore.getArchiveKeys)
@@ -490,6 +488,7 @@ function createFileUrl(file: File) {
   const url = URL.createObjectURL(file)
   return {
     url,
+    type: file.type,
     name: file.name,
   }
 }
@@ -497,7 +496,8 @@ function createFileUrl(file: File) {
 function onFileSelect(files: File[]) {
   filesUrls.value = []
   for (const file of files) {
-    filesUrls.value.push(createFileUrl(file))
+    const fileUrl = createFileUrl(file)
+    filesUrls.value.push(fileUrl)
   }
 }
 

@@ -26,8 +26,7 @@
           }"
         >
           <QBadge
-            v-if="isDemo"
-            :label="$t('header.demo')"
+            :label="isDemo ? $t('header.demo') : $t('header.free')"
             transparent
             color="secondary"
             class="vertical-top q-ml-xs"
