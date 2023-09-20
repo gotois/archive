@@ -8,6 +8,7 @@
           to="/"
           color="primary"
           icon="arrow_back"
+          class="absolute"
           round
           flat
           unelevated

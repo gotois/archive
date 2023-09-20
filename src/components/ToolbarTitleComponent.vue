@@ -2,9 +2,10 @@
   <QToolbarTitle class="non-selectable">
     <QIcon
       v-show="!$q.dark.isActive"
-      class="orientation-landscape"
+      class="cursor-pointer orientation-landscape"
       style="vertical-align: text-top"
       name="img:/icons/safari-pinned-tab.svg"
+      @click="onOpenRepo"
     />
     <span
       v-if="!$q.platform.is.android"

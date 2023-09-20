@@ -17,6 +17,7 @@
           round
           :dense="$q.platform.is.desktop"
           icon="settings"
+          class="absolute"
           @click="onToggleLeftDrawer"
         />
         <ToolbarTitleComponent

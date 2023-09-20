@@ -223,8 +223,10 @@ const premiumSupport = ref([
     label: $t('pricing.premium.support.title'),
     icon: 'contact_support',
     children: [
-      { label: $t('pricing.premium.support.values.1') },
-      { label: $t('pricing.premium.support.values.2') },
+      {
+        label: $t('pricing.premium.support.values.1'),
+        children: [{ label: $t('pricing.premium.support.values.2') }],
+      },
     ],
   },
 ])
@@ -233,9 +235,13 @@ const vipSupport = ref([
     label: $t('pricing.vip.support.title'),
     icon: 'contact_support',
     children: [
-      { label: $t('pricing.vip.support.values.1') },
-      { label: $t('pricing.vip.support.values.2') },
-      { label: $t('pricing.vip.support.values.3') },
+      {
+        label: $t('pricing.vip.support.values.1'),
+        children: [
+          { label: $t('pricing.vip.support.values.2') },
+          { label: $t('pricing.vip.support.values.3') },
+        ],
+      },
     ],
   },
 ])
@@ -254,13 +260,17 @@ const premiumFunctional = ref([
     label: $t('pricing.premium.functions.title'),
     icon: 'admin_panel_settings',
     children: [
-      { label: $t('pricing.premium.functions.values.1') },
-      { label: $t('pricing.premium.functions.values.2') },
-      { label: $t('pricing.premium.functions.values.3') },
-      { label: $t('pricing.premium.functions.values.4') },
-      { label: $t('pricing.premium.functions.values.5') },
-      { label: $t('pricing.premium.functions.values.6') },
-      { label: $t('pricing.premium.functions.values.7') },
+      {
+        label: $t('pricing.premium.functions.values.1'),
+        children: [
+          { label: $t('pricing.premium.functions.values.2') },
+          { label: $t('pricing.premium.functions.values.3') },
+          { label: $t('pricing.premium.functions.values.4') },
+          { label: $t('pricing.premium.functions.values.5') },
+          { label: $t('pricing.premium.functions.values.6') },
+          { label: $t('pricing.premium.functions.values.7') },
+        ],
+      },
     ],
   },
 ])
@@ -269,8 +279,10 @@ const vipFunctional = ref([
     label: $t('pricing.vip.functions.title'),
     icon: 'security',
     children: [
-      { label: $t('pricing.vip.functions.values.1') },
-      { label: $t('pricing.vip.functions.values.2') },
+      {
+        label: $t('pricing.vip.functions.values.1'),
+        children: [{ label: $t('pricing.vip.functions.values.2') }],
+      },
     ],
   },
 ])
