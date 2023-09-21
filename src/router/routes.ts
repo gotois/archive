@@ -5,7 +5,6 @@ export enum ROUTE_NAMES {
   ARCHIVE = 'archive',
   FILTER = 'filter',
   SEARCH = 'search',
-  FEEDBACK = 'feedback',
   SUPPORT = 'support',
   AUTH = 'auth',
   CREATE = 'create',
@@ -43,14 +42,9 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/ArchivePage.vue'),
       },
       {
-        path: ROUTE_NAMES.FEEDBACK,
-        name: ROUTE_NAMES.FEEDBACK,
-        component: () => import('pages/FeedbackPage.vue'),
-      },
-      {
         path: ROUTE_NAMES.SUPPORT,
         name: ROUTE_NAMES.SUPPORT,
-        component: () => import('pages/SupportPage.vue'),
+        component: () => import('pages/FeedbackPage.vue'), // todo rename to SupportPage.vue
       },
     ],
   },

@@ -442,39 +442,26 @@
         <QSeparator class="q-mb-md" />
         <QSpace class="col" />
         <QChip
-          v-if="
-            $q.platform.is.mac ||
-            $q.platform.is.linux ||
-            $q.platform.is.win ||
-            $q.platform.is.safari
-          "
-          icon="monetization_on"
+          icon="support"
           class="cursor-pointer full-width q-pa-md self-end"
           color="transparent"
           :dense="$q.platform.is.desktop"
           square
           clickable
           :disable="router.currentRoute.value.name === ROUTE_NAMES.SUPPORT"
-          :label="miniState ? '' : $t('navigation.support.label')"
+          :label="miniState ? '' : $t('navigation.support.free.label')"
           @click="onOpenSupport"
         >
-          <QTooltip>
-            {{ $t('navigation.support.tooltip') }}
-          </QTooltip>
-        </QChip>
-        <QChip
-          icon="link"
-          class="cursor-pointer full-width q-pa-md self-end"
-          color="transparent"
-          :dense="$q.platform.is.desktop"
-          square
-          clickable
-          :disable="router.currentRoute.value.name === ROUTE_NAMES.FEEDBACK"
-          :label="miniState ? '' : $t('navigation.feedback.label')"
-          @click="onOpenFeedback"
-        >
-          <QTooltip>
-            {{ $t('navigation.feedback.tooltip') }}
+          <QTooltip
+            v-if="
+              $q.platform.is.mac ||
+              $q.platform.is.linux ||
+              $q.platform.is.win ||
+              $q.platform.is.safari
+            "
+          >
+            <!--todo поддержать логику premium/vip-->
+            {{ $t('navigation.support.free.tooltip') }}
           </QTooltip>
         </QChip>
       </QList>
@@ -713,12 +700,6 @@ async function logOutFromPod() {
 function onOpenSupport() {
   return router.push({
     name: ROUTE_NAMES.SUPPORT,
-  })
-}
-
-function onOpenFeedback() {
-  return router.push({
-    name: ROUTE_NAMES.FEEDBACK,
   })
 }
 

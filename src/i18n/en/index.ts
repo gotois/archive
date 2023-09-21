@@ -75,12 +75,18 @@ export default {
     signout: 'Exit from SOLiD',
     signin: 'Login with WebID',
     support: {
-      label: 'Support me',
-      tooltip: 'Support',
-    },
-    feedback: {
-      label: 'Leave a review',
-      tooltip: 'If you find an error, please write to us about it.',
+      free: {
+        label: 'Leave a review',
+        tooltip: 'If you find an error, please write to us about it.',
+      },
+      premium: {
+        label: 'Support',
+        tooltip: 'Please write to us.',
+      },
+      vip: {
+        label: 'Support',
+        tooltip: 'Please call to us.',
+      },
     },
     back: 'Back',
     noscript: 'Please enable JavaScript to run the application.',
@@ -308,7 +314,7 @@ export default {
       functions: {
         title: 'Individual functions',
         values: {
-          '1': 'Everything included in Free, plus...',
+          '1': 'Everything included in Premium, plus...',
           '2': 'Telemetry off',
         },
       },

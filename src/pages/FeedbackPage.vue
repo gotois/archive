@@ -17,8 +17,9 @@
 <script lang="ts" setup>
 import { onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useMeta, QPage, Platform, openURL } from 'quasar'
+import { useMeta, QPage, openURL } from 'quasar'
 import { useRouter } from 'vue-router'
+import { isTWA } from '../helpers/twaHelper'
 import { packageId } from '../../twa-manifest.json'
 
 const iframeURL =
@@ -33,7 +34,7 @@ const metaData = {
 }
 
 onMounted(() => {
-  if (Platform.is.android) {
+  if (isTWA) {
     openURL(
       'https://play.google.com/store/apps/details?id=' + packageId,
       null,
