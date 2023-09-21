@@ -44,7 +44,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: ROUTE_NAMES.SUPPORT,
         name: ROUTE_NAMES.SUPPORT,
-        component: () => import('pages/FeedbackPage.vue'), // todo rename to SupportPage.vue
+        component: () => import('pages/SupportPage.vue'),
       },
     ],
   },
