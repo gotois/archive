@@ -127,13 +127,13 @@ import {
   QItemSection,
   QTooltip,
   QItemLabel,
-  openURL,
 } from 'quasar'
 import { useI18n } from 'vue-i18n'
 import { clusterApiUrl } from '@solana/web3.js'
 import useWalletStore from 'stores/wallet'
 import { getSolana } from '../services/phantomWalletService'
 import { WalletType } from '../types/models'
+import { open } from '../helpers/urlHelper'
 
 const emit = defineEmits(['skip', 'complete', 'error'])
 defineProps({
@@ -223,10 +223,7 @@ function closeDialog() {
 async function tryToLoginPhantomWallet() {
   const solana = getSolana()
   if (!solana) {
-    return openURL('https://phantom.app', undefined, {
-      noopener: true,
-      noreferrer: true,
-    })
+    return open('https://phantom.app')
   }
   let publicKey = ''
   /* eslint-disable */

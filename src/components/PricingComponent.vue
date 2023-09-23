@@ -146,7 +146,7 @@
             square
             :dense="$q.platform.is.desktop"
             :label="$t('pricing.vip.ok')"
-            @click="$emit('vip')"
+            @click="onVip"
           />
         </QCardSection>
         <QSeparator inset color="grey-8" />
@@ -192,9 +192,11 @@ import {
   QList,
   QTree,
 } from 'quasar'
+import { open } from '../helpers/urlHelper'
+import pkg from '../../package.json'
 import { ROUTE_NAMES } from '../router/routes'
 
-const emit = defineEmits(['demo', 'free', 'premium', 'vip'])
+const emit = defineEmits(['demo', 'free', 'premium'])
 
 const PhantomWalletLogin = defineAsyncComponent(
   () => import('components/PhantomWalletLogin.vue'),
@@ -304,5 +306,10 @@ function onSkipWallet() {
   dialog.onOk(() => {
     emit('demo')
   })
+}
+
+function onVip() {
+  const { email } = pkg.contributors[0]
+  open(`mailto:${email}?subject=VIP`)
 }
 </script>

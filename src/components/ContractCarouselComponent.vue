@@ -169,11 +169,11 @@ import {
   QCarouselControl,
   QCarousel,
   Platform,
-  openURL,
 } from 'quasar'
 import ImageContextMenu from 'components/ImageContextMenu.vue'
 import SwipeToClose from 'components/SwipeToClose.vue'
 import { FormatContract } from '../types/models'
+import { open } from '../helpers/urlHelper'
 
 interface Props {
   model: FormatContract
@@ -199,11 +199,7 @@ function onShowFullImage(object: FormatContract) {
   const { contentUrl, encodingFormat } = object.object[currentSlide.value - 1]
 
   if (Platform.is.safari && encodingFormat === 'application/pdf') {
-    openURL(contentUrl, undefined, {
-      popup: Platform.is.desktop ? 1 : null,
-      menubar: false,
-    })
-    return
+    return open(contentUrl)
   }
   fullscreen.value = !fullscreen.value
 }

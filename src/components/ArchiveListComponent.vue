@@ -173,7 +173,6 @@ import {
   QPagination,
   QVirtualScroll,
   copyToClipboard,
-  openURL,
 } from 'quasar'
 import { storeToRefs } from 'pinia'
 import useAuthStore from 'stores/auth'
@@ -188,6 +187,7 @@ import { readFilesPromise } from '../helpers/fileHelper'
 import createCal from '../helpers/calendarHelper'
 import { mailUrl, googleMailUrl } from '../helpers/mailHelper'
 import { isVerified } from '../helpers/contractHelper'
+import { open } from '../helpers/urlHelper'
 
 const $q = useQuasar()
 const $t = useI18n().t
@@ -375,7 +375,7 @@ function onSheet(item: FormatContract) {
       }
       case SheetAction.GOOGLE_CALENDAR: {
         const url = googleMailUrl(item).toString()
-        return openURL(url)
+        return open(url)
       }
       case SheetAction.CALENDAR: {
         const file = await createCal(icalId, item)
@@ -385,10 +385,10 @@ function onSheet(item: FormatContract) {
         return uploadArchive(item)
       }
       case SheetAction.MAIL: {
-        return openURL(mailUrl(item))
+        return open(mailUrl(item))
       }
       case SheetAction.TELEPHONE: {
-        return openURL(item.participant.telephone)
+        return open(item.participant.telephone)
       }
       case SheetAction.LAW: {
         return sendToCourt()
@@ -405,7 +405,7 @@ function sendToCourt() {
   console.warn('This functionality is under development.')
   const botName = 'gotois_bot'
   const myAction = 'start'
-  openURL(`https://t.me/${botName}?start=${myAction}`)
+  open(`https://t.me/${botName}?start=${myAction}`)
 }
 
 async function saveIcal(file: File) {

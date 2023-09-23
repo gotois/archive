@@ -48,7 +48,7 @@
 <script lang="ts" setup>
 import { ref, PropType } from 'vue'
 import { QSelect, QBtn, QTooltip } from 'quasar'
-import { validUrlString } from '../helpers/dataHelper'
+import { validUrlString } from '../helpers/urlHelper'
 
 const emit = defineEmits(['onComplete'])
 defineProps({

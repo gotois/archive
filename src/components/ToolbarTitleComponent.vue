@@ -22,16 +22,14 @@
 </template>
 <script lang="ts" setup>
 import { toRef } from 'vue'
-import { QToolbarTitle, QTooltip, QIcon, openURL } from 'quasar'
+import { QToolbarTitle, QTooltip, QIcon } from 'quasar'
+import { open } from '../helpers/urlHelper'
 import pkg from '../../package.json'
 
 const navigatorVersion = toRef(pkg, 'version')
 const [domain, repo] = pkg.repository.split(':')
 
 function onOpenRepo() {
-  openURL(`https://${domain}.com/${repo}`, undefined, {
-    noopener: true,
-    noreferrer: true,
-  })
+  open(`https://${domain}.com/${repo}`)
 }
 </script>

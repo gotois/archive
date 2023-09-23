@@ -16,23 +16,3 @@ export function validTelString(tel: string) {
   }
   return true
 }
-
-export function validUrlString(url: string) {
-  if (!url || url.length < 10) {
-    return false
-  }
-  if (
-    !(
-      url.startsWith('http://') ||
-      url.startsWith('https://') ||
-      url.startsWith('did:')
-    )
-  ) {
-    return false
-  }
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  if (Reflect.has(URL, 'canParse') && !URL.canParse(url)) {
-    return false
-  }
-  return true
-}

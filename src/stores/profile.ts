@@ -1,7 +1,7 @@
 import { LocalStorage } from 'quasar'
 import { defineStore } from 'pinia'
 import { getEmailProperty, getGravatarURL } from '../helpers/schemaHelper'
-import { validUrlString } from '../helpers/dataHelper'
+import { validUrlString } from '../helpers/urlHelper'
 
 interface State {
   did: string

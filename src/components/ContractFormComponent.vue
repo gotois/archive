@@ -324,7 +324,8 @@ import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
 import { readFilePromise } from '../helpers/fileHelper'
 import { formatDate } from '../helpers/dateHelper'
-import { validTelString, validUrlString } from '../helpers/dataHelper'
+import { validTelString } from '../helpers/dataHelper'
+import { validUrlString } from '../helpers/urlHelper'
 
 const DateComponent = defineAsyncComponent(
   () => import('components/DateComponent.vue'),
@@ -535,7 +536,7 @@ function onResetForm(confirm = false) {
     const dialog = $q.dialog({
       message: $t('components.contractForm.resetDialog.message'),
       cancel: true,
-      persistent: true,
+      persistent: false,
     })
     dialog.onOk(() => {
       resetForm()

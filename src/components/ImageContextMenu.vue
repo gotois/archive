@@ -1,7 +1,7 @@
 <template>
   <QMenu touch-position context-menu>
     <QList :dense="$q.platform.is.desktop" style="min-width: 100px">
-      <QItem v-close-popup clickable @click="onWindowOpenImage(contentUrl)">
+      <QItem v-close-popup clickable @click="open(contentUrl)">
         <QItemSection>
           {{ $t('components.imageContextMenu.open') }}
         </QItemSection>
@@ -30,8 +30,8 @@ import {
   QItem,
   QItemSection,
   QSeparator,
-  openURL,
 } from 'quasar'
+import { open } from '../helpers/urlHelper'
 
 defineProps({
   contentUrl: {
@@ -62,14 +62,5 @@ async function onCopy(contentUrl: string) {
       message: $t('components.imageContextMenu.fail'),
     })
   }
-}
-
-function onWindowOpenImage(contentUrl: string) {
-  openURL(contentUrl, undefined, {
-    noopener: true,
-    noreferrer: true,
-    toolbar: false,
-    popup: 1,
-  })
 }
 </script>

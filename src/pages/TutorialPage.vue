@@ -100,6 +100,11 @@
             <QBtn
               :label="$t('tutorial.welcome.ok')"
               color="accent"
+              square
+              stretch
+              :class="{
+                'full-width': !$q.platform.is.desktop,
+              }"
               @click="pricing = true"
             />
             <QDialog
@@ -125,7 +130,6 @@
                     @demo="onDemoSign"
                     @free="stepper.next()"
                     @premium="onPremium"
-                    @vip="onContactSale"
                   />
                 </QCardSection>
               </QCard>
@@ -469,10 +473,6 @@ async function onStep(step: number) {
 
 function onPremium() {
   alert('Premium is under construction')
-}
-
-function onContactSale() {
-  alert('Contact Sale is under construction')
 }
 
 setMeta(step.value)

@@ -135,7 +135,7 @@
             icon="app_registration"
             class="full-width q-pl-md q-pr-md q-mb-md block"
             :label="$t('navigation.register')"
-            @click="$router.push('/reset')"
+            @click="$router.push('/pricing')"
           />
           <QBtn
             v-else-if="isLoggedIn"
