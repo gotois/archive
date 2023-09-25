@@ -183,7 +183,7 @@ import ContractCarouselComponent from 'components/ContractCarouselComponent.vue'
 import { FormatContract, ContractTable } from '../types/models'
 import { isDateNotOk, formatterDate } from '../helpers/dateHelper'
 import { parse } from '../helpers/markdownHelper'
-import { readFilesPromise } from '../helpers/fileHelper'
+import { readFilesPromise, fileShare } from '../helpers/fileHelper'
 import createCal from '../helpers/calendarHelper'
 import { mailUrl, googleMailUrl } from '../helpers/mailHelper'
 import { isVerified } from '../helpers/contractHelper'
@@ -427,15 +427,9 @@ async function saveIcal(file: File) {
 
 async function shareFile(title: string, file: File) {
   try {
-    await navigator.share({
-      title: title,
-      files: [file],
-    })
+    await fileShare(file, title)
   } catch (error) {
     console.error('Sharing failed', error)
-    if (error.name === 'AbortError') {
-      return
-    }
     $q.notify({
       type: 'negative',
       message: $t('components.archiveList.sheet.share.fail'),

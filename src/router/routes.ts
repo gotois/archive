@@ -2,6 +2,7 @@ import { RouteRecordRaw } from 'vue-router'
 
 export enum ROUTE_NAMES {
   ROOT = 'main',
+  WELCOME = 'welcome',
   ARCHIVE = 'archive',
   FILTER = 'filter',
   SEARCH = 'search',
@@ -51,6 +52,17 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/archive',
     redirect: '/',
+  },
+  {
+    path: '/welcome',
+    component: () => import('layouts/EmptyLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: ROUTE_NAMES.WELCOME,
+        component: () => import('pages/WelcomePage.vue'),
+      },
+    ],
   },
   {
     path: '/auth',

@@ -7,6 +7,7 @@ import routes from './routes'
 import { ROUTE_NAMES } from './routes'
 import { reset, deleteDatabases } from '../services/databaseService'
 import solidAuth from '../services/authService'
+import { isTWA } from '../helpers/twaHelper'
 
 export default route(() => {
   const Router = createRouter({
@@ -56,6 +57,14 @@ export default route(() => {
       case ROUTE_NAMES.PRICING:
       case ROUTE_NAMES.PRIVACY: {
         return true
+      }
+      case ROUTE_NAMES.WELCOME: {
+        if (isTWA) {
+          return {
+            name: ROUTE_NAMES.ROOT,
+          }
+        }
+        break
       }
       case ROUTE_NAMES.LOGIN: {
         if (!authStore.isLoggedIn) {

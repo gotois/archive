@@ -110,7 +110,10 @@
               }"
               color="info"
             >
-              <ImageContextMenu v-if="!fullscreen" :content-url="contentUrl" />
+              <ImageContextMenu
+                v-if="!fullscreen"
+                :image="item.object[objectIndex]"
+              />
             </QIcon>
           </template>
           <template v-else>
@@ -130,7 +133,10 @@
               no-spinner
               no-native-menu
             >
-              <ImageContextMenu v-if="!fullscreen" :content-url="contentUrl" />
+              <ImageContextMenu
+                v-if="!fullscreen"
+                :image="item.object[objectIndex]"
+              />
             </QImg>
           </template>
         </SwipeToClose>

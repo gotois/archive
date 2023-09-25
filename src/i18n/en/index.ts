@@ -12,6 +12,9 @@ export default {
     title: 'Search in the archive of contracts',
   },
   pages: {
+    welcome: {
+      title: 'ContractKeeper - Electronic Signature and contract Management',
+    },
     create: {
       title: 'Create a contract',
     },
@@ -170,12 +173,9 @@ export default {
     success: 'Profile updated',
   },
   wallet: {
-    label: 'Private Key Solana',
-    open: 'Solana Wallet Dialog',
     disconnected: 'Wallet disconnected',
     accountChanged: 'Account changed',
     fail: 'Error binding crypto wallet',
-    hint: 'Enter the address of your Private Key from Solana or log in through a wallet',
   },
   customer: {
     rules: 'Enter performer',
@@ -210,6 +210,7 @@ export default {
     welcome: {
       title: `Welcome to ${productName}`,
       body: 'Convenient and secure recording of any agreements on your devices.',
+      hint: 'You can find these documents in the application settings at any time.',
       ok: 'Accept and Continue',
       demoHint: 'Start without authorization you will be Demo sign. Continue?',
     },
@@ -234,10 +235,8 @@ export default {
     },
     wallet: {
       title: 'Connecting Crypto Wallet',
-      skip: 'Skip',
       caption: 'Use your cryptographic key',
       body: 'The application uses the [Solana](https://solana.com) blockchain. To confirm your transactions, use the [Phantom](https://phantom.app) wallet or enter your secret key.',
-      ok: 'Next',
     },
     oidc: {
       title: 'Connecting WebID',
@@ -345,6 +344,14 @@ export default {
     cancel: 'Close',
   },
   components: {
+    phantomWallet: {
+      label: 'Private Key Solana',
+      hint: 'Enter the address of your Private Key from Solana or log in through a wallet',
+      info: 'This is your Solana Phantom Private key',
+      open: 'Solana Wallet Dialog',
+      skip: 'Skip',
+      ok: 'Next',
+    },
     otp: {
       processing: 'Please wait...',
       fail: 'Invalid key',
@@ -468,6 +475,7 @@ export default {
       open: 'Open file',
       copy: 'Copy to clipboard',
       success: 'Data copied to clipboard',
+      share: 'Share file',
       fail: 'Error occurred',
     },
   },

@@ -22,20 +22,20 @@
       @click="showDialog = true"
     >
       <QTooltip>
-        {{ $t('wallet.open') }}
+        {{ $t('components.phantomWallet.open') }}
       </QTooltip>
     </QBtn>
     <QDialog v-model="showDialog" square persistent>
-      <QCard flat class="q-pa-md">
+      <QCard class="q-pa-md">
         <QForm v-if="!hasPhantomWallet" greedy @submit="onWalletComplete">
           <QInput
             v-model.trim="walletPrivateKey"
-            :label="$t('wallet.label')"
+            :label="$t('components.phantomWallet.label')"
             :type="isPwd ? 'password' : 'text'"
-            :hint="$t('wallet.hint')"
+            :hint="$t('components.phantomWallet.hint')"
             :maxlength="88"
             :hide-bottom-space="!$q.platform.is.desktop"
-            :color="color"
+            :color="textColor"
             name="wallet"
             autocomplete="off"
             autofocus
@@ -50,6 +50,11 @@
                 class="cursor-pointer q-mr-md"
                 @click="isPwd = !isPwd"
               />
+              <QBtn icon="info" flat no-wrap round class="no-padding">
+                <QTooltip anchor="center left" self="center middle">
+                  {{ $t('components.phantomWallet.info') }}
+                </QTooltip>
+              </QBtn>
             </template>
           </QInput>
           <QSelect
@@ -59,9 +64,9 @@
             :label="'Solana Cluster'"
             :hide-bottom-space="!$q.platform.is.desktop"
             :behavior="$q.platform.is.ios ? 'dialog' : 'menu'"
+            :color="textColor"
             name="contractType"
             spellcheck="false"
-            :color="color"
             options-selected-class="text-secondary"
             class="q-mt-md q-mb-md"
             use-input
@@ -94,8 +99,8 @@
             "
             :label="
               walletPrivateKey.length === 0 || solanaClusterApiURL.length === 0
-                ? $t('tutorial.wallet.skip')
-                : $t('tutorial.wallet.ok')
+                ? $t('components.phantomWallet.skip')
+                : $t('components.phantomWallet.ok')
             "
             :class="{
               'full-width': !$q.platform.is.desktop,

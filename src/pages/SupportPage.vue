@@ -21,7 +21,7 @@ import { useMeta, QPage } from 'quasar'
 import { useRouter } from 'vue-router'
 import { isTWA } from '../helpers/twaHelper'
 import { open } from '../helpers/urlHelper'
-import { packageId } from '../../twa-manifest.json'
+import { applicationURL } from '../helpers/googlePlayHelper'
 
 const iframeURL =
   'https://docs.google.com/forms/d/e/1FAIpQLSdVkv7OPOU2n20YKhl3sBwwhjAV_KuFqFncNNfnIgUTp3_8RA/viewform?embedded=true'
@@ -36,7 +36,7 @@ const metaData = {
 
 onMounted(() => {
   if (isTWA) {
-    open('https://play.google.com/store/apps/details?id=' + packageId)
+    open(applicationURL)
     return router.push({
       name: 'archive',
     })

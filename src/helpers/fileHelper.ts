@@ -18,3 +18,16 @@ export function readFilesPromise(files: File[] | Blob[]) {
   }
   return Promise.all(promises) as Promise<string[]>
 }
+
+export async function fileShare(file: File, title?: string) {
+  try {
+    return await navigator.share({
+      title: title ?? file.name,
+      files: [file],
+    })
+  } catch (error) {
+    if (error.name !== 'AbortError') {
+      throw error
+    }
+  }
+}

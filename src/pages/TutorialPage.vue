@@ -96,6 +96,9 @@
               </QCard>
             </QExpansionItem>
           </QList>
+          <p class="text-caption no-margin text-weight-light">
+            {{ $t('tutorial.welcome.hint') }}
+          </p>
           <QStepperNavigation>
             <QBtn
               :label="$t('tutorial.welcome.ok')"
