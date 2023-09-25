@@ -171,7 +171,7 @@ events.on(EVENTS.LOGOUT, () => {
 events.on(EVENTS.ERROR, (error) => {
   console.error('Login error:', error)
 })
-/* eslint-disable */
+
 const solana = getSolana()
 if (solana) {
   solana.on('connect', (/*publicKey*/) => {
@@ -184,7 +184,8 @@ if (solana) {
       message: $t('wallet.disconnected'),
     })
   })
-  solana.on('accountChanged', async (publicKey: any) => {
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  solana.on('accountChanged', async (publicKey: string) => {
     console.warn('accountChanged')
     await walletStore.setKeypare({
       publicKey: publicKey,
@@ -196,7 +197,6 @@ if (solana) {
     })
   })
 }
-/* eslint-enable */
 
 useMeta(metaData)
 </script>

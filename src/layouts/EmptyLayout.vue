@@ -41,3 +41,8 @@ const AndroidBarComponent = defineAsyncComponent(
   () => import('components/AndroidBarComponent.vue'),
 )
 </script>
+<style lang="scss">
+:root {
+  touch-action: pan-x pan-y;
+}
+</style>

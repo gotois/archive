@@ -1,5 +1,11 @@
-/* eslint-disable */
-export function getSolana(): unknown {
-  return window?.phantom?.solana
+interface PhantomSolana {
+  on: (
+    type: 'connect' | 'disconnect' | 'accountChanged',
+    callback: (arg: never) => void,
+  ) => void
 }
-/* eslint-enable */
+export function getSolana() {
+  /* eslint-disable */
+  return window?.phantom?.solana as PhantomSolana
+  /* eslint-enable */
+}

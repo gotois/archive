@@ -64,7 +64,6 @@ function handlePan(details: Details) {
   translateY.value = 0
 }
 </script>
-
 <style lang="scss" scoped>
 .swipe-to-close {
   will-change: opacity, transform;

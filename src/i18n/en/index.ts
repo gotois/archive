@@ -218,7 +218,9 @@ export default {
       body:
         'Our service works as follows: we record the terms of agreements in a reliable storage accessible only to you, either on your physical device or on your SOLID server.' +
         "<br><br>To ensure the security and confidentiality of your information, our application uses the browser's internal storage, which is only accessible from your current device. Your data never leaves your device without your explicit permission." +
-        '<br><br>Therefore, when you use our service, you can be confident in the safety and control of your data.',
+        '<br><br>Therefore, when you use our service, you can be confident in the safety and control of your data.' +
+        '<br><br>Documents signed in the service have legal force. In case of conflict, they will be accepted by the tax office and the court.' +
+        '<br><br>Documents are stored in the electronic archive of your phone. You can find and print them at any time.',
     },
     agreement: {
       title: 'User Agreement',

@@ -25,7 +25,7 @@ const metaData = {
 
 useMeta(metaData)
 </script>
-<style scoped>
+<style lang="scss" scoped>
 ::v-deep(h1) {
   font-size: large;
   line-height: 1rem;
