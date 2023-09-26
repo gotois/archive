@@ -261,7 +261,7 @@ const step = ref(getCurrentStep() ?? STEP.WELCOME)
 const pricing = ref(false)
 
 const { isLoggedIn } = storeToRefs(authStore)
-const { did, consumer, email } = storeToRefs(profileStore)
+const { did, consumer, phone, email } = storeToRefs(profileStore)
 
 watch(
   () => step.value,
@@ -392,6 +392,7 @@ async function onDemoSign() {
   await keyPair.setKeyPair(key)
   profileStore.consumerName('Test User')
   profileStore.consumerEmail('tester@gotointeractive.com')
+  profileStore.consumerPhone('1234567890')
   profileStore.consumerDID(key.id)
   authStore.webId = demoUserWebId
   tutorialStore.tutorialComplete()
@@ -417,6 +418,7 @@ async function onFinish() {
     }
     profileStore.consumerName(consumer.value)
     profileStore.consumerEmail(email.value)
+    profileStore.consumerPhone(phone.value)
     await profileStore.setAvatar(email.value)
 
     if (isLoggedIn.value) {
@@ -432,6 +434,7 @@ async function onFinish() {
       agent: {
         name: consumer.value,
         email: email.value,
+        // todo добавить `phone.value`
       },
       participant: {
         name: pkg.author.name,

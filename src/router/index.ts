@@ -58,7 +58,7 @@ export default route(() => {
       case ROUTE_NAMES.PRIVACY: {
         return true
       }
-      case ROUTE_NAMES.WELCOME: {
+      case ROUTE_NAMES.PROMO: {
         if (isTWA) {
           return {
             name: ROUTE_NAMES.ROOT,
@@ -83,7 +83,7 @@ export default route(() => {
         }
         return true
       }
-      case 'auth': {
+      case ROUTE_NAMES.AUTH: {
         if (
           !LocalStorage.has('code') ||
           (LocalStorage.has('code') && authStore.pinIsLoggedIn)
@@ -139,7 +139,7 @@ export default route(() => {
             }
           }
           return {
-            name: ROUTE_NAMES.WELCOME,
+            name: ROUTE_NAMES.PROMO,
             query: {},
           }
         }

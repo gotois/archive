@@ -2,7 +2,7 @@ import { RouteRecordRaw } from 'vue-router'
 
 export enum ROUTE_NAMES {
   ROOT = 'main',
-  WELCOME = 'welcome',
+  PROMO = 'promo',
   ARCHIVE = 'archive',
   FILTER = 'filter',
   SEARCH = 'search',
@@ -54,18 +54,18 @@ const routes: RouteRecordRaw[] = [
     redirect: '/',
   },
   {
-    path: '/welcome',
+    path: '/' + ROUTE_NAMES.PROMO,
     component: () => import('layouts/EmptyLayout.vue'),
     children: [
       {
         path: '',
-        name: ROUTE_NAMES.WELCOME,
+        name: ROUTE_NAMES.PROMO,
         component: () => import('pages/WelcomePage.vue'),
       },
     ],
   },
   {
-    path: '/auth',
+    path: '/' + ROUTE_NAMES.AUTH,
     component: () => import('layouts/EmptyLayout.vue'),
     children: [
       {
@@ -76,7 +76,7 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
-    path: '/create',
+    path: '/' + ROUTE_NAMES.CREATE,
     component: () => import('layouts/MainLayout.vue'),
     children: [
       {
@@ -87,7 +87,7 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
-    path: '/tutorial',
+    path: '/' + ROUTE_NAMES.TUTORIAL,
     component: () => import('layouts/EmptyLayout.vue'),
     children: [
       {
@@ -98,7 +98,7 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
-    path: '/privacy',
+    path: '/' + ROUTE_NAMES.PRIVACY,
     component: () => import('layouts/EmptyLayout.vue'),
     children: [
       {
@@ -109,7 +109,7 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
-    path: '/login',
+    path: '/' + ROUTE_NAMES.LOGIN,
     component: () => import('layouts/EmptyLayout.vue'),
     children: [
       {
@@ -120,7 +120,7 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
-    path: '/pricing',
+    path: '/' + ROUTE_NAMES.PRICING,
     component: () => import('layouts/EmptyLayout.vue'),
     children: [
       {

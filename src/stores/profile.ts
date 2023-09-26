@@ -7,6 +7,7 @@ interface State {
   did: string
   consumer: string
   email: string
+  phone: string
   avatar: string
 }
 
@@ -15,6 +16,7 @@ export default defineStore('profile', {
     did: LocalStorage.getItem('did') ?? '',
     consumer: LocalStorage.getItem('consumer') ?? '',
     email: LocalStorage.getItem('email') ?? '',
+    phone: LocalStorage.getItem('phone') ?? '',
     avatar: LocalStorage.getItem('avatar') ?? '',
   }),
   actions: {
@@ -32,6 +34,11 @@ export default defineStore('profile', {
       const email = value.trim()
       LocalStorage.set('email', email)
       this.email = email
+    },
+    consumerPhone(value: string) {
+      const phone = value.trim()
+      LocalStorage.set('phone', phone)
+      this.phone = phone
     },
     consumerImg(value: string) {
       LocalStorage.set('avatar', value)

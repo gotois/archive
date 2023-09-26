@@ -8,16 +8,28 @@
   >
     <h1
       class="text-center text-uppercase no-margin no-padding"
-      style="font-size: xxx-large"
+      style="font-size: xxx-large; line-height: 1"
     >
       Мои договоры - ЭДО для всех
     </h1>
-    <h2 class="text-center no-margin no-padding" style="font-size: x-large">
+    <h2
+      class="text-center no-padding"
+      style="font-size: x-large; line-height: 1"
+    >
       Решение упрощает обмен документами для физических и юридических лиц в
       любом бизнес-процессе.
     </h2>
 
-    <QBtn color="primary" class="q-ma-md" glossy fab @click="onRegister">
+    <QBtn
+      color="primary"
+      class="q-ma-lg"
+      glossy
+      fab
+      :class="{
+        'full-width': !$q.platform.is.desktop,
+      }"
+      @click="onRegister"
+    >
       Подключиться
     </QBtn>
 
@@ -25,6 +37,10 @@
       <QCard
         class="text-white q-ma-xs"
         bordered
+        flat
+        :class="{
+          'full-width': !$q.platform.is.desktop,
+        }"
         style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)"
       >
         <QCardSection>
@@ -44,18 +60,55 @@
       </QCard>
 
       <QCard
+        class="text-white q-ma-xs self-baseline"
         bordered
-        class="text-white q-ma-xs"
+        flat
+        :class="{
+          'full-width': !$q.platform.is.desktop,
+        }"
         style="background: radial-gradient(circle, #21ba45 0%, #014a88 100%)"
       >
         <QCardSection>
           <div class="text-subtitle1">Мои договоры в</div>
         </QCardSection>
         <QCardSection class="q-pt-none">
-          <QBtn flat :href="applicationURL">Google Play</QBtn>
+          <QBtn icon="play_arrow" color="black" :href="applicationURL"
+            >Google Play</QBtn
+          >
         </QCardSection>
       </QCard>
     </div>
+
+    <QTimeline class="q-mt-md q-pl-md q-pr-md">
+      <QTimelineEntry heading>Как это работает</QTimelineEntry>
+
+      <QTimelineEntry
+        title="Регистрация"
+        subtitle="Шаг 1"
+        color="primary"
+        icon="key"
+      >
+        <div>Получите НЭП для Российского законодательства.</div>
+      </QTimelineEntry>
+
+      <QTimelineEntry
+        title="Подписание агентом"
+        subtitle="Шаг 2"
+        color="secondary"
+        icon="done_outline"
+      >
+        <div>Создайте новый документ или подпишите полученный.</div>
+      </QTimelineEntry>
+
+      <QTimelineEntry
+        title="Подписание контрагентом"
+        subtitle="Шаг 3"
+        color="positive"
+        icon="done_all"
+      >
+        <div>Передайте договор контрагенту и дождитесь его подписания.</div>
+      </QTimelineEntry>
+    </QTimeline>
 
     <QList padding class="rounded-borders">
       <QItemLabel header>GIC DAO</QItemLabel>
@@ -71,6 +124,8 @@ import {
   QSeparator,
   QCard,
   QItemLabel,
+  QTimeline,
+  QTimelineEntry,
   QList,
 } from 'quasar'
 import { useI18n } from 'vue-i18n'

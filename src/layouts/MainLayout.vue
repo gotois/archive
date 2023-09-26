@@ -228,7 +228,10 @@
                 autocomplete="on"
               >
                 <template #prepend>
-                  <QIcon :name="avatar ? 'img:' + avatar : 'face'" />
+                  <QIcon
+                    class="rounded-borders bg-white"
+                    :name="avatar ? 'img:' + avatar : 'face'"
+                  />
                 </template>
               </QInput>
               <QInput
@@ -251,11 +254,32 @@
                   <QIcon name="email" />
                 </template>
               </QInput>
+              <QInput
+                v-model.trim="phone"
+                color="secondary"
+                type="tel"
+                mask="### ### ####"
+                :fill-mask="!isDemo"
+                outlined
+                :clearable="!isDemo"
+                :readonly="isDemo"
+                stack-label
+                :hide-hint="!$q.platform.is.desktop"
+                :hide-bottom-space="!phone"
+                :label="$t('consumer.phone')"
+                :error-message="$t('consumer.phoneRules')"
+                name="tel"
+                autocomplete="on"
+              >
+                <template #prepend>
+                  <QIcon name="phone" />
+                </template>
+              </QInput>
               <QField
                 v-if="getWalletLD.id"
                 label="DID"
                 color="secondary"
-                class="q-pb-md full-width"
+                class="q-pt-md q-pb-md full-width"
                 outlined
                 readonly
                 stack-label
@@ -612,7 +636,7 @@ const contractStore = useContractStore()
 const profileStore = useProfileStore()
 const walletStore = useWalletStore()
 
-const { consumer, email, avatar } = storeToRefs(profileStore)
+const { consumer, email, phone, avatar } = storeToRefs(profileStore)
 const { getArchiveNames, contractsCount } = storeToRefs(contractStore)
 const { hasCode, isLoggedIn, isDemo, webId } = storeToRefs(authStore)
 const { getWalletLD } = storeToRefs(walletStore)
@@ -706,6 +730,7 @@ function onOpenSupport() {
 async function onFinishProfile() {
   profileStore.consumerName(consumer.value)
   profileStore.consumerEmail(email.value)
+  profileStore.consumerPhone(phone.value)
   await profileStore.setAvatar(email.value)
   $q.notify({
     message: $t('consumer.success'),

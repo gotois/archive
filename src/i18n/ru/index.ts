@@ -99,7 +99,7 @@ export default {
   },
   settings: {
     native: {
-      profile: 'Мой профиль',
+      profile: 'Личные данные',
       title: 'База данных',
       description: 'Загрузка и выгрузка Ваших договоров.',
       import: 'Выберите файл базы договоров',
@@ -108,7 +108,7 @@ export default {
       otp: 'Вход по паролю',
     },
     consumer: {
-      description: 'Измените Ваше ФИО или почту в договорах.',
+      description: 'Измените данные Вашего профиля в договорах.',
     },
     otp: {
       removeCode: 'Удалить PIN',
@@ -166,9 +166,11 @@ export default {
     },
   },
   consumer: {
-    type: 'Ваше ФИО',
-    email: 'Ваша почта',
+    type: 'ФИО',
+    email: 'Почта',
     emailRules: 'Введите адрес электронной почты',
+    phone: 'Телефон',
+    phoneRules: 'Введите номер телефона',
     rules: 'Введите потребителя (заказчика) услуги',
     save: 'Сохранить',
     success: 'Профиль обновлен',
