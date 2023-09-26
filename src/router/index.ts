@@ -28,7 +28,7 @@ export default route(() => {
       SessionStorage.clear()
       await reset()
       deleteDatabases()
-      location.replace(ROUTE_NAMES.TUTORIAL)
+      window.location.replace(ROUTE_NAMES.ROOT)
       return
     }
     if (error || !(code && state)) {
@@ -132,8 +132,14 @@ export default route(() => {
               ],
             })
           }
+          if (isTWA) {
+            return {
+              name: ROUTE_NAMES.TUTORIAL,
+              query: {},
+            }
+          }
           return {
-            name: ROUTE_NAMES.TUTORIAL,
+            name: ROUTE_NAMES.WELCOME,
             query: {},
           }
         }

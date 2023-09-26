@@ -90,7 +90,7 @@ async function onRegister() {
   await router.push({
     name: ROUTE_NAMES.TUTORIAL,
     query: {
-      step: STEP.OIDC, // todo до достижения OIDC нужно выбрать какой будет план
+      step: STEP.WELCOME,
     },
   })
 }

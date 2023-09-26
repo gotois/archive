@@ -13,11 +13,11 @@
           flat
           :class="{
             invisible: miniState,
+            absolute: miniState,
           }"
           round
           :dense="$q.platform.is.desktop"
           icon="settings"
-          class="absolute"
           @click="onToggleLeftDrawer"
         />
         <ToolbarTitleComponent
