@@ -93,7 +93,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: '',
         name: ROUTE_NAMES.TUTORIAL,
-        component: () => import('pages/TutorialPage.vue'),
+        component: () => import('pages/RegistrationPage.vue'),
       },
     ],
   },

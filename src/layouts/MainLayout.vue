@@ -229,7 +229,10 @@
               >
                 <template #prepend>
                   <QIcon
-                    class="rounded-borders bg-white"
+                    class="rounded-borders"
+                    :class="{
+                      'bg-white': avatar,
+                    }"
                     :name="avatar ? 'img:' + avatar : 'face'"
                   />
                 </template>

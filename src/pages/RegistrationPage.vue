@@ -95,6 +95,24 @@
                 </QCardSection>
               </QCard>
             </QExpansionItem>
+            <QExpansionItem
+              :label="$t('tutorial.safety.title')"
+              :caption="$t('tutorial.safety.caption')"
+              icon="safety_divider"
+              :dense="$q.platform.is.desktop"
+              :dense-toggle="$q.platform.is.desktop"
+            >
+              <QCard>
+                <QCardSection>
+                  <div
+                    class="text-body1"
+                    style="white-space: break-spaces"
+                    v-html="parse($t('tutorial.safety.body'))"
+                  >
+                  </div>
+                </QCardSection>
+              </QCard>
+            </QExpansionItem>
           </QList>
           <p class="text-caption no-margin text-weight-light">
             {{ $t('tutorial.welcome.hint') }}
