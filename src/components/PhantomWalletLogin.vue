@@ -35,7 +35,7 @@
             :hint="$t('components.phantomWallet.hint')"
             :maxlength="88"
             :hide-bottom-space="!$q.platform.is.desktop"
-            :color="textColor"
+            color="secondary"
             name="wallet"
             autocomplete="off"
             autofocus
@@ -64,7 +64,7 @@
             :label="'Solana Cluster'"
             :hide-bottom-space="!$q.platform.is.desktop"
             :behavior="$q.platform.is.ios ? 'dialog' : 'menu'"
-            :color="textColor"
+            color="secondary"
             name="contractType"
             spellcheck="false"
             options-selected-class="text-secondary"

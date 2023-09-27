@@ -166,6 +166,7 @@ export interface FormatContract extends BaseSchemaType {
   'identifier': FormatContractIdentifier[]
   'startTime': Date
   'endTime'?: Date
+  'proof'?: Proof
   'object': ImageType[]
 }
 export interface FormatContractAgent extends BaseSchemaType, Person {}

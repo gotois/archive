@@ -521,7 +521,12 @@
         @remove="onRemoveArchiveName(name as string)"
         @click="onSelectArchiveName(name, value)"
       >
-        <QAvatar v-if="value.count > 1" color="secondary" text-color="white">
+        <QAvatar
+          v-if="value.count > 1"
+          color="white"
+          text-color="secondary"
+          square
+        >
           {{ value.count }}
         </QAvatar>
         <div class="ellipsis">{{ name }}</div>

@@ -62,16 +62,16 @@
                 name: 'create',
                 query: { instrument_name: archiveEmptyText },
               }"
+              class="btn-fixed-width"
               padding="none"
               unelevated
-              push
               align="left"
               flat
               text-color="accent"
               type="a"
               no-caps
               :label="archiveEmptyText"
-            />.
+            />
           </template>
         </template>
         <template v-if="isSearch || isFilter" #action>

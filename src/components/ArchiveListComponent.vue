@@ -117,11 +117,16 @@
             </span>
           </div>
           <div class="row items-center">
-            <QBtn
+            <QBtnDropdown
               class="text-weight-light no-margin full-width"
-              dense
+              content-class="no-shadow no-border no-border-radius"
               no-caps
               flat
+              unelevated
+              square
+              dense
+              split
+              :disable-dropdown="!item.proof"
               :icon="itemIsOrganization(item) ? 'group' : 'face'"
               size="xm"
               align="left"
@@ -129,7 +134,17 @@
               text-color="black-9"
               :label="item.participant.name"
               :href="item.participant.url"
-            />
+            >
+              <div class="q-pa-md row justify-between">
+                <div style="width: 100%">
+                  <QChatMessage
+                    :text="[item.proof.proofPurpose]"
+                    :stamp="item.proof.created"
+                    sent
+                  />
+                </div>
+              </div>
+            </QBtnDropdown>
           </div>
         </QCardSection>
       </QCard>
@@ -159,6 +174,7 @@ import { useI18n } from 'vue-i18n'
 import {
   useQuasar,
   QBtn,
+  QBtnDropdown,
   QIcon,
   QItemLabel,
   QSeparator,
@@ -170,6 +186,7 @@ import {
   QCard,
   QItem,
   QMenu,
+  QChatMessage,
   QPagination,
   QVirtualScroll,
   copyToClipboard,

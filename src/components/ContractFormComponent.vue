@@ -611,7 +611,7 @@ async function onSubmit() {
     typeof duration.value.to === 'string'
       ? new Date(duration.value.to)
       : duration.value.to
-  if (startDate.valueOf() >= endDate.valueOf()) {
+  if (startDate.valueOf() > endDate.valueOf()) {
     $q.notify({
       type: 'negative',
       message: $t('components.contractForm.submitDate.invalidSelectDate'),

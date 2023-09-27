@@ -191,6 +191,7 @@ export function formatterContract(contract: ContractTable) {
     'startTime': contract.startTime,
     'endTime': contract.endTime,
     'object': object ?? [],
+    'proof': contract.proof ? contract.proof : null,
     // 'url': contract.url, // todo поддержать url
   } as FormatContract
 }
