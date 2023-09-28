@@ -523,8 +523,8 @@
       >
         <QAvatar
           v-if="value.count > 1"
-          color="white"
-          text-color="secondary"
+          :color="$q.dark.isActive ? 'white' : 'dark'"
+          :text-color="$q.dark.isActive ? 'secondary' : 'white'"
           square
         >
           {{ value.count }}

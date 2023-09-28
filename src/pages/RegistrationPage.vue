@@ -118,16 +118,28 @@
             {{ $t('tutorial.welcome.hint') }}
           </p>
           <QStepperNavigation>
-            <QBtn
+            <QBtnDropdown
               :label="$t('tutorial.welcome.ok')"
               color="accent"
               square
+              auto-close
               stretch
               :class="{
                 'full-width': !$q.platform.is.desktop,
               }"
-              @click="pricing = true"
-            />
+            >
+              <QBtnGroup class="q-pa-md" flat>
+                <QBtn
+                  class="full-width"
+                  square
+                  label="Blockchain"
+                  @click="pricing = true"
+                >
+                  <QTooltip>Blockchain Solana</QTooltip>
+                </QBtn>
+                <QBtn class="full-width" disable square label="НЭП" />
+              </QBtnGroup>
+            </QBtnDropdown>
             <QDialog
               v-model="pricing"
               persistent
@@ -222,6 +234,8 @@ import {
   QList,
   QExpansionItem,
   QBtn,
+  QBtnGroup,
+  QBtnDropdown,
   QDialog,
   QBar,
 } from 'quasar'
