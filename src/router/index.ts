@@ -159,6 +159,10 @@ export default route(() => {
           return {
             ...to,
             name: ROUTE_NAMES.LOGIN,
+            query: {
+              ...to.query,
+              fullPath: to.fullPath,
+            },
           }
         }
         break

@@ -19,12 +19,18 @@ export function readFilesPromise(files: File[] | Blob[]) {
   return Promise.all(promises) as Promise<string[]>
 }
 
+export const canShare = typeof navigator.share === 'function'
+
 export async function fileShare(file: File, title?: string) {
+  const shareData = {
+    title: title ?? file.name,
+    files: [file],
+  }
+  if (!navigator.canShare(shareData)) {
+    throw new Error('Specified data cannot be shared.')
+  }
   try {
-    return await navigator.share({
-      title: title ?? file.name,
-      files: [file],
-    })
+    return await navigator.share(shareData)
   } catch (error) {
     if (error.name !== 'AbortError') {
       throw error

@@ -35,7 +35,12 @@ async function onImportData() {
       dialog.update({
         message: credential.credentialSubject.instrument.name,
       })
-      await contractStore.insertContract(credential)
+      const alreadySaved = await contractStore.existContract(
+        credential.credentialSubject.identifier,
+      )
+      if (!alreadySaved) {
+        await contractStore.insertContract(credential)
+      }
     }
     $q.notify({
       type: 'positive',

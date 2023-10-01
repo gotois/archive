@@ -1,4 +1,4 @@
-import { uid, date, LocalStorage, SessionStorage } from 'quasar'
+import { is, uid, date, LocalStorage, SessionStorage } from 'quasar'
 import { defineStore } from 'pinia'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -26,6 +26,7 @@ import {
   FormatContract,
   MyContract,
   WalletType,
+  ContractIdentifier,
 } from '../types/models'
 
 interface Store {
@@ -69,6 +70,14 @@ export default defineStore('contracts', {
     removeContractName(name: string) {
       this.contractNames.delete(name)
       LocalStorage.set('contractNames', this.getArchiveNames)
+    },
+    // This contract already in IndexedDB
+    async existContract(identifier: ContractIdentifier[]) {
+      const dexieId = identifier.find((i) => i.name === 'Dexie')
+      const contract = await db.contracts.get({
+        id: Number(dexieId.value),
+      })
+      return is.deepEqual(contract.identifier, identifier)
     },
     // Save to IndexedDb
     async insertContract(credential: Credential) {

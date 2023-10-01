@@ -378,64 +378,79 @@ export default defineStore('pod', {
         ds,
         ds.internal_resourceInfo.sourceIri + '#instrument',
       )
-      credentialSubject.set('instrument', {
-        name: getStringNoLocale(instrument, SCHEMA_INRUPT.name),
-        description: getStringNoLocale(instrument, SCHEMA_INRUPT.description),
-      })
+      if (instrument) {
+        credentialSubject.set('instrument', {
+          name: getStringNoLocale(instrument, SCHEMA_INRUPT.name),
+          description: getStringNoLocale(instrument, SCHEMA_INRUPT.description),
+        })
+      }
       const startTime = getThing(
         ds,
         ds.internal_resourceInfo.sourceIri + '#startTime',
       )
-      credentialSubject.set(
-        'startTime',
-        getDate(startTime, SCHEMA_INRUPT.startTime),
-      )
+      if (startTime) {
+        credentialSubject.set(
+          'startTime',
+          getDate(startTime, SCHEMA_INRUPT.startTime),
+        )
+      }
       const participant = getThing(
         ds,
         ds.internal_resourceInfo.sourceIri + '#participant',
       )
-      credentialSubject.set('participant', {
-        name: getStringNoLocale(participant, SCHEMA_INRUPT.name),
-        email: getStringNoLocale(participant, SCHEMA_INRUPT.email),
-        url: getStringNoLocale(participant, SCHEMA_INRUPT.url),
-        tel: getStringNoLocale(participant, 'https://schema.org/telephone'),
-      })
+      if (participant) {
+        credentialSubject.set('participant', {
+          name: getStringNoLocale(participant, SCHEMA_INRUPT.name),
+          email: getStringNoLocale(participant, SCHEMA_INRUPT.email),
+          url: getStringNoLocale(participant, SCHEMA_INRUPT.url),
+          tel: getStringNoLocale(participant, 'https://schema.org/telephone'),
+        })
+      }
       const endTime = getThing(
         ds,
         ds.internal_resourceInfo.sourceIri + '#endTime',
       )
-      credentialSubject.set('endTime', getDate(endTime, SCHEMA_INRUPT.endDate))
+      if (endTime) {
+        credentialSubject.set(
+          'endTime',
+          getDate(endTime, SCHEMA_INRUPT.endDate),
+        )
+      }
 
       const identifier = getThing(
         ds,
         ds.internal_resourceInfo.sourceIri + '#identifier',
       )
       // todo refactoring
-      credentialSubject.set('identifier', [
-        {
-          value: getStringNoLocaleAll(identifier, SCHEMA_INRUPT.value)[0],
-          name: getStringNoLocaleAll(identifier, SCHEMA_INRUPT.name)[0],
-          propertyID: getStringNoLocaleAll(identifier, SCHEMA_INRUPT.text)[0],
-        },
-        {
-          value: getStringNoLocaleAll(identifier, SCHEMA_INRUPT.value)[1],
-          name: getStringNoLocaleAll(identifier, SCHEMA_INRUPT.name)[1],
-          propertyID: getStringNoLocaleAll(identifier, SCHEMA_INRUPT.text)[1],
-        },
-      ])
+      if (identifier) {
+        credentialSubject.set('identifier', [
+          {
+            value: getStringNoLocaleAll(identifier, SCHEMA_INRUPT.value)[0],
+            name: getStringNoLocaleAll(identifier, SCHEMA_INRUPT.name)[0],
+            propertyID: getStringNoLocaleAll(identifier, SCHEMA_INRUPT.text)[0],
+          },
+          {
+            value: getStringNoLocaleAll(identifier, SCHEMA_INRUPT.value)[1],
+            name: getStringNoLocaleAll(identifier, SCHEMA_INRUPT.name)[1],
+            propertyID: getStringNoLocaleAll(identifier, SCHEMA_INRUPT.text)[1],
+          },
+        ])
+      }
 
       // todo images
       const object = getThing(
         ds,
         ds.internal_resourceInfo.sourceIri + '#object',
       )
-      getStringNoLocaleAll(object, SCHEMA_INRUPT.ImageObject)
-      credentialSubject.set('images', [])
-      // object.addStringNoLocale(
-      //     SCHEMA_INRUPT.identifier,
-      //     object.encodingFormat,
-      //   )
-      //   objectThing.addUrl(SCHEMA_INRUPT.image, object.contentUrl)
+      if (object) {
+        getStringNoLocaleAll(object, SCHEMA_INRUPT.ImageObject)
+        credentialSubject.set('images', [])
+        // object.addStringNoLocale(
+        //     SCHEMA_INRUPT.identifier,
+        //     object.encodingFormat,
+        //   )
+        //   objectThing.addUrl(SCHEMA_INRUPT.image, object.contentUrl)
+      }
 
       return {
         '@context': [

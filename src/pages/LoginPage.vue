@@ -48,6 +48,7 @@
 <script lang="ts" setup>
 import { onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 import { useMeta, useQuasar, QBtn, QChip, QPage, QCard, QTooltip } from 'quasar'
 import { storeToRefs } from 'pinia'
 import usePodStore from 'stores/pod'
@@ -56,6 +57,8 @@ import solidAuth from '../services/authService'
 
 const $t = useI18n().t
 const $q = useQuasar()
+const router = useRouter()
+
 const podStore = usePodStore()
 
 const { getOidcIssuer } = storeToRefs(podStore)
@@ -74,7 +77,7 @@ async function onLogin() {
   await tryLogin()
 }
 
-async function tryLogin() {
+async function tryLogin(redirectUrl = window.location.origin) {
   try {
     $q.loading.show({
       message: $t('components.oidcIssuer.processing'),
@@ -84,7 +87,7 @@ async function tryLogin() {
       spinnerColor: 'primary',
     })
     await solidAuth({
-      redirectUrl: window.location.origin,
+      redirectUrl,
       oidcIssuer: getOidcIssuer.value,
       restorePreviousSession: false,
     })
@@ -109,7 +112,12 @@ function onOnlineAuthorize(oidcIssuer: string) {
 
 onMounted(async () => {
   if (getOidcIssuer.value) {
-    await tryLogin()
+    await tryLogin(
+      router.currentRoute.value.query.fullPath
+        ? window.location.origin +
+            String(router.currentRoute.value.query.fullPath)
+        : null,
+    )
   }
 })
 

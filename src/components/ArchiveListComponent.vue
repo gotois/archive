@@ -200,7 +200,7 @@ import ContractCarouselComponent from 'components/ContractCarouselComponent.vue'
 import { FormatContract, ContractTable } from '../types/models'
 import { isDateNotOk, formatterDate } from '../helpers/dateHelper'
 import { parse } from '../helpers/markdownHelper'
-import { readFilesPromise, fileShare } from '../helpers/fileHelper'
+import { readFilesPromise, fileShare, canShare } from '../helpers/fileHelper'
 import createCal from '../helpers/calendarHelper'
 import { mailUrl, googleMailUrl } from '../helpers/mailHelper'
 import { isVerified } from '../helpers/contractHelper'
@@ -302,7 +302,6 @@ enum SheetAction {
 }
 
 function onSheet(item: FormatContract) {
-  const nativeShareAvailable = typeof navigator.share === 'function'
   const actions = []
   // Group 1 - Share local
   if (item.sameAs) {
@@ -312,7 +311,7 @@ function onSheet(item: FormatContract) {
       id: SheetAction.LINK,
     })
   }
-  if (nativeShareAvailable) {
+  if (canShare) {
     actions.push({
       label: $t('components.archiveList.sheet.share.label'),
       icon: $q.platform.is.android ? 'share' : 'ios_share',

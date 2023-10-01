@@ -129,7 +129,7 @@ interface Person {
   url?: string
 }
 
-interface ContractIdentifier {
+export interface ContractIdentifier {
   value: string | number
   name: string | WalletType
   propertyID?: number

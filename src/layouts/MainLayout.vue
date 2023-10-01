@@ -403,16 +403,22 @@
           <p class="q-pt-md q-pl-md q-pr-md">
             {{ $t('settings.native.description') }}
           </p>
-          <QItemSection v-if="settingsOpen && isLoggedIn" class="q-pa-md">
+          <QItemSection
+            v-if="settingsOpen && isLoggedIn"
+            class="q-pl-md q-pr-md q-pb-md no-margin"
+          >
             <PodImporter />
             <QSeparator />
           </QItemSection>
-          <QItemSection v-if="settingsOpen" class="q-pl-md q-pr-md q-pb-md">
+          <QItemSection
+            v-if="settingsOpen"
+            class="q-pr-md q-pb-md q-pl-md no-margin"
+          >
             <DatabaseComponent />
           </QItemSection>
           <template v-if="$q.platform.is.desktop">
             <QSeparator />
-            <QItemSection class="q-pa-md">
+            <QItemSection class="q-pa-md no-margin">
               <p>{{ $t('settings.keychain.title') }}</p>
               <QBtn
                 :label="$t('settings.keychain.label')"
@@ -433,7 +439,7 @@
           </template>
           <template v-if="contractsCount > 0">
             <QSeparator />
-            <QItemSection class="q-pa-md">
+            <QItemSection class="q-pa-md no-margin">
               <p>{{ $t('settings.clean.description') }}</p>
               <QBtn
                 :label="$t('settings.clean.submit')"
@@ -524,7 +530,7 @@
         <QAvatar
           v-if="value.count > 1"
           :color="$q.dark.isActive ? 'white' : 'dark'"
-          :text-color="$q.dark.isActive ? 'secondary' : 'white'"
+          :text-color="$q.dark.isActive ? 'dark' : 'white'"
           square
         >
           {{ value.count }}

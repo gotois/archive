@@ -13,6 +13,7 @@
       </QItem>
       <QSeparator />
       <QItem
+        v-if="canShare"
         v-close-popup
         :dense="$q.platform.is.desktop"
         clickable
@@ -50,7 +51,7 @@ import {
 } from 'quasar'
 import { open } from '../helpers/urlHelper'
 import { getFileExt } from '../helpers/dataHelper'
-import { fileShare } from '../helpers/fileHelper'
+import { fileShare, canShare } from '../helpers/fileHelper'
 
 defineProps({
   image: {
