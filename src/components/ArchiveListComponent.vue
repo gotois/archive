@@ -117,34 +117,7 @@
             </span>
           </div>
           <div class="row items-center">
-            <QBtnDropdown
-              class="text-weight-light no-margin full-width"
-              content-class="no-shadow no-border no-border-radius"
-              no-caps
-              flat
-              unelevated
-              square
-              dense
-              split
-              :disable-dropdown="!item.proof"
-              :icon="itemIsOrganization(item) ? 'group' : 'face'"
-              size="xm"
-              align="left"
-              :ripple="false"
-              text-color="black-9"
-              :label="item.participant.name"
-              :href="item.participant.url"
-            >
-              <div class="q-pa-md row justify-between">
-                <div style="width: 100%">
-                  <QChatMessage
-                    :text="[item.proof.proofPurpose]"
-                    :stamp="item.proof.created"
-                    sent
-                  />
-                </div>
-              </div>
-            </QBtnDropdown>
+            <ContractStory :item="item" />
           </div>
         </QCardSection>
       </QCard>
@@ -174,7 +147,6 @@ import { useI18n } from 'vue-i18n'
 import {
   useQuasar,
   QBtn,
-  QBtnDropdown,
   QIcon,
   QItemLabel,
   QSeparator,
@@ -186,7 +158,6 @@ import {
   QCard,
   QItem,
   QMenu,
-  QChatMessage,
   QPagination,
   QVirtualScroll,
   copyToClipboard,
@@ -197,6 +168,7 @@ import useContractStore from 'stores/contract'
 import usePodStore from 'stores/pod'
 import useWalletStore from 'stores/wallet'
 import ContractCarouselComponent from 'components/ContractCarouselComponent.vue'
+import ContractStory from 'components/ContractStory.vue'
 import { FormatContract, ContractTable } from '../types/models'
 import { isDateNotOk, formatterDate } from '../helpers/dateHelper'
 import { parse } from '../helpers/markdownHelper'
@@ -247,10 +219,6 @@ watch(
 
 function itemScheduled(item: FormatContract) {
   return item.endTime !== null && item.endTime < new Date()
-}
-
-function itemIsOrganization(item: FormatContract) {
-  return item.participant['@type'] === 'https://schema.org/Organization'
 }
 
 function getItems(from: number, size: number): FormatContract[] {
