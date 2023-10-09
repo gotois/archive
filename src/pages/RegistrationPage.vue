@@ -429,7 +429,7 @@ async function onDemoSign() {
   authStore.webId = demoUserWebId
   tutorialStore.tutorialComplete()
   await router.push({
-    name: ROUTE_NAMES.CREATE,
+    name: ROUTE_NAMES.ARCHIVE,
   })
 }
 
@@ -460,7 +460,7 @@ async function onFinish() {
       // ...
     }
 
-    const contractPDF = await mintContract({
+    const preContract = await mintContract({
       url: window.location.origin + '/docs/privacy.md',
       agentLegal: Number(true), // todo - перенести в схему объекта agent
       agent: {
@@ -481,7 +481,7 @@ async function onFinish() {
     tutorialStore.tutorialComplete()
     await router.push({
       name: ROUTE_NAMES.CREATE,
-      query: contractPDF,
+      query: preContract,
     })
   } catch (error) {
     console.error(error)

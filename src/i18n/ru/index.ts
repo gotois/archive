@@ -54,8 +54,6 @@ export default {
   },
   list: {
     explore: 'Очистить поиск',
-    create: 'Создать документ',
-    calendar: 'Открыть календарь',
   },
   archive: {
     search: 'Поиск договоров',
@@ -208,6 +206,7 @@ export default {
   },
   contractForm: {
     submit: 'Добавить',
+    sign: 'Подписать',
     date: 'Открыть календарь',
   },
   tutorial: {

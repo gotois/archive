@@ -1,12 +1,12 @@
 import { parse } from '../helpers/markdownHelper'
 import { createContractPDF, createPDF } from '../helpers/pdfHelper'
-import { OwnerContract } from '../types/models'
+import { OwnerContract, PreContract } from '../types/models'
 
 export async function mintContract(contract: OwnerContract) {
   const response = await fetch(contract.url)
   const contentType = response.headers.get('content-type')
 
-  const output = {
+  const output: PreContract = {
     agentLegal: Number(true),
     agentName: contract.agent.name,
     agentEmail: contract.agent.email,

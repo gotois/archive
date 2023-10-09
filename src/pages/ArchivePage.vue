@@ -56,22 +56,6 @@
           <template v-else>
             {{ $t('archive.empty') }}
             {{ $t('archive.example') }}
-            <br />
-            <QBtn
-              :to="{
-                name: 'create',
-                query: { instrument_name: archiveEmptyText },
-              }"
-              class="btn-fixed-width"
-              padding="none"
-              unelevated
-              align="left"
-              flat
-              text-color="accent"
-              type="a"
-              no-caps
-              :label="archiveEmptyText"
-            />
           </template>
         </template>
         <template v-if="isSearch || isFilter" #action>
@@ -101,38 +85,58 @@
           'bg-white': !$q.dark.isActive,
           'bg-dark': $q.dark.isActive,
         }"
+        @hide="files = []"
       >
-        <QFabAction
-          push
-          icon="create"
-          square
-          outline
+        <QFile
+          v-model="files"
+          style="width: 200px"
+          :label="$t('files.type')"
+          :counter="Boolean(files.length)"
+          accept="image/png, image/jpeg, .pdf"
           color="primary"
-          :class="{
-            'bg-white': !$q.dark.isActive,
-            'bg-dark': $q.dark.isActive,
-          }"
-          :label="$t('list.create')"
-          :to="{ name: 'create' }"
-        />
-        <QFabAction
-          push
-          icon="event"
+          :hide-hint="!$q.platform.is.desktop"
+          :hide-bottom-space="!$q.platform.is.desktop"
+          :dense="$q.platform.is.desktop"
+          multiple
           square
-          outline
-          color="primary"
-          :class="{
-            'bg-white': !$q.dark.isActive,
-            'bg-dark': $q.dark.isActive,
-          }"
-          :label="$t('list.calendar')"
+          :bg-color="$q.dark.isActive ? 'dark' : 'white'"
+          @update:model-value="onFileSelect"
         >
-          <QPopupProxy cover transition-show="scale" transition-hide="scale">
-            <CalendarEventsComponent @select="onFilterById" />
-          </QPopupProxy>
-        </QFabAction>
+          <template #prepend>
+            <QIcon name="attach_file" />
+          </template>
+          <template #append>
+            <QIcon name="add" @click.stop />
+          </template>
+          <QTooltip>{{ $t('files.hint') }}</QTooltip>
+        </QFile>
       </QFab>
     </QPageSticky>
+    <QDialog
+      v-model="creatingNewContract"
+      maximized
+      position="top"
+      transition-show="slide-up"
+      transition-hide="slide-down"
+    >
+      <QCard
+        :class="{
+          'bg-grey-4 text-white': !$q.dark.isActive,
+          'bg-dark text-white': $q.dark.isActive,
+        }"
+      >
+        <QBar>
+          <QSpace />
+          <QBtn v-close-popup dense flat icon="close" />
+        </QBar>
+        <QCardSection>
+          <ContractFormComponent
+            :contract="contract"
+            @on-create="onCreateContract"
+          />
+        </QCardSection>
+      </QCard>
+    </QDialog>
   </QPage>
 </template>
 <script lang="ts" setup>
@@ -159,26 +163,35 @@ import {
   QBtn,
   QPageSticky,
   QFab,
-  QFabAction,
-  QPopupProxy,
+  QFile,
+  QIcon,
+  QTooltip,
+  QDialog,
+  QCard,
+  QCardSection,
+  QBar,
+  QSpace,
 } from 'quasar'
 import { storeToRefs } from 'pinia'
 import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
 import usePodStore from 'stores/pod'
 import useNotification from 'stores/notification'
-import contractTypes from '../services/contractEnum'
 import { ROUTE_NAMES } from '../router/routes'
-import { FormatContract } from '../types/models'
+import { FormatContract, ContractTable, Credential } from '../types/models'
 
-const CalendarEventsComponent = defineAsyncComponent(
-  () => import('components/CalendarEventsComponent.vue'),
-)
 const ArchiveListComponent = defineAsyncComponent({
   loader: () => import('components/ArchiveListComponent.vue'),
   delay: 0,
   loadingComponent: h(QSkeleton, {
     class: 'absolute-full',
+  }),
+})
+const ContractFormComponent = defineAsyncComponent({
+  loader: () => import('components/ContractFormComponent.vue'),
+  delay: 0,
+  loadingComponent: h(QSkeleton, {
+    style: { height: '460px' },
   }),
 })
 
@@ -207,12 +220,6 @@ const isSearch = computed(
 const isFilter = computed(
   () => router.currentRoute.value.name === ROUTE_NAMES.FILTER,
 )
-const archiveEmptyText = computed(() => {
-  const randomContractType = Math.floor(
-    Math.random() * (contractTypes.length - 1),
-  )
-  return contractTypes[randomContractType]
-})
 const paginationCount = computed(() => {
   switch (router.currentRoute.value.name) {
     case ROUTE_NAMES.SEARCH:
@@ -224,6 +231,9 @@ const paginationCount = computed(() => {
     }
   }
 })
+const files = ref([])
+const creatingNewContract = ref(false)
+const contract = ref<InstanceType<typeof Credential> | null>(null)
 
 watch(
   () => router.currentRoute.value.query,
@@ -234,15 +244,31 @@ watch(
 
 useMeta(metaData)
 
-async function onFilterById(ids: number[]) {
-  if (!ids) {
-    return
-  }
-  $q.loading.show()
-  await contractStore.filteredByIds({
-    ids: ids,
+function onCreateContract(newContract: ContractTable) {
+  $q.notify({
+    message: $t('components.contractForm.submitDate.success', {
+      id: newContract.instrument_name.toLocaleLowerCase(),
+    }),
+    type: 'positive',
+    actions: [
+      {
+        label: $t('components.contractForm.submitDate.redirect'),
+        color: 'white',
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        async handler() {
+          await router.push({
+            name: ROUTE_NAMES.FILTER,
+            query: {
+              name: newContract.instrument_name,
+              page: 1,
+            },
+          })
+        },
+      },
+    ],
   })
-  $q.loading.hide()
+
+  creatingNewContract.value = false
 }
 
 async function onPaginate(page: number) {
@@ -382,6 +408,23 @@ async function updateContracts({
     }
   }
   $q.loading.hide()
+}
+
+function onFileSelect(files: File[]) {
+  const filesUrls = []
+  for (const file of files) {
+    filesUrls.push({
+      contentUrl: URL.createObjectURL(file),
+      encodingFormat: file.type,
+      caption: file.name,
+    })
+  }
+  contract.value = {
+    credentialSubject: {
+      object: filesUrls,
+    },
+  } as Credential
+  creatingNewContract.value = true
 }
 
 async function onRefresh(done: () => void) {

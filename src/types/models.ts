@@ -148,6 +148,7 @@ interface ImageType {
   '@type': string
   'contentUrl': string
   'encodingFormat': string
+  'caption'?: string
 }
 
 export interface OwnerContract {
@@ -211,4 +212,17 @@ export interface FullTextDocument {
   instrument_name: string
   endTime: Date
   instrument_description: string
+}
+
+export interface PreContract {
+  agentLegal: number
+  agentName: string
+  agentEmail: string
+  participantName: string
+  participantEmail: string
+  participantUrl: string
+  instrumentName: string
+  instrumentDescription: string
+  images: string[]
+  startTime: string
 }

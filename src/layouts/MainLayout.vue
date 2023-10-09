@@ -61,15 +61,11 @@
       <QTabs
         shrink
         stretch
-        :inline-label="!$q.platform.is.desktop"
+        inline-label
         mobile-arrows
+        dense
         :align="$q.platform.is.desktop ? 'center' : 'justify'"
       >
-        <QRouteTab
-          :to="{ name: 'create' }"
-          icon="create"
-          :label="$t('header.create')"
-        />
         <QRouteTab
           :to="{ name: 'archive' }"
           icon="archive"
@@ -503,6 +499,7 @@
       v-if="getArchiveNames.length"
       v-model="rightDrawerOpen"
       side="right"
+      :width="320"
       class="q-pa-md scroll-y"
       show-if-above
       bordered
@@ -518,11 +515,12 @@
         :dense="$q.platform.is.desktop"
         square
         outline
-        clickable
         class="row"
+        :ripple="false"
         :disable="router.currentRoute.value.query.name === name"
         :selected="router.currentRoute.value.query.name === name"
         :color="value.recommendation ? 'orange' : ''"
+        :clickable="value.count > 0"
         :removable="value.recommendation"
         @remove="onRemoveArchiveName(name as string)"
         @click="onSelectArchiveName(name, value)"
@@ -544,6 +542,7 @@
         animation="blink"
         width="100%"
       />
+      <CalendarEventsComponent @select="onFilterById" />
     </QDrawer>
     <QPageContainer>
       <RouterView
@@ -640,6 +639,9 @@ const PhantomWalletLogin = defineAsyncComponent(
 )
 const AndroidBarComponent = defineAsyncComponent(
   () => import('components/AndroidBarComponent.vue'),
+)
+const CalendarEventsComponent = defineAsyncComponent(
+  () => import('components/CalendarEventsComponent.vue'),
 )
 
 const $t = useI18n().t
@@ -808,17 +810,22 @@ function onRemoveArchiveName(name: string) {
   contractStore.removeContractName(name)
 }
 
+async function onFilterById(ids: number[]) {
+  if (!ids) {
+    return
+  }
+  $q.loading.show()
+  await contractStore.filteredByIds({
+    ids: ids,
+  })
+  $q.loading.hide()
+}
+
 async function onSelectArchiveName(
   name: string,
   value: { count: number; recommendation: boolean },
 ) {
   if (value.count === 0) {
-    await router.push({
-      name: ROUTE_NAMES.CREATE,
-      query: {
-        instrument_name: name,
-      },
-    })
     return
   }
   await router.push({

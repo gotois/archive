@@ -53,8 +53,6 @@ export default {
   },
   list: {
     explore: 'Clear Search',
-    create: 'Create contract',
-    calendar: 'Open calendar',
   },
   archive: {
     search: 'Search',
@@ -199,11 +197,12 @@ export default {
     infinity: 'Unlimited',
   },
   files: {
-    type: 'Attached documents',
-    hint: 'Add documents in PDF, PNG, or JPG format.',
+    type: 'Create document',
+    hint: 'Use PDF, PNG, or JPG format.',
   },
   contractForm: {
     submit: 'Add',
+    sign: 'Sign',
     date: 'Open calendar',
   },
   tutorial: {

@@ -8,7 +8,7 @@ export enum ROUTE_NAMES {
   SEARCH = 'search',
   SUPPORT = 'support',
   AUTH = 'auth',
-  CREATE = 'create',
+  SIGN = 'sign',
   TUTORIAL = 'tutorial',
   PRIVACY = 'privacy',
   LOGIN = 'login',
@@ -76,13 +76,13 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
-    path: '/' + ROUTE_NAMES.CREATE,
+    path: '/' + ROUTE_NAMES.SIGN,
     component: () => import('layouts/MainLayout.vue'),
     children: [
       {
         path: '',
-        name: ROUTE_NAMES.CREATE,
-        component: () => import('pages/CreatePage.vue'),
+        name: ROUTE_NAMES.SIGN,
+        component: () => import('pages/CreatePage.vue'), // todo переименовать в SignPage.vue
       },
     ],
   },

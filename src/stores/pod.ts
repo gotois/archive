@@ -13,6 +13,7 @@ import {
   getProfileAll,
   getPodUrlAllFrom,
   getDate,
+  getUrlAll,
   getThingAll,
   saveSolidDatasetAt,
   setThing,
@@ -23,6 +24,7 @@ import useAuthStore from 'stores/auth'
 import useProfileStore from 'stores/profile'
 import {
   ProofCredential,
+  Credential,
   CredentialSubject,
   CredentialTypes,
   FormatContract,
@@ -354,9 +356,10 @@ export default defineStore('pod', {
         })
     },
     // конвертация всех things в формат читаемых контрактов
-    async getContract(url: string) {
-      const ds = await this.getDataset(url)
-
+    async getContract(url: string): Promise<Credential> {
+      const ds = await getSolidDataset(url, {
+        fetch,
+      })
       const type = getThing(ds, ds.internal_resourceInfo.sourceIri + '#type')
       const issuer = getThing(
         ds,
@@ -443,13 +446,12 @@ export default defineStore('pod', {
         ds.internal_resourceInfo.sourceIri + '#object',
       )
       if (object) {
-        getStringNoLocaleAll(object, SCHEMA_INRUPT.ImageObject)
-        credentialSubject.set('images', [])
-        // object.addStringNoLocale(
-        //     SCHEMA_INRUPT.identifier,
-        //     object.encodingFormat,
-        //   )
-        //   objectThing.addUrl(SCHEMA_INRUPT.image, object.contentUrl)
+        credentialSubject.set('object', [
+          {
+            encodingFormat: getStringNoLocaleAll(object, SCHEMA_INRUPT.identifier)[0],
+            contentUrl: getUrlAll(object, SCHEMA_INRUPT.image)[0],
+          },
+        ])
       }
 
       return {
@@ -485,7 +487,7 @@ export default defineStore('pod', {
         'credentialSubject': Object.fromEntries(
           credentialSubject,
         ) as CredentialSubject,
-      } as Credential
+      }
     },
   },
   getters: {

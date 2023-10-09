@@ -139,8 +139,8 @@ events.on(EVENTS.LOGIN, async () => {
   authStore.openIdHandleIncoming()
   try {
     await podStore.setResourceRootUrl()
-  } catch (e) {
-    console.error(e)
+  } catch (error) {
+    console.error(error)
     $q.notify({
       type: 'negative',
       message: 'Login Failed',
@@ -150,17 +150,22 @@ events.on(EVENTS.LOGIN, async () => {
   } finally {
     $q.sessionStorage.remove('connect')
   }
-  const { name, email, avatar } = await podStore.getProfileFOAF()
-  if (name) {
-    profileStore.consumerName(name)
+  try {
+    const { name, email, avatar } = await podStore.getProfileFOAF()
+    if (name) {
+      profileStore.consumerName(name)
+    }
+    if (email) {
+      profileStore.consumerEmail(email)
+    }
+    if (avatar) {
+      profileStore.consumerImg(avatar)
+    }
+  } catch (error) {
+    console.error(error)
+  } finally {
+    $q.sessionStorage.set('restorePreviousSession', true)
   }
-  if (email) {
-    profileStore.consumerEmail(email)
-  }
-  if (avatar) {
-    profileStore.consumerImg(avatar)
-  }
-  $q.sessionStorage.set('restorePreviousSession', true)
 })
 
 events.on(EVENTS.LOGOUT, () => {

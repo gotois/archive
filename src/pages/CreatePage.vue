@@ -13,30 +13,13 @@
           class="q-pa-md q-ml-auto q-mr-auto q-mt-md q-mb-md"
         >
           <ContractFormComponent
+            v-if="contract"
             ref="contractForm"
             :class="{
               'col-xs-6': $q.platform.is.desktop,
             }"
-            :agent-legal="Boolean($route.query.agentLegal) as boolean"
-            :instrument-description="
-              $route.query.instrumentDescription as string
-            "
-            :instrument-name="$route.query.instrumentName as string"
-            :participant-email="$route.query.participantEmail as string"
-            :participant-name="$route.query.participantName as string"
-            :participant-url="$route.query.participantUrl as string"
-            :images="$route.query.images as string[]"
-            :start-time="
-              $route.query.startTime
-                ? new Date($route.query.startTime as string)
-                : null
-            "
-            :end-time="
-              $route.query.endTime
-                ? new Date($route.query.endTime as string)
-                : null
-            "
-            @on-create="onCreate"
+            :contract="contract"
+            @on-create="onCreateContract"
           />
         </QCard>
         <QSpace class="q-pb-xs" />
@@ -45,9 +28,10 @@
   </QPage>
 </template>
 <script lang="ts" setup>
-import { defineAsyncComponent, h, ref } from 'vue'
+import { defineAsyncComponent, h, ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
+  useQuasar,
   useMeta,
   QPage,
   QSpace,
@@ -57,7 +41,9 @@ import {
   QScrollArea,
 } from 'quasar'
 import { useRouter } from 'vue-router'
+import usePodStore from 'stores/pod'
 import { ROUTE_NAMES } from '../router/routes'
+import { ContractTable, Credential } from '../types/models'
 
 const ContractFormComponent = defineAsyncComponent({
   loader: () => import('components/ContractFormComponent.vue'),
@@ -68,23 +54,41 @@ const ContractFormComponent = defineAsyncComponent({
 })
 
 const $t = useI18n().t
+const $q = useQuasar()
 const router = useRouter()
+const podStore = usePodStore()
 
 const contractForm = ref<InstanceType<typeof ContractFormComponent> | null>(
   null,
 )
+const contract = ref<InstanceType<typeof Credential> | null>(null)
+
 const metaData = {
   'title': $t('pages.create.title'),
   'og:title': $t('pages.create.title'),
 }
 
-async function onCreate(value: string) {
-  await router.push({
-    name: ROUTE_NAMES.FILTER,
-    query: {
-      name: value,
-      page: 1,
-    },
+function onCreateContract(newContract: ContractTable) {
+  $q.notify({
+    message: $t('components.contractForm.submitDate.success', {
+      id: newContract.instrument_name.toLocaleLowerCase(),
+    }),
+    type: 'positive',
+    actions: [
+      {
+        label: $t('components.contractForm.submitDate.redirect'),
+        color: 'white',
+        async handler() {
+          await router.push({
+            name: ROUTE_NAMES.FILTER,
+            query: {
+              name: newContract.instrument_name,
+              page: 1,
+            },
+          })
+        },
+      },
+    ],
   })
 }
 
@@ -92,6 +96,14 @@ function onRefresh(done: () => void) {
   contractForm.value.resetForm(true)
   done()
 }
+
+onMounted(async () => {
+  try {
+    contract.value = await podStore.getContract(fromUrl)
+  } catch (error) {
+    console.error(error)
+  }
+})
 
 useMeta(metaData)
 </script>

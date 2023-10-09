@@ -9,7 +9,6 @@
     event-color="secondary"
     color="primary"
     minimal
-    landscape
     @navigation="updateEvents"
     @update:model-value="selectDate"
   >

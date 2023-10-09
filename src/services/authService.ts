@@ -53,7 +53,7 @@ export default async ({
     isExpirationAlive ||
     defaultSession.sessionId === sessionInfo.sessionId
   ) {
-    return Promise.resolve('Session alive')
+    console.warn('Session alive')
   }
   return login({
     oidcIssuer,
