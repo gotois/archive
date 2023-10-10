@@ -58,7 +58,6 @@ export default {
     search: 'Search',
     tooltip: 'Start typing',
     empty: 'Add your first contract.',
-    example: 'Example:',
     searchEmpty: 'Nothing found. Try changing your search options.',
     filterEmpty: 'Nothing is selected.',
     notfound: 'No results',

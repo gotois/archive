@@ -55,7 +55,6 @@
           }}</template>
           <template v-else>
             {{ $t('archive.empty') }}
-            {{ $t('archive.example') }}
           </template>
         </template>
         <template v-if="isSearch || isFilter" #action>
@@ -169,7 +168,7 @@
           <QSpace />
           <QBtn v-close-popup dense flat icon="close" />
         </QBar>
-        <QCardSection>
+        <QCardSection class="fit overflow-auto">
           <ContractFormComponent
             :contract="contract"
             @on-create="onCreateContract"

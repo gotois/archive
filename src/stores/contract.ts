@@ -10,6 +10,7 @@ import {
   signMessageUsePhantom,
   signMessageUseSolana,
   sign,
+  createAndSignPresentation,
 } from '../services/cryptoService'
 import { db, keys, keyPair } from '../services/databaseService'
 import {
@@ -91,6 +92,58 @@ export default defineStore('contracts', {
 
       return { contract, index }
     },
+    async createPresentation(contract: Credential) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const key = await keyPair.last()
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
+      const suite = new Ed25519Signature2020({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        key: key,
+      })
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return createAndSignPresentation({
+        signedVC: contract,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        suite,
+      })
+    },
+    async signContract(contract: Credential) {
+      const walletStore = useWalletStore()
+      // подписываем документ и обновляем идентификатор подписи
+      const message = getIdentifierMessage(contract.credentialSubject)
+      switch (walletStore.type) {
+        case WalletType.Phantom: {
+          const { signature } = await signMessageUsePhantom(message)
+          contract.credentialSubject.identifier.push({
+            value: signature,
+            name: WalletType.Phantom,
+          })
+          break
+        }
+        case WalletType.Secret: {
+          const { secretKey } = await keys.last()
+          const { signature } = signMessageUseSolana(message, secretKey)
+          contract.credentialSubject.identifier.push({
+            value: signature,
+            name: WalletType.Secret,
+          })
+          break
+        }
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const key = await keyPair.last()
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
+      const suite = new Ed25519Signature2020({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        key: key,
+      })
+      const signedVC = await sign({
+        credential: contract,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        suite,
+      })
+      return signedVC
+    },
     async addContract({
       contractData,
       usePod = false,
@@ -123,44 +176,10 @@ export default defineStore('contracts', {
         propertyID: db.verno, // используемая версия движка
         value: index,
       })
-
-      // подписываем документ и обновляем идентификатор подписи
-      const message = getIdentifierMessage(jsldContract.credentialSubject)
-      switch (walletStore.type) {
-        case WalletType.Phantom: {
-          const { signature } = await signMessageUsePhantom(message)
-          jsldContract.credentialSubject.identifier.push({
-            value: signature,
-            name: WalletType.Phantom,
-          })
-          break
-        }
-        case WalletType.Secret: {
-          const { secretKey } = await keys.last()
-          const { signature } = signMessageUseSolana(message, secretKey)
-          jsldContract.credentialSubject.identifier.push({
-            value: signature,
-            name: WalletType.Secret,
-          })
-          break
-        }
-      }
-
       const count = await db.contracts.count()
       this.setContractsCount(count)
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const key = await keyPair.last()
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
-      const suite = new Ed25519Signature2020({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        key: key,
-      })
-      const signedVC = await sign({
-        credential: jsldContract,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        suite,
-      })
+      const signedVC = await this.signContract(jsldContract)
       contract.identifier = jsldContract.credentialSubject.identifier
       contract.proof = signedVC.proof
 

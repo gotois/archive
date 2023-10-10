@@ -546,7 +546,19 @@ function onFocusInput({ target }: { target: HTMLElement }) {
   target.scrollIntoView()
 }
 
-async function onSubmit() {
+async function signContract() {
+  await contractStore.createPresentation(props.contract)
+}
+
+function onSubmit() {
+  if (isSigning.value) {
+    return signContract()
+  } else {
+    return saveContract()
+  }
+}
+
+async function saveContract() {
   if (!date.isValid(String(duration.value.from))) {
     $q.notify({
       type: 'negative',

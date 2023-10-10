@@ -224,7 +224,7 @@
           'bg-dark text-white': $q.dark.isActive,
         }"
       >
-        <QCardSection>
+        <QCardSection class="fit overflow-auto">
           <ContractFormComponent
             v-if="privacyContract"
             :contract="privacyContract"

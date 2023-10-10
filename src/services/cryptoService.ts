@@ -49,16 +49,16 @@ export function sign({
 }
 
 export function createAndSignPresentation({
-  issue, // aka signedVC
+  signedVC,
   suite,
   challenge = uid(),
 }: {
-  issue: unknown
-  suite: unknown
-  challenge: string
+  signedVC: unknown
+  suite: Ed25519Signature2020
+  challenge?: string
 }) {
   const presentation = vc.createPresentation({
-    verifiableCredential: issue,
+    verifiableCredential: [signedVC],
   })
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return vc.signPresentation({

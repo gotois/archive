@@ -61,7 +61,7 @@ const podStore = usePodStore()
 const contractForm = ref<InstanceType<typeof ContractFormComponent> | null>(
   null,
 )
-const contract = ref<InstanceType<typeof Credential> | null>(null)
+const contract = ref<Credential | null>(null)
 
 const metaData = {
   'title': $t('pages.create.title'),
@@ -103,9 +103,10 @@ onMounted(async () => {
   try {
     const fromUrl = router.currentRoute.value.query.from as string
     contract.value = await podStore.getContract(fromUrl)
-  } catch (error) {
+  } catch (error: unknown) {
     console.error(error)
-    if (error.response.status === 401) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (error?.response?.status === 401) {
       $q.notify({
         type: 'negative',
         message: 'Access Denied',

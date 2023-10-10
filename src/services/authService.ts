@@ -54,6 +54,7 @@ export default async ({
     defaultSession.sessionId === sessionInfo.sessionId
   ) {
     console.warn('Session alive')
+    return window.location.href.replace(redirectUrl)
   }
   return login({
     oidcIssuer,
