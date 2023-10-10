@@ -100,6 +100,7 @@ function onRefresh(done: () => void) {
 
 onMounted(async () => {
   try {
+    const fromUrl = router.currentRoute.value.query.from as string
     contract.value = await podStore.getContract(fromUrl)
   } catch (error) {
     console.error(error)

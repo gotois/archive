@@ -76,7 +76,6 @@
         hide-label
         glossy
         push
-        class="shadow-2"
         icon="add"
         direction="up"
         vertical-actions-align="right"
@@ -85,7 +84,7 @@
           'bg-white': !$q.dark.isActive,
           'bg-dark': $q.dark.isActive,
         }"
-        @hide="files = []"
+        @hide="clearFabData"
       >
         <QFile
           v-model="files"
@@ -94,6 +93,11 @@
           :counter="Boolean(files.length)"
           accept="image/png, image/jpeg, .pdf"
           color="primary"
+          label-color="primary"
+          class="shadow-1"
+          unelevated
+          borderless
+          filled
           :hide-hint="!$q.platform.is.desktop"
           :hide-bottom-space="!$q.platform.is.desktop"
           :dense="$q.platform.is.desktop"
@@ -103,13 +107,49 @@
           @update:model-value="onFileSelect"
         >
           <template #prepend>
-            <QIcon name="attach_file" />
-          </template>
-          <template #append>
-            <QIcon name="add" @click.stop />
+            <QIcon name="attach_file" color="primary" />
           </template>
           <QTooltip>{{ $t('files.hint') }}</QTooltip>
         </QFile>
+        <QInput
+          v-model.trim="urlFrom"
+          style="width: 200px"
+          square
+          flat
+          unelevated
+          borderless
+          filled
+          :hide-hint="!$q.platform.is.desktop"
+          :hide-bottom-space="!$q.platform.is.desktop"
+          :dense="$q.platform.is.desktop"
+          color="primary"
+          label-color="primary"
+          :bg-color="$q.dark.isActive ? 'dark' : 'white'"
+          class="no-margin shadow-1"
+          :label="'URL'"
+        >
+          <template #prepend>
+            <QIcon name="add" color="primary" />
+          </template>
+          <template #after>
+            <QBtn
+              v-if="validUrlString(urlFrom)"
+              unelevated
+              text-color="primary"
+              dense
+              square
+              icon-right="check"
+              class="no-margin"
+              :to="{
+                name: 'sign',
+                query: {
+                  from: urlFrom,
+                },
+              }"
+            />
+          </template>
+          <QTooltip>{{ 'Use .ttl from SOLiD' }}</QTooltip>
+        </QInput>
       </QFab>
     </QPageSticky>
     <QDialog
@@ -162,6 +202,7 @@ import {
   QBanner,
   QBtn,
   QPageSticky,
+  QInput,
   QFab,
   QFile,
   QIcon,
@@ -179,6 +220,7 @@ import usePodStore from 'stores/pod'
 import useNotification from 'stores/notification'
 import { ROUTE_NAMES } from '../router/routes'
 import { mintContract } from '../services/contractGeneratorService'
+import { validUrlString } from '../helpers/urlHelper'
 import { FormatContract, ContractTable, Credential } from '../types/models'
 
 const ArchiveListComponent = defineAsyncComponent({
@@ -235,6 +277,7 @@ const paginationCount = computed(() => {
 const files = ref([])
 const creatingNewContract = ref(false)
 const contract = ref<InstanceType<typeof Credential> | null>(null)
+const urlFrom = ref('')
 
 watch(
   () => router.currentRoute.value.query,
@@ -244,6 +287,11 @@ watch(
 )
 
 useMeta(metaData)
+
+function clearFabData() {
+  files.value = []
+  urlFrom.value = ''
+}
 
 function onCreateContract(newContract: ContractTable) {
   $q.notify({
