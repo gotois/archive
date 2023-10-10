@@ -122,7 +122,8 @@ export interface CredentialTypes {
   url: string
 }
 
-interface Person {
+export interface Agent {
+  type: 'Organization' | 'Person'
   name: string
   email?: string
   telephone?: string
@@ -144,18 +145,19 @@ interface BaseSchemaType {
   '@type': string
 }
 
+interface FormatImageType extends BaseSchemaType, ImageType {}
+
 interface ImageType {
-  '@type': string
-  'contentUrl': string
-  'encodingFormat': string
-  'caption'?: string
+  contentUrl: string
+  encodingFormat: string
+  caption?: string
 }
 
 export interface OwnerContract {
-  url: string // owner original link
-  agent: FormatContractAgent
-  participant: FormatContractParticipant
-  instrument: FormatContractInstrument
+  agent?: Agent
+  participant?: Agent
+  instrument?: ContractInstrument
+  files: ImageType[]
 }
 
 export interface FormatContract extends BaseSchemaType {
@@ -168,16 +170,16 @@ export interface FormatContract extends BaseSchemaType {
   'startTime': Date
   'endTime'?: Date
   'proof'?: Proof
-  'object': ImageType[]
+  'object': FormatImageType[]
 }
-export interface FormatContractAgent extends BaseSchemaType, Person {}
-export interface FormatContractParticipant extends BaseSchemaType, Person {}
+export interface FormatContractAgent extends BaseSchemaType, Agent {}
+export interface FormatContractParticipant extends BaseSchemaType, Agent {}
 interface FormatContractIdentifier extends BaseSchemaType, ContractIdentifier {}
 interface FormatContractInstrument extends BaseSchemaType, ContractInstrument {}
 
 export interface CredentialSubject {
-  agent: Person
-  participant: Person
+  agent: Agent
+  participant: Agent
   instrument: ContractInstrument
   identifier: ContractIdentifier[]
   startTime: Date
@@ -212,17 +214,4 @@ export interface FullTextDocument {
   instrument_name: string
   endTime: Date
   instrument_description: string
-}
-
-export interface PreContract {
-  agentLegal: number
-  agentName: string
-  agentEmail: string
-  participantName: string
-  participantEmail: string
-  participantUrl: string
-  instrumentName: string
-  instrumentDescription: string
-  images: string[]
-  startTime: string
 }

@@ -4,7 +4,8 @@
     class="relative-position"
   >
     <template
-      v-for="({ contentUrl, encodingFormat, caption = '' }, urlIndex) in props.contract.credentialSubject.object"
+      v-for="({ contentUrl, encodingFormat, caption = '' }, urlIndex) in props
+        .contract.credentialSubject.object"
       :key="urlIndex"
     >
       <object
@@ -42,14 +43,16 @@
     autocomplete="off"
     spellcheck="true"
     greedy
-    autofocus
+    :autofocus="!isSigning"
     @submit="onSubmit"
     @reset="onResetForm"
   >
     <QSelect
       v-model="contractType"
       :options="contractOptions"
-      :readonly="Boolean(props.contract.proof || props.contract.credentialSubject?.instrument?.name)"
+      :readonly="
+        Boolean(isSigning || props.contract.credentialSubject?.instrument?.name)
+      "
       :label="$t('contract.type')"
       :hint="
         $q.platform.is.mobile
@@ -82,7 +85,11 @@
     </QSelect>
     <QInput
       v-model.trim="customer"
-      :readonly="Boolean(props.contract.proof || props.contract.credentialSubject?.participant?.name)"
+      :readonly="
+        Boolean(
+          isSigning || props.contract.credentialSubject?.participant?.name,
+        )
+      "
       :label="$t('customer.type')"
       :hint="$t('customer.hint')"
       :rules="[(val) => val && val.length > 0]"
@@ -106,7 +113,9 @@
       <template #append>
         <QCheckbox
           v-model="isCustomerOrg"
-          :disable="Boolean(props.contract.credentialSubject?.participant?.name)"
+          :disable="
+            Boolean(props.contract.credentialSubject?.participant?.name)
+          "
           size="md"
           color="secondary"
           keep-color
@@ -122,8 +131,8 @@
       v-model="modelContact"
       :readonly="
         Boolean(
-          props.contract.proof ||
-          props.contract.credentialSubject.participant?.email?.length ||
+          isSigning ||
+            props.contract.credentialSubject.participant?.email?.length ||
             props.contract.credentialSubject.participant?.url?.length,
         )
       "
@@ -166,7 +175,9 @@
       <QInput
         v-if="!$q.platform.is.mobile"
         v-model="duration.from"
-        :readonly="Boolean(props.contract.proof || props.contract.credentialSubject.startTime)"
+        :readonly="
+          Boolean(isSigning || props.contract.credentialSubject.startTime)
+        "
         :label="$t('duration.from')"
         class="col no-padding"
         :type="typeof duration.from === 'string' ? 'text' : 'date'"
@@ -218,8 +229,11 @@
         :rules="typeof duration.to === 'string' ? ['date'] : []"
         :label="$t('duration.to')"
         :readonly="
-          props.contract.proof ||
-          Boolean(props.contract.credentialSubject.startTime || props.contract.credentialSubject.endTime) ||
+          isSigning ||
+          Boolean(
+            props.contract.credentialSubject.startTime ||
+              props.contract.credentialSubject.endTime,
+          ) ||
           dateNoLimit
         "
         :dense="$q.platform.is.desktop"
@@ -234,7 +248,12 @@
         <QToggle
           v-if="!$q.platform.is.mobile"
           v-model="dateNoLimit"
-          :disable="Boolean(props.contract.credentialSubject.startTime || props.contract.credentialSubject.endTime)"
+          :disable="
+            Boolean(
+              props.contract.credentialSubject.startTime ||
+                props.contract.credentialSubject.endTime,
+            )
+          "
           color="secondary"
           class="non-selectable"
           :class="{
@@ -274,7 +293,7 @@
         :class="{
           'full-width': !$q.platform.is.desktop,
         }"
-        :label="props.contract.proof ? $t('contractForm.sign') : $t('contractForm.submit')"
+        :label="isSigning ? $t('contractForm.sign') : $t('contractForm.submit')"
         icon-right="save"
         type="submit"
         color="accent"
@@ -285,7 +304,7 @@
   </QForm>
 </template>
 <script lang="ts" setup>
-import { PropType, ref, defineAsyncComponent, onMounted } from 'vue'
+import { PropType, ref, computed, defineAsyncComponent, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   useQuasar,
@@ -348,18 +367,30 @@ const contractStore = useContractStore()
 const profileStore = useProfileStore()
 
 const { isLoggedIn } = storeToRefs(authStore)
+const isSigning = computed(() => {
+  return (
+    // eslint-disable-next-line no-prototype-builtins
+    props.contract.hasOwnProperty('proof') ||
+    Boolean(props.contract.credentialSubject?.instrument)
+  )
+})
 
 const contractOptions = ref(contractStore.getArchiveKeys)
 const contractForm = ref<QForm>()
 const loadingForm = ref(false)
 const modelContact = ref<MultiContact[]>([])
 const currentContactType = ref<InputType>(InputType.text)
-
 const contractType = ref(props.contract.credentialSubject?.instrument?.name)
 const customer = ref(props.contract.credentialSubject?.participant?.name)
-const isCustomerOrg = ref(props.contract.credentialSubject?.agent?.legal) // fixme legal нет
-const description = ref(props.contract.credentialSubject?.instrument?.description)
-const cloneStartDate = date.clone(props.contract.credentialSubject.startTime ?? new Date())
+const isCustomerOrg = ref(
+  props.contract.credentialSubject?.agent?.type === 'Organization',
+)
+const description = ref(
+  props.contract.credentialSubject?.instrument?.description,
+)
+const cloneStartDate = date.clone(
+  props.contract.credentialSubject.startTime ?? new Date(),
+)
 const afterYearDate = new Date(
   date
     .clone(cloneStartDate)
@@ -370,7 +401,6 @@ const duration = ref<Duration>({
   to: formatDate(afterYearDate),
 })
 const dateNoLimit = ref(Boolean(props.contract.credentialSubject.endTime))
-const filesUrls = ref([])
 
 function filterOptions(val: string, update: (callback: () => void) => void) {
   update(() => {
@@ -445,7 +475,6 @@ function resetForm() {
     from: formatDate(props.contract.credentialSubject.startTime),
     to: formatDate(afterYearDate),
   }
-  filesUrls.value = []
   dateNoLimit.value = false
 }
 
@@ -573,8 +602,8 @@ async function onSubmit() {
 
   try {
     const images = []
-    for (const file of filesUrls.value) {
-      const res = await fetch(file.url)
+    for (const file of props.contract.credentialSubject.object) {
+      const res = await fetch(file.contentUrl)
       const blob = await res.blob()
       const image = await readFilePromise(blob)
       images.push(image)
@@ -627,7 +656,7 @@ onMounted(() => {
   if (props.contract.credentialSubject.participant?.url) {
     modelContact.value.push({
       type: InputType.url,
-      value: props.contract.credentialSubject.participanturl,
+      value: props.contract.credentialSubject.participant.url,
     })
   }
 })

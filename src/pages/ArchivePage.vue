@@ -178,6 +178,7 @@ import useContractStore from 'stores/contract'
 import usePodStore from 'stores/pod'
 import useNotification from 'stores/notification'
 import { ROUTE_NAMES } from '../router/routes'
+import { mintContract } from '../services/contractGeneratorService'
 import { FormatContract, ContractTable, Credential } from '../types/models'
 
 const ArchiveListComponent = defineAsyncComponent({
@@ -419,11 +420,9 @@ function onFileSelect(files: File[]) {
       caption: file.name,
     })
   }
-  contract.value = {
-    credentialSubject: {
-      object: filesUrls,
-    },
-  } as Credential
+  contract.value = mintContract({
+    files: filesUrls,
+  })
   creatingNewContract.value = true
 }
 

@@ -78,8 +78,9 @@ function onCreateContract(newContract: ContractTable) {
       {
         label: $t('components.contractForm.submitDate.redirect'),
         color: 'white',
-        async handler() {
-          await router.push({
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        handler() {
+          return router.push({
             name: ROUTE_NAMES.FILTER,
             query: {
               name: newContract.instrument_name,

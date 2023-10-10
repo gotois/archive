@@ -211,6 +211,28 @@
         </QStep>
       </QStepper>
     </QScrollArea>
+    <QDialog
+      v-model="creatingNewContract"
+      maximized
+      position="top"
+      transition-show="slide-up"
+      transition-hide="slide-down"
+    >
+      <QCard
+        :class="{
+          'bg-white text-white': !$q.dark.isActive,
+          'bg-dark text-white': $q.dark.isActive,
+        }"
+      >
+        <QCardSection>
+          <ContractFormComponent
+            v-if="privacyContract"
+            :contract="privacyContract"
+            @on-create="onCreateContract"
+          />
+        </QCardSection>
+      </QCard>
+    </QDialog>
   </QPage>
 </template>
 <script lang="ts" setup>
@@ -250,6 +272,7 @@ import useWalletStore from 'stores/wallet'
 import pkg from '../../package.json'
 import { ROUTE_NAMES, STEP } from '../router/routes'
 import { parse } from '../helpers/markdownHelper'
+import { createContractPDF } from '../helpers/pdfHelper'
 import solidAuth from '../services/authService'
 import { keyPair } from '../services/databaseService'
 import { mintContract } from '../services/contractGeneratorService'
@@ -258,13 +281,14 @@ import { Credential } from '../types/models'
 const PricingComponent = defineAsyncComponent(
   () => import('components/PricingComponent.vue'),
 )
-
 const OIDCIssuerComponent = defineAsyncComponent(
   () => import('components/OIDCIssuerComponent.vue'),
 )
-
 const IdComponent = defineAsyncComponent(
   () => import('components/IdComponent.vue'),
+)
+const ContractFormComponent = defineAsyncComponent(
+  () => import('components/ContractFormComponent.vue'),
 )
 
 const $t = useI18n().t
@@ -291,6 +315,8 @@ const scroll = ref<InstanceType<typeof QScrollArea> | null>(null)
 const stepper = ref<InstanceType<typeof QStepper> | null>(null)
 const step = ref(getCurrentStep() ?? STEP.WELCOME)
 const pricing = ref(false)
+const creatingNewContract = ref(false)
+const privacyContract = ref<InstanceType<typeof Credential> | null>(null)
 
 const { isLoggedIn } = storeToRefs(authStore)
 const { did, consumer, phone, email } = storeToRefs(profileStore)
@@ -335,6 +361,41 @@ function setMeta(value: number) {
   }
 }
 
+function onCreateContract() {
+  const dialog = $q.dialog({
+    message: $t('database.pod.sync'),
+    cancel: true,
+    persistent: true,
+  })
+
+  dialog
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    .onOk(async () => {
+      const links = await podStore.getContractsLink()
+      for (const id of links) {
+        const credential: Credential = await podStore.getContract(id)
+        dialog.update({
+          message: credential.credentialSubject.instrument.name,
+        })
+        await contractStore.insertContract(credential)
+      }
+      tutorialStore.tutorialComplete()
+      exportKeyPair()
+      await router.push({
+        name: ROUTE_NAMES.ARCHIVE,
+      })
+    })
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    .onDismiss(async () => {
+      tutorialStore.tutorialComplete()
+      exportKeyPair()
+
+      await router.push({
+        name: ROUTE_NAMES.ARCHIVE,
+      })
+    })
+}
+
 async function onOnlineAuthorize(oidcIssuer: string) {
   if (!oidcIssuer) {
     const dialog = $q.dialog({
@@ -373,25 +434,6 @@ async function onOnlineAuthorize(oidcIssuer: string) {
   }
 }
 
-function importContractsFromPod() {
-  const dialog = $q.dialog({
-    message: $t('database.pod.sync'),
-    cancel: true,
-    persistent: true,
-  })
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  dialog.onOk(async () => {
-    const links = await podStore.getContractsLink()
-    for (const id of links) {
-      const credential: Credential = await podStore.getContract(id)
-      dialog.update({
-        message: credential.credentialSubject.instrument.name,
-      })
-      await contractStore.insertContract(credential)
-    }
-  })
-}
-
 function exportKeyPair() {
   const dialog = $q.dialog({
     message: $t('components.keypair.export.dialog.message'),
@@ -424,13 +466,48 @@ async function onDemoSign() {
   await keyPair.setKeyPair(key)
   profileStore.consumerName('Test User')
   profileStore.consumerEmail('tester@gotointeractive.com')
-  profileStore.consumerPhone('1234567890')
+  profileStore.consumerPhone('+1234567890')
   profileStore.consumerDID(key.id)
   authStore.webId = demoUserWebId
   tutorialStore.tutorialComplete()
   await router.push({
     name: ROUTE_NAMES.ARCHIVE,
   })
+}
+
+async function mintPrivacyContract() {
+  const response = await fetch(window.location.origin + '/docs/privacy.md')
+  const contentType = response.headers.get('content-type')
+
+  if (contentType.startsWith('text/markdown')) {
+    const md = await response.text()
+    const html = parse(md)
+    const file = await createContractPDF(html)
+
+    return mintContract({
+      agent: {
+        type: 'Organization',
+        name: consumer.value,
+        email: email.value,
+      },
+      participant: {
+        name: pkg.author.name,
+        email: pkg.author.email,
+        url: pkg.author.url,
+      },
+      instrument: {
+        name: $t('pages.privacy.title'),
+        description: `${pkg.productName}: ${pkg.description} v${pkg.version}`,
+      },
+      files: [
+        {
+          contentUrl: URL.createObjectURL(file),
+          encodingFormat: file.type,
+          caption: file.name,
+        },
+      ],
+    })
+  }
 }
 
 async function onFinish() {
@@ -444,7 +521,6 @@ async function onFinish() {
     if (!did.value) {
       throw new Error('DID empty')
     }
-    exportKeyPair()
     if (isLoggedIn.value) {
       await podStore.initPod()
     }
@@ -455,34 +531,12 @@ async function onFinish() {
 
     if (isLoggedIn.value) {
       await podStore.setProfileFOAF()
-      importContractsFromPod()
       // fixme - сохранять KeyPair DID на SOLID
       // ...
     }
 
-    const preContract = await mintContract({
-      url: window.location.origin + '/docs/privacy.md',
-      agentLegal: Number(true), // todo - перенести в схему объекта agent
-      agent: {
-        name: consumer.value,
-        email: email.value,
-        // todo добавить `phone.value`
-      },
-      participant: {
-        name: pkg.author.name,
-        email: pkg.author.email,
-        url: pkg.author.url,
-      },
-      instrument: {
-        name: $t('pages.privacy.title'),
-        description: `${pkg.productName}: ${pkg.description} v${pkg.version}`,
-      },
-    })
-    tutorialStore.tutorialComplete()
-    await router.push({
-      name: ROUTE_NAMES.CREATE,
-      query: preContract,
-    })
+    privacyContract.value = await mintPrivacyContract()
+    creatingNewContract.value = true
   } catch (error) {
     console.error(error)
     $q.notify({

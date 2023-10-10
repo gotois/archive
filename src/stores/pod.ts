@@ -448,7 +448,10 @@ export default defineStore('pod', {
       if (object) {
         credentialSubject.set('object', [
           {
-            encodingFormat: getStringNoLocaleAll(object, SCHEMA_INRUPT.identifier)[0],
+            encodingFormat: getStringNoLocaleAll(
+              object,
+              SCHEMA_INRUPT.identifier,
+            )[0],
             contentUrl: getUrlAll(object, SCHEMA_INRUPT.image)[0],
           },
         ])
