@@ -272,30 +272,32 @@ enum SheetAction {
 function onSheet(item: FormatContract) {
   const actions = []
   // Group 1 - Share local
-  if (item.sameAs) {
-    actions.push({
-      label: $t('components.archiveList.sheet.link.label'),
-      icon: 'link',
-      id: SheetAction.LINK,
-    })
-  }
   if (canShare) {
     actions.push({
       label: $t('components.archiveList.sheet.share.label'),
       icon: $q.platform.is.android ? 'share' : 'ios_share',
+      color: 'dark',
       id: SheetAction.SHARE,
     })
-  }
-  // Group 2 - Publish
-  if (actions.length) {
-    actions.push({})
   }
   actions.push({
     label: $t('components.archiveList.sheet.event.native.label'),
     icon: 'event',
-    color: 'primary',
+    color: 'dark',
     id: SheetAction.CALENDAR,
   })
+  // Group 2 - Publish
+  if (actions.length) {
+    actions.push({})
+  }
+  if (item.sameAs) {
+    actions.push({
+      label: $t('components.archiveList.sheet.link.label'),
+      icon: 'link',
+      color: 'primary',
+      id: SheetAction.LINK,
+    })
+  }
   if ($q.platform.is.android) {
     actions.push({
       label: $t('components.archiveList.sheet.event.google.label'),
@@ -355,7 +357,10 @@ function onSheet(item: FormatContract) {
         return shareFile(item.instrument.name, icalFile)
       }
       case SheetAction.LINK: {
-        return shareURL(item.sameAs)
+        const webId = window.prompt('WebID clent')
+        await podStore.shareLink(item.sameAs, webId)
+        const shareLink = window.location.origin + '/sign?from=' + item.sameAs
+        return shareURL(shareLink)
       }
       case SheetAction.GOOGLE_CALENDAR: {
         const url = googleMailUrl(item).toString()

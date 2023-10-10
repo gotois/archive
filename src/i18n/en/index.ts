@@ -423,18 +423,18 @@ export default {
       sheet: {
         title: 'Select an action',
         link: {
-          label: 'Share link',
+          label: 'Share to Sign',
           success: 'Link copied to clipboard',
           fail: 'Copy failed',
         },
         share: {
-          label: 'Share document',
+          label: 'Save document',
           fail: 'Error sharing file',
         },
         event: {
           native: {
-            label: 'Download ICS',
-            fail: 'Error downloading file',
+            label: 'Save to Calendar',
+            fail: 'Error downloading ICS file',
           },
           google: {
             label: 'Add to Google Calendar',

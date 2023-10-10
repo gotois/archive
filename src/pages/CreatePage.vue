@@ -99,11 +99,20 @@ function onRefresh(done: () => void) {
 }
 
 onMounted(async () => {
+  $q.loading.show()
   try {
     const fromUrl = router.currentRoute.value.query.from as string
     contract.value = await podStore.getContract(fromUrl)
   } catch (error) {
     console.error(error)
+    if (error.response.status === 401) {
+      $q.notify({
+        type: 'negative',
+        message: 'Access Denied',
+      })
+    }
+  } finally {
+    $q.loading.hide()
   }
 })
 

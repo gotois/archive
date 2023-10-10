@@ -2,6 +2,7 @@ import { LocalStorage } from 'quasar'
 import { defineStore } from 'pinia'
 import { fetch } from '@inrupt/solid-client-authn-browser'
 import {
+  WebId,
   SolidDataset,
   buildThing,
   createSolidDataset,
@@ -15,6 +16,7 @@ import {
   getDate,
   getUrlAll,
   getThingAll,
+  universalAccess,
   saveSolidDatasetAt,
   setThing,
   createThing,
@@ -491,6 +493,16 @@ export default defineStore('pod', {
           credentialSubject,
         ) as CredentialSubject,
       }
+    },
+    shareLink(url: string, webId: WebId) {
+      return universalAccess.setAgentAccess(
+        url,
+        webId,
+        { read: true, append: true, controlRead: true },
+        {
+          fetch,
+        },
+      )
     },
   },
   getters: {
