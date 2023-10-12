@@ -154,26 +154,38 @@
     <QDialog
       v-model="creatingNewContract"
       maximized
+      :allow-focus-outside="false"
       position="top"
+      persistent
       transition-show="slide-up"
       transition-hide="slide-down"
     >
       <QCard
+        style="max-width: 640px"
         :class="{
-          'bg-grey-4 text-white': !$q.dark.isActive,
+          'bg-white text-white': !$q.dark.isActive,
           'bg-dark text-white': $q.dark.isActive,
         }"
       >
-        <QBar>
+        <QBar :dense="false" :dark="false">
           <QSpace />
-          <QBtn v-close-popup dense flat icon="close" />
-        </QBar>
-        <QCardSection class="fit overflow-auto">
-          <ContractFormComponent
-            :contract="contract"
-            @on-create="onCreateContract"
+          <QBtn
+            v-close-popup
+            flat
+            color="dark"
+            icon="close"
+            @click="clearFabData"
           />
-        </QCardSection>
+        </QBar>
+        <QScrollArea visible style="height: calc(100dvh - 32px)">
+          <QCardSection class="q-pt-none">
+            <ContractFormComponent
+              v-if="contract"
+              :contract="contract"
+              @on-create="onCreateContract"
+            />
+          </QCardSection>
+        </QScrollArea>
       </QCard>
     </QDialog>
   </QPage>
