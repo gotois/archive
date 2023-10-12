@@ -1,6 +1,7 @@
 import { uid } from 'quasar'
 import tweetnacl from 'tweetnacl'
 import { PublicKey } from '@solana/web3.js'
+import { encodeMessage, decode, encode } from '../helpers/cryptoHelper'
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
@@ -15,23 +16,22 @@ import ed25519Ctx from 'ed25519-signature-2020-context'
 import { Ed25519Signature2020 } from '@digitalbazaar/ed25519-signature-2020'
 // @ts-ignore
 import { JsonLdDocumentLoader } from 'jsonld-document-loader'
-// @ts-ignore
-import * as base68 from 'base58-universal'
 import { Credential, ProofCredential } from '../types/models'
 
-const jdl = new JsonLdDocumentLoader()
-jdl.addStatic(ed25519Ctx.CONTEXT_URL, ed25519Ctx.CONTEXT)
-jdl.addStatic(Ed25519Signature2020.CONTEXT_URL, Ed25519Signature2020.CONTEXT)
-jdl.addStatic(
-  cred.CREDENTIALS_CONTEXT_V1_URL,
-  cred.contexts.get(cred.constants.CREDENTIALS_CONTEXT_V1_URL),
-)
+function createDocumentLoader() {
+  const jdl = new JsonLdDocumentLoader()
+  jdl.addStatic(ed25519Ctx.CONTEXT_URL, ed25519Ctx.CONTEXT)
+  jdl.addStatic(Ed25519Signature2020.CONTEXT_URL, Ed25519Signature2020.CONTEXT)
+  jdl.addStatic(
+    cred.CREDENTIALS_CONTEXT_V1_URL,
+    cred.contexts.get(cred.constants.CREDENTIALS_CONTEXT_V1_URL),
+  )
 
-const documentLoader = jdl.build()
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return jdl.build()
+}
 
-export const decode: (str: string) => Uint8Array = base68.decode
-
-export const encode: (x: Uint8Array) => string = base68.encode
+const documentLoader = createDocumentLoader()
 
 export function sign({
   credential,
@@ -39,13 +39,12 @@ export function sign({
 }: {
   credential: Credential
   suite: Ed25519Signature2020
-}): Promise<ProofCredential> {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+}) {
   return vc.issue({
     credential,
     suite,
     documentLoader: documentLoader,
-  })
+  }) as Promise<ProofCredential>
 }
 
 export function createAndSignPresentation({
@@ -69,28 +68,6 @@ export function createAndSignPresentation({
   })
 }
 
-function encodeMessage(message: string) {
-  return new TextEncoder().encode(JSON.stringify(message))
-}
-
-export async function signMessageUsePhantom(message: string) {
-  if (!globalThis?.phantom?.solana) {
-    throw new Error('Solana Phantom Wallet not found')
-  }
-  if (!globalThis?.phantom?.solana?.isConnected) {
-    await globalThis?.phantom?.solana.connect({ onlyIfTrusted: false })
-  }
-  const signed: { signature: Uint8Array; publicKey: PublicKey } =
-    await globalThis?.phantom?.solana?.signMessage(
-      encodeMessage(message),
-      'utf8',
-    )
-  return {
-    signature: encode(signed.signature),
-    publicKey: signed.publicKey.toBase58(),
-  }
-}
-
 export function verifySign(
   message: string,
   signature: string,
@@ -108,7 +85,10 @@ export function verifySign(
   }
 }
 
-export function signMessageUseSolana(message: string, secretKey: Uint8Array) {
+export function signMessageUseSecretKey(
+  message: string,
+  secretKey: Uint8Array,
+) {
   const fromWallet = tweetnacl.sign.keyPair.fromSecretKey(secretKey)
   const signature = tweetnacl.sign.detached(
     encodeMessage(message),
@@ -118,12 +98,4 @@ export function signMessageUseSolana(message: string, secretKey: Uint8Array) {
     signature: encode(signature),
     publicKey: fromWallet.publicKey,
   }
-}
-
-export async function getHash(str: string, algo = 'SHA-256') {
-  const strBuf = new TextEncoder().encode(str)
-  const hash = await crypto.subtle.digest(algo, strBuf)
-  return Array.from(new Uint8Array(hash))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('')
 }

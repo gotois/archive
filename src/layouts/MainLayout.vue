@@ -509,40 +509,45 @@
       >
         {{ $t('documentTypes.title') }}
       </p>
-      <QChip
-        v-for="([name, value], objectKey) in getArchiveNames"
-        :key="objectKey"
-        :dense="$q.platform.is.desktop"
-        square
-        outline
-        class="row"
-        :ripple="false"
-        :disable="router.currentRoute.value.query.name === name"
-        :selected="router.currentRoute.value.query.name === name"
-        :color="value.recommendation ? 'orange' : ''"
-        :clickable="value.count > 0"
-        :removable="value.recommendation"
-        @remove="onRemoveArchiveName(name as string)"
-        @click="onSelectArchiveName(name, value)"
-      >
-        <QAvatar
-          v-if="value.count > 1"
-          :color="$q.dark.isActive ? 'white' : 'dark'"
-          :text-color="$q.dark.isActive ? 'dark' : 'white'"
+      <div style="height: calc(100vh - 380px)" class="scroll">
+        <QChip
+          v-for="([name, value], objectKey) in getArchiveNames"
+          :key="objectKey"
+          :dense="$q.platform.is.desktop"
           square
+          outline
+          class="row"
+          :ripple="false"
+          :disable="router.currentRoute.value.query.name === name"
+          :selected="router.currentRoute.value.query.name === name"
+          :color="value.recommendation ? 'orange' : ''"
+          :clickable="value.count > 0"
+          :removable="value.recommendation"
+          @remove="onRemoveArchiveName(name as string)"
+          @click="onSelectArchiveName(name, value)"
         >
-          {{ value.count }}
-        </QAvatar>
-        <div class="ellipsis">{{ name }}</div>
-        <QTooltip>{{ name }}</QTooltip>
-      </QChip>
-      <QSkeleton
-        v-show="getArchiveNames.length === 0"
-        type="QChip"
-        animation="blink"
-        width="100%"
+          <QAvatar
+            v-if="value.count > 1"
+            :color="$q.dark.isActive ? 'white' : 'dark'"
+            :text-color="$q.dark.isActive ? 'dark' : 'white'"
+            square
+          >
+            {{ value.count }}
+          </QAvatar>
+          <div class="ellipsis">{{ name }}</div>
+          <QTooltip>{{ name }}</QTooltip>
+        </QChip>
+        <QSkeleton
+          v-show="getArchiveNames.length === 0"
+          type="QChip"
+          animation="blink"
+          width="100%"
+        />
+      </div>
+      <CalendarEventsComponent
+        class="absolute-bottom q-ml-auto q-mr-auto q-mb-md q-mt-md"
+        @select="onFilterById"
       />
-      <CalendarEventsComponent @select="onFilterById" />
     </QDrawer>
     <QPageContainer>
       <RouterView

@@ -7,11 +7,11 @@ import usePodStore from './pod'
 import useWalletStore from './wallet'
 import { demoUserWebId } from './auth'
 import {
-  signMessageUsePhantom,
-  signMessageUseSolana,
+  signMessageUseSecretKey,
   sign,
   createAndSignPresentation,
 } from '../services/cryptoService'
+import { signMessageUsePhantom } from '../services/phantomWalletService'
 import { db, keys, keyPair } from '../services/databaseService'
 import {
   formatterContracts,
@@ -122,7 +122,7 @@ export default defineStore('contracts', {
         }
         case WalletType.Secret: {
           const { secretKey } = await keys.last()
-          const { signature } = signMessageUseSolana(message, secretKey)
+          const { signature } = signMessageUseSecretKey(message, secretKey)
           contract.credentialSubject.identifier.push({
             value: signature,
             name: WalletType.Secret,

@@ -3,7 +3,7 @@ import { Connection, Keypair, PublicKey } from '@solana/web3.js'
 import useAuthStore from 'stores/auth'
 import useProfileStore from 'stores/profile'
 import { keys } from '../services/databaseService'
-import { decode } from '../services/cryptoService'
+import { decode } from '../helpers/cryptoHelper'
 import { WalletType } from '../types/models'
 
 interface Store {

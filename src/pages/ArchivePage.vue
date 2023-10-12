@@ -167,7 +167,7 @@
           'bg-dark text-white': $q.dark.isActive,
         }"
       >
-        <QBar :dense="false" :dark="false">
+        <QBar :dense="false" :dark="false" class="bg-grey-2">
           <QSpace />
           <QBtn
             v-close-popup

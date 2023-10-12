@@ -276,14 +276,14 @@ function onSheet(item: FormatContract) {
     actions.push({
       label: $t('components.archiveList.sheet.share.label'),
       icon: $q.platform.is.android ? 'share' : 'ios_share',
-      color: 'dark',
+      color: 'info',
       id: SheetAction.SHARE,
     })
   }
   actions.push({
     label: $t('components.archiveList.sheet.event.native.label'),
     icon: 'event',
-    color: 'dark',
+    color: 'info',
     id: SheetAction.CALENDAR,
   })
   // Group 2 - Publish

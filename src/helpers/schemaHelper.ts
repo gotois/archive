@@ -8,7 +8,7 @@ import {
   MyContract,
   BaseContext,
 } from '../types/models'
-import { getHash } from '../services/cryptoService'
+import { getHash } from '../helpers/cryptoHelper'
 import { getMimeType } from '../helpers/dataHelper'
 
 export function formatterContracts(

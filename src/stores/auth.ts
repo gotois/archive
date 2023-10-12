@@ -2,7 +2,7 @@ import { LocalStorage, SessionStorage } from 'quasar'
 import { defineStore } from 'pinia'
 import { WebId } from '@inrupt/solid-client'
 import { getDefaultSession } from '@inrupt/solid-client-authn-browser'
-import { getHash } from '../services/cryptoService'
+import { getHash } from '../helpers/cryptoHelper'
 
 interface Store {
   pinIsLoggedIn: boolean
