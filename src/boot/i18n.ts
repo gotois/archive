@@ -24,10 +24,9 @@ declare module 'vue-i18n' {
 /* eslint-enable @typescript-eslint/no-empty-interface */
 
 export default boot(({ app }) => {
-  const locale =
-    String(LocalStorage.getItem('locale')) ??
-    navigator.language ??
-    defaultLocale
+  const locale = LocalStorage.has('locale')
+    ? String(LocalStorage.getItem('locale'))
+    : navigator.language ?? defaultLocale
 
   const i18n = createI18n({
     locale: locale,

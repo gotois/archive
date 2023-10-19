@@ -17,15 +17,17 @@
     align="left"
     :ripple="false"
     text-color="black-9"
-    :label="item.participant.name"
+    :label="item.participant.sameAs"
     :href="item.participant.url"
     @update:model-value="showed = !showed"
   />
   <div v-if="showed" class="q-pa-md row justify-between full-width">
     <div style="width: 100%">
       <QChatMessage
-        :text="[item.proof.proofPurpose]"
-        :stamp="date.formatDate(item.proof.created, 'YYYY/MM/DD HH:mm')"
+        v-for="(proof, objectKey) in item.proof"
+        :key="objectKey"
+        :text="[JSON.stringify(item.proof)]"
+        :stamp="date.formatDate(proof.created, 'YYYY/MM/DD HH:mm')"
         sent
       />
     </div>

@@ -18,31 +18,37 @@ export function formatterContracts(
 }
 
 export function getContractFromLD(jsldContract: Credential) {
-  return {
-    context: jsldContract['@context'],
-    type: jsldContract.type,
-    issuer: jsldContract.issuer,
-    issuanceDate: new Date(jsldContract.issuanceDate),
-    identifier: jsldContract.credentialSubject?.identifier,
-    agent_name: jsldContract.credentialSubject.agent?.name,
-    agent_email: jsldContract.credentialSubject.agent?.email,
-    participant_name: jsldContract.credentialSubject.participant?.name, // todo упростить схему
-    participant_email: jsldContract.credentialSubject.participant?.email, // todo упростить схему
-    participant_url: jsldContract.credentialSubject.participant?.url, // todo упростить схему
-    participant_tel: jsldContract.credentialSubject.participant?.telephone, // todo упростить схему
-    instrument_name: jsldContract.credentialSubject.instrument.name,
-    instrument_description:
-      jsldContract.credentialSubject.instrument.description ?? null,
-    startTime: new Date(jsldContract.credentialSubject.startTime),
-    endTime: jsldContract.credentialSubject.endTime
-      ? new Date(jsldContract.credentialSubject.endTime)
-      : null,
-    images: jsldContract.credentialSubject.object,
-    // url: jsldContract.credentialSubject.url,
-  } as ContractTable
+  return JSON.parse(
+    JSON.stringify({
+      context: jsldContract['@context'],
+      type: jsldContract.type,
+      issuer: jsldContract.issuer,
+      issuanceDate: new Date(jsldContract.issuanceDate),
+      identifier: jsldContract.credentialSubject?.identifier,
+      agent_name: jsldContract.credentialSubject.agent?.name,
+      agent_email: jsldContract.credentialSubject.agent?.email,
+      participant_name: jsldContract.credentialSubject.participant?.sameAs, // todo упростить схему
+      participant_email: jsldContract.credentialSubject.participant?.email, // todo упростить схему
+      participant_url: jsldContract.credentialSubject.participant?.url, // todo упростить схему
+      participant_tel: jsldContract.credentialSubject.participant?.telephone, // todo упростить схему
+      instrument_name: jsldContract.credentialSubject.instrument.name,
+      instrument_description:
+        jsldContract.credentialSubject.instrument.description ?? null,
+      startTime: new Date(jsldContract.credentialSubject.startTime),
+      endTime: jsldContract.credentialSubject.endTime
+        ? new Date(jsldContract.credentialSubject.endTime)
+        : null,
+      images: jsldContract.credentialSubject.object,
+      // url: jsldContract.credentialSubject.url,
+    }),
+  ) as ContractTable
 }
 
-export function createContractLD(contractData: MyContract) {
+export function createContractLD(
+  contractData: MyContract,
+  id: string,
+  resolver: string,
+) {
   const context = new Map()
   context.set('OrganizeAction', BaseContext.schemaOrg + '/OrganizeAction')
   context.set('agent', BaseContext.schemaOrg + '/agent')
@@ -67,7 +73,7 @@ export function createContractLD(contractData: MyContract) {
   context.set('value', BaseContext.schemaOrg + '/value')
   context.set('telephone', BaseContext.schemaOrg + '/telephone')
   context.set('url', BaseContext.schemaOrg + '/url')
-
+  context.set('sameAs', BaseContext.schemaOrg + '/sameAs')
   const credentialSubject = new Map()
   credentialSubject.set('agent', {
     name: contractData?.agent_name,
@@ -75,15 +81,19 @@ export function createContractLD(contractData: MyContract) {
       ? getEmailProperty(contractData.agent_email)
       : null,
   })
-  credentialSubject.set('instrument', {
-    name: contractData.instrument_name,
-    description: contractData.instrument_description,
-  })
+  const instrument = {}
+  if (contractData.instrument_name) {
+    instrument.name = contractData.instrument_name
+  }
+  if (contractData.instrument_description) {
+    instrument.description = contractData.instrument_description
+  }
+  credentialSubject.set('instrument', instrument)
   if (contractData.startTime) {
     credentialSubject.set('startTime', contractData.startTime.toJSON())
   }
   credentialSubject.set('participant', {
-    name: contractData.participant_name,
+    sameAs: contractData.participant_name, // todo - rename participant_name
     email: contractData.participant_email
       ? getEmailProperty(contractData.participant_email)
       : null,
@@ -92,7 +102,6 @@ export function createContractLD(contractData: MyContract) {
       : null,
     url: contractData.participant_url,
   })
-  credentialSubject.set('identifier', [])
   if (contractData.endTime) {
     credentialSubject.set('endTime', contractData.endTime.toJSON())
   }
@@ -113,11 +122,19 @@ export function createContractLD(contractData: MyContract) {
       }),
     )
   }
+  const idName = 'Contract'
+  credentialSubject.set('identifier', [
+    {
+      value: id,
+      name: idName,
+    },
+  ])
   return {
     '@context': [
       'https://www.w3.org/2018/credentials/v1',
       Object.fromEntries(context),
     ],
+    'id': `${resolver}?${idName.toLowerCase()}=${id}`,
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     'type': contractData.type ?? ['VerifiableCredential', 'OrganizeAction'],
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -162,7 +179,7 @@ export function formatterContract(contract: ContractTable) {
   const participant: FormatContractParticipant = {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
     '@type': contract.context ? contract?.context[1]?.participant : 'Person',
-    'name': contract.participant_name,
+    'sameAs': contract.participant_name,
     'url': contract.participant_url,
     'telephone': contract.participant_tel,
   }
@@ -188,8 +205,8 @@ export function formatterContract(contract: ContractTable) {
     'participant': participant,
     'instrument': instrument,
     'identifier': identifier,
-    'startTime': contract.startTime,
-    'endTime': contract.endTime,
+    'startTime': new Date(contract.startTime),
+    'endTime': contract.endTime ? new Date(contract.endTime) : null,
     'object': object ?? [],
     'proof': contract.proof ? contract.proof : null,
     // 'url': contract.url, // todo поддержать url

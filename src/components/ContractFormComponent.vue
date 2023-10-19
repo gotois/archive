@@ -1,11 +1,12 @@
 <template>
   <div
-    v-if="props.contract.credentialSubject?.object?.length"
+    v-if="contract.credentialSubject?.object?.length"
     class="relative-position"
   >
     <template
-      v-for="({ contentUrl, encodingFormat, caption = '' }, urlIndex) in props
-        .contract.credentialSubject.object"
+      v-for="(
+        { contentUrl, encodingFormat, caption = '' }, urlIndex
+      ) in contract.credentialSubject.object"
       :key="urlIndex"
     >
       <object
@@ -43,16 +44,14 @@
     autocomplete="off"
     spellcheck="true"
     greedy
-    :autofocus="!isSigning"
+    :autofocus="!signing"
     @submit="onSubmit"
     @reset="onResetForm"
   >
     <QSelect
       v-model="contractType"
       :options="contractOptions"
-      :readonly="
-        Boolean(isSigning || props.contract.credentialSubject?.instrument?.name)
-      "
+      :readonly="Boolean(signing)"
       :label="$t('contract.type')"
       :hint="
         $q.platform.is.mobile
@@ -85,14 +84,10 @@
     </QSelect>
     <QInput
       v-model.trim="customer"
-      :readonly="
-        Boolean(
-          isSigning || props.contract.credentialSubject?.participant?.name,
-        )
-      "
+      :readonly="Boolean(signing)"
       :label="$t('customer.type')"
       :hint="$t('customer.hint')"
-      :rules="[(val) => val && val.length > 0]"
+      :rules="[validUrlString]"
       :error-message="$t('customer.rules')"
       autocomplete="on"
       name="customer"
@@ -113,9 +108,7 @@
       <template #append>
         <QCheckbox
           v-model="isCustomerOrg"
-          :disable="
-            Boolean(props.contract.credentialSubject?.participant?.name)
-          "
+          :disable="Boolean(contract.credentialSubject?.participant?.name)"
           size="md"
           color="secondary"
           keep-color
@@ -129,13 +122,7 @@
     </QInput>
     <QSelect
       v-model="modelContact"
-      :readonly="
-        Boolean(
-          isSigning ||
-            props.contract.credentialSubject.participant?.email?.length ||
-            props.contract.credentialSubject.participant?.url?.length,
-        )
-      "
+      :readonly="Boolean(signing)"
       :label="$t('customer.contact')"
       autocomplete="off"
       spellcheck="false"
@@ -175,9 +162,7 @@
       <QInput
         v-if="!$q.platform.is.mobile"
         v-model="duration.from"
-        :readonly="
-          Boolean(isSigning || props.contract.credentialSubject.startTime)
-        "
+        :readonly="Boolean(signing)"
         :label="$t('duration.from')"
         class="col no-padding"
         :type="typeof duration.from === 'string' ? 'text' : 'date'"
@@ -192,7 +177,7 @@
       </QInput>
       <QBtnDropdown
         v-if="$q.platform.is.mobile"
-        :disable="Boolean(props.contract.credentialSubject.startTime)"
+        :disable="Boolean(contract.credentialSubject.startTime)"
         square
         outline
         cover
@@ -214,7 +199,7 @@
           <QSeparator vertical spaced inset />
           <QToggle
             v-model="dateNoLimit"
-            :disable="Boolean(props.contract.credentialSubject.startTime)"
+            :disable="Boolean(contract.credentialSubject.startTime)"
             checked-icon="hourglass_disabled"
             unchecked-icon="date_range"
             size="lg"
@@ -228,14 +213,7 @@
         :type="typeof duration.to === 'string' ? 'text' : 'date'"
         :rules="typeof duration.to === 'string' ? ['date'] : []"
         :label="$t('duration.to')"
-        :readonly="
-          isSigning ||
-          Boolean(
-            props.contract.credentialSubject.startTime ||
-              props.contract.credentialSubject.endTime,
-          ) ||
-          dateNoLimit
-        "
+        :readonly="signing || dateNoLimit"
         :dense="$q.platform.is.desktop"
         class="col no-padding"
         mask="date"
@@ -250,8 +228,8 @@
           v-model="dateNoLimit"
           :disable="
             Boolean(
-              props.contract.credentialSubject.startTime ||
-                props.contract.credentialSubject.endTime,
+              contract.credentialSubject.startTime ||
+                contract.credentialSubject.endTime,
             )
           "
           color="secondary"
@@ -275,6 +253,7 @@
       color="secondary"
       :hide-hint="!$q.platform.is.desktop"
       :dense="$q.platform.is.desktop"
+      :readonly="signing"
       hide-bottom-space
       outlined
       square
@@ -285,6 +264,9 @@
         <QIcon name="sticky_note_2" />
       </template>
     </QInput>
+    <template v-if="signing">
+      {{ JSON.stringify(dogovor.presentation.proof, null, 2) }}
+    </template>
     <div class="text-left">
       <QBtn
         ripple
@@ -293,7 +275,7 @@
         :class="{
           'full-width': !$q.platform.is.desktop,
         }"
-        :label="isSigning ? $t('contractForm.sign') : $t('contractForm.submit')"
+        :label="signing ? $t('contractForm.sign') : $t('contractForm.submit')"
         icon-right="save"
         type="submit"
         color="accent"
@@ -304,9 +286,10 @@
   </QForm>
 </template>
 <script lang="ts" setup>
-import { PropType, ref, computed, defineAsyncComponent, onMounted } from 'vue'
+import { PropType, ref, defineAsyncComponent, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
+  uid,
   useQuasar,
   date,
   QForm,
@@ -325,13 +308,22 @@ import {
 } from 'quasar'
 import { storeToRefs } from 'pinia'
 import useAuthStore from 'stores/auth'
+import { demoUserWebId } from 'stores/auth'
 import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
+import useWalletStore from 'stores/wallet'
+import usePodStore from 'stores/pod'
 import { readFilePromise } from '../helpers/fileHelper'
 import { formatDate } from '../helpers/dateHelper'
 import { validTelString } from '../helpers/dataHelper'
 import { validUrlString } from '../helpers/urlHelper'
-import { Credential } from '../types/models'
+import { signMessageUsePhantom } from '../services/phantomWalletService'
+import { signMessageUseSecretKey } from '../services/cryptoService'
+import { Credential, MyContract, WalletType } from '../types/models'
+import { createContractLD, getIdentifierMessage } from '../helpers/schemaHelper'
+import { keys, keyPair } from '../services/databaseService'
+import { WebId } from '@inrupt/solid-client'
+import Dogovor from '../services/contractGeneratorService'
 
 const DateComponent = defineAsyncComponent(
   () => import('components/DateComponent.vue'),
@@ -354,8 +346,12 @@ interface MultiContact {
 
 const emit = defineEmits(['onCreate'])
 const props = defineProps({
-  contract: {
-    type: Object as PropType<Credential>,
+  signing: {
+    type: Boolean as PropType<boolean>,
+    default: false,
+  },
+  dogovor: {
+    type: Object as PropType<Dogovor>,
     default: () => ({}),
   },
 })
@@ -365,32 +361,42 @@ const $q = useQuasar()
 const authStore = useAuthStore()
 const contractStore = useContractStore()
 const profileStore = useProfileStore()
+const walletStore = useWalletStore()
+const podStore = usePodStore()
 
 const { isLoggedIn } = storeToRefs(authStore)
-const isSigning = computed(() => {
-  return (
-    // eslint-disable-next-line no-prototype-builtins
-    props.contract.hasOwnProperty('proof') ||
-    Boolean(props.contract.credentialSubject?.instrument)
+
+let cloneStartDate = null
+const contract = ref<Credential | null>(null)
+const contractType = ref<string | null>(null)
+const customer = ref<WebId>(null)
+const isCustomerOrg = ref<boolean | null>(null)
+const description = ref<string | null>(null)
+const dateNoLimit = ref<boolean | null>(null)
+
+if (props.signing) {
+  contract.value = props.dogovor.presentation
+    .verifiableCredential[0] as Credential
+  customer.value = contract.value.credentialSubject.participant.sameAs
+  contractType.value = contract.value.credentialSubject.instrument?.name
+  isCustomerOrg.value =
+    contract.value.credentialSubject?.agent?.type === 'Organization' // todo - проверить может быть неактуально
+  description.value = contract.value.credentialSubject.instrument.description
+  dateNoLimit.value = Boolean(contract.value.credentialSubject.endTime)
+
+  cloneStartDate = date.clone(
+    new Date(contract.value.credentialSubject.startTime),
   )
-})
+} else {
+  contract.value = props.dogovor.credential
+  cloneStartDate = date.clone(new Date())
+}
 
 const contractOptions = ref(contractStore.getArchiveKeys)
 const contractForm = ref<QForm>()
 const loadingForm = ref(false)
 const modelContact = ref<MultiContact[]>([])
 const currentContactType = ref<InputType>(InputType.text)
-const contractType = ref(props.contract.credentialSubject?.instrument?.name)
-const customer = ref(props.contract.credentialSubject?.participant?.name)
-const isCustomerOrg = ref(
-  props.contract.credentialSubject?.agent?.type === 'Organization',
-)
-const description = ref(
-  props.contract.credentialSubject?.instrument?.description,
-)
-const cloneStartDate = date.clone(
-  props.contract.credentialSubject.startTime ?? new Date(),
-)
 const afterYearDate = new Date(
   date
     .clone(cloneStartDate)
@@ -400,7 +406,6 @@ const duration = ref<Duration>({
   from: formatDate(cloneStartDate),
   to: formatDate(afterYearDate),
 })
-const dateNoLimit = ref(Boolean(props.contract.credentialSubject.endTime))
 
 function filterOptions(val: string, update: (callback: () => void) => void) {
   update(() => {
@@ -472,7 +477,7 @@ function resetForm() {
   description.value = ''
   modelContact.value = []
   duration.value = {
-    from: formatDate(props.contract.credentialSubject.startTime),
+    from: formatDate(contract.value.credentialSubject.startTime),
     to: formatDate(afterYearDate),
   }
   dateNoLimit.value = false
@@ -508,7 +513,7 @@ function onSelectDate(value: string | Duration) {
       message: $t('components.contractForm.selectDate.fail'),
     })
     duration.value = {
-      from: formatDate(props.contract.credentialSubject.startTime),
+      from: formatDate(contract.value.credentialSubject.startTime),
       to: afterYearDate,
     }
     return
@@ -546,32 +551,20 @@ function onFocusInput({ target }: { target: HTMLElement }) {
   target.scrollIntoView()
 }
 
-async function signContract() {
-  await contractStore.createPresentation(props.contract)
-}
-
-function onSubmit() {
-  if (isSigning.value) {
-    return signContract()
-  } else {
-    return saveContract()
-  }
-}
-
-async function saveContract() {
+async function prepareContract() {
   if (!date.isValid(String(duration.value.from))) {
     $q.notify({
       type: 'negative',
       message: $t('components.contractForm.submitDate.invalidStartDate'),
     })
-    return
+    throw new Error('date invalid')
   }
   if (!dateNoLimit.value && !date.isValid(String(duration.value.to))) {
     $q.notify({
       type: 'negative',
       message: $t('components.contractForm.submitDate.invalidEndDate'),
     })
-    return
+    throw new Error('date invalid')
   }
   const startDate: Date =
     typeof duration.value.from === 'string'
@@ -586,19 +579,8 @@ async function saveContract() {
       type: 'negative',
       message: $t('components.contractForm.submitDate.invalidSelectDate'),
     })
-    return
+    throw new Error('date invalid')
   }
-  const participantEmails = modelContact.value.filter(({ type }) => {
-    return type === InputType.email
-  })
-  const participantTels = modelContact.value.filter(({ type }) => {
-    return type === InputType.tel
-  })
-  const participantUrls = modelContact.value.filter(({ type }) => {
-    return type === InputType.url
-  })
-
-  loadingForm.value = true
 
   // Если дата совпадает с текущей, то считаем что договор подписан сегодняшним числом
   if (date.getDateDiff(startDate, new Date(), 'days') === 0) {
@@ -612,36 +594,130 @@ async function saveContract() {
     // иначе упадет ошибка при создании на Pod, если таких договоров будет два
   }
 
+  const images = []
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  for (const file of contract.value.credentialSubject.object) {
+    const res = await fetch(file.contentUrl)
+    const blob = await res.blob()
+    const image = await readFilePromise(blob)
+    images.push(image)
+  }
+
+  const participantEmails = modelContact.value.filter(
+    ({ type }) => type === InputType.email,
+  )
+  const participantTels = modelContact.value.filter(
+    ({ type }) => type === InputType.tel,
+  )
+  const participantUrls = modelContact.value.filter(
+    ({ type }) => type === InputType.url,
+  )
+
+  const person = profileStore.getPersonLD
+  return {
+    agent_name: person.name,
+    agent_email: person.email,
+    agent_legal: isCustomerOrg.value,
+    participant_name: customer.value,
+    participant_email: participantEmails.length
+      ? participantEmails[0].value // todo поддержать массив email
+      : null,
+    participant_tel: participantTels.length ? participantTels[0].value : null, // todo поддержать массив tel
+    participant_url: participantUrls.length ? participantUrls[0].value : null, // todo поддержать массив url
+    instrument_name: contractType.value,
+    instrument_description: description.value,
+    startTime: startDate,
+    endTime: dateNoLimit.value ? null : endDate,
+    images: images,
+  } as MyContract
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+async function signContractUseSolana(contract: Credential) {
+  const message = getIdentifierMessage(contract.credentialSubject)
+  switch (walletStore.type) {
+    case WalletType.Phantom: {
+      const { signature } = await signMessageUsePhantom(message)
+      contract.credentialSubject.identifier.push({
+        value: signature,
+        name: WalletType.Phantom,
+      })
+      break
+    }
+    case WalletType.Secret: {
+      const { secretKey } = await keys.last()
+      const { signature } = signMessageUseSecretKey(message, secretKey)
+      contract.credentialSubject.identifier.push({
+        value: signature,
+        name: WalletType.Secret,
+      })
+      break
+    }
+  }
+  return contract
+}
+
+async function onSubmit() {
+  if (!isLoggedIn.value) {
+    alert('You needs to be sign in!')
+    return
+  }
+  if (props.signing) {
+    return sign()
+  } else {
+    return save()
+  }
+}
+
+async function sign() {
+  loadingForm.value = true
   try {
-    const images = []
-    for (const file of props.contract.credentialSubject.object) {
-      const res = await fetch(file.contentUrl)
-      const blob = await res.blob()
-      const image = await readFilePromise(blob)
-      images.push(image)
-    }
-    const person = profileStore.getPersonLD
-    const newContract = {
-      agent_name: person.name,
-      agent_email: person.email,
-      agent_legal: isCustomerOrg.value,
-      participant_name: customer.value,
-      participant_email: participantEmails.length
-        ? participantEmails[0].value // todo поддержать массив email
-        : null,
-      participant_tel: participantTels.length ? participantTels[0].value : null, // todo поддержать массив tel
-      participant_url: participantUrls.length ? participantUrls[0].value : null, // todo поддержать массив url
-      instrument_name: contractType.value,
-      instrument_description: description.value,
-      startTime: startDate,
-      endTime: dateNoLimit.value ? null : endDate,
-      images: images,
-    }
-    await contractStore.addContract({
-      contractData: newContract,
-      usePod: isLoggedIn.value,
+    const suite = await keyPair.getSuite()
+    await props.dogovor.sign(suite)
+    await props.dogovor.upload()
+    await contractStore.addPresentation(props.dogovor.presentation)
+  } catch (error) {
+    console.error(error)
+    $q.notify({
+      type: 'negative',
+      message: $t('components.contractForm.submitDate.fail'),
     })
-    emit('onCreate', newContract)
+  } finally {
+    loadingForm.value = false
+  }
+}
+
+async function save() {
+  loadingForm.value = true
+
+  try {
+    const id = uid()
+    const url = String(podStore.getResourceBaseUrl) + id + '.ttl'
+    console.warn(url)
+    const newContract = await prepareContract()
+    const gicId = walletStore?.publicKey?.toString()
+    const resolver = gicId ? `did:gic:${gicId}` : demoUserWebId
+    let jsldContract = createContractLD(newContract, id, resolver)
+
+    // todo - поддержать подписание Solana
+    // jsldContract = await signContractUseSolana(jsldContract)
+    // console.log('signed contract', jsldContract)
+
+    const suite = await keyPair.getSuite()
+    const dogovor = await Dogovor.fromCredential(url, jsldContract, suite)
+    await dogovor.upload()
+
+    if (customer.value === authStore.webId) {
+      console.warn('Нелья выбрать себя в испонителя')
+    } else {
+      const webId = customer.value
+      await dogovor.shareLink(url, webId)
+    }
+
+    const newDogovor = await Dogovor.fromUrl(url)
+    await contractStore.addPresentation(newDogovor.presentation)
+
+    emit('onCreate', newDogovor)
     onResetForm()
   } catch (error) {
     console.error(error)
@@ -659,16 +735,16 @@ defineExpose({
 })
 
 onMounted(() => {
-  if (props.contract.credentialSubject.participant?.email) {
+  if (contract.value.credentialSubject.participant?.email) {
     modelContact.value.push({
       type: InputType.email,
-      value: props.contract.credentialSubject.participant.email,
+      value: contract.value.credentialSubject.participant.email,
     })
   }
-  if (props.contract.credentialSubject.participant?.url) {
+  if (contract.value.credentialSubject.participant?.url) {
     modelContact.value.push({
       type: InputType.url,
-      value: props.contract.credentialSubject.participant.url,
+      value: contract.value.credentialSubject.participant.url,
     })
   }
 })

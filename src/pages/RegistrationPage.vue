@@ -226,8 +226,9 @@
       >
         <QCardSection class="fit overflow-auto">
           <ContractFormComponent
-            v-if="privacyContract"
-            :contract="privacyContract"
+            v-if="dogovor"
+            :dogovor="dogovor"
+            :signing="false"
             @on-create="onCreateContract"
           />
         </QCardSection>
@@ -262,6 +263,7 @@ import {
   QBar,
 } from 'quasar'
 import { storeToRefs } from 'pinia'
+import { WebId } from '@inrupt/solid-client'
 import useAuthStore from 'stores/auth'
 import { demoUserWebId } from 'stores/auth'
 import useTutorialStore from 'stores/tutorial'
@@ -275,8 +277,7 @@ import { parse } from '../helpers/markdownHelper'
 import { createContractPDF } from '../helpers/pdfHelper'
 import solidAuth from '../services/authService'
 import { keyPair } from '../services/databaseService'
-import { mintContract } from '../services/contractGeneratorService'
-import { Credential } from '../types/models'
+import Dogovor from '../services/contractGeneratorService'
 
 const PricingComponent = defineAsyncComponent(
   () => import('components/PricingComponent.vue'),
@@ -316,7 +317,7 @@ const stepper = ref<InstanceType<typeof QStepper> | null>(null)
 const step = ref(getCurrentStep() ?? STEP.WELCOME)
 const pricing = ref(false)
 const creatingNewContract = ref(false)
-const privacyContract = ref<InstanceType<typeof Credential> | null>(null)
+const dogovor = ref<InstanceType<typeof Dogovor> | null>(null)
 
 const { isLoggedIn } = storeToRefs(authStore)
 const { did, consumer, phone, email } = storeToRefs(profileStore)
@@ -367,17 +368,15 @@ function onCreateContract() {
     cancel: true,
     persistent: true,
   })
-
   dialog
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     .onOk(async () => {
       const links = await podStore.getContractsLink()
-      for (const id of links) {
-        const credential: Credential = await podStore.getContract(id)
-        dialog.update({
-          message: credential.credentialSubject.instrument.name,
-        })
-        await contractStore.insertContract(credential)
+      for (const link of links) {
+        const message = 'refreshing ' + link
+        const newDogovor = await Dogovor.fromUrl(link)
+        dialog.update({ message: message })
+        await contractStore.insertContract(newDogovor.presentation)
       }
       tutorialStore.tutorialComplete()
       exportKeyPair()
@@ -484,13 +483,14 @@ async function mintPrivacyContract() {
     const html = parse(md)
     const file = await createContractPDF(html)
 
-    return mintContract({
+    const dogovor = Dogovor.mintContract({
       agent: {
         type: 'Organization',
         name: consumer.value,
         email: email.value,
       },
       participant: {
+        sameAs: 'http://gotointeractive.com/profile/card#me' as WebId, // todo пока просто заглушка
         name: pkg.author.name,
         email: pkg.author.email,
         url: pkg.author.url,
@@ -507,6 +507,8 @@ async function mintPrivacyContract() {
         },
       ],
     })
+
+    return dogovor
   }
 }
 
@@ -531,11 +533,11 @@ async function onFinish() {
 
     if (isLoggedIn.value) {
       await podStore.setProfileFOAF()
-      // fixme - сохранять KeyPair DID на SOLID
+      // todo сохранять KeyPair DID на SOLiD
       // ...
     }
 
-    privacyContract.value = await mintPrivacyContract()
+    dogovor.value = await mintPrivacyContract()
     creatingNewContract.value = true
   } catch (error) {
     console.error(error)

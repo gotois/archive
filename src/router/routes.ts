@@ -82,7 +82,7 @@ const routes: RouteRecordRaw[] = [
       {
         path: '',
         name: ROUTE_NAMES.SIGN,
-        component: () => import('pages/CreatePage.vue'), // todo переименовать в SignPage.vue
+        component: () => import('pages/SignPage.vue'),
       },
     ],
   },

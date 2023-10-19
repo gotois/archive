@@ -19,6 +19,9 @@ export default {
     create: {
       title: 'Создание договора',
     },
+    sign: {
+      title: 'Подпись договора',
+    },
     archive: {
       title: 'Архив договоров',
     },
@@ -179,10 +182,10 @@ export default {
     fail: 'Произошла ошибка привязки крипто кошелька',
   },
   customer: {
-    rules: 'Введите исполнителя',
+    rules: 'Введите WebId исполнителя',
     type: 'Исполнитель',
     hintType: 'Установить Юридическое или Физическое лицо',
-    hint: 'ФИО исполнителя, ИНН или WebID',
+    hint: 'WebID',
     contact: 'Контакты',
     hintContact: 'Используйте Email, URL или Tel',
   },
@@ -263,7 +266,7 @@ export default {
   pricing: {
     free: {
       title: 'Бесплатно',
-      description: 'Услуга хранения договоров',
+      description: 'Услуга подписания договоров',
       price: 'за пользователя/месяц',
       ok: 'Начать',
       support: {
@@ -450,11 +453,6 @@ export default {
           google: {
             label: 'Добавить в Google календарь',
           },
-        },
-        upload: {
-          label: 'Загрузить на POD',
-          success: 'Данные записаны на Ваш Pod',
-          fail: 'Произошла ошибка записи данных',
         },
         mail: {
           label: 'Отправить сообщение',

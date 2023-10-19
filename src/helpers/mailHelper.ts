@@ -10,7 +10,7 @@ export function mailUrl(item: FormatContract) {
   if (item.instrument.name) {
     str += '&subject=' + item.instrument.name
   }
-  let body = `Hello ${item.participant.name}.\n\n`
+  let body = `Hello ${item.participant.sameAs}.\n\n`
   if (item.sameAs) {
     body += `Link: ${item.sameAs}`
   }

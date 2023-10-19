@@ -13,12 +13,13 @@
           class="q-pa-md q-ml-auto q-mr-auto q-mt-md q-mb-md"
         >
           <ContractFormComponent
-            v-if="contract"
+            v-if="dogovor"
             ref="contractForm"
             :class="{
               'col-xs-6': $q.platform.is.desktop,
             }"
-            :contract="contract"
+            :dogovor="dogovor"
+            :signing="true"
             @on-create="onCreateContract"
           />
         </QCard>
@@ -41,9 +42,9 @@ import {
   QScrollArea,
 } from 'quasar'
 import { useRouter } from 'vue-router'
-import usePodStore from 'stores/pod'
 import { ROUTE_NAMES } from '../router/routes'
-import { ContractTable, Credential } from '../types/models'
+import { ContractTable } from '../types/models'
+import Dogovor from '../services/contractGeneratorService'
 
 const ContractFormComponent = defineAsyncComponent({
   loader: () => import('components/ContractFormComponent.vue'),
@@ -56,16 +57,15 @@ const ContractFormComponent = defineAsyncComponent({
 const $t = useI18n().t
 const $q = useQuasar()
 const router = useRouter()
-const podStore = usePodStore()
 
 const contractForm = ref<InstanceType<typeof ContractFormComponent> | null>(
   null,
 )
-const contract = ref<Credential | null>(null)
+const dogovor = ref<Dogovor | null>(null)
 
 const metaData = {
-  'title': $t('pages.create.title'),
-  'og:title': $t('pages.create.title'),
+  'title': $t('pages.sign.title'),
+  'og:title': $t('pages.sign.title'),
 }
 
 function onCreateContract(newContract: ContractTable) {
@@ -101,8 +101,8 @@ function onRefresh(done: () => void) {
 onMounted(async () => {
   $q.loading.show()
   try {
-    const fromUrl = router.currentRoute.value.query.from as string
-    contract.value = await podStore.getContract(fromUrl)
+    const link = router.currentRoute.value.query.from as string
+    dogovor.value = await Dogovor.fromUrl(link)
   } catch (error: unknown) {
     console.error(error)
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access

@@ -180,8 +180,9 @@
         <QScrollArea visible style="height: calc(100dvh - 32px)">
           <QCardSection class="q-pt-none">
             <ContractFormComponent
-              v-if="contract"
-              :contract="contract"
+              v-if="dogovor"
+              :dogovor="dogovor"
+              :signing="false"
               @on-create="onCreateContract"
             />
           </QCardSection>
@@ -230,9 +231,9 @@ import useContractStore from 'stores/contract'
 import usePodStore from 'stores/pod'
 import useNotification from 'stores/notification'
 import { ROUTE_NAMES } from '../router/routes'
-import { mintContract } from '../services/contractGeneratorService'
+import Dogovor from '../services/contractGeneratorService'
 import { validUrlString } from '../helpers/urlHelper'
-import { FormatContract, ContractTable, Credential } from '../types/models'
+import { FormatContract } from '../types/models'
 
 const ArchiveListComponent = defineAsyncComponent({
   loader: () => import('components/ArchiveListComponent.vue'),
@@ -287,7 +288,7 @@ const paginationCount = computed(() => {
 })
 const files = ref([])
 const creatingNewContract = ref(false)
-const contract = ref<InstanceType<typeof Credential> | null>(null)
+const dogovor = ref<InstanceType<typeof Dogovor> | null>(null)
 const urlFrom = ref('')
 
 watch(
@@ -304,10 +305,13 @@ function clearFabData() {
   urlFrom.value = ''
 }
 
-function onCreateContract(newContract: ContractTable) {
+function onCreateContract(dogovor: Dogovor) {
+  const dogovorName =
+    dogovor.presentation.verifiableCredential[0].credentialSubject.instrument
+      .name
   $q.notify({
     message: $t('components.contractForm.submitDate.success', {
-      id: newContract.instrument_name.toLocaleLowerCase(),
+      id: dogovorName,
     }),
     type: 'positive',
     actions: [
@@ -315,11 +319,11 @@ function onCreateContract(newContract: ContractTable) {
         label: $t('components.contractForm.submitDate.redirect'),
         color: 'white',
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        async handler() {
-          await router.push({
+        handler() {
+          return router.push({
             name: ROUTE_NAMES.FILTER,
             query: {
-              name: newContract.instrument_name,
+              name: dogovorName,
               page: 1,
             },
           })
@@ -479,7 +483,7 @@ function onFileSelect(files: File[]) {
       caption: file.name,
     })
   }
-  contract.value = mintContract({
+  dogovor.value = Dogovor.mintContract({
     files: filesUrls,
   })
   creatingNewContract.value = true

@@ -164,12 +164,10 @@ import {
 } from 'quasar'
 import { storeToRefs } from 'pinia'
 import useAuthStore from 'stores/auth'
-import useContractStore from 'stores/contract'
-import usePodStore from 'stores/pod'
 import useWalletStore from 'stores/wallet'
 import ContractCarouselComponent from 'components/ContractCarouselComponent.vue'
 import ContractStory from 'components/ContractStory.vue'
-import { FormatContract, ContractTable } from '../types/models'
+import { FormatContract } from '../types/models'
 import { isDateNotOk } from '../helpers/dateHelper'
 import { parse } from '../helpers/markdownHelper'
 import { readFilesPromise, fileShare, canShare } from '../helpers/fileHelper'
@@ -202,8 +200,6 @@ const props = defineProps({
 })
 const emit = defineEmits(['onPaginate', 'onRemove', 'onEdit'])
 const authStore = useAuthStore()
-const contractStore = useContractStore()
-const podStore = usePodStore()
 const walletStore = useWalletStore()
 
 const contracts = toRef(props, 'contracts', [])
@@ -269,7 +265,6 @@ enum SheetAction {
   SHARE = 'share',
   CALENDAR = 'calendar',
   GOOGLE_CALENDAR = 'google-calendar',
-  UPLOAD = 'upload',
   MAIL = 'mail',
   TELEPHONE = 'telephone',
   LAW = 'law',
@@ -310,14 +305,6 @@ function onSheet(item: FormatContract) {
       icon: 'event',
       color: 'secondary',
       id: SheetAction.GOOGLE_CALENDAR,
-    })
-  }
-  if (!item.sameAs && isLoggedIn.value) {
-    actions.push({
-      label: $t('components.archiveList.sheet.upload.label'),
-      icon: 'cloud_upload',
-      color: 'primary',
-      id: SheetAction.UPLOAD,
     })
   }
   // Group 3 - Message
@@ -363,8 +350,6 @@ function onSheet(item: FormatContract) {
         return shareFile(item.instrument.name, icalFile)
       }
       case SheetAction.LINK: {
-        const webId = window.prompt('WebID clent')
-        await podStore.shareLink(item.sameAs, webId)
         const shareLink = window.location.origin + '/sign?from=' + item.sameAs
         return shareURL(shareLink)
       }
@@ -375,9 +360,6 @@ function onSheet(item: FormatContract) {
       case SheetAction.CALENDAR: {
         const file = await createCal(icalId, item)
         return saveIcal(file)
-      }
-      case SheetAction.UPLOAD: {
-        return uploadArchive(item)
       }
       case SheetAction.MAIL: {
         return open(mailUrl(item))
@@ -428,26 +410,6 @@ async function shareFile(title: string, file: File) {
     $q.notify({
       type: 'negative',
       message: $t('components.archiveList.sheet.share.fail'),
-    })
-  }
-}
-
-async function uploadArchive(item: FormatContract) {
-  const currentContract = contractStore.contracts.find(
-    (c: ContractTable) => String(c.id) === String(item.identifier.value),
-  ) as ContractTable // todo поменять тип
-
-  try {
-    await podStore.uploadContract(currentContract)
-    $q.notify({
-      type: 'positive',
-      message: $t('components.archiveList.sheet.upload.success'),
-    })
-  } catch (error) {
-    console.error('Uploading failed', error)
-    $q.notify({
-      type: 'negative',
-      message: $t('components.archiveList.sheet.upload.fail'),
     })
   }
 }

@@ -1,32 +1,15 @@
-import { is, uid, date, LocalStorage, SessionStorage } from 'quasar'
+import { is, date, LocalStorage, SessionStorage } from 'quasar'
 import { defineStore } from 'pinia'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { Ed25519Signature2020 } from '@digitalbazaar/ed25519-signature-2020'
 import usePodStore from './pod'
-import useWalletStore from './wallet'
-import { demoUserWebId } from './auth'
-import {
-  signMessageUseSecretKey,
-  sign,
-  createAndSignPresentation,
-} from '../services/cryptoService'
-import { signMessageUsePhantom } from '../services/phantomWalletService'
-import { db, keys, keyPair } from '../services/databaseService'
-import {
-  formatterContracts,
-  createContractLD,
-  getContractFromLD,
-  getIdentifierMessage,
-} from '../helpers/schemaHelper'
+import { db } from '../services/databaseService'
+import { formatterContracts, getContractFromLD } from '../helpers/schemaHelper'
 import {
   ContractData,
   ContractDate,
   ContractTable,
-  Credential,
   FormatContract,
-  MyContract,
-  WalletType,
+  Presentation,
   ContractIdentifier,
 } from '../types/models'
 
@@ -81,119 +64,38 @@ export default defineStore('contracts', {
       return is.deepEqual(contract.identifier, identifier)
     },
     // Save to IndexedDb
-    async insertContract(credential: Credential) {
-      const contract = getContractFromLD(credential)
-
+    async insertContract(contract: ContractTable) {
       const index = await db.add(contract)
       if (index === 0) {
         return Promise.reject('Cannot add this item')
       }
       this.addContractName(contract.instrument_name)
-
-      return { contract, index }
-    },
-    async createPresentation(contract: Credential) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const key = await keyPair.last()
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
-      const suite = new Ed25519Signature2020({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        key: key,
-      })
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return createAndSignPresentation({
-        signedVC: contract,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        suite,
-      })
-    },
-    async signContract(contract: Credential) {
-      const walletStore = useWalletStore()
-      // подписываем документ и обновляем идентификатор подписи
-      const message = getIdentifierMessage(contract.credentialSubject)
-      switch (walletStore.type) {
-        case WalletType.Phantom: {
-          const { signature } = await signMessageUsePhantom(message)
-          contract.credentialSubject.identifier.push({
-            value: signature,
-            name: WalletType.Phantom,
-          })
-          break
-        }
-        case WalletType.Secret: {
-          const { secretKey } = await keys.last()
-          const { signature } = signMessageUseSecretKey(message, secretKey)
-          contract.credentialSubject.identifier.push({
-            value: signature,
-            name: WalletType.Secret,
-          })
-          break
-        }
-      }
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const key = await keyPair.last()
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
-      const suite = new Ed25519Signature2020({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        key: key,
-      })
-      const signedVC = await sign({
-        credential: contract,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        suite,
-      })
-      return signedVC
-    },
-    async addContract({
-      contractData,
-      usePod = false,
-    }: {
-      contractData: MyContract
-      usePod: boolean
-    }) {
-      const walletStore = useWalletStore()
-
-      // Step 1: JSON-LD
-      const id = uid()
-      const jsldContract = createContractLD(contractData)
-      const idName = 'Contract'
-      const gicId = walletStore?.publicKey?.toString()
-      const resolver = gicId ? `did:gic:${gicId}` : demoUserWebId
-      jsldContract.id = `${resolver}?${idName.toLowerCase()}=${id}`
-      jsldContract.credentialSubject.identifier.push({
-        value: id,
-        name: idName,
-      })
-      // fixme поддержать открытие договора в браузере через ссылку по его url
-      // jsldContract.credentialSubject.url =
-      //   'https://archive.gotointeractive.com/' + id
-      // todo: сейчас происходит сохранение в БД Dexie даже если не выполнились остальные условия.
-      //  Требуется сохранять во внутреннее хранилище и удалять тот контракт, что не прошел весь цикл обслуживания
-      const { contract, index } = await this.insertContract(jsldContract)
       // после первичной записи обновляем идентификатор Dexie
-      jsldContract.credentialSubject.identifier.push({
+      contract.identifier.push({
         name: 'Dexie',
         propertyID: db.verno, // используемая версия движка
         value: index,
       })
-      const count = await db.contracts.count()
-      this.setContractsCount(count)
-
-      const signedVC = await this.signContract(jsldContract)
-      contract.identifier = jsldContract.credentialSubject.identifier
-      contract.proof = signedVC.proof
-
-      // Save to SOLiD Pod
-      if (usePod) {
-        const podStore = usePodStore()
-        contract.resource_url = await podStore.uploadContract(signedVC)
-      }
       // обновляем запись в БД
       await db.contracts.where('id').equals(index).modify({
-        resource_url: contract.resource_url,
         identifier: contract.identifier,
-        proof: contract.proof,
       })
+
+      return { contract, index }
+    },
+    async addPresentation(presentation: Presentation) {
+      const mycontract = getContractFromLD(presentation.verifiableCredential[0])
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      mycontract.proof = JSON.parse(JSON.stringify(presentation.proof))
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      mycontract.identifier = JSON.parse(
+        JSON.stringify(
+          presentation.verifiableCredential[0].credentialSubject.identifier,
+        ),
+      )
+      const { contract } = await this.insertContract(mycontract)
+      const count = await db.contracts.count()
+      this.setContractsCount(count)
       this.contracts.push(contract)
     },
     async editContract(contract: FormatContract) {

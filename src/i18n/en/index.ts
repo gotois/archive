@@ -18,6 +18,9 @@ export default {
     create: {
       title: 'Create a contract',
     },
+    sign: {
+      title: 'Sign a contract',
+    },
     archive: {
       title: 'Archive of contracts',
     },
@@ -177,10 +180,10 @@ export default {
     fail: 'Error binding crypto wallet',
   },
   customer: {
-    rules: 'Enter performer',
+    rules: 'Enter performer WebId',
     type: 'Performer',
     hintType: 'Set Entity or Individual',
-    hint: 'Performer full name, INN, or WebID',
+    hint: 'WebId',
     contact: 'Contact',
     hintContact: 'Use Email, URL or Tel',
   },
@@ -440,11 +443,6 @@ export default {
           google: {
             label: 'Add to Google Calendar',
           },
-        },
-        upload: {
-          label: 'Upload to POD',
-          success: 'Data written to your Pod',
-          fail: 'Error writing data',
         },
         mail: {
           label: 'Send message',

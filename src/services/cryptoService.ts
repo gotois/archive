@@ -16,7 +16,21 @@ import ed25519Ctx from 'ed25519-signature-2020-context'
 import { Ed25519Signature2020 } from '@digitalbazaar/ed25519-signature-2020'
 // @ts-ignore
 import { JsonLdDocumentLoader } from 'jsonld-document-loader'
-import { Credential, ProofCredential } from '../types/models'
+import { Credential, ProofCredential, Presentation } from '../types/models'
+
+export interface Suite {
+  verifier: unknown
+  verificationMethod: string
+  useNativeCanonize: unknown
+  type: string
+  signer: unknown
+  requiredKeyType: string
+  proof: unknown
+  key: unknown
+  contextUrl: string
+  canonizeOptions: unknown
+  LDKeyClass: unknown
+}
 
 function createDocumentLoader() {
   const jdl = new JsonLdDocumentLoader()
@@ -33,12 +47,12 @@ function createDocumentLoader() {
 
 const documentLoader = createDocumentLoader()
 
-export function sign({
+export function issue({
   credential,
   suite,
 }: {
   credential: Credential
-  suite: Ed25519Signature2020
+  suite: Suite
 }) {
   return vc.issue({
     credential,
@@ -47,25 +61,21 @@ export function sign({
   }) as Promise<ProofCredential>
 }
 
-export function createAndSignPresentation({
-  signedVC,
+export function signPresentation({
+  presentation,
   suite,
   challenge = uid(),
 }: {
-  signedVC: unknown
-  suite: Ed25519Signature2020
+  presentation: Presentation
+  suite: Suite
   challenge?: string
 }) {
-  const presentation = vc.createPresentation({
-    verifiableCredential: [signedVC],
-  })
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return vc.signPresentation({
     presentation,
     suite,
     challenge,
     documentLoader: documentLoader,
-  })
+  }) as Promise<Presentation>
 }
 
 export function verifySign(

@@ -20,7 +20,7 @@
           class="bg-white rounded-borders"
           name="img:/icons/safari-pinned-tab.svg"
         />
-        Мои договоры
+        Подписать "Мои договоры" онлайн
       </h1>
       <h2
         class="text-center text-white no-padding text-weight-medium"

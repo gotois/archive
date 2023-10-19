@@ -21,9 +21,9 @@ export default async (id: string, object: FormatContract) => {
     })
   }
   const attendee = []
-  if (object.participant.name && object.participant.email) {
+  if (object.participant.sameAs && object.participant.email) {
     attendee.push({
-      name: object.participant.name,
+      name: object.participant.sameAs,
       email: object.participant.email,
     })
   }

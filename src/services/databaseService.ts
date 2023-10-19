@@ -3,6 +3,9 @@ import { Platform } from 'quasar'
 import { PublicKey } from '@solana/web3.js'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
+import { Ed25519Signature2020 } from '@digitalbazaar/ed25519-signature-2020'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020'
 import recommendationContractTypes from './recommendationContractEnum'
 import {
@@ -15,6 +18,7 @@ import {
   FullTextDocument,
 } from '../types/models'
 import { createContractLD, getContractFromLD } from '../helpers/schemaHelper'
+import { Suite } from './cryptoService'
 
 export function reset() {
   return Promise.all([
@@ -64,7 +68,7 @@ class KeyPairDatabase extends Dexie {
       throw new Error('KeyPair not found')
     }
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return
-    return Ed25519VerificationKey2020.from(keysTable)
+    return Ed25519VerificationKey2020.from(keysTable) as unknown
   }
 
   generateNewKeyPair(controller: string) {
@@ -76,6 +80,14 @@ class KeyPairDatabase extends Dexie {
   async setKeyPair(keyPair: DIDTable) {
     await this.keyPair.clear()
     return this.keyPair.add(keyPair)
+  }
+
+  async getSuite() {
+    const key = await keyPair.last()
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    return new Ed25519Signature2020({
+      key: key,
+    }) as Suite
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await

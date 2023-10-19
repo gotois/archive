@@ -1,3 +1,5 @@
+import { WebId } from '@inrupt/solid-client'
+
 export enum WalletType {
   Phantom = 'Phantom Wallet',
   Secret = 'Unknown Wallet', // Solana base58
@@ -20,7 +22,7 @@ export interface ContractTable {
   proof?: Proof
   agent_name: string
   agent_email: string
-  participant_name: string
+  participant_name: string // todo - вместо этого сейчас participant_sameAs
   participant_email: string // todo поддержать массив
   participant_tel: string // todo поддержать массив
   participant_url: string // todo поддержать массив
@@ -80,6 +82,13 @@ export interface Credential {
   'credentialSubject': CredentialSubject
 }
 
+export interface Presentation {
+  '@context': string[]
+  'proof': Proof | Proof[]
+  'type': string[]
+  'verifiableCredential': ProofCredential[]
+}
+
 export enum BaseContext {
   schemaOrg = 'https://schema.org',
 }
@@ -124,7 +133,8 @@ export interface CredentialTypes {
 
 export interface Agent {
   type: 'Organization' | 'Person'
-  name: string
+  sameAs: WebId
+  name?: string
   email?: string
   telephone?: string
   url?: string
