@@ -170,7 +170,7 @@ import useWalletStore from 'stores/wallet'
 import ContractCarouselComponent from 'components/ContractCarouselComponent.vue'
 import ContractStory from 'components/ContractStory.vue'
 import { FormatContract, ContractTable } from '../types/models'
-import { isDateNotOk, formatterDate } from '../helpers/dateHelper'
+import { isDateNotOk } from '../helpers/dateHelper'
 import { parse } from '../helpers/markdownHelper'
 import { readFilesPromise, fileShare, canShare } from '../helpers/fileHelper'
 import createCal from '../helpers/calendarHelper'
@@ -180,6 +180,7 @@ import { open } from '../helpers/urlHelper'
 
 const $q = useQuasar()
 const $t = useI18n().t
+const { locale } = useI18n()
 
 const props = defineProps({
   paginationCount: {
@@ -226,6 +227,11 @@ function getItems(from: number, size: number): FormatContract[] {
 }
 
 function prettyDate(item: FormatContract) {
+  const formatterDate = new Intl.DateTimeFormat(locale.value, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
   if (
     !isDateNotOk(item.startTime) &&
     (item.endTime === null || item.endTime === undefined)

@@ -21,9 +21,3 @@ export function formatIcal(x: Date): string {
   })
   return date.formatDate(buildDate, 'YYYYMMDDTHHmmss') + '00Z'
 }
-
-export const formatterDate = new Intl.DateTimeFormat('ru', {
-  year: 'numeric',
-  month: 'short',
-  day: 'numeric',
-})

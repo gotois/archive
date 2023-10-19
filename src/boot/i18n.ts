@@ -3,6 +3,8 @@ import { LocalStorage } from 'quasar'
 import { createI18n } from 'vue-i18n'
 import messages from '../i18n'
 
+const defaultLocale = 'ru'
+
 export type MessageLanguages = keyof typeof messages
 // Type-define 'en-US' as the master schema for the resource
 export type MessageSchema = (typeof messages)['ru']
@@ -22,9 +24,14 @@ declare module 'vue-i18n' {
 /* eslint-enable @typescript-eslint/no-empty-interface */
 
 export default boot(({ app }) => {
+  const locale =
+    String(LocalStorage.getItem('locale')) ??
+    navigator.language ??
+    defaultLocale
+
   const i18n = createI18n({
-    locale: LocalStorage.getItem('locale') ?? navigator.language,
-    fallbackLocale: 'ru',
+    locale: locale,
+    fallbackLocale: defaultLocale,
     legacy: false,
     messages,
   })

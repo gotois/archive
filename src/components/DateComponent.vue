@@ -35,16 +35,6 @@ interface Range {
 
 const model = ref(new Date())
 const rangeStart = ref<Range>(null)
-const calendarLocale = ref<unknown>(
-  locale.value === 'ru'
-    ? {
-        days: $t('calendar.days').split('_'),
-        daysShort: $t('calendar.daysShort').split('_'),
-        months: $t('calendar.months').split('_'),
-        monthsShort: $t('calendar.monthsShort').split('_'),
-      }
-    : null,
-)
 
 const emit = defineEmits(['select'])
 const props = defineProps({
@@ -61,6 +51,17 @@ const options = computed(() => {
     }
   }
   return limitOptionsFn
+})
+
+const calendarLocale = computed(() => {
+  return locale.value === 'ru'
+    ? {
+        days: $t('calendar.days').split('_'),
+        daysShort: $t('calendar.daysShort').split('_'),
+        months: $t('calendar.months').split('_'),
+        monthsShort: $t('calendar.monthsShort').split('_'),
+      }
+    : null
 })
 
 function limitOptionsFn(dateStr: string) {

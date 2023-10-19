@@ -3,6 +3,7 @@
     v-model="model"
     :events="events"
     :options="options"
+    class="no-box-shadow"
     default-view="Calendar"
     :first-day-of-week="locale === 'ru' ? 1 : null"
     :locale="calendarLocale"

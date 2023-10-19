@@ -165,6 +165,8 @@ export default {
     type: 'Full name',
     email: 'Email',
     emailRules: 'Enter email address',
+    phone: 'Phone',
+    phoneRules: 'Enter phone number',
     rules: 'Enter consumer (client) of the service',
     save: 'Save',
     success: 'Profile updated',

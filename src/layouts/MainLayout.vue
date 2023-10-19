@@ -509,7 +509,7 @@
       >
         {{ $t('documentTypes.title') }}
       </p>
-      <div style="height: calc(100vh - 380px)" class="scroll">
+      <div style="height: calc(100dvh - 380px)" class="scroll">
         <QChip
           v-for="([name, value], objectKey) in getArchiveNames"
           :key="objectKey"
@@ -545,7 +545,7 @@
         />
       </div>
       <CalendarEventsComponent
-        class="absolute-bottom q-ml-auto q-mr-auto q-mb-md q-mt-md"
+        class="absolute-bottom q-ml-auto q-mr-auto q-mb-none q-mt-md"
         @select="onFilterById"
       />
     </QDrawer>
