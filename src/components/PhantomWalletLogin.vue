@@ -225,11 +225,31 @@ function closeDialog() {
   showDialog.value = false
 }
 
+function createSignInData() {
+  const now: Date = new Date()
+  const uri = window.location.href
+  const currentUrl = new URL(uri)
+  const domain = currentUrl.host
+  const currentDateTime = now.toISOString()
+
+  return {
+    domain,
+    statement:
+      'Clicking Sign or Approve only means you have proved this wallet is owned by you. This request will not trigger any blockchain transaction or cost any gas fee.',
+    version: '1',
+    nonce: 'oBbLoEldZs',
+    chainId: 'mainnet',
+    issuedAt: currentDateTime,
+    resources: ['https://archive.gotointeractive.com'],
+  }
+}
+
 async function tryToLoginPhantomWallet() {
   const solana = getSolana()
   if (!solana) {
     return open('https://phantom.app')
   }
+  const signInDate = createSignInData()
   let publicKey = ''
   /* eslint-disable */
   if (solana.isConnected) {
@@ -238,8 +258,8 @@ async function tryToLoginPhantomWallet() {
   } else {
     try {
       /* eslint-disable */
-      const result = await solana.connect({ onlyIfTrusted: false })
-      publicKey = result.publicKey.toBase58()
+      const loginData = await solana.signIn(signInDate)
+      publicKey = loginData.address.toBase58()
       /* eslint-enable */
     } catch (error) {
       console.error(error)
