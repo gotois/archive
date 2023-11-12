@@ -11,20 +11,24 @@
       class="bg-accent self-baseline"
       square
       style="padding-top: 120px"
+      :style="{
+        paddingLeft: $q.platform.is.desktop ? 'calc(50vw / 2)' : null,
+        paddingRight: $q.platform.is.desktop ? 'calc(50vw / 2)' : null,
+      }"
     >
       <h1
         class="text-white text-center text-uppercase text-weight-light no-margin no-padding"
         style="font-size: xxx-large; line-height: 1"
       >
-        <QIcon
-          class="bg-white rounded-borders"
-          name="img:/icons/safari-pinned-tab.svg"
-        />
-        Подписать "Мои договоры" онлайн
+        Подписать "Мои&#x202F;договоры" онлайн
       </h1>
       <h2
-        class="text-center text-white no-padding text-weight-medium"
+        class="text-white no-padding text-weight-medium"
         style="font-size: x-large; line-height: 1"
+        :class="{
+          'text-left': $q.platform.is.desktop,
+          'text-center': $q.platform.is.mobile,
+        }"
       >
         Решение упрощает обмен документами для физических и юридических лиц в
         любом бизнес-процессе.
@@ -32,32 +36,50 @@
 
       <QCardActions align="center">
         <QBtn
-          color="primary"
-          class="text-primary q-ma-lg q-pl-xl q-pr-xl"
-          style="width: 282px"
+          color="white"
+          class="q-ma-lg"
+          :style="{
+            paddingLeft: '24px',
+            paddingRight: '24px',
+          }"
           :class="{
             'full-width': !$q.platform.is.desktop,
           }"
           glossy
+          push
           fab
           @click="onRegister"
         >
-          Подключиться
+          <QIcon
+            v-if="$q.platform.is.desktop"
+            name="img:/icons/safari-pinned-tab.svg"
+          />
+          <span class="q-ml-xs text-accent text-weight-bolder">
+            Подключиться
+          </span>
         </QBtn>
       </QCardActions>
 
       <QSpace class="q-mb-xl" />
 
-      <QCardSection class="q-ml-lg q-pt-none text-left">
-        <QBtn icon="play_arrow" color="black" :href="applicationURL"
-          >Google Play</QBtn
-        >
-      </QCardSection>
+      <div class="flex justify-center row">
+        <QCardSection class="flex q-pt-none text-left col-12">
+          <QBtn icon="play_arrow" color="black" :href="applicationURL">
+            Google Play
+          </QBtn>
+        </QCardSection>
+      </div>
     </QCard>
 
     <h2 class="text-center">Делаем ЭДО для всех</h2>
 
-    <div class="flex justify-center">
+    <div
+      class="flex justify-center"
+      :style="{
+        marginLeft: $q.platform.is.desktop ? 'calc(50vw / 2)' : null,
+        marginRight: $q.platform.is.desktop ? 'calc(50vw / 2)' : null,
+      }"
+    >
       <QCard
         flat
         class="q-ma-xs"
@@ -86,24 +108,37 @@
     </div>
 
     <h3 class="text-center">Почему это удобно</h3>
-    <div class="flex flex-center">
-      <QCard class="q-ma-md" bordered>
-        <QCardSection>Дружелюбная платформа</QCardSection>
+    <div
+      class="flex justify-center"
+      :class="{
+        row: !$q.platform.is.mobile,
+      }"
+    >
+      <QCard class="q-ma-md col-3" bordered>
+        <QCardSection>
+          <div class="text-h6">Безопасность данных</div>
+          <div class="text-subtitle2">
+            Использование Solid Pod обеспечивает децентрализованное хранение
+            данных, где каждый пользователь контролирует свои данные.
+          </div>
+        </QCardSection>
       </QCard>
-      <QCard class="q-ma-md" bordered>
-        <QCardSection>Быстрый старт</QCardSection>
+      <QCard class="q-ma-md col-3" bordered>
+        <QCardSection>
+          <div class="text-h6"> Дружелюбная платформа </div>
+          <div class="text-subtitle2">
+            Интерфейс спроектирован упростить процессы управления и маршруты
+            согласования для простого обмена договорами.
+          </div>
+        </QCardSection>
       </QCard>
-      <QCard class="q-ma-md" bordered>
-        <QCardSection>Выгодные тарифы</QCardSection>
-      </QCard>
-      <QCard class="q-ma-md" bordered>
-        <QCardSection>Маршруты согласования</QCardSection>
-      </QCard>
-      <QCard class="q-ma-md" bordered>
-        <QCardSection>Поддержка различных ЭП</QCardSection>
-      </QCard>
-      <QCard class="q-ma-md" bordered>
-        <QCardSection>Техподдержка</QCardSection>
+      <QCard class="q-ma-md col-3" bordered>
+        <QCardSection>
+          <div class="text-h6"> Доступность </div>
+          <div class="text-subtitle2">
+            Обеспечиваем помощь и техническую поддержку для быстрого старта.
+          </div>
+        </QCardSection>
       </QCard>
     </div>
 
@@ -120,31 +155,43 @@
         }"
       >
         <QTimelineEntry
-          title="Регистрация"
+          title="Авторизация Solana"
           subtitle="Шаг 1"
           color="accent"
           icon="key"
           class="text-left"
         >
-          <div>Установите свою электронную подпись.</div>
+          <div>Авторизуйтесь под своим аккаунтом.</div>
         </QTimelineEntry>
         <QTimelineEntry
-          title="Подписание агентом"
+          title="Подключите свой Solid Pod"
           subtitle="Шаг 2"
+          color="accent"
+          icon="memory"
+          class="text-left"
+        >
+          <div>Выберите сервер где будете хранить документы.</div>
+        </QTimelineEntry>
+        <QTimelineEntry
+          title="Загрузите свою электронную подпись"
+          subtitle="Шаг 3"
           color="accent"
           icon="done_outline"
           class="text-left"
         >
-          <div>Создайте новый документ или подпишите полученный.</div>
+          <div>Загрузите свою электронную подпись.</div>
         </QTimelineEntry>
         <QTimelineEntry
-          title="Подписание контрагентом"
-          subtitle="Шаг 3"
+          title="Подписание агентом и контрагентом"
+          subtitle="Шаг 4"
           color="positive"
           icon="done_all"
           class="text-left"
         >
-          <div>Передайте договор контрагенту и дождитесь его подписания.</div>
+          <div
+            >Создайте новый документ и дождитесь подписания контрагентом.</div
+          >
+          <div>Или подпишите полученный агентский договоры по ссылке.</div>
         </QTimelineEntry>
       </div>
     </QTimeline>
@@ -199,8 +246,16 @@
         </QCard>
       </QExpansionItem>
     </QList>
-    <QList padding class="rounded-borders bg-grey-9 text-white">
-      <QItemLabel header class="text-center text-subtitle1"
+    <QList
+      padding
+      class="rounded-borders bg-grey-9 text-white"
+      dark
+      :style="{
+        paddingLeft: $q.platform.is.desktop ? 'calc(50vw / 2)' : null,
+        paddingRight: $q.platform.is.desktop ? 'calc(50vw / 2)' : null,
+      }"
+    >
+      <QItemLabel header class="text-center text-subtitle1 text-uppercase"
         >Социальные сети</QItemLabel
       >
       <QItem v-ripple clickable href="https://forum.gotointeractive.com">
@@ -210,19 +265,21 @@
         </QCardSection>
       </QItem>
 
-      <QSeparator spaced />
+      <QSeparator spaced dark />
 
-      <QItemLabel header class="text-center text-subtitle1">GIC DAO</QItemLabel>
+      <QItemLabel header class="text-center text-subtitle1 text-uppercase"
+        >GIC DAO</QItemLabel
+      >
       <QItem v-ripple clickable href="https://gotointeractive.com">
         <QCardSection>
           <QItemLabel lines="1" class="text-left">Сайт</QItemLabel>
-          <QItemLabel caption></QItemLabel>
+          <QItemLabel caption>Ботификация жизни начинается здесь</QItemLabel>
         </QCardSection>
       </QItem>
       <QItem v-ripple clickable href="mailto:support@gotointeractive.com">
         <QCardSection>
-          <QItemLabel lines="1" class="text-left"> Центр поддержки </QItemLabel>
-          <QItemLabel caption></QItemLabel>
+          <QItemLabel lines="1" class="text-left">Поддержка</QItemLabel>
+          <QItemLabel caption>Обратиться в центр поддержки</QItemLabel>
         </QCardSection>
       </QItem>
     </QList>
