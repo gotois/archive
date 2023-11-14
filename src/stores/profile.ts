@@ -59,6 +59,8 @@ export default defineStore('profile', {
         'email': getEmailProperty(state.email),
         'name': state.consumer,
         'image': state.avatar,
+        'telephone': state.phone?.length ? state.phone : null,
+        'homepage': null, // todo поддержать значение личного сайта
       }
     },
   },

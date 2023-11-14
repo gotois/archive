@@ -82,82 +82,6 @@
         <QIcon name="assignment" />
       </template>
     </QSelect>
-    <QInput
-      v-model.trim="customer"
-      :readonly="Boolean(signing)"
-      :label="$t('customer.type')"
-      :hint="$t('customer.hint')"
-      :rules="[validUrlString]"
-      :error-message="$t('customer.rules')"
-      autocomplete="on"
-      name="customer"
-      type="text"
-      spellcheck="true"
-      :hide-bottom-space="!$q.platform.is.desktop"
-      :hide-hint="!$q.platform.is.desktop"
-      :dense="$q.platform.is.desktop"
-      outlined
-      lazy-rules
-      square
-      color="secondary"
-      @focus="onFocusInput"
-    >
-      <template #prepend>
-        <QIcon name="assignment_ind" />
-      </template>
-      <template #append>
-        <QCheckbox
-          v-model="isCustomerOrg"
-          :disable="Boolean(contract.credentialSubject?.participant?.name)"
-          size="md"
-          color="secondary"
-          keep-color
-          checked-icon="group"
-          unchecked-icon="person"
-          :dense="$q.platform.is.desktop"
-        >
-          <QTooltip>{{ $t('customer.hintType') }}</QTooltip>
-        </QCheckbox>
-      </template>
-    </QInput>
-    <QSelect
-      v-model="modelContact"
-      :readonly="Boolean(signing)"
-      :label="$t('customer.contact')"
-      autocomplete="off"
-      spellcheck="false"
-      :hint="$t('customer.hintContact')"
-      :hide-hint="!$q.platform.is.desktop"
-      :hide-bottom-space="!$q.platform.is.desktop"
-      :type="currentContactType"
-      :error-message="$t('consumer.emailRules')"
-      :behavior="$q.platform.is.ios === true ? 'dialog' : 'menu'"
-      :dense="$q.platform.is.desktop"
-      color="secondary"
-      use-input
-      use-chips
-      multiple
-      hide-dropdown-icon
-      square
-      outlined
-      @new-value="onNewValueContact"
-      @input-value="onInputValueContact"
-      @focus="onFocusInput"
-    >
-      <template #prepend>
-        <QIcon name="contacts" />
-      </template>
-      <template #selected-item="item">
-        <QChip
-          :icon="formatIconContact(item.opt)"
-          :dense="$q.platform.is.desktop"
-          color="transparent"
-          square
-        >
-          {{ item.opt.value }}
-        </QChip>
-      </template>
-    </QSelect>
     <div class="row justify-center items-center">
       <QInput
         v-if="!$q.platform.is.mobile"
@@ -244,6 +168,98 @@
         </QToggle>
       </QInput>
     </div>
+    <QBtn
+      v-if="customers.length === 0"
+      ripple
+      square
+      stretch
+      :class="{
+        'full-width': !$q.platform.is.desktop,
+      }"
+      no-caps
+      label="Добавить в маршрут исполнителей"
+      icon="route"
+      color="secondary"
+      @click="onAddCustomer"
+    />
+    <template v-if="customers.length">
+      <QInput
+        v-model.trim="customer"
+        :readonly="Boolean(signing)"
+        :label="$t('customer.type')"
+        :hint="$t('customer.hint')"
+        :rules="[validUrlString]"
+        :error-message="$t('customer.rules')"
+        autocomplete="on"
+        name="customer"
+        type="text"
+        spellcheck="true"
+        :hide-bottom-space="!$q.platform.is.desktop"
+        :hide-hint="!$q.platform.is.desktop"
+        :dense="$q.platform.is.desktop"
+        outlined
+        lazy-rules
+        square
+        color="secondary"
+        @focus="onFocusInput"
+      >
+        <template #prepend>
+          <QIcon name="assignment_ind" />
+        </template>
+        <template #append>
+          <QCheckbox
+            v-model="isCustomerOrg"
+            :disable="Boolean(contract.credentialSubject?.participant?.name)"
+            size="md"
+            color="secondary"
+            keep-color
+            checked-icon="group"
+            unchecked-icon="person"
+            :dense="$q.platform.is.desktop"
+          >
+            <QTooltip>{{ $t('customer.hintType') }}</QTooltip>
+          </QCheckbox>
+        </template>
+      </QInput>
+      <QSelect
+        v-model="modelContact"
+        :readonly="Boolean(signing)"
+        :label="$t('customer.contact')"
+        autocomplete="off"
+        spellcheck="false"
+        :hint="$t('customer.hintContact')"
+        :hide-hint="!$q.platform.is.desktop"
+        :hide-bottom-space="!$q.platform.is.desktop"
+        :type="currentContactType"
+        :error-message="$t('consumer.emailRules')"
+        :behavior="$q.platform.is.ios === true ? 'dialog' : 'menu'"
+        :dense="$q.platform.is.desktop"
+        color="secondary"
+        use-input
+        use-chips
+        multiple
+        hide-dropdown-icon
+        square
+        outlined
+        @new-value="onNewValueContact"
+        @input-value="onInputValueContact"
+        @focus="onFocusInput"
+      >
+        <template #prepend>
+          <QIcon name="contacts" />
+        </template>
+        <template #selected-item="item">
+          <QChip
+            :icon="formatIconContact(item.opt)"
+            :dense="$q.platform.is.desktop"
+            color="transparent"
+            square
+          >
+            {{ item.opt.value }}
+          </QChip>
+        </template>
+      </QSelect>
+    </template>
     <QInput
       v-model.trim="description"
       :label="$t('description.type')"
@@ -369,6 +385,7 @@ const { isLoggedIn } = storeToRefs(authStore)
 let cloneStartDate = null
 const contract = ref<Credential | null>(null)
 const contractType = ref<string | null>(null)
+const customers = ref([])
 const customer = ref<WebId>(null)
 const isCustomerOrg = ref<boolean | null>(null)
 const description = ref<string | null>(null)
@@ -377,6 +394,9 @@ const dateNoLimit = ref<boolean | null>(null)
 if (props.signing) {
   contract.value = props.dogovor.presentation
     .verifiableCredential[0] as Credential
+
+  customers.value.push(contract.value.credentialSubject.participant)
+
   customer.value = contract.value.credentialSubject.participant.sameAs
   contractType.value = contract.value.credentialSubject.instrument?.name
   isCustomerOrg.value =
@@ -390,6 +410,11 @@ if (props.signing) {
 } else {
   const { credential } = props.dogovor
   contract.value = credential
+
+  if (contract.value.credentialSubject.participant) {
+    customers.value.push(contract.value.credentialSubject.participant)
+  }
+
   if (credential.credentialSubject.participant) {
     customer.value = credential.credentialSubject.participant?.sameAs
   }
@@ -446,6 +471,10 @@ function formatIconContact(contact: MultiContact) {
       return 'question_mark'
     }
   }
+}
+
+function onAddCustomer() {
+  customers.value.push(null)
 }
 
 function onInputValueContact(text: string) {
@@ -627,18 +656,37 @@ async function prepareContract() {
   const participantUrls = modelContact.value.filter(
     ({ type }) => type === InputType.url,
   )
-
   const person = profileStore.getPersonLD
+  // если не установлен кастомер, считаем кастомером создателя
+  const participantName = customers.value.length
+    ? customer.value
+    : authStore.webId
+  const participantEmail = customer.value
+    ? participantEmails.length
+      ? participantEmails[0].value // todo поддержать массив email
+      : null
+    : person.email
+  const participantTel = customer.value
+    ? participantTels.length
+      ? participantTels[0].value
+      : null // todo поддержать массив tel
+    : person.telephone
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const participantUrl = customer.value
+    ? participantUrls.length
+      ? participantUrls[0].value
+      : null // todo поддержать массив url
+    : person.homepage
+
   return {
     agent_name: person.name,
     agent_email: person.email,
     agent_legal: isCustomerOrg.value,
-    participant_name: customer.value,
-    participant_email: participantEmails.length
-      ? participantEmails[0].value // todo поддержать массив email
-      : null,
-    participant_tel: participantTels.length ? participantTels[0].value : null, // todo поддержать массив tel
-    participant_url: participantUrls.length ? participantUrls[0].value : null, // todo поддержать массив url
+    participant_name: participantName,
+    participant_email: participantEmail,
+    participant_tel: participantTel,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    participant_url: participantUrl,
     instrument_name: contractType.value,
     instrument_description: description.value,
     startTime: startDate,
@@ -722,9 +770,7 @@ async function save() {
     const dogovor = await Dogovor.fromCredential(url, jsldContract, suite)
     await dogovor.upload()
 
-    if (customer.value === authStore.webId) {
-      console.warn('Нелья выбрать себя в испонителя')
-    } else {
+    if (customers.value.length > 0) {
       const webId = customer.value
       await dogovor.shareLink(url, webId)
     }
