@@ -38,9 +38,6 @@ export default {
       oidc: { title: 'OIDC' },
       final: { title: 'Agreement for use' },
     },
-    pricing: {
-      title: 'Pricing: plans for every',
-    },
     unknown: {
       seo: {
         title: 'Page not found',
@@ -135,7 +132,6 @@ export default {
   oidc: {
     issuerHint: 'Select URL address',
     tutorialHint: 'OIDC Issuer is the URL of your SOLID provider',
-    label: 'OIDC Issuer Address',
     login: 'Log in',
     skip: 'Skip',
     issuerTooltipEmpty: 'Data is required to sign contracts.',
@@ -247,10 +243,10 @@ export default {
       body: 'Be sure to read the text of the contract that you sign. And only if you are sure, agree to it.',
     },
     oidc: {
-      title: 'Connecting WebID',
+      title: 'Connecting Solid server',
       caption: 'Provide your unique identifier',
       body:
-        'You can store your contracts in the cloud; our service uses SOLiD technology. To authenticate, log in using your [OIDC Issuer](# "OpenID Connect Issuer") address.' +
+        'You can store your contracts in the cloud; our service uses [SOLiD](https://solidproject.org). To authenticate, log in using your [OIDC Issuer](# "OpenID Connect Issuer") address.' +
         "<br><br>If you have any questions or need assistance, please refer to the technical documentation of the standard or contact our [support team](mailto:support{'@'}gotointeractive.com). We are ready to answer all your questions regarding the use of our service.",
       ok: 'Next',
     },

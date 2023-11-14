@@ -380,7 +380,7 @@ if (props.signing) {
   customer.value = contract.value.credentialSubject.participant.sameAs
   contractType.value = contract.value.credentialSubject.instrument?.name
   isCustomerOrg.value =
-    contract.value.credentialSubject?.agent?.type === 'Organization' // todo - проверить может быть неактуально
+    contract.value.credentialSubject?.agent?.type === 'Organization'
   description.value = contract.value.credentialSubject.instrument.description
   dateNoLimit.value = Boolean(contract.value.credentialSubject.endTime)
 
@@ -388,7 +388,22 @@ if (props.signing) {
     new Date(contract.value.credentialSubject.startTime),
   )
 } else {
-  contract.value = props.dogovor.credential
+  const { credential } = props.dogovor
+  contract.value = credential
+  if (credential.credentialSubject.participant) {
+    customer.value = credential.credentialSubject.participant?.sameAs
+  }
+  if (credential.credentialSubject.instrument) {
+    contractType.value = credential.credentialSubject.instrument?.name
+  }
+  if (credential.credentialSubject.agent) {
+    isCustomerOrg.value =
+      credential.credentialSubject.agent?.type === 'Organization'
+  }
+  if (credential.credentialSubject.instrument) {
+    description.value = credential.credentialSubject.instrument?.description
+  }
+
   cloneStartDate = date.clone(new Date())
 }
 

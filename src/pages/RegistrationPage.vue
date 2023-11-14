@@ -187,10 +187,7 @@
             v-html="parse($t('tutorial.oidc.body'))"
           >
           </div>
-          <OIDCIssuerComponent
-            :label="$t('oidc.label')"
-            @on-complete="onOnlineAuthorize"
-          >
+          <OIDCIssuerComponent @on-complete="onOnlineAuthorize">
             <QTooltip>{{ $t('oidc.tutorialHint') }}</QTooltip>
           </OIDCIssuerComponent>
         </QStep>
@@ -213,12 +210,15 @@
     </QScrollArea>
     <QDialog
       v-model="creatingNewContract"
-      maximized
-      position="top"
+      :allow-focus-outside="false"
+      position="standard"
+      persistent
+      no-shake
       transition-show="slide-up"
       transition-hide="slide-down"
     >
       <QCard
+        style="max-width: 640px"
         :class="{
           'bg-white text-white': !$q.dark.isActive,
           'bg-dark text-white': $q.dark.isActive,

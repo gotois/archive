@@ -20,7 +20,7 @@ export default route(() => {
   })
   // Если пользователь уже входил через Pod, пробуем авторизовать автоматически
   Router.beforeEach(async (to) => {
-    const { code, state, error } = to.query
+    const { code, state, error, lang } = to.query
 
     // hack - специальный путь для сброса состояния приложения
     if (to.path === '/reset') {
@@ -33,6 +33,9 @@ export default route(() => {
     }
     if (error || !(code && state)) {
       return
+    }
+    if (lang) {
+      LocalStorage.set('locale', lang)
     }
     const podStore = usePodStore()
     if (!podStore.getOidcIssuer) {

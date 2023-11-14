@@ -21,7 +21,7 @@
             {{ $t('pricing.free.description') }}
           </div>
           <div>
-            <span class="vertical-middle text-h3">{{ basePrice }}</span>
+            <span class="vertical-middle text-h4">{{ basePrice }}</span>
             {{ $t('pricing.free.price') }}
           </div>
           <PhantomWalletLogin
@@ -75,7 +75,7 @@
             {{ $t('pricing.premium.description') }}
           </div>
           <div>
-            <span class="vertical-middle text-h3">
+            <span class="vertical-middle text-h4">
               {{ premiumPrice }}
             </span>
             {{ $t('pricing.premium.price') }}
@@ -132,7 +132,7 @@
             {{ $t('pricing.vip.description') }}
           </div>
           <div>
-            <span class="vertical-middle text-h3">
+            <span class="vertical-middle text-h4">
               {{ vipPrice }}
             </span>
             {{ $t('pricing.vip.price') }}
@@ -206,9 +206,9 @@ const router = useRouter()
 const $q = useQuasar()
 const $t = useI18n().t
 
-const basePrice = '$0'
-const premiumPrice = '$20'
-const vipPrice = '$200'
+const basePrice = '0 SOL'
+const premiumPrice = '1 SOL'
+const vipPrice = '3 SOL'
 
 const freeSupport = ref([
   {

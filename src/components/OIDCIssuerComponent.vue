@@ -9,6 +9,7 @@
       :prefix="prefix"
       :rules="[checkUrl]"
       :hint="$t('oidc.issuerHint')"
+      :dense="$q.platform.is.desktop"
       type="url"
       :use-input="!oidcIssuer"
       square
@@ -30,7 +31,7 @@
       :class="{
         'full-width': $q.platform.is.mobile,
       }"
-      :color="oidcIssuer.length ? 'accent' : 'secondary'"
+      :color="oidcIssuer?.length ? 'accent' : 'secondary'"
       :label="oidcIssuer ? $t('oidc.login') : $t('oidc.skip')"
       :loading="$q.loading.isActive"
       no-caps
@@ -54,7 +55,8 @@ const emit = defineEmits(['onComplete'])
 defineProps({
   label: {
     type: String as PropType<string>,
-    required: true,
+    required: false,
+    default: undefined,
   },
 })
 

@@ -12,7 +12,6 @@ export enum ROUTE_NAMES {
   TUTORIAL = 'tutorial',
   PRIVACY = 'privacy',
   LOGIN = 'login',
-  PRICING = 'pricing',
 }
 
 export enum STEP {
@@ -116,17 +115,6 @@ const routes: RouteRecordRaw[] = [
         path: '',
         name: ROUTE_NAMES.LOGIN,
         component: () => import('pages/LoginPage.vue'),
-      },
-    ],
-  },
-  {
-    path: '/' + ROUTE_NAMES.PRICING,
-    component: () => import('layouts/EmptyLayout.vue'),
-    children: [
-      {
-        path: '',
-        name: ROUTE_NAMES.PRICING,
-        component: () => import('pages/PricingPage.vue'),
       },
     ],
   },

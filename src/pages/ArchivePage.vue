@@ -157,6 +157,7 @@
       :allow-focus-outside="false"
       position="top"
       persistent
+      no-shake
       transition-show="slide-up"
       transition-hide="slide-down"
     >

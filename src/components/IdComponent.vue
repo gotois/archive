@@ -35,6 +35,7 @@
     <QInput
       v-if="did"
       :hint="$t('tutorial.data.hint')"
+      :hide-hint="Boolean(did)"
       :model-value="did"
       color="secondary"
       :dense="$q.platform.is.desktop"

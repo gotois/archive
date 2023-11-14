@@ -114,7 +114,7 @@
         row: !$q.platform.is.mobile,
       }"
     >
-      <QCard class="q-ma-md col-3" bordered>
+      <QCard class="q-ma-md col-3" :bordered="$q.platform.is.desktop">
         <QCardSection>
           <div class="text-h6">Безопасность данных</div>
           <div class="text-subtitle2">
@@ -123,7 +123,7 @@
           </div>
         </QCardSection>
       </QCard>
-      <QCard class="q-ma-md col-3" bordered>
+      <QCard class="q-ma-md col-3" :bordered="$q.platform.is.desktop">
         <QCardSection>
           <div class="text-h6"> Дружелюбная платформа </div>
           <div class="text-subtitle2">
@@ -132,7 +132,7 @@
           </div>
         </QCardSection>
       </QCard>
-      <QCard class="q-ma-md col-3" bordered>
+      <QCard class="q-ma-md col-3" :bordered="$q.platform.is.desktop">
         <QCardSection>
           <div class="text-h6"> Доступность </div>
           <div class="text-subtitle2">
@@ -321,6 +321,7 @@ async function onRegister() {
     name: ROUTE_NAMES.TUTORIAL,
     query: {
       step: STEP.WELCOME,
+      lang: 'ru',
     },
   })
 }
