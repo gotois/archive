@@ -17,21 +17,24 @@
       }"
     >
       <h1
-        class="text-white text-center text-uppercase text-weight-light no-margin no-padding"
-        style="font-size: xxx-large; line-height: 1"
+        class="text-white text-uppercase text-center text-weight-light no-margin no-padding"
+        :style="{
+          'font-size': $q.platform.is.mobile ? '5vmax' : '3vmax',
+          'line-height': 1,
+        }"
       >
         Подписать "Мои&#x202F;договоры" онлайн
       </h1>
       <h2
-        class="text-white no-padding text-weight-medium"
+        class="text-white text-weight-medium"
         style="font-size: x-large; line-height: 1"
         :class="{
-          'text-left': $q.platform.is.desktop,
-          'text-center': $q.platform.is.mobile,
+          'text-center no-padding': $q.platform.is.desktop,
+          'text-left q-pa-md': $q.platform.is.mobile,
         }"
       >
-        Решение упрощает обмен документами для физических и юридических лиц в
-        любом бизнес-процессе.
+        Решение упрощает хранение и обмен документами для физических и
+        юридических лиц в любом бизнес-процессе.
       </h2>
 
       <QCardActions align="center">
@@ -71,20 +74,21 @@
       </div>
     </QCard>
 
-    <h2 class="text-center">Делаем ЭДО для всех</h2>
-
-    <div
-      class="flex justify-center"
-      :style="{
-        marginLeft: $q.platform.is.desktop ? 'calc(50vw / 2)' : null,
-        marginRight: $q.platform.is.desktop ? 'calc(50vw / 2)' : null,
+    <h2
+      :class="{
+        'text-center': $q.platform.is.desktop,
+        'q-pl-md q-pr-md': !$q.platform.is.desktop,
       }"
+      >Делаем ЭДО для всех</h2
     >
+
+    <div class="flex justify-center full-width">
       <QCard
         flat
-        class="q-ma-xs"
-        :class="{
-          'full-width': !$q.platform.is.desktop,
+        class="q-ma-xs full-width"
+        :style="{
+          paddingLeft: $q.platform.is.desktop ? 'calc(50vw / 2)' : null,
+          paddingRight: $q.platform.is.desktop ? 'calc(50vw / 2)' : null,
         }"
       >
         <QCardSection>
@@ -107,34 +111,41 @@
       </QCard>
     </div>
 
-    <h3 class="text-center">Почему это удобно</h3>
+    <h2
+      :class="{
+        'text-center': $q.platform.is.desktop,
+        'q-pl-md q-pr-md': !$q.platform.is.desktop,
+      }"
+    >
+      Почему это удобно
+    </h2>
     <div
       class="flex justify-center"
       :class="{
         row: !$q.platform.is.mobile,
       }"
     >
-      <QCard class="q-ma-md col-3" :bordered="$q.platform.is.desktop">
+      <QCard class="q-mr-md col-3" :bordered="$q.platform.is.desktop" flat>
         <QCardSection>
           <div class="text-h6">Безопасность данных</div>
           <div class="text-subtitle2">
-            Использование Solid Pod обеспечивает децентрализованное хранение
-            данных, где каждый пользователь контролирует свои данные.
+            Каждый наш клиент контролирует свои данные используя
+            децентрализованное хранилище Solid Pod.
           </div>
         </QCardSection>
       </QCard>
-      <QCard class="q-ma-md col-3" :bordered="$q.platform.is.desktop">
+      <QCard class="q-mr-md col-3" :bordered="$q.platform.is.desktop" flat>
         <QCardSection>
-          <div class="text-h6"> Дружелюбная платформа </div>
+          <div class="text-h6">Дружелюбная платформа</div>
           <div class="text-subtitle2">
-            Интерфейс спроектирован упростить процессы управления и маршруты
-            согласования для простого обмена договорами.
+            Интерфейс спроектирован для удобного обмена документами через
+            маршруты согласования.
           </div>
         </QCardSection>
       </QCard>
-      <QCard class="q-ma-md col-3" :bordered="$q.platform.is.desktop">
+      <QCard class="col-3" :bordered="$q.platform.is.desktop" flat>
         <QCardSection>
-          <div class="text-h6"> Доступность </div>
+          <div class="text-h6">Доступность</div>
           <div class="text-subtitle2">
             Обеспечиваем помощь и техническую поддержку для быстрого старта.
           </div>
@@ -142,12 +153,17 @@
       </QCard>
     </div>
 
-    <QSpace />
+    <QSpace class="q-mt-xl" />
 
     <QTimeline class="q-mt-md q-mb-md q-pl-md q-pr-md">
-      <QTimelineEntry heading class="text-center"
-        >Как это работает</QTimelineEntry
+      <h2
+        :class="{
+          'text-center': $q.platform.is.desktop,
+          'q-pl-md q-pr-md': !$q.platform.is.desktop,
+        }"
       >
+        Как это работает
+      </h2>
       <div
         :style="{
           marginLeft: $q.platform.is.desktop ? 'calc(50vw / 2)' : null,
@@ -155,49 +171,60 @@
         }"
       >
         <QTimelineEntry
-          title="Авторизация Solana"
+          title="Подключение криптокошелька"
           subtitle="Шаг 1"
           color="accent"
           icon="key"
           class="text-left"
         >
-          <div>Авторизуйтесь под своим аккаунтом.</div>
+          <div>Авторизуйтесь под своим аккаунтом Solana.</div>
         </QTimelineEntry>
         <QTimelineEntry
-          title="Подключите свой Solid Pod"
+          title="Подключение Pod"
           subtitle="Шаг 2"
           color="accent"
           icon="memory"
           class="text-left"
         >
-          <div>Выберите сервер где будете хранить документы.</div>
+          <div>
+            Выберите свой Solid сервер где планируете хранить документы.
+          </div>
         </QTimelineEntry>
         <QTimelineEntry
-          title="Загрузите свою электронную подпись"
+          title="Загрузите электронную подпись"
           subtitle="Шаг 3"
           color="accent"
           icon="done_outline"
           class="text-left"
         >
-          <div>Загрузите свою электронную подпись.</div>
+          <div>
+            Загрузите или сгенерируйте свою электронную подпись Ed25519.
+          </div>
         </QTimelineEntry>
         <QTimelineEntry
-          title="Подписание агентом и контрагентом"
+          title="Загрузите документ"
           subtitle="Шаг 4"
           color="positive"
           icon="done_all"
           class="text-left"
         >
-          <div
-            >Создайте новый документ и дождитесь подписания контрагентом.</div
-          >
-          <div>Или подпишите полученный агентский договоры по ссылке.</div>
+          <div>
+            Загрузите файл документа и создайте маршрут его на подписания.
+          </div>
+          <div>Контрагент сможет его подписать по ссылке.</div>
         </QTimelineEntry>
       </div>
     </QTimeline>
 
-    <h3 class="text-center">Часто задаваемые вопросы</h3>
+    <h3
+      :class="{
+        'text-center': $q.platform.is.desktop,
+        'q-pl-md q-pr-md': !$q.platform.is.desktop,
+      }"
+      >Часто задаваемые вопросы</h3
+    >
     <QList
+      :padding="$q.platform.is.desktop"
       class="q-mb-xl rounded-borders text-left"
       :style="{
         marginLeft: $q.platform.is.desktop ? 'calc(50vw / 2)' : null,
@@ -247,13 +274,13 @@
       </QExpansionItem>
     </QList>
     <QList
-      padding
-      class="rounded-borders bg-grey-9 text-white"
-      dark
+      :padding="$q.platform.is.desktop"
+      class="bg-grey-9 text-white"
       :style="{
         paddingLeft: $q.platform.is.desktop ? 'calc(50vw / 2)' : null,
         paddingRight: $q.platform.is.desktop ? 'calc(50vw / 2)' : null,
       }"
+      dark
     >
       <QItemLabel header class="text-center text-subtitle1 text-uppercase"
         >Социальные сети</QItemLabel

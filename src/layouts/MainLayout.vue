@@ -58,40 +58,6 @@
           @click="rightDrawerOpen = !rightDrawerOpen"
         />
       </QToolbar>
-      <QTabs
-        shrink
-        stretch
-        inline-label
-        mobile-arrows
-        dense
-        :align="$q.platform.is.desktop ? 'center' : 'justify'"
-      >
-        <QRouteTab
-          :to="{ name: 'archive' }"
-          icon="archive"
-          :label="$t('header.archive')"
-          @click="onArchiveRoute"
-        >
-          <QBadge
-            v-if="contractsCount > 0"
-            color="secondary"
-            transparent
-            :dense="$q.platform.is.desktop"
-            class="q-ml-xs"
-            align="middle"
-            :style="{
-              height: $q.platform.is.mobile ? '24px' : 'auto',
-            }"
-            :floating="$q.platform.is.desktop"
-            :rounded="$q.platform.is.desktop"
-          >
-            <template v-if="contractsCount">
-              {{ contractsCount > 999 ? '999+' : String(contractsCount) }}
-            </template>
-            <QTooltip v-if="isLoggedIn">Вы подключены к SOLID серверу</QTooltip>
-          </QBadge>
-        </QRouteTab>
-      </QTabs>
     </QHeader>
     <QDrawer
       v-model="leftDrawerOpen"
@@ -131,7 +97,7 @@
             icon="app_registration"
             class="full-width q-pl-md q-pr-md q-mb-md block"
             :label="$t('navigation.register')"
-            @click="$router.push('/pricing')"
+            @click="$router.push({ name: ROUTE_NAMES.PROMO })"
           />
           <QBtn
             v-else-if="isLoggedIn"
@@ -509,6 +475,23 @@
       >
         {{ $t('documentTypes.title') }}
       </p>
+      <QBadge
+        v-if="contractsCount > 0"
+        color="secondary"
+        transparent
+        :dense="$q.platform.is.desktop"
+        class="q-ma-xs"
+        align="middle"
+        :style="{
+          height: $q.platform.is.mobile ? '24px' : 'auto',
+        }"
+        :floating="$q.platform.is.desktop"
+        :rounded="$q.platform.is.desktop"
+      >
+        <template v-if="contractsCount">
+          {{ contractsCount > 999 ? '999+' : String(contractsCount) }}
+        </template>
+      </QBadge>
       <div style="height: calc(100dvh - 380px)" class="scroll">
         <QChip
           v-for="([name, value], objectKey) in getArchiveNames"
@@ -594,8 +577,6 @@ import {
   QList,
   QDrawer,
   QBadge,
-  QTabs,
-  QRouteTab,
   QToolbar,
   QHeader,
   QLayout,
@@ -679,19 +660,6 @@ const otp = ref<InstanceType<typeof QOtp> | null>(null)
 
 function onToggleLeftDrawer(): void {
   leftDrawerOpen.value = !leftDrawerOpen.value
-}
-
-async function onArchiveRoute(e: Event) {
-  e.preventDefault()
-  if ('Notification' in window && Notification.permission === 'default') {
-    await Notification.requestPermission()
-  }
-  return router.push({
-    name: ROUTE_NAMES.ARCHIVE,
-    query: {
-      page: 1,
-    },
-  })
 }
 
 async function onCopyText(text: string) {

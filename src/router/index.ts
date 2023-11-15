@@ -28,13 +28,13 @@ export default route(() => {
       SessionStorage.clear()
       await reset()
       deleteDatabases()
-      window.location.replace(ROUTE_NAMES.ROOT)
+      window.location.replace(ROUTE_NAMES.PROMO)
       return
     }
     if (error || !(code && state)) {
       return
     }
-    if (lang) {
+    if (lang && !LocalStorage.has('locale')) {
       LocalStorage.set('locale', lang)
     }
     const podStore = usePodStore()

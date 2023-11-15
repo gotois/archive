@@ -63,8 +63,6 @@ export default {
     notfound: 'No results',
   },
   header: {
-    create: 'Create',
-    archive: 'Archive',
     demo: 'Demo',
     free: 'Free',
   },

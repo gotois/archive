@@ -64,8 +64,6 @@ export default {
     notfound: 'Нет результатов',
   },
   header: {
-    create: 'Создание',
-    archive: 'Архив',
     demo: 'Демо',
     free: 'Беспл.',
   },

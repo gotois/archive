@@ -23,13 +23,35 @@
 <script lang="ts" setup>
 import { toRef } from 'vue'
 import { QToolbarTitle, QTooltip, QIcon } from 'quasar'
+import { useRouter } from 'vue-router'
 import { open } from '../helpers/urlHelper'
 import pkg from '../../package.json'
+import { ROUTE_NAMES } from '../router/routes'
+
+const router = useRouter()
 
 const navigatorVersion = toRef(pkg, 'version')
 const [domain, repo] = pkg.repository.split(':')
 
-function onOpenRepo() {
-  open(`https://${domain}.com/${repo}`)
+async function onOpenRepo(e: Event) {
+  e.preventDefault()
+  if ('Notification' in window && Notification.permission === 'default') {
+    await Notification.requestPermission()
+  }
+  switch (router.currentRoute.value.name) {
+    case ROUTE_NAMES.FILTER:
+    case ROUTE_NAMES.SEARCH:
+    case ROUTE_NAMES.SUPPORT:
+    case ROUTE_NAMES.ARCHIVE:
+      return router.push({
+        name: ROUTE_NAMES.ARCHIVE,
+        query: {
+          page: 1,
+        },
+      })
+    default: {
+      return open(`https://${domain}.com/${repo}`)
+    }
+  }
 }
 </script>
