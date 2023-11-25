@@ -13,10 +13,3 @@ export function parseJwt(token: string): unknown {
     return undefined
   }
 }
-
-export function validTelString(tel: string) {
-  if (!tel.startsWith('+')) {
-    return false
-  }
-  return true
-}

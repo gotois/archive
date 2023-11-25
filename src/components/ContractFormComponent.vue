@@ -221,44 +221,19 @@
           </QCheckbox>
         </template>
       </QInput>
-      <QSelect
-        v-model="modelContact"
+      <MultiContactComponent
+        :model-value="modelContact"
         :readonly="Boolean(signing)"
         :label="$t('customer.contact')"
-        autocomplete="off"
-        spellcheck="false"
         :hint="$t('customer.hintContact')"
+        :error-message="$t('consumer.emailRules')"
         :hide-hint="!$q.platform.is.desktop"
         :hide-bottom-space="!$q.platform.is.desktop"
-        :type="currentContactType"
-        :error-message="$t('consumer.emailRules')"
-        :behavior="$q.platform.is.ios === true ? 'dialog' : 'menu'"
         :dense="$q.platform.is.desktop"
         color="secondary"
-        use-input
-        use-chips
-        multiple
-        hide-dropdown-icon
-        square
-        outlined
-        @new-value="onNewValueContact"
-        @input-value="onInputValueContact"
         @focus="onFocusInput"
-      >
-        <template #prepend>
-          <QIcon name="contacts" />
-        </template>
-        <template #selected-item="item">
-          <QChip
-            :icon="formatIconContact(item.opt)"
-            :dense="$q.platform.is.desktop"
-            color="transparent"
-            square
-          >
-            {{ item.opt.value }}
-          </QChip>
-        </template>
-      </QSelect>
+        @update:model-value="(value) => (modelContact = value)"
+      />
     </template>
     <QInput
       v-model.trim="description"
@@ -319,8 +294,6 @@ import {
   QCheckbox,
   QTooltip,
   QToggle,
-  QChip,
-  patterns,
 } from 'quasar'
 import { storeToRefs } from 'pinia'
 import useAuthStore from 'stores/auth'
@@ -329,9 +302,9 @@ import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
 import useWalletStore from 'stores/wallet'
 import usePodStore from 'stores/pod'
+import MultiContactComponent from 'components/MultiContact.vue'
 import { readFilePromise } from '../helpers/fileHelper'
 import { formatDate } from '../helpers/dateHelper'
-import { validTelString } from '../helpers/dataHelper'
 import { validUrlString } from '../helpers/urlHelper'
 import { signMessageUsePhantom } from '../services/phantomWalletService'
 import { signMessageUseSecretKey } from '../services/cryptoService'
@@ -436,7 +409,6 @@ const contractOptions = ref(contractStore.getArchiveKeys)
 const contractForm = ref<QForm>()
 const loadingForm = ref(false)
 const modelContact = ref<MultiContact[]>([])
-const currentContactType = ref<InputType>(InputType.text)
 const afterYearDate = new Date(
   date
     .clone(cloneStartDate)
@@ -456,61 +428,8 @@ function filterOptions(val: string, update: (callback: () => void) => void) {
   })
 }
 
-function formatIconContact(contact: MultiContact) {
-  switch (contact.type) {
-    case InputType.email: {
-      return 'alternate_email'
-    }
-    case InputType.url: {
-      return 'link'
-    }
-    case InputType.tel: {
-      return 'add_call'
-    }
-    default: {
-      return 'question_mark'
-    }
-  }
-}
-
 function onAddCustomer() {
   customers.value.push(null)
-}
-
-function onInputValueContact(text: string) {
-  if (validTelString(text)) {
-    currentContactType.value = InputType.tel
-  } else if (validUrlString(text)) {
-    currentContactType.value = InputType.url
-  } else if (text.includes('@') && patterns.testPattern.email(text)) {
-    currentContactType.value = InputType.email
-  } else {
-    currentContactType.value = InputType.text
-  }
-}
-
-function onNewValueContact(
-  text: string,
-  done: (value: MultiContact, format: string) => void,
-) {
-  text = text.toLowerCase().replaceAll(' ', '')
-  if (validTelString(text)) {
-    return done(
-      {
-        type: InputType.tel,
-        value: text.replace(/\D/g, ''),
-      },
-      'add-unique',
-    )
-  } else if (validUrlString(text)) {
-    return done({ type: InputType.url, value: text }, 'add-unique')
-  } else if (text.includes('@') && patterns.testPattern.email(text)) {
-    return done({ type: InputType.email, value: text }, 'add-unique')
-  }
-  $q.notify({
-    type: 'warning',
-    message: 'Unknown type text. Use Tel, Email or URL',
-  })
 }
 
 function resetForm() {
