@@ -17,8 +17,9 @@ import {
   WalletType,
   FullTextDocument,
 } from '../types/models'
-import { createContractLD, getContractFromLD } from '../helpers/schemaHelper'
+import { getContractFromLD } from '../helpers/schemaHelper'
 import { Suite } from './cryptoService'
+import Dogovor from './contractGeneratorService'
 
 export function reset() {
   return Promise.all([
@@ -220,7 +221,8 @@ class ContractDatabase extends Dexie {
           .table('contracts')
           .toCollection()
           .modify((contract) => {
-            const ld = createContractLD(contract as MyContract)
+            // fixme - add follow next parameters: 'id', 'resolver'
+            const ld = Dogovor.createContractLD(contract as MyContract)
             const ct = getContractFromLD(ld)
             Object.keys(ct).forEach((key) => {
               // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access

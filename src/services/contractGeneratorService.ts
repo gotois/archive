@@ -20,10 +20,21 @@ import {
   universalAccess,
 } from '@inrupt/solid-client'
 import { RDF, SCHEMA_INRUPT } from '@inrupt/vocab-common-rdf'
-import { OwnerContract, Credential, Presentation } from '../types/models'
+import {
+  OwnerContract,
+  Credential,
+  Presentation,
+  MyContract,
+  CredentialSubject,
+  BaseContext,
+} from '../types/models'
 import { issue, signPresentation, Suite } from '../services/cryptoService'
+import { getMimeType } from '../helpers/dataHelper'
+import { getEmailProperty } from '../helpers/schemaHelper'
 
 export default class Dogovor {
+  resourceUrl = ''
+
   get credential() {
     if (this._credential) {
       return this._credential as Credential
@@ -178,7 +189,7 @@ export default class Dogovor {
   }
 
   upload() {
-    return saveSolidDatasetAt(this.resourceUrl as string, this.dataset, {
+    return saveSolidDatasetAt(this.resourceUrl, this.dataset, {
       fetch,
     })
   }
@@ -460,5 +471,108 @@ export default class Dogovor {
     } as Credential
 
     return dogovor
+  }
+
+  static createContractLD(
+    contractData: MyContract,
+    id: string,
+    resolver: string,
+  ) {
+    const context = new Map()
+    context.set('OrganizeAction', BaseContext.schemaOrg + '/OrganizeAction')
+    context.set('agent', BaseContext.schemaOrg + '/agent')
+    context.set('name', BaseContext.schemaOrg + '/name')
+    context.set('email', BaseContext.schemaOrg + '/email')
+    context.set('instrument', BaseContext.schemaOrg + '/instrument')
+    context.set('description', BaseContext.schemaOrg + '/description')
+    context.set(
+      'participant',
+      BaseContext.schemaOrg +
+        '/' +
+        (contractData.agent_legal ? 'Organization' : 'Person'),
+    )
+    context.set('identifier', BaseContext.schemaOrg + '/identifier')
+    context.set('startTime', BaseContext.schemaOrg + '/startTime')
+    context.set('endTime', BaseContext.schemaOrg + '/endTime')
+    context.set('propertyID', BaseContext.schemaOrg + '/propertyID')
+    context.set('value', BaseContext.schemaOrg + '/PropertyValue')
+    context.set('object', BaseContext.schemaOrg + '/ImageObject')
+    context.set('encodingFormat', BaseContext.schemaOrg + '/encodingFormat')
+    context.set('contentUrl', BaseContext.schemaOrg + '/contentUrl')
+    context.set('value', BaseContext.schemaOrg + '/value')
+    context.set('telephone', BaseContext.schemaOrg + '/telephone')
+    context.set('url', BaseContext.schemaOrg + '/url')
+    context.set('sameAs', BaseContext.schemaOrg + '/sameAs')
+    const credentialSubject = new Map()
+    credentialSubject.set('agent', {
+      name: contractData?.agent_name,
+      email: contractData.agent_email
+        ? getEmailProperty(contractData.agent_email)
+        : null,
+    })
+    const instrument = {}
+    if (contractData.instrument_name) {
+      instrument.name = contractData.instrument_name
+    }
+    if (contractData.instrument_description) {
+      instrument.description = contractData.instrument_description
+    }
+    credentialSubject.set('instrument', instrument)
+    if (contractData.startTime) {
+      credentialSubject.set('startTime', contractData.startTime.toJSON())
+    }
+    credentialSubject.set('participant', {
+      sameAs: contractData.participant_name, // todo - rename participant_name
+      email: contractData.participant_email
+        ? getEmailProperty(contractData.participant_email)
+        : null,
+      telephone: contractData.participant_tel
+        ? 'tel:' + contractData.participant_tel
+        : null,
+      url: contractData.participant_url,
+    })
+    if (contractData.endTime) {
+      credentialSubject.set('endTime', contractData.endTime.toJSON())
+    }
+    if (contractData.images) {
+      credentialSubject.set(
+        'object',
+        contractData.images.map((content: unknown) => {
+          if (typeof content === 'string') {
+            return {
+              encodingFormat: getMimeType(content),
+              contentUrl: content,
+            }
+          } else if (typeof content === 'object') {
+            return content
+          } else {
+            throw new Error('Unknown content images')
+          }
+        }),
+      )
+    }
+    const idName = 'Contract'
+    credentialSubject.set('identifier', [
+      {
+        value: id,
+        name: idName,
+      },
+    ])
+    return {
+      '@context': [
+        'https://www.w3.org/2018/credentials/v1',
+        Object.fromEntries(context),
+      ],
+      'id': `${resolver}?${idName.toLowerCase()}=${id}`,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      'type': contractData.type ?? ['VerifiableCredential', 'OrganizeAction'],
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      'issuer': contractData.issuer ?? 'https://archive.gotointeractive.com',
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      'issuanceDate': contractData.issuanceDate ?? new Date().toISOString(),
+      'credentialSubject': Object.fromEntries(
+        credentialSubject,
+      ) as CredentialSubject,
+    } as Credential
   }
 }

@@ -492,7 +492,10 @@
           {{ contractsCount > 999 ? '999+' : String(contractsCount) }}
         </template>
       </QBadge>
-      <div style="height: calc(100dvh - 380px)" class="scroll">
+      <div
+        style="height: calc(100dvh - 380px); overflow-x: hidden"
+        class="scroll-y"
+      >
         <QChip
           v-for="([name, value], objectKey) in getArchiveNames"
           :key="objectKey"
@@ -500,6 +503,7 @@
           square
           outline
           class="row"
+          style="max-width: calc(100% - 8px)"
           :ripple="false"
           :disable="router.currentRoute.value.query.name === name"
           :selected="router.currentRoute.value.query.name === name"

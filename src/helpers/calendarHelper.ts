@@ -12,7 +12,11 @@ export default async (id: string, object: FormatContract) => {
   if (!object.sameAs) {
     console.warn('object sameAs is empty')
   }
-  const uid = object.identifier.find((i) => i.name === 'Contract').value
+  let uid = null
+  if (object.identifier.length) {
+    uid = object.identifier.find((i) => i.name === 'Contract').value
+  }
+
   const organizer = []
   if (object.agent.name && object.agent.email) {
     organizer.push({

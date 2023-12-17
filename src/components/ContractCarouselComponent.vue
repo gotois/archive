@@ -71,6 +71,7 @@
           :disable="!fullscreen"
           :style="{
             'max-height': fullscreen ? '100dvh' : '400px',
+            'background-color': 'white',
           }"
           @on-close="fullscreen = false"
         >

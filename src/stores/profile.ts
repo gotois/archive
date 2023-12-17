@@ -53,6 +53,7 @@ export default defineStore('profile', {
   },
   getters: {
     getPersonLD(state) {
+      // todo - поддержать выдачу WebId
       return {
         '@context': 'https://json-ld.org/contexts/person.jsonld',
         '@type': 'Person',

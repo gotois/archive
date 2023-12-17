@@ -309,7 +309,7 @@ import { validUrlString } from '../helpers/urlHelper'
 import { signMessageUsePhantom } from '../services/phantomWalletService'
 import { signMessageUseSecretKey } from '../services/cryptoService'
 import { Credential, MyContract, WalletType } from '../types/models'
-import { createContractLD, getIdentifierMessage } from '../helpers/schemaHelper'
+import { getIdentifierMessage } from '../helpers/schemaHelper'
 import { keys, keyPair } from '../services/databaseService'
 import { WebId } from '@inrupt/solid-client'
 import Dogovor from '../services/contractGeneratorService'
@@ -679,7 +679,7 @@ async function save() {
     const newContract = await prepareContract()
     const gicId = walletStore?.publicKey?.toString()
     const resolver = gicId ? `did:gic:${gicId}` : demoUserWebId
-    let jsldContract = createContractLD(newContract, id, resolver)
+    let jsldContract = Dogovor.createContractLD(newContract, id, resolver)
 
     // todo - поддержать подписание Solana
     // jsldContract = await signContractUseSolana(jsldContract)
