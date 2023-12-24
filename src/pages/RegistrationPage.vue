@@ -132,6 +132,14 @@
                 <QBtn
                   class="full-width"
                   square
+                  label="Demo"
+                  @click="onDemoSign"
+                >
+                  <QTooltip>Demo sign</QTooltip>
+                </QBtn>
+                <QBtn
+                  class="full-width"
+                  square
                   label="Blockchain"
                   @click="pricing = true"
                 >
@@ -160,7 +168,6 @@
                 </QBar>
                 <QCardSection class="full-height overflow-hidden-y">
                   <PricingComponent
-                    @demo="onDemoSign"
                     @free="stepper.next()"
                     @premium="onPremium"
                   />
@@ -363,6 +370,19 @@ function setMeta(value: number) {
 }
 
 function onCreateContract() {
+  function end() {
+    tutorialStore.tutorialComplete()
+    exportKeyPair()
+    void router.push({
+      name: ROUTE_NAMES.ARCHIVE,
+    })
+  }
+
+  if (!isLoggedIn.value) {
+    end()
+    return
+  }
+
   const dialog = $q.dialog({
     message: $t('database.pod.sync'),
     cancel: true,
@@ -378,20 +398,10 @@ function onCreateContract() {
         dialog.update({ message: message })
         await contractStore.insertContract(newDogovor.presentation)
       }
-      tutorialStore.tutorialComplete()
-      exportKeyPair()
-      await router.push({
-        name: ROUTE_NAMES.ARCHIVE,
-      })
+      end()
     })
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    .onDismiss(async () => {
-      tutorialStore.tutorialComplete()
-      exportKeyPair()
-
-      await router.push({
-        name: ROUTE_NAMES.ARCHIVE,
-      })
+    .onDismiss(() => {
+      end()
     })
 }
 
@@ -402,9 +412,8 @@ async function onOnlineAuthorize(oidcIssuer: string) {
       cancel: true,
       persistent: true,
     })
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    dialog.onOk(async () => {
-      await onDemoSign()
+    dialog.onOk(() => {
+      stepper.value.next()
     })
     return
   }
@@ -566,7 +575,8 @@ async function onStep(step: number) {
 }
 
 function onPremium() {
-  alert('Premium is under construction')
+  console.warn('Premium is under construction')
+  stepper.value.next()
 }
 
 setMeta(step.value)
@@ -585,7 +595,7 @@ onMounted(() => {
     step.value === Number(STEP.FINAL) &&
     walletStore.getMultibase?.length === 0
   ) {
-    step.value = STEP.WELCOME
+    $q.loading.hide()
   } else if (isLoggedIn.value && query.code && query.state) {
     step.value = STEP.FINAL
   }

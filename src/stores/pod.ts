@@ -116,14 +116,29 @@ export default defineStore('pod', {
       this.resourceRootUrl = podsUrl[selectedPod]
     },
     async getProfileFOAF() {
-      const getResourceBaseUrl = this.getResourceBaseUrl
-      if (typeof getResourceBaseUrl !== 'string') {
+      if (typeof this.resourceRootUrl !== 'string') {
         return
       }
+      const getResourceBaseUrl = this.resourceRootUrl
+      let profileDataset = null
       // 'profile/card' for inrupt.net
-      // todo 'profile' for inrupt.com
-      const resourceProfileUrl = getResourceBaseUrl + 'profile/card'
-      const profileDataset = await this.getDataset(resourceProfileUrl)
+      if (!profileDataset) {
+        try {
+          const resourceProfileUrl = getResourceBaseUrl + 'profile/card'
+          profileDataset = await this.getDataset(resourceProfileUrl)
+        } catch {
+          /* empty */
+        }
+      }
+      // 'profile' for inrupt.com
+      if (!profileDataset) {
+        try {
+          const resourceProfileUrl = getResourceBaseUrl + 'profile'
+          profileDataset = await this.getDataset(resourceProfileUrl)
+        } catch {
+          /* empty */
+        }
+      }
       const authStore = useAuthStore()
       const profile = getThing(profileDataset, authStore.webId)
       if (profile) {

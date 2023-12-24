@@ -168,20 +168,22 @@
         </QToggle>
       </QInput>
     </div>
-    <QBtn
-      v-if="customers.length === 0"
-      ripple
-      square
-      stretch
-      :class="{
-        'full-width': !$q.platform.is.desktop,
-      }"
-      no-caps
-      label="Добавить в маршрут исполнителей"
-      icon="route"
-      color="secondary"
-      @click="onAddCustomer"
-    />
+    <div class="row">
+      <QBtn
+        v-if="customers.length === 0"
+        ripple
+        square
+        stretch
+        :class="{
+          'full-width': !$q.platform.is.desktop,
+        }"
+        no-caps
+        label="Добавить в маршрут исполнителей"
+        icon="route"
+        color="secondary"
+        @click="onAddCustomer"
+      />
+    </div>
     <template v-if="customers.length">
       <QInput
         v-model.trim="customer"
@@ -640,14 +642,10 @@ async function signContractUseSolana(contract: Credential) {
 }
 
 async function onSubmit() {
-  if (!isLoggedIn.value) {
-    alert('You needs to be sign in!')
-    return
-  }
   if (props.signing) {
-    return sign()
+    return isLoggedIn.value ? sign() : alert('You needs to be sign in!')
   } else {
-    return save()
+    return isLoggedIn.value ? saveOnline() : saveOffline()
   }
 }
 
@@ -669,7 +667,24 @@ async function sign() {
   }
 }
 
-async function save() {
+async function saveOffline() {
+  loadingForm.value = true
+  const id = uid()
+  const newContract = await prepareContract()
+  const resolver = demoUserWebId
+  const jsldContract = Dogovor.createContractLD(newContract, id, resolver)
+  const suite = await keyPair.getSuite()
+  const dogovor = await Dogovor.fromCredential(
+    'http://localhost/',
+    jsldContract,
+    suite,
+  )
+  await contractStore.addPresentation(dogovor.presentation)
+  emit('onCreate', dogovor)
+  onResetForm()
+}
+
+async function saveOnline() {
   loadingForm.value = true
 
   try {

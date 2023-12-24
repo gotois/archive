@@ -24,15 +24,16 @@
             <span class="vertical-middle text-h4">{{ basePrice }}</span>
             {{ $t('pricing.free.price') }}
           </div>
-          <PhantomWalletLogin
+          <QBtn
             v-if="router.currentRoute.value.name !== ROUTE_NAMES.PRICING"
             :label="$t('pricing.free.ok')"
             color="white"
             text-color="black"
-            content-class="full-width q-mt-md"
-            @skip="onSkipWallet"
-            @error="onWalletError"
-            @complete="$emit('free')"
+            class="full-width q-mt-md"
+            size="md"
+            square
+            :dense="$q.platform.is.desktop"
+            @click="$emit('free')"
           />
         </QCardSection>
         <QSeparator inset color="grey-3" />
@@ -80,16 +81,15 @@
             </span>
             {{ $t('pricing.premium.price') }}
           </div>
-          <QBtn
+          <PhantomWalletLogin
             v-if="router.currentRoute.value.name !== ROUTE_NAMES.PRICING"
-            size="md"
-            class="full-width q-mt-md"
+            :label="$t('pricing.premium.ok')"
             color="white"
             text-color="black"
-            square
-            :dense="$q.platform.is.desktop"
-            :label="$t('pricing.premium.ok')"
-            @click="$emit('premium')"
+            content-class="full-width q-mt-md"
+            @skip="onSkipWallet"
+            @error="onWalletError"
+            @complete="$emit('premium')"
           />
         </QCardSection>
         <QSeparator inset color="grey-5" />
@@ -196,7 +196,7 @@ import { open } from '../helpers/urlHelper'
 import pkg from '../../package.json'
 import { ROUTE_NAMES } from '../router/routes'
 
-const emit = defineEmits(['demo', 'free', 'premium'])
+const emit = defineEmits(['free', 'premium'])
 
 const PhantomWalletLogin = defineAsyncComponent(
   () => import('components/PhantomWalletLogin.vue'),
@@ -304,7 +304,7 @@ function onSkipWallet() {
     persistent: true,
   })
   dialog.onOk(() => {
-    emit('demo')
+    emit('free')
   })
 }
 

@@ -17,10 +17,18 @@
     align="left"
     :ripple="false"
     text-color="black-9"
-    :label="item.participant.sameAs"
     :href="item.participant.url"
     @update:model-value="showed = !showed"
-  />
+  >
+    <template #label>
+      <div
+        class="absolute overflow-hidden text-left ellipsis"
+        style="left: 32px; right: 0"
+      >
+        {{ item.participant.sameAs }}
+      </div>
+    </template>
+  </QBtnDropdown>
   <div v-if="showed" class="q-pa-md row justify-between full-width">
     <div style="width: 100%">
       <QChatMessage

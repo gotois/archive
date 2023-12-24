@@ -1,11 +1,5 @@
 <template>
-  <QBtnGroup
-    spread
-    class="flex q-mt-md"
-    :class="{
-      'full-width': !$q.platform.is.desktop,
-    }"
-  >
+  <QBtnGroup spread class="flex q-mt-md">
     <QFile
       v-model="keyPairFile"
       color="accent"

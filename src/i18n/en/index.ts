@@ -375,7 +375,7 @@ export default {
       processing: 'Authenticating. Please wait...',
       authorizeDialog: {
         message:
-          'Your contracts will not be saved on the SOLiD server. You will not be able to create tokens for your documents. Continue?',
+          'Your contracts will not be saved on the SOLiD server. Use offline-mode. Continue?',
         fail: 'Error occurred while logging in with OIDC',
       },
     },
