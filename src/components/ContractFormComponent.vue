@@ -11,8 +11,6 @@
     >
       <canvas
         id="input-overlay"
-        width="300"
-        height="300"
         class="absolute no-pointer-events"
         style="z-index: 1"
       ></canvas>
@@ -749,7 +747,7 @@ async function recognizeImage(
     'input-overlay',
   ) as HTMLCanvasElement
   // fixme - for example rect. Change to SVG
-  input_overlay.width = 300
+  input_overlay.width = 600
   input_overlay.height = 300
   if (input_overlay) {
     const ioctx = input_overlay.getContext('2d')

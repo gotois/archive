@@ -337,7 +337,7 @@ watch(
 )
 
 function setMeta(value: number) {
-  switch (value) {
+  switch (value as STEP) {
     case STEP.WELCOME: {
       useMeta({
         'title': $t('pages.tutorial.welcome.title'),

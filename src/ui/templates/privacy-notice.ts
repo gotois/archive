@@ -1,4 +1,5 @@
-import { Template, BLANK_PDF, TextSchema } from '@pdfme/generator'
+import { Template, BLANK_PDF } from '@pdfme/common'
+import { TextSchema } from '@pdfme/generator'
 
 // A4, значение в MM
 const A4 = {
