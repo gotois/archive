@@ -65,6 +65,7 @@
     "minisearch": "6.3.0",
     "pinia": "2.1.7",
     "quasar": "2.14.2",
+    "rgbaster": "2.1.1",
     "tesseract.js": "5.0.4",
     "tweetnacl": "1.0.3",
     "vue": "3.3.13",

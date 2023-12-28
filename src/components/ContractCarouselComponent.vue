@@ -71,7 +71,7 @@
           :disable="!fullscreen"
           :style="{
             'max-height': fullscreen ? '100dvh' : '400px',
-            'background-color': 'white',
+            'background-color': color,
           }"
           @on-close="fullscreen = false"
         >
@@ -133,6 +133,11 @@
               fetchpriority="high"
               no-spinner
               no-native-menu
+              @load="
+                encodingFormat !== 'application/pdf'
+                  ? prominentBGColors()
+                  : null
+              "
             >
               <ImageContextMenu
                 v-if="!fullscreen"
@@ -177,6 +182,7 @@ import {
   QCarousel,
   Platform,
 } from 'quasar'
+import analyze from 'rgbaster'
 import ImageContextMenu from 'components/ImageContextMenu.vue'
 import SwipeToClose from 'components/SwipeToClose.vue'
 import { FormatContract } from '../types/models'
@@ -191,6 +197,15 @@ const props = defineProps<Props>()
 const item = toRef<FormatContract>(props, 'model')
 const currentSlide = ref(1)
 const fullscreen = ref(false)
+const color = ref('white')
+
+async function getColorFromImage(contentUrl: string) {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call
+  const [{ color }]: { color: string }[] = await analyze(contentUrl, {
+    scale: 0.7,
+  })
+  return color
+}
 
 function icon(encodingFormat: string) {
   if (fullscreen.value) {
@@ -200,6 +215,14 @@ function icon(encodingFormat: string) {
   } else {
     return 'fullscreen'
   }
+}
+
+async function prominentBGColors() {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
+  color.value = await getColorFromImage(
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
+    item.value.object[currentSlide.value - 1].contentUrl,
+  )
 }
 
 function onShowFullImage(object: FormatContract) {
