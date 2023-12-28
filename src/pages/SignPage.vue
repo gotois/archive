@@ -111,7 +111,17 @@ onMounted(async () => {
         type: 'negative',
         message: 'Access Denied',
       })
+    } else {
+      $q.notify({
+        type: 'negative',
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        message: error?.message,
+      })
     }
+    await router.push({
+      path: '/',
+      replace: true,
+    })
   } finally {
     $q.loading.hide()
   }

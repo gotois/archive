@@ -130,7 +130,7 @@ class SolanaKeysDatabase extends Dexie {
     if (!keysTable) {
       return null
     }
-    switch (keysTable.type) {
+    switch (keysTable.type as WalletType) {
       case WalletType.Phantom: {
         return {
           type: WalletType.Phantom,

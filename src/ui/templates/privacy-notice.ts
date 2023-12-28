@@ -1,10 +1,10 @@
-import { Template, BLANK_PDF, TextSchema } from '@pdfme/generator'
+import { Template, BLANK_PDF } from '@pdfme/common'
 
 // A4, значение в MM
 const A4 = {
   width: 210,
   height: 297,
-} as TextSchema
+}
 
 export default {
   basePdf: BLANK_PDF,

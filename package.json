@@ -1,6 +1,6 @@
 {
   "name": "contracts",
-  "version": "0.6.3",
+  "version": "0.7.0",
   "description": "Take control of your contracts with our app",
   "keywords": [
     "archive",
@@ -20,7 +20,7 @@
   "repository": "github:gotois/archive",
   "productName": "ContractKeeper",
   "author": {
-    "name": "goto Interactive Communications DAO",
+    "name": "GIC DAO",
     "email": "support@gotointeractive.com",
     "url": "https://gotointeractive.com/"
   },
@@ -44,14 +44,14 @@
   "dependencies": {
     "@digitalbazaar/ed25519-signature-2020": "5.2.0",
     "@digitalbazaar/ed25519-verification-key-2020": "4.1.0",
-    "@digitalbazaar/vc": "6.0.2",
+    "@digitalbazaar/vc": "6.2.0",
     "@inrupt/solid-client": "1.30.2",
     "@inrupt/solid-client-authn-browser": "1.17.3",
     "@inrupt/vocab-common-rdf": "1.0.5",
-    "@pdfme/common": "2.2.1",
-    "@pdfme/generator": "2.2.1",
+    "@pdfme/common": "3.2.0",
+    "@pdfme/generator": "3.2.0",
     "@quasar/extras": "1.16.9",
-    "@solana/web3.js": "1.87.1",
+    "@solana/web3.js": "1.87.6",
     "credentials-context": "2.0.0",
     "dexie": "3.2.4",
     "dexie-export-import": "4.0.7",
@@ -61,7 +61,7 @@
     "jsonld-document-loader": "2.0.0",
     "jspdf": "2.5.1",
     "jszip": "3.10.1",
-    "marked": "9.1.1",
+    "marked": "11.1.0",
     "minisearch": "6.3.0",
     "pinia": "2.1.7",
     "quasar": "2.14.2",
@@ -72,23 +72,23 @@
     "vue-router": "4.2.5"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "~7.22.15",
+    "@babel/eslint-parser": "~7.23.3",
     "@bubblewrap/cli": "~1.21.0",
     "@quasar/app-vite": "~1.7.1",
-    "@types/html-to-text": "~9.0.2",
+    "@types/html-to-text": "~9.0.4",
     "@types/marked": "~6.0.0",
-    "@types/node": "~20.8.4",
-    "@typescript-eslint/eslint-plugin": "~6.7.5",
-    "@typescript-eslint/parser": "~6.7.5",
+    "@types/node": "~20.10.5",
+    "@typescript-eslint/eslint-plugin": "~6.16.0",
+    "@typescript-eslint/parser": "~6.16.0",
     "autoprefixer": "~10.4.16",
     "dotenv": "~16.3.1",
-    "eslint": "~8.51.0",
-    "eslint-config-prettier": "~9.0.0",
-    "eslint-plugin-prettier": "~5.0.1",
+    "eslint": "~8.56.0",
+    "eslint-config-prettier": "~9.1.0",
+    "eslint-plugin-prettier": "~5.1.2",
     "eslint-plugin-quasar": "~1.1.0",
-    "eslint-plugin-vue": "~9.17.0",
+    "eslint-plugin-vue": "~9.19.2",
     "quasar-app-extension-q-otp": "~0.0.3",
-    "typescript": "~5.2.2",
+    "typescript": "~5.3.3",
     "vite": ">=4.4.11",
     "workbox-build": "~6.6.1",
     "workbox-cacheable-response": "~7.0.0",
@@ -102,7 +102,7 @@
     "vite": "$vite"
   },
   "engines": {
-    "node": ">= 18",
-    "npm": ">= 8.x"
+    "node": ">= 20",
+    "npm": ">= 9.x"
   }
 }

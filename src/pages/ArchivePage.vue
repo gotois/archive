@@ -72,6 +72,7 @@
     </template>
     <QPageSticky position="bottom-right" :offset="[18, 18]">
       <QFab
+        ref="fab"
         hide-label
         glossy
         push
@@ -268,6 +269,7 @@ const NOTIFICATION_TIMER = 30000
 
 const currentPage = toRef(router.currentRoute.value.query, 'page')
 const scrollAreaRef = ref<InstanceType<typeof QScrollArea> | null>(null)
+const fab = ref<InstanceType<typeof QFab> | null>(null)
 const { isLoggedIn } = storeToRefs(authStore)
 const { formatContracts } = storeToRefs(contractStore)
 const isSearch = computed(
@@ -476,6 +478,7 @@ async function updateContracts({
 }
 
 function onFileSelect(files: File[]) {
+  fab.value.hide()
   const filesUrls = []
   for (const file of files) {
     filesUrls.push({
