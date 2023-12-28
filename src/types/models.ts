@@ -157,7 +157,7 @@ interface BaseSchemaType {
 
 interface FormatImageType extends BaseSchemaType, ImageType {}
 
-interface ImageType {
+export interface ImageType {
   contentUrl: string
   encodingFormat: string
   caption?: string

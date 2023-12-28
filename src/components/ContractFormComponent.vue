@@ -9,6 +9,13 @@
       ) in contract.credentialSubject.object"
       :key="urlIndex"
     >
+      <canvas
+        id="input-overlay"
+        width="300"
+        height="300"
+        class="absolute no-pointer-events"
+        style="z-index: 1"
+      ></canvas>
       <object
         v-if="encodingFormat === 'application/pdf' || caption.endsWith('.pdf')"
         :data="contentUrl"
@@ -298,6 +305,8 @@ import {
   QToggle,
 } from 'quasar'
 import { storeToRefs } from 'pinia'
+import { WebId } from '@inrupt/solid-client'
+import { createWorker } from 'tesseract.js'
 import useAuthStore from 'stores/auth'
 import { demoUserWebId } from 'stores/auth'
 import useContractStore from 'stores/contract'
@@ -310,10 +319,9 @@ import { formatDate } from '../helpers/dateHelper'
 import { validUrlString } from '../helpers/urlHelper'
 import { signMessageUsePhantom } from '../services/phantomWalletService'
 import { signMessageUseSecretKey } from '../services/cryptoService'
-import { Credential, MyContract, WalletType } from '../types/models'
+import { Credential, MyContract, WalletType, ImageType } from '../types/models'
 import { getIdentifierMessage } from '../helpers/schemaHelper'
 import { keys, keyPair } from '../services/databaseService'
-import { WebId } from '@inrupt/solid-client'
 import Dogovor from '../services/contractGeneratorService'
 
 const DateComponent = defineAsyncComponent(
@@ -725,11 +733,48 @@ async function saveOnline() {
   }
 }
 
+async function recognizeImage(
+  { contentUrl, encodingFormat }: ImageType,
+  langs = 'eng+rus',
+) {
+  if (!encodingFormat.startsWith('image')) {
+    return
+  }
+  const worker = await createWorker(langs)
+  const img = new Image()
+  img.src = contentUrl
+  const { data } = await worker.recognize(img)
+
+  const input_overlay = document.getElementById(
+    'input-overlay',
+  ) as HTMLCanvasElement
+  // fixme - for example rect. Change to SVG
+  input_overlay.width = 300
+  input_overlay.height = 300
+  if (input_overlay) {
+    const ioctx = input_overlay.getContext('2d')
+    data.words.forEach((w) => {
+      const b = w.bbox
+      ioctx.strokeWidth = 1
+      ioctx.strokeStyle = 'red'
+      ioctx.strokeRect(b.x0, b.y0, b.x1 - b.x0, b.y1 - b.y0)
+      ioctx.beginPath()
+      ioctx.moveTo(w.baseline.x0, w.baseline.y0)
+      ioctx.lineTo(w.baseline.x1, w.baseline.y1)
+      ioctx.strokeStyle = 'green'
+      ioctx.stroke()
+    })
+  }
+
+  contractType.value = data.text.split('\n')[0]
+  await worker.terminate()
+}
+
 defineExpose({
   resetForm: onResetForm,
 })
 
-onMounted(() => {
+onMounted(async () => {
   if (contract.value.credentialSubject.participant?.email) {
     modelContact.value.push({
       type: InputType.email,
@@ -741,6 +786,12 @@ onMounted(() => {
       type: InputType.url,
       value: contract.value.credentialSubject.participant.url,
     })
+  }
+
+  try {
+    await recognizeImage(contract.value.credentialSubject.object[0])
+  } catch {
+    /* empty */
   }
 })
 </script>
