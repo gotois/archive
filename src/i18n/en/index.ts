@@ -447,6 +447,9 @@ export default {
         law: {
           label: 'Challenge in court',
         },
+        map: {
+          label: 'Open in Map',
+        },
       },
     },
     contractForm: {

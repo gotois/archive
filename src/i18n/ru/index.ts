@@ -457,6 +457,9 @@ export default {
         law: {
           label: 'Оспорить в суде',
         },
+        map: {
+          label: 'Открыть карту',
+        },
       },
     },
     contractForm: {

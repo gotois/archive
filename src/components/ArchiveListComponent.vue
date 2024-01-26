@@ -175,6 +175,7 @@ import createCal from '../helpers/calendarHelper'
 import { mailUrl, googleMailUrl } from '../helpers/mailHelper'
 import { isVerified } from '../helpers/contractHelper'
 import { open } from '../helpers/urlHelper'
+import { openMap } from '../services/geoService'
 
 const $q = useQuasar()
 const $t = useI18n().t
@@ -268,6 +269,7 @@ enum SheetAction {
   MAIL = 'mail',
   TELEPHONE = 'telephone',
   LAW = 'law',
+  MAP = 'map',
 }
 
 function onSheet(item: FormatContract) {
@@ -335,6 +337,13 @@ function onSheet(item: FormatContract) {
       })
     }
   }
+  // fixme показывать только если item содержит в себе содержимое GEO
+  actions.push({
+    label: $t('components.archiveList.sheet.map.label'),
+    icon: 'map',
+    color: 'secondary',
+    id: SheetAction.MAP,
+  })
   const icalId = $t('organization.prodid')
 
   $q.bottomSheet({
@@ -369,6 +378,10 @@ function onSheet(item: FormatContract) {
       }
       case SheetAction.LAW: {
         return sendToCourt()
+      }
+      case SheetAction.MAP: {
+        // fixme брать lat и lng из данных item
+        return openMap({ lat: 37.618879, lng: 55.751426 })
       }
       default: {
         console.warn('Unknown id')
