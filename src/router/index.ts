@@ -87,8 +87,8 @@ export default route(() => {
       }
       case ROUTE_NAMES.AUTH: {
         if (
-          !LocalStorage.has('code') ||
-          (LocalStorage.has('code') && authStore.pinIsLoggedIn)
+          !LocalStorage.has('secret') ||
+          (LocalStorage.has('secret') && authStore.pinIsLoggedIn)
         ) {
           return {
             name: ROUTE_NAMES.ARCHIVE,
@@ -145,7 +145,7 @@ export default route(() => {
             query: {},
           }
         }
-        if (LocalStorage.has('code') && !authStore.pinIsLoggedIn) {
+        if (LocalStorage.has('secret') && !authStore.pinIsLoggedIn) {
           return {
             name: ROUTE_NAMES.AUTH,
             query: {

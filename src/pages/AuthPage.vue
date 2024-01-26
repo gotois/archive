@@ -8,7 +8,7 @@
     </p>
     <QOtp
       ref="otp"
-      :num="4"
+      :num="6"
       :dense="$q.platform.is.desktop"
       :disabled="otpDisabled"
       class="flex flex-center"
@@ -26,11 +26,13 @@ import { useMeta, useQuasar, QPage } from 'quasar'
 import { useRouter } from 'vue-router'
 import QOtp from 'quasar-app-extension-q-otp/src/component/QOtp.vue'
 import useAuthStore from 'stores/auth'
+import useTFAStore from 'stores/tfa'
 
 const $t = useI18n().t
 const $q = useQuasar()
 const router = useRouter()
 const authStore = useAuthStore()
+const tfaStore = useTFAStore()
 
 const metaData = {
   'title': 'pages.auth.title',
@@ -42,9 +44,8 @@ const otpDisabled = ref(false)
 
 async function onHandleComplete(value: string) {
   const timeout = 2000
-  await authStore.validate(value)
-  if (authStore.pinIsLoggedIn) {
-    await authStore.setCode(value)
+  if (tfaStore.verify(value)) {
+    authStore.pinIsLoggedIn = true
     const dismiss = $q.notify({
       message: $t('components.otp.processing'),
       timeout: 2000,

@@ -294,9 +294,12 @@
 
       <QSeparator spaced dark />
 
-      <QItemLabel header class="text-center text-subtitle1 text-uppercase"
-        >GIC DAO</QItemLabel
-      >
+      <QItemLabel header class="text-center text-subtitle1 text-uppercase">
+        <template v-if="locale === 'ru'">
+          ООО "Виртуальный секретарь"
+        </template>
+        <template v-else>GIC DAO</template>
+      </QItemLabel>
       <QItem v-ripple clickable href="https://gotointeractive.com">
         <QCardSection>
           <QItemLabel lines="1" class="text-left">Сайт</QItemLabel>
@@ -337,6 +340,7 @@ import { applicationURL } from '../helpers/googlePlayHelper'
 
 const $t = useI18n().t
 const router = useRouter()
+const { locale } = useI18n()
 
 const metaData = {
   'title': $t('pages.welcome.title'),

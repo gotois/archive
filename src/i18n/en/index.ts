@@ -108,7 +108,7 @@ export default {
     otp: {
       removeCode: 'Remove PIN',
       addCode: 'Set PIN',
-      description: 'Enter a numeric PIN to log into the application.',
+      description: 'Enter a numeric OTP from 2FA to log into the application.',
     },
     keychain: {
       title: 'Manage Certificates',

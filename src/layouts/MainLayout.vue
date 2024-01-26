@@ -305,7 +305,7 @@
           :label="$t('settings.native.otp')"
         >
           <QItemSection class="q-pa-md">
-            <template v-if="hasCode">
+            <template v-if="activated">
               <QBtn
                 round
                 :dense="$q.platform.is.desktop"
@@ -326,21 +326,30 @@
                 icon="key"
                 color="secondary"
                 :label="$t('settings.otp.addCode')"
-                @click="showOTPDialog = true"
+                @click="openOTPDialog"
               />
               <QDialog v-model="showOTPDialog" position="bottom" square>
                 <QCard flat class="q-pa-md">
                   <QCardSection>
                     <p>{{ $t('settings.otp.description') }}</p>
+                    <QImg
+                      :src="authUriQR"
+                      alt="QR"
+                      fit="none"
+                      height="250px"
+                      class="cursor-pointer"
+                      decoding="async"
+                      @click="open(authUri)"
+                    />
                     <QSpace class="q-pa-xs" />
                     <QOtp
                       v-if="showOTPDialog"
                       ref="otp"
-                      separator="-"
+                      separator=" "
                       outlined
                       autofocus
                       :dense="$q.platform.is.desktop"
-                      :num="4"
+                      :num="6"
                       class="flex flex-center"
                       @change="onOTPChange"
                       @complete="onOTPHandleComplete"
@@ -572,6 +581,7 @@ import {
   QTooltip,
   QAvatar,
   QChip,
+  QImg,
   QSeparator,
   QItemSection,
   QExpansionItem,
@@ -594,6 +604,7 @@ import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { logout } from '@inrupt/solid-client-authn-browser'
 import useAuthStore from 'stores/auth'
+import useTFAStore from 'stores/tfa'
 import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
 import useWalletStore from 'stores/wallet'
@@ -601,6 +612,8 @@ import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
 import { indexAllDocuments } from '../services/searchService'
 import { isTWA } from '../helpers/twaHelper'
 import { keyPair } from '../services/databaseService'
+import { createQR } from '../helpers/qrHelper'
+import { open } from '../helpers/urlHelper'
 import { ROUTE_NAMES } from '../router/routes'
 
 const LocaleComponent = defineAsyncComponent(
@@ -638,13 +651,15 @@ const $t = useI18n().t
 const $q = useQuasar()
 const router = useRouter()
 const authStore = useAuthStore()
+const tfaStore = useTFAStore()
 const contractStore = useContractStore()
 const profileStore = useProfileStore()
 const walletStore = useWalletStore()
 
 const { consumer, email, phone, avatar } = storeToRefs(profileStore)
 const { getArchiveNames, contractsCount } = storeToRefs(contractStore)
-const { hasCode, isLoggedIn, isDemo, webId } = storeToRefs(authStore)
+const { isLoggedIn, isDemo, webId } = storeToRefs(authStore)
+const { activated } = storeToRefs(tfaStore)
 const { getWalletLD } = storeToRefs(walletStore)
 const bigScreen = computed(
   () => $q.platform.is.desktop && ($q.screen.xl || $q.screen.lg),
@@ -661,6 +676,8 @@ const otpOpen = ref(false)
 const confirm = ref(false)
 const showSearch = ref(false)
 const otp = ref<InstanceType<typeof QOtp> | null>(null)
+const authUriQR = ref('')
+const authUri = ref('')
 
 function onToggleLeftDrawer(): void {
   leftDrawerOpen.value = !leftDrawerOpen.value
@@ -732,7 +749,7 @@ async function onFinishProfile() {
 }
 
 function onOTPChange(value: string) {
-  if (!hasCode.value || value.length) {
+  if (!activated.value || value.length) {
     return
   }
   const dialog = $q.dialog({
@@ -742,7 +759,8 @@ function onOTPChange(value: string) {
   })
   dialog.onOk(() => {
     try {
-      authStore.removeCode()
+      tfaStore.deactivate2fa()
+      authStore.removeAuthValue()
       $q.notify({
         type: 'positive',
         message: $t('components.otp.pinDialog.success'),
@@ -758,16 +776,19 @@ function onOTPChange(value: string) {
   showOTPDialog.value = false
 }
 
-function onOTPHandleComplete(code: string) {
+function onOTPHandleComplete(token: string) {
+  if (!tfaStore.verify(token)) {
+    return
+  }
   const dialog = $q.dialog({
     message: $t('components.otp.saveDialog.message'),
     cancel: true,
     persistent: true,
   })
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  dialog.onOk(async () => {
+  dialog.onOk(() => {
     try {
-      await authStore.setCode(code)
+      tfaStore.activate2fa()
+      authStore.setTryAuthValue()
       $q.notify({
         type: 'positive',
         message: $t('components.otp.saveDialog.success'),
@@ -812,6 +833,13 @@ async function onSelectArchiveName(
       page: 1,
     },
   })
+}
+
+async function openOTPDialog() {
+  const authURI = tfaStore.generate()
+  authUri.value = authURI
+  authUriQR.value = await createQR(authURI)
+  showOTPDialog.value = true
 }
 
 onMounted(async () => {

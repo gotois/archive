@@ -1,5 +1,6 @@
 import { ImageFormat, jsPDF } from 'jspdf'
 import { generate } from '@pdfme/generator'
+import { text, image } from '@pdfme/schemas'
 import { convert } from 'html-to-text'
 import { FormatContract } from '../types/models'
 import privacyNotice from '../ui/templates/privacy-notice'
@@ -42,13 +43,14 @@ export async function createContractPDF(
   html: string,
   fileName = 'contract.pdf',
 ) {
-  const text = convert(html, {
+  const htmlText = convert(html, {
     wordwrap: 80,
   })
-  const inputs = [{ text: text }]
+  const inputs = [{ text: htmlText }]
   const pdf = await generate({
     template: privacyNotice,
     inputs,
+    plugins: { text, image },
   })
   return new File([pdf.buffer], fileName, {
     type: 'application/pdf',

@@ -109,7 +109,7 @@ export default {
     otp: {
       removeCode: 'Удалить PIN',
       addCode: 'Установить PIN',
-      description: 'Введите цифровой PIN для входа в приложение.',
+      description: 'Добавьте в 2FA и подтвердите код для входа в приложение.',
     },
     keychain: {
       title: 'Управление сертификатами',
