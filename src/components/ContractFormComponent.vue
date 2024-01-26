@@ -3,45 +3,9 @@
     v-if="contract.credentialSubject?.object?.length"
     class="relative-position"
   >
-    <template
-      v-for="(
-        { contentUrl, encodingFormat, caption = '' }, urlIndex
-      ) in contract.credentialSubject.object"
-      :key="urlIndex"
-    >
-      <canvas
-        id="input-overlay"
-        class="absolute no-pointer-events"
-        style="z-index: 1"
-      ></canvas>
-      <object
-        v-if="encodingFormat === 'application/pdf' || caption.endsWith('.pdf')"
-        :data="contentUrl"
-        type="application/pdf"
-        class="full-width"
-        style="max-height: 300px"
-        height="300"
-      ></object>
-      <QImg
-        v-else
-        :src="contentUrl"
-        no-transition
-        :draggable="false"
-        :alt="caption"
-        style="max-height: 300px"
-        fit="scale-down"
-        :placeholder-src="caption"
-        class="full-width"
-        @mouseleave="onHideCaption"
-        @mouseenter="onShowCaption"
-      >
-        <div v-if="caption.length" class="absolute-top-right text-caption">
-          {{ caption }}
-        </div>
-      </QImg>
-      <QSeparator spaced inset />
-    </template>
+    <ContractCarouselComponent :model="contract.credentialSubject" />
   </div>
+  <QSeparator spaced inset />
   <QForm
     ref="contractForm"
     class="q-gutter-md"
@@ -294,7 +258,6 @@ import {
   QBtnDropdown,
   QSelect,
   QSeparator,
-  QImg,
   QBtn,
   QIcon,
   QInput,
@@ -312,6 +275,7 @@ import useProfileStore from 'stores/profile'
 import useWalletStore from 'stores/wallet'
 import usePodStore from 'stores/pod'
 import MultiContactComponent from 'components/MultiContact.vue'
+import ContractCarouselComponent from 'components/ContractCarouselComponent.vue'
 import { readFilePromise } from '../helpers/fileHelper'
 import { formatDate } from '../helpers/dateHelper'
 import { validUrlString } from '../helpers/urlHelper'
@@ -452,14 +416,6 @@ function resetForm() {
     to: formatDate(afterYearDate),
   }
   dateNoLimit.value = false
-}
-
-function onHideCaption({ target }: { target: HTMLElement }) {
-  target.querySelector('.text-caption')?.classList?.remove('invisible')
-}
-
-function onShowCaption({ target }: { target: HTMLElement }) {
-  target.querySelector('.text-caption')?.classList?.add('invisible')
 }
 
 function onResetForm(confirm = false) {
@@ -742,28 +698,6 @@ async function recognizeImage(
   const img = new Image()
   img.src = contentUrl
   const { data } = await worker.recognize(img)
-
-  const input_overlay = document.getElementById(
-    'input-overlay',
-  ) as HTMLCanvasElement
-  // fixme - for example rect. Change to SVG
-  input_overlay.width = 600
-  input_overlay.height = 300
-  if (input_overlay) {
-    const ioctx = input_overlay.getContext('2d')
-    data.words.forEach((w) => {
-      const b = w.bbox
-      ioctx.strokeWidth = 1
-      ioctx.strokeStyle = 'red'
-      ioctx.strokeRect(b.x0, b.y0, b.x1 - b.x0, b.y1 - b.y0)
-      ioctx.beginPath()
-      ioctx.moveTo(w.baseline.x0, w.baseline.y0)
-      ioctx.lineTo(w.baseline.x1, w.baseline.y1)
-      ioctx.strokeStyle = 'green'
-      ioctx.stroke()
-    })
-  }
-
   contractType.value = data.text.split('\n')[0]
   await worker.terminate()
 }

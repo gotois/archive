@@ -61,7 +61,9 @@
       </div>
     </template>
     <QCarouselSlide
-      v-for="({ contentUrl, encodingFormat }, objectIndex) in item.object"
+      v-for="(
+        { contentUrl, encodingFormat, caption = '' }, objectIndex
+      ) in item.object"
       :key="objectIndex"
       class="no-margin no-padding"
       :name="objectIndex + 1"
@@ -120,7 +122,6 @@
           <template v-else>
             <QImg
               class="col"
-              alt="Document"
               fit="contain"
               :height="fullscreen ? '100dvh' : '400px'"
               :ratio="1"
@@ -133,12 +134,21 @@
               fetchpriority="high"
               no-spinner
               no-native-menu
+              no-transition
+              :draggable="false"
+              :alt="caption ?? 'Document'"
+              :placeholder-src="caption"
               @load="
                 encodingFormat !== 'application/pdf'
                   ? prominentBGColors()
                   : null
               "
+              @mouseleave="onShowCaption"
+              @mouseenter="onHideCaption"
             >
+              <div v-if="caption.length" class="absolute-top-left text-caption">
+                {{ caption }}
+              </div>
               <ImageContextMenu
                 v-if="!fullscreen"
                 :image="item.object[objectIndex]"
@@ -215,6 +225,14 @@ function icon(encodingFormat: string) {
   } else {
     return 'fullscreen'
   }
+}
+
+function onHideCaption({ target }: { target: HTMLElement }) {
+  target.querySelector('.text-caption')?.classList?.remove('invisible')
+}
+
+function onShowCaption({ target }: { target: HTMLElement }) {
+  target.querySelector('.text-caption')?.classList?.add('invisible')
 }
 
 async function prominentBGColors() {
