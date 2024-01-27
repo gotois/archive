@@ -58,6 +58,11 @@ export async function createContractPDF(
 }
 
 export async function createPDF(object: FormatContract) {
+  const title = object.instrument.name
+  const description = object.instrument.description
+  const author = object.agent.name
+  const formatImages = object.object
+
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'px',
@@ -65,20 +70,20 @@ export async function createPDF(object: FormatContract) {
     hotfixes: ['px_scaling'],
   })
   doc.setProperties({
-    title: object.instrument.name,
-    subject: object.instrument.description,
-    author: object.agent.name,
+    title: title,
+    subject: description,
+    author: author,
     creator: productName,
   })
   const files: File[] = []
   let docLength = 0
 
-  for (const { contentUrl, encodingFormat } of object.object) {
+  for (const { contentUrl, encodingFormat } of formatImages) {
     if (encodingFormat === 'application/pdf') {
       const [extension] = contentUrl.match(/[^:/]\w+(?=;|,)/)
       const res = await fetch(contentUrl)
       const blob: Blob = await res.blob()
-      const fileName = object.instrument.name + '.' + extension
+      const fileName = title + '.' + extension
       const file = new File([blob], fileName, { type: encodingFormat })
       files.push(file)
       continue
@@ -106,7 +111,7 @@ export async function createPDF(object: FormatContract) {
   if (docLength > 0) {
     const blob = doc.output('blob')
     doc.close()
-    const file = new File([blob], object.instrument.name + '.pdf', {
+    const file = new File([blob], title + '.pdf', {
       type: 'application/pdf',
     })
     files.push(file)

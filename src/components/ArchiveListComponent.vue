@@ -352,10 +352,10 @@ function onSheet(item: FormatContract) {
     class: $q.platform.is.desktop ? 'text-center' : '',
     actions: actions,
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  }).onOk(async (action: { id: SheetAction }) => {
+  }).onOk((action: { id: SheetAction }) => {
     switch (action.id) {
       case SheetAction.SHARE: {
-        const icalFile = await createCal(icalId, item)
+        const icalFile = createCal(icalId, item)
         return shareFile(item.instrument.name, icalFile)
       }
       case SheetAction.LINK: {
@@ -367,7 +367,7 @@ function onSheet(item: FormatContract) {
         return open(url)
       }
       case SheetAction.CALENDAR: {
-        const file = await createCal(icalId, item)
+        const file = createCal(icalId, item)
         return saveIcal(file)
       }
       case SheetAction.MAIL: {

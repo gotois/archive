@@ -1,13 +1,10 @@
 import { event as createEvent, default as icalendar } from 'ical-browser'
-import { createPDF } from './pdfHelper'
-import { readFilesPromise } from './fileHelper'
 import { FormatContract } from '../types/models'
 
-export default async (id: string, object: FormatContract) => {
-  const files = await createPDF(object)
+export default (id: string, object: FormatContract) => {
   const attach: string[] = []
-  for (const base64 of await readFilesPromise(files)) {
-    attach.push(base64)
+  for (const { contentUrl } of object.object) {
+    attach.push(contentUrl)
   }
   if (!object.sameAs) {
     console.warn('object sameAs is empty')

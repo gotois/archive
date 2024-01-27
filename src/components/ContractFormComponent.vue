@@ -279,12 +279,13 @@ import ContractCarouselComponent from 'components/ContractCarouselComponent.vue'
 import { readFilePromise } from '../helpers/fileHelper'
 import { formatDate } from '../helpers/dateHelper'
 import { validUrlString } from '../helpers/urlHelper'
+import { createPDF } from '../helpers/pdfHelper'
+import { getIdentifierMessage } from '../helpers/schemaHelper'
 import { signMessageUsePhantom } from '../services/phantomWalletService'
 import { signMessageUseSecretKey } from '../services/cryptoService'
-import { Credential, MyContract, WalletType, ImageType } from '../types/models'
-import { getIdentifierMessage } from '../helpers/schemaHelper'
 import { keys, keyPair } from '../services/databaseService'
 import Dogovor from '../services/contractGeneratorService'
+import { Credential, MyContract, WalletType, ImageType } from '../types/models'
 
 const DateComponent = defineAsyncComponent(
   () => import('components/DateComponent.vue'),
@@ -521,15 +522,6 @@ async function prepareContract() {
     // иначе упадет ошибка при создании на Pod, если таких договоров будет два
   }
 
-  const images = []
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  for (const file of contract.value.credentialSubject.object) {
-    const res = await fetch(file.contentUrl)
-    const blob = await res.blob()
-    const image = await readFilePromise(blob)
-    images.push(image)
-  }
-
   const participantEmails = modelContact.value.filter(
     ({ type }) => type === InputType.email,
   )
@@ -560,6 +552,23 @@ async function prepareContract() {
       ? participantUrls[0].value
       : null // todo поддержать массив url
     : person.homepage
+
+  // превращение images в один PDF
+  const pdfFiles = await createPDF({
+    agent: {
+      name: person.name,
+    },
+    instrument: {
+      name: contractType.value,
+      description: description.value,
+    },
+    object: contract.value.credentialSubject.object,
+  })
+  const images = []
+  for (const pdf of pdfFiles) {
+    const image = await readFilePromise(pdf)
+    images.push(image)
+  }
 
   return {
     agent_name: person.name,
