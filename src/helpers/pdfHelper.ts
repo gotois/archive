@@ -7,6 +7,8 @@ import privacyNotice from '../ui/templates/privacy-notice'
 import pkg from '../../package.json'
 
 const { productName } = pkg
+const MIME_TYPE = 'application/pdf'
+const FILE_EXT = '.pdf'
 
 async function resizeImageA4(dataUrl: string) {
   const MAX_WIDTH = 794
@@ -41,7 +43,7 @@ async function resizeImageA4(dataUrl: string) {
 
 export async function createContractPDF(
   html: string,
-  fileName = 'contract.pdf',
+  fileName = 'contract' + FILE_EXT,
 ) {
   const htmlText = convert(html, {
     wordwrap: 80,
@@ -53,7 +55,7 @@ export async function createContractPDF(
     plugins: { text, image },
   })
   return new File([pdf.buffer], fileName, {
-    type: 'application/pdf',
+    type: MIME_TYPE,
   })
 }
 
@@ -79,11 +81,10 @@ export async function createPDF(object: FormatContract) {
   let docLength = 0
 
   for (const { contentUrl, encodingFormat } of formatImages) {
-    if (encodingFormat === 'application/pdf') {
-      const [extension] = contentUrl.match(/[^:/]\w+(?=;|,)/)
+    if (encodingFormat === MIME_TYPE) {
       const res = await fetch(contentUrl)
       const blob: Blob = await res.blob()
-      const fileName = title + '.' + extension
+      const fileName = title + FILE_EXT
       const file = new File([blob], fileName, { type: encodingFormat })
       files.push(file)
       continue
@@ -111,8 +112,8 @@ export async function createPDF(object: FormatContract) {
   if (docLength > 0) {
     const blob = doc.output('blob')
     doc.close()
-    const file = new File([blob], title + '.pdf', {
-      type: 'application/pdf',
+    const file = new File([blob], title + FILE_EXT, {
+      type: MIME_TYPE,
     })
     files.push(file)
   }
