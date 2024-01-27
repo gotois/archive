@@ -10,10 +10,7 @@ const { productName } = pkg
 const MIME_TYPE = 'application/pdf'
 const FILE_EXT = '.pdf'
 
-async function resizeImageA4(dataUrl: string) {
-  const MAX_WIDTH = 794
-  const MAX_HEIGHT = 1123
-
+async function decodeImg(dataUrl: string) {
   const img = new Image()
   img.src = dataUrl
   try {
@@ -22,6 +19,13 @@ async function resizeImageA4(dataUrl: string) {
     console.error('Cannot decode the image')
     throw error
   }
+  return img
+}
+
+function resizeImageA4(img: HTMLImageElement) {
+  const MAX_WIDTH = 794
+  const MAX_HEIGHT = 1123
+
   let { width, height } = img
 
   // resizing logic portrait
@@ -64,9 +68,10 @@ export async function createPDF(object: FormatContract) {
   const description = object.instrument.description
   const author = object.agent.name
   const formatImages = object.object
+  const orientation = 'portrait'
 
   const doc = new jsPDF({
-    orientation: 'portrait',
+    orientation: orientation,
     unit: 'px',
     format: 'a4',
     hotfixes: ['px_scaling'],
@@ -93,10 +98,11 @@ export async function createPDF(object: FormatContract) {
     const format = encodingFormat
       .replace('image/', '')
       .toUpperCase() as ImageFormat
-    const { width, height } = await resizeImageA4(contentUrl)
+    const img = await decodeImg(contentUrl)
+    const { width, height } = resizeImageA4(img)
 
     if (docLength != 0) {
-      doc.addPage(format, 'portrait')
+      doc.addPage(format, orientation)
     }
     doc.addImage({
       imageData: contentUrl,
