@@ -245,7 +245,11 @@ import useNotification from 'stores/notification'
 import { ROUTE_NAMES } from '../router/routes'
 import Dogovor from '../services/contractGeneratorService'
 import { validUrlString } from '../helpers/urlHelper'
-import { PDF_MIME_TYPE, PNG_MIME_TYPE, JPG_MIME_TYPE } from '../helpers/mimeTypes'
+import {
+  PDF_MIME_TYPE,
+  PNG_MIME_TYPE,
+  JPG_MIME_TYPE,
+} from '../helpers/mimeTypes'
 import { FormatContract } from '../types/models'
 
 const ArchiveListComponent = defineAsyncComponent({

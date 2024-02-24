@@ -15,9 +15,7 @@
       <div class="q-pa-md non-selectable">
         <QIcon
           v-if="
-            [PDF_MIME_TYPE].includes(
-              item.object[navProps.index].encodingFormat,
-            )
+            [PDF_MIME_TYPE].includes(item.object[navProps.index].encodingFormat)
           "
           name="picture_as_pdf"
           size="64px"
@@ -139,9 +137,7 @@
               :alt="caption ?? 'Document'"
               :placeholder-src="caption"
               @load="
-                encodingFormat !== PDF_MIME_TYPE
-                  ? prominentBGColors()
-                  : null
+                encodingFormat !== PDF_MIME_TYPE ? prominentBGColors() : null
               "
               @mouseleave="onShowCaption"
               @mouseenter="onHideCaption"
