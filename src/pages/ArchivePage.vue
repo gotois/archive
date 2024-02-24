@@ -1,5 +1,15 @@
 <template>
-  <QPage :class="$q.dark.isActive ? 'bg-transparent' : 'bg-grey-1'">
+  <QPage
+    :class="{
+      'bg-transparent': $q.dark.isActive,
+      'bg-grey-1': !$q.dark.isActive,
+      'light-dimmed': isDragging,
+    }"
+    @dragenter="dragenter"
+    @dragover="dragover"
+    @dragleave="dragleave"
+    @drop="drop"
+  >
     <QScrollArea
       v-if="
         formatContracts.length > 0 &&
@@ -91,7 +101,7 @@
           style="width: 200px"
           :label="$t('files.type')"
           :counter="Boolean(files.length)"
-          accept="image/png, image/jpeg, .pdf"
+          :accept="`${PNG_MIME_TYPE}, ${JPG_MIME_TYPE}, ${PDF_MIME_TYPE}`"
           color="primary"
           label-color="primary"
           class="shadow-1"
@@ -235,6 +245,7 @@ import useNotification from 'stores/notification'
 import { ROUTE_NAMES } from '../router/routes'
 import Dogovor from '../services/contractGeneratorService'
 import { validUrlString } from '../helpers/urlHelper'
+import { PDF_MIME_TYPE, PNG_MIME_TYPE, JPG_MIME_TYPE } from '../helpers/mimeTypes'
 import { FormatContract } from '../types/models'
 
 const ArchiveListComponent = defineAsyncComponent({
@@ -293,6 +304,7 @@ const files = ref([])
 const creatingNewContract = ref(false)
 const dogovor = ref<InstanceType<typeof Dogovor> | null>(null)
 const urlFrom = ref('')
+const isDragging = ref(false)
 
 watch(
   () => router.currentRoute.value.query,
@@ -302,6 +314,38 @@ watch(
 )
 
 useMeta(metaData)
+
+function dragenter(e: DragEvent) {
+  e.preventDefault()
+  isDragging.value = true
+}
+
+function dragover(e: Event) {
+  e.preventDefault()
+  isDragging.value = true
+}
+
+function dragleave() {
+  isDragging.value = false
+}
+
+function drop(e: DragEvent) {
+  e.preventDefault()
+  const files: File[] = Array.from(e.dataTransfer.files).filter(
+    (file: File) => {
+      switch (file.type) {
+        case PDF_MIME_TYPE:
+        case PNG_MIME_TYPE:
+        case JPG_MIME_TYPE:
+          return true
+        default:
+          return false
+      }
+    },
+  )
+  onFileSelect(files)
+  isDragging.value = false
+}
 
 function clearFabData() {
   files.value = []
@@ -486,6 +530,9 @@ function onFileSelect(files: File[]) {
       encodingFormat: file.type,
       caption: file.name,
     })
+  }
+  if (filesUrls.length === 0) {
+    return
   }
   dogovor.value = Dogovor.mintContract({
     files: filesUrls,

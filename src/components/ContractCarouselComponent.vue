@@ -15,7 +15,7 @@
       <div class="q-pa-md non-selectable">
         <QIcon
           v-if="
-            ['application/pdf'].includes(
+            [PDF_MIME_TYPE].includes(
               item.object[navProps.index].encodingFormat,
             )
           "
@@ -87,13 +87,13 @@
             v-else-if="
               $q.platform.is.desktop &&
               !$q.platform.is.safari &&
-              encodingFormat === 'application/pdf'
+              encodingFormat === PDF_MIME_TYPE
             "
           >
             <object
               name="picture_as_pdf"
               :data="contentUrl"
-              type="application/pdf"
+              :type="PDF_MIME_TYPE"
               :style="{
                 width: '100%',
                 height: fullscreen ? '100dvh' : '400px',
@@ -139,7 +139,7 @@
               :alt="caption ?? 'Document'"
               :placeholder-src="caption"
               @load="
-                encodingFormat !== 'application/pdf'
+                encodingFormat !== PDF_MIME_TYPE
                   ? prominentBGColors()
                   : null
               "
@@ -197,6 +197,7 @@ import ImageContextMenu from 'components/ImageContextMenu.vue'
 import SwipeToClose from 'components/SwipeToClose.vue'
 import { FormatContract } from '../types/models'
 import { open } from '../helpers/urlHelper'
+import { PDF_MIME_TYPE } from '../helpers/mimeTypes'
 
 interface Props {
   model: FormatContract
@@ -220,7 +221,7 @@ async function getColorFromImage(contentUrl: string) {
 function icon(encodingFormat: string) {
   if (fullscreen.value) {
     return 'fullscreen_exit'
-  } else if (Platform.is.safari && encodingFormat === 'application/pdf') {
+  } else if (Platform.is.safari && encodingFormat === PDF_MIME_TYPE) {
     return 'open_in_full'
   } else {
     return 'fullscreen'
@@ -246,7 +247,7 @@ async function prominentBGColors() {
 function onShowFullImage(object: FormatContract) {
   const { contentUrl, encodingFormat } = object.object[currentSlide.value - 1]
 
-  if (Platform.is.safari && encodingFormat === 'application/pdf') {
+  if (Platform.is.safari && encodingFormat === PDF_MIME_TYPE) {
     return open(contentUrl)
   }
   fullscreen.value = !fullscreen.value

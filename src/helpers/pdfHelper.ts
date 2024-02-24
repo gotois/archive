@@ -4,10 +4,10 @@ import { text, image } from '@pdfme/schemas'
 import { convert } from 'html-to-text'
 import { FormatContract } from '../types/models'
 import privacyNotice from '../ui/templates/privacy-notice'
+import { PDF_MIME_TYPE } from './mimeTypes'
 import pkg from '../../package.json'
 
 const { productName } = pkg
-const MIME_TYPE = 'application/pdf'
 const FILE_EXT = '.pdf'
 
 async function decodeImg(dataUrl: string) {
@@ -59,7 +59,7 @@ export async function createContractPDF(
     plugins: { text, image },
   })
   return new File([pdf.buffer], fileName, {
-    type: MIME_TYPE,
+    type: PDF_MIME_TYPE,
   })
 }
 
@@ -86,7 +86,7 @@ export async function createPDF(object: FormatContract) {
   let docLength = 0
 
   for (const { contentUrl, encodingFormat } of formatImages) {
-    if (encodingFormat === MIME_TYPE) {
+    if (encodingFormat === PDF_MIME_TYPE) {
       const res = await fetch(contentUrl)
       const blob: Blob = await res.blob()
       const fileName = title + FILE_EXT
@@ -119,7 +119,7 @@ export async function createPDF(object: FormatContract) {
     const blob = doc.output('blob')
     doc.close()
     const file = new File([blob], title + FILE_EXT, {
-      type: MIME_TYPE,
+      type: PDF_MIME_TYPE,
     })
     files.push(file)
   }

@@ -5,13 +5,15 @@ interface State {
   tutorialCompleted: boolean
 }
 
+const tutorialKey = 'tutorialCompleted'
+
 export default defineStore('tutorial', {
   state: (): State => ({
-    tutorialCompleted: LocalStorage.getItem('tutorialCompleted') ?? false,
+    tutorialCompleted: LocalStorage.getItem(tutorialKey) ?? false,
   }),
   actions: {
     tutorialComplete() {
-      LocalStorage.set('tutorialCompleted', true)
+      LocalStorage.set(tutorialKey, true)
       this.tutorialCompleted = true
     },
   },
