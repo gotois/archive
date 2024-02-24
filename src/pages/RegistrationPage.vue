@@ -118,62 +118,7 @@
             {{ $t('tutorial.welcome.hint') }}
           </p>
           <QStepperNavigation>
-            <QBtnDropdown
-              :label="$t('tutorial.welcome.ok')"
-              color="accent"
-              square
-              auto-close
-              stretch
-              :class="{
-                'full-width': !$q.platform.is.desktop,
-              }"
-            >
-              <QBtnGroup class="q-pa-md" flat>
-                <QBtn
-                  class="full-width"
-                  square
-                  label="Demo"
-                  @click="onDemoSign"
-                >
-                  <QTooltip>Demo sign</QTooltip>
-                </QBtn>
-                <QBtn
-                  class="full-width"
-                  square
-                  label="Blockchain"
-                  @click="pricing = true"
-                >
-                  <QTooltip>Blockchain Solana</QTooltip>
-                </QBtn>
-                <QBtn class="full-width" disable square label="НЭП" />
-              </QBtnGroup>
-            </QBtnDropdown>
-            <QDialog
-              v-model="pricing"
-              persistent
-              maximized
-              transition-show="slide-up"
-              transition-hide="slide-down"
-            >
-              <QCard
-                class="overflow-hidden-y q-pb-lg"
-                :class="{
-                  'bg-grey-4 text-white': !$q.dark.isActive,
-                  'bg-dark text-white': $q.dark.isActive,
-                }"
-              >
-                <QBar>
-                  <QSpace />
-                  <QBtn v-close-popup dense flat icon="close" />
-                </QBar>
-                <QCardSection class="full-height overflow-hidden-y">
-                  <PricingComponent
-                    @free="stepper.next()"
-                    @premium="onPremium"
-                  />
-                </QCardSection>
-              </QCard>
-            </QDialog>
+            <SelectRegistration @select="registrationCallback" />
           </QStepperNavigation>
         </QStep>
         <QStep
@@ -263,11 +208,7 @@ import {
   QTooltip,
   QList,
   QExpansionItem,
-  QBtn,
-  QBtnGroup,
-  QBtnDropdown,
   QDialog,
-  QBar,
 } from 'quasar'
 import { storeToRefs } from 'pinia'
 import { WebId } from '@inrupt/solid-client'
@@ -286,8 +227,8 @@ import solidAuth from '../services/authService'
 import { keyPair } from '../services/databaseService'
 import Dogovor from '../services/contractGeneratorService'
 
-const PricingComponent = defineAsyncComponent(
-  () => import('components/PricingComponent.vue'),
+const SelectRegistration = defineAsyncComponent(
+  () => import('components/SelectRegistration.vue'),
 )
 const OIDCIssuerComponent = defineAsyncComponent(
   () => import('components/OIDCIssuerComponent.vue'),
@@ -322,7 +263,6 @@ function getCurrentStep() {
 const scroll = ref<InstanceType<typeof QScrollArea> | null>(null)
 const stepper = ref<InstanceType<typeof QStepper> | null>(null)
 const step = ref(getCurrentStep() ?? STEP.WELCOME)
-const pricing = ref(false)
 const creatingNewContract = ref(false)
 const dogovor = ref<InstanceType<typeof Dogovor> | null>(null)
 
@@ -335,6 +275,13 @@ watch(
     setMeta(value)
   },
 )
+
+function registrationCallback(cb: () => boolean) {
+  const hasNext = cb()
+  if (hasNext) {
+    stepper.value.next()
+  }
+}
 
 function setMeta(value: number) {
   switch (value as STEP) {
@@ -469,20 +416,6 @@ function exportKeyPair() {
   })
 }
 
-async function onDemoSign() {
-  const key = await keyPair.generateNewKeyPair(demoUserWebId)
-  await keyPair.setKeyPair(key)
-  profileStore.consumerName('Test User')
-  profileStore.consumerEmail('tester@gotointeractive.com')
-  profileStore.consumerPhone('+1234567890')
-  profileStore.consumerDID(key.id)
-  authStore.webId = demoUserWebId
-  tutorialStore.tutorialComplete()
-  await router.push({
-    name: ROUTE_NAMES.ARCHIVE,
-  })
-}
-
 async function mintPrivacyContract() {
   const response = await fetch(window.location.origin + '/docs/privacy.md')
   const contentType = response.headers.get('content-type')
@@ -572,11 +505,6 @@ async function onStep(step: number) {
     replace: true,
   })
   scroll.value.setScrollPosition('vertical', step * 30, 100)
-}
-
-function onPremium() {
-  console.warn('Premium is under construction')
-  stepper.value.next()
 }
 
 setMeta(step.value)

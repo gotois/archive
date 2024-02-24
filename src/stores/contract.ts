@@ -84,6 +84,7 @@ export default defineStore('contracts', {
       return { contract, index }
     },
     async addPresentation(presentation: Presentation) {
+      // todo - отрефакторить метод
       const mycontract = getContractFromLD(presentation.verifiableCredential[0])
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       mycontract.proof = JSON.parse(JSON.stringify(presentation.proof))
