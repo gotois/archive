@@ -24,8 +24,9 @@ import { ref, computed, PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { QBtn, QDate, date } from 'quasar'
 
-const $t = useI18n().t
-const { locale } = useI18n()
+const i18n = useI18n()
+const $t = i18n.t
+const locale = i18n.locale
 
 interface Range {
   day: number

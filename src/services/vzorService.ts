@@ -1,6 +1,15 @@
 import { uid } from 'quasar'
 
 export default async function (text: string) {
+  if (!process.env.server) {
+    throw new Error('Unknown JSON-RPC2 server url')
+  }
+  const headers = new Headers()
+  headers.append('Accept', 'application/json')
+  headers.append('Content-Type', 'application/json')
+  if (process.env.server_basic_auth) {
+    headers.set('Authorization', process.env.server_basic_auth)
+  }
   const response = await fetch(process.env.server, {
     body: JSON.stringify({
       jsonrpc: '2.0',
@@ -11,10 +20,7 @@ export default async function (text: string) {
       },
       id: uid(),
     }),
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-    },
+    headers: headers,
     method: 'POST',
   })
   return (await response.json()) as {

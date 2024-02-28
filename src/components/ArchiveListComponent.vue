@@ -178,8 +178,9 @@ import { open } from '../helpers/urlHelper'
 import { openMap } from '../services/geoService'
 
 const $q = useQuasar()
-const $t = useI18n().t
-const { locale } = useI18n()
+const i18n = useI18n()
+const $t = i18n.t
+const locale = i18n.locale
 
 const props = defineProps({
   paginationCount: {

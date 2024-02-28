@@ -345,8 +345,8 @@
                     <QOtp
                       v-if="showOTPDialog"
                       ref="otp"
-                      separator=" "
-                      outlined
+                      :separator="$q.screen.xs ? '' : ' '"
+                      :outlined="!$q.screen.xs"
                       autofocus
                       :dense="$q.platform.is.desktop"
                       :num="6"

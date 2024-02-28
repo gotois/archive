@@ -125,8 +125,9 @@ const KeypairComponent = defineAsyncComponent(
 
 const emit = defineEmits(['finish'])
 const $q = useQuasar()
-const { locale } = useI18n()
-const $t = useI18n().t
+const i18n = useI18n()
+const $t = i18n.t
+const locale = i18n.locale
 const profileStore = useProfileStore()
 
 const useGoogleId = ref(false)

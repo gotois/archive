@@ -27,8 +27,9 @@ interface NavigationDate {
   month: number
 }
 
-const $t = useI18n().t
-const { locale } = useI18n()
+const i18n = useI18n()
+const $t = i18n.t
+const locale = i18n.locale
 
 const emit = defineEmits(['select'])
 const contractStore = useContractStore()

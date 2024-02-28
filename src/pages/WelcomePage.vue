@@ -338,9 +338,10 @@ import { useRouter } from 'vue-router'
 import { ROUTE_NAMES, STEP } from '../router/routes'
 import { applicationURL } from '../helpers/googlePlayHelper'
 
-const $t = useI18n().t
 const router = useRouter()
-const { locale } = useI18n()
+const i18n = useI18n()
+const $t = i18n.t
+const locale = i18n.locale
 
 const metaData = {
   'title': $t('pages.welcome.title'),

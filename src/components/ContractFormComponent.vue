@@ -709,17 +709,13 @@ async function recognizeImage(
   img.src = contentUrl
   const { data } = await worker.recognize(img)
   await worker.terminate()
-  try {
-    const ld = await vzor(data.text)
-    contractType.value = ld.name
-    description.value = ld.description
-    // duration.value = {
-    //   from: formatDate(ld.startDate),
-    //   to: formatDate(ld.endDate),
-    // }
-  } catch (e) {
-    console.error(e)
-  }
+  const ld = await vzor(data.text)
+  contractType.value = ld.name
+  description.value = ld.description
+  // duration.value = {
+  //   from: formatDate(ld.startDate),
+  //   to: formatDate(ld.endDate),
+  // }
 }
 
 defineExpose({
@@ -739,11 +735,13 @@ onMounted(async () => {
       value: contract.value.credentialSubject.participant.url,
     })
   }
-
+  $q.loading.show()
   try {
     await recognizeImage(contract.value.credentialSubject.object[0])
-  } catch {
-    /* empty */
+  } catch (e) {
+    console.error(e)
+  } finally {
+    $q.loading.hide()
   }
 })
 </script>
