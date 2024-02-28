@@ -285,6 +285,7 @@ import { signMessageUsePhantom } from '../services/phantomWalletService'
 import { signMessageUseSecretKey } from '../services/cryptoService'
 import { keys, keyPair } from '../services/databaseService'
 import Dogovor from '../services/contractGeneratorService'
+import vzor from '../services/vzorService'
 import { Credential, MyContract, WalletType, ImageType } from '../types/models'
 
 const DateComponent = defineAsyncComponent(
@@ -707,8 +708,18 @@ async function recognizeImage(
   const img = new Image()
   img.src = contentUrl
   const { data } = await worker.recognize(img)
-  contractType.value = data.text.split('\n')[0]
   await worker.terminate()
+  try {
+    const ld = await vzor(data.text)
+    contractType.value = ld.name
+    description.value = ld.description
+    // duration.value = {
+    //   from: formatDate(ld.startDate),
+    //   to: formatDate(ld.endDate),
+    // }
+  } catch (e) {
+    console.error(e)
+  }
 }
 
 defineExpose({

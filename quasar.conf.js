@@ -45,6 +45,7 @@ module.exports = configure((ctx) => {
     build: {
       env: {
         google_client_id: process.env.GOOGLE_CLIENT_ID,
+        server: process.env.SERVER_RPC2,
       },
       target: {
         browser: 'esnext',
