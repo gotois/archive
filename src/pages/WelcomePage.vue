@@ -298,15 +298,15 @@
         <template v-if="locale === 'ru'">
           ООО "Виртуальный секретарь"
         </template>
-        <template v-else>GIC DAO</template>
+        <template v-else>{{ author.name }}</template>
       </QItemLabel>
-      <QItem v-ripple clickable href="https://gotointeractive.com">
+      <QItem v-ripple clickable :href="author.url">
         <QCardSection>
           <QItemLabel lines="1" class="text-left">Сайт</QItemLabel>
           <QItemLabel caption>Ботификация жизни начинается здесь</QItemLabel>
         </QCardSection>
       </QItem>
-      <QItem v-ripple clickable href="mailto:support@gotointeractive.com">
+      <QItem v-ripple clickable :href="'mailto:' + author.email">
         <QCardSection>
           <QItemLabel lines="1" class="text-left">Поддержка</QItemLabel>
           <QItemLabel caption>Обратиться в центр поддержки</QItemLabel>
@@ -337,6 +337,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { ROUTE_NAMES, STEP } from '../router/routes'
 import { applicationURL } from '../helpers/googlePlayHelper'
+import { author } from '../../package.json'
 
 const router = useRouter()
 const i18n = useI18n()
