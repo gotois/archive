@@ -243,6 +243,7 @@ export default class Dogovor {
           object: 'https://schema.org/ImageObject',
           encodingFormat: 'https://schema.org/encodingFormat',
           contentUrl: 'https://schema.org/contentUrl',
+          location: 'https://schema.org/location',
           telephone: 'https://schema.org/telephone',
           url: 'https://schema.org/url',
           sameAs: 'https://schema.org/sameAs',
@@ -498,6 +499,7 @@ export default class Dogovor {
     context.set('value', BaseContext.schemaOrg + '/PropertyValue')
     context.set('object', BaseContext.schemaOrg + '/ImageObject')
     context.set('encodingFormat', BaseContext.schemaOrg + '/encodingFormat')
+    context.set('location', BaseContext.schemaOrg + '/location')
     context.set('contentUrl', BaseContext.schemaOrg + '/contentUrl')
     context.set('value', BaseContext.schemaOrg + '/value')
     context.set('telephone', BaseContext.schemaOrg + '/telephone')
@@ -550,6 +552,9 @@ export default class Dogovor {
           }
         }),
       )
+    }
+    if (contractData.location) {
+      credentialSubject.set('location', JSON.stringify(contractData.location))
     }
     const idName = 'Contract'
     credentialSubject.set('identifier', [

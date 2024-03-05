@@ -338,13 +338,14 @@ function onSheet(item: FormatContract) {
       })
     }
   }
-  // fixme показывать только если item содержит в себе содержимое GEO
-  actions.push({
-    label: $t('components.archiveList.sheet.map.label'),
-    icon: 'map',
-    color: 'secondary',
-    id: SheetAction.MAP,
-  })
+  if (item.location) {
+    actions.push({
+      label: $t('components.archiveList.sheet.map.label'),
+      icon: 'map',
+      color: 'secondary',
+      id: SheetAction.MAP,
+    })
+  }
   const icalId = $t('organization.prodid')
 
   $q.bottomSheet({
@@ -381,8 +382,7 @@ function onSheet(item: FormatContract) {
         return sendToCourt()
       }
       case SheetAction.MAP: {
-        // fixme брать lat и lng из данных item
-        return openMap({ lat: 37.618879, lng: 55.751426 })
+        return openMap(item.location)
       }
       default: {
         console.warn('Unknown id')

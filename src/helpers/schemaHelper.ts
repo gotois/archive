@@ -3,6 +3,7 @@ import {
   ContractTable,
   FormatContract,
   FormatContractParticipant,
+  FormatPlace,
   Credential,
   CredentialSubject,
   BaseContext,
@@ -30,6 +31,7 @@ export function getContractFromLD(jsldContract: Credential) {
       participant_url: jsldContract.credentialSubject.participant?.url, // todo упростить схему
       participant_tel: jsldContract.credentialSubject.participant?.telephone, // todo упростить схему
       instrument_name: jsldContract.credentialSubject.instrument.name,
+      location: jsldContract.credentialSubject.location,
       instrument_description:
         jsldContract.credentialSubject.instrument.description ?? null,
       startTime: new Date(jsldContract.credentialSubject.startTime),
@@ -101,6 +103,9 @@ export function formatterContract(contract: ContractTable) {
     'participant': participant,
     'instrument': instrument,
     'identifier': identifier,
+    'location': contract.location
+      ? (JSON.parse(contract.location) as FormatPlace)
+      : null,
     'startTime': new Date(contract.startTime),
     'endTime': contract.endTime ? new Date(contract.endTime) : null,
     'object': object ?? [],

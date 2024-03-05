@@ -28,11 +28,24 @@ export default (id: string, object: FormatContract) => {
       email: object.participant.email,
     })
   }
+
+  let geo = null
+  if (object.location?.geo) {
+    geo = [object.location.geo.latitude, object.location.geo.longitude]
+  }
+
+  let location = null
+  if (object.location?.name) {
+    location = object.location.name
+  }
+
   const event = createEvent({
     uid: uid as string,
     url: object.sameAs ? new URL(object.sameAs) : null,
     summary: object.instrument.name,
     description: object.instrument.description,
+    location: location,
+    geo: geo,
     stamp: new Date(),
     start: object.startTime,
     end: object.endTime,

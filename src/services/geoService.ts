@@ -1,13 +1,11 @@
 import { Platform } from 'quasar'
 import { open } from '../helpers/urlHelper'
+import { Place } from '../types/models'
 
-interface LatLng {
-  lat: number
-  lng: number
-}
-
-export function openMap({ lat, lng }: LatLng) {
-  const query = 'Mexican+Restaurant'
+export function openMap(place: Place) {
+  const query = place.name ?? ''
+  const lat = place.geo.latitude
+  const lng = place.geo.longitude
   if (Platform.is.safari) {
     return open(
       `https://maps.apple.com/?q=${query}&sll=${lng + ',' + lat}&z=10&t=s`,

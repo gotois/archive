@@ -204,8 +204,10 @@ class ContractDatabase extends Dexie {
       'participant_email',
       'participant_tel',
       'participant_url',
+      // todo объединить name, description в один instrument
       'instrument_name',
       'instrument_description',
+      'location',
       'startTime',
       'endTime',
       '*images',

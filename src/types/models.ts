@@ -20,6 +20,7 @@ export interface ContractTable {
   issuanceDate: Date
   identifier: ContractIdentifier[]
   proof?: Proof
+  location?: string
   agent_name: string
   agent_email: string
   participant_name: string // todo - вместо этого сейчас participant_sameAs
@@ -140,6 +141,17 @@ export interface Agent {
   url?: string
 }
 
+export interface GeoCoordinates {
+  '@type': 'GeoCoordinates'
+  'latitude': number
+  'longitude': number
+}
+
+export interface Place {
+  geo: GeoCoordinates
+  name?: string
+}
+
 export interface ContractIdentifier {
   value: string | number
   name: string | WalletType
@@ -179,6 +191,7 @@ export interface FormatContract extends BaseSchemaType {
   'identifier': FormatContractIdentifier[]
   'startTime': Date
   'endTime'?: Date
+  'location'?: FormatPlace
   'proof'?: Proof
   'object': FormatImageType[]
 }
@@ -186,6 +199,7 @@ export interface FormatContractAgent extends BaseSchemaType, Agent {}
 export interface FormatContractParticipant extends BaseSchemaType, Agent {}
 interface FormatContractIdentifier extends BaseSchemaType, ContractIdentifier {}
 interface FormatContractInstrument extends BaseSchemaType, ContractInstrument {}
+export interface FormatPlace extends BaseSchemaType, Place {}
 
 export interface CredentialSubject {
   agent: Agent
@@ -195,6 +209,7 @@ export interface CredentialSubject {
   startTime: Date
   endTime?: Date
   object: ImageType[]
+  location?: Place
   url: string
   sameAs?: string
 }
@@ -210,6 +225,7 @@ export interface MyContract {
   participant_email?: string
   participant_tel?: string
   participant_url?: string
+  location?: Place
   startTime: Date
   endTime?: Date
 }
