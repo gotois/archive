@@ -9,6 +9,7 @@
     @dragover="dragover"
     @dragleave="dragleave"
     @drop="drop"
+    @click="checkFabOutclick"
   >
     <QScrollArea
       v-if="
@@ -331,6 +332,13 @@ function dragover(e: Event) {
 
 function dragleave() {
   isDragging.value = false
+}
+
+function checkFabOutclick(e: Event) {
+  if (!(fab.value.$el as HTMLElement).contains(e.target as HTMLElement)) {
+    fab.value.hide()
+    e.preventDefault()
+  }
 }
 
 function drop(e: DragEvent) {

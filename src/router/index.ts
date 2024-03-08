@@ -31,11 +31,11 @@ export default route(() => {
       window.location.replace(ROUTE_NAMES.PROMO)
       return
     }
-    if (error || !(code && state)) {
-      return
-    }
     if (lang && !LocalStorage.has('locale')) {
       LocalStorage.set('locale', lang)
+    }
+    if (error || !(code && state)) {
+      return
     }
     const podStore = usePodStore()
     if (!podStore.getOidcIssuer) {

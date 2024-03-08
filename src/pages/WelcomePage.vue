@@ -67,9 +67,15 @@
 
       <div class="flex justify-center row">
         <QCardSection class="flex q-pt-none text-left col-12">
-          <QBtn icon="play_arrow" color="black" :href="applicationURL">
+          <QBtn
+            v-if="!forRus"
+            icon="play_arrow"
+            color="black"
+            :href="applicationURL"
+          >
             Google Play
           </QBtn>
+          <!-- todo - для РФ нужны кнопки VK и пр. -->
         </QCardSection>
       </div>
     </QCard>
@@ -93,21 +99,18 @@
       >
         <QCardSection>
           <div class="text-subtitle1"
-            >Предоставляем услуги обеспечения согласования договоренностей между
-            участниками понятным способом</div
-          >
-          <div class="text-subtitle2"
             >Удобный сервис для подписания договоров, актов и других документов
             по выполнению договоренностей.
           </div>
         </QCardSection>
         <QCardSection class="q-pt-none text-left">
-          1. Загрузка документа договора
+          1. Создание и регистрация* документов
           <QSeparator spaced inset />
-          2. Подписание договора электронной подписью
+          2. Организация движения* и учета документов*
           <QSeparator spaced inset />
-          3. Сохранение и дальнейшая передача договора
+          3. Хранение документов
         </QCardSection>
+        <div>* В разработке</div>
       </QCard>
     </div>
 
@@ -125,7 +128,16 @@
         row: !$q.platform.is.mobile,
       }"
     >
-      <QCard class="q-mr-md col-3" :bordered="$q.platform.is.desktop" flat>
+      <QCard class="q-ma-md col-3" :bordered="$q.platform.is.desktop" flat>
+        <QCardSection>
+          <div class="text-h6">Электронный архив</div>
+          <div class="text-subtitle2">
+            Надёжное децентрализованное хранение всех документов для компаний и
+            частных лиц.
+          </div>
+        </QCardSection>
+      </QCard>
+      <QCard class="q-ma-md col-3" :bordered="$q.platform.is.desktop" flat>
         <QCardSection>
           <div class="text-h6">Безопасность данных</div>
           <div class="text-subtitle2">
@@ -134,7 +146,7 @@
           </div>
         </QCardSection>
       </QCard>
-      <QCard class="q-mr-md col-3" :bordered="$q.platform.is.desktop" flat>
+      <QCard class="q-ma-md col-3" :bordered="$q.platform.is.desktop" flat>
         <QCardSection>
           <div class="text-h6">Дружелюбная платформа</div>
           <div class="text-subtitle2">
@@ -143,11 +155,25 @@
           </div>
         </QCardSection>
       </QCard>
-      <QCard class="col-3" :bordered="$q.platform.is.desktop" flat>
+      <QCard class="q-ma-md col-3" :bordered="$q.platform.is.desktop" flat>
         <QCardSection>
           <div class="text-h6">Доступность</div>
           <div class="text-subtitle2">
             Обеспечиваем помощь и техническую поддержку для быстрого старта.
+          </div>
+        </QCardSection>
+      </QCard>
+      <QCard class="q-ma-md col-3" :bordered="$q.platform.is.desktop" flat>
+        <QCardSection>
+          <div class="text-h6"
+            >Обеспечение согласования договоренностей между участниками</div
+          >
+          <div class="text-subtitle2">
+            1. Загрузка документа договора
+            <br />
+            2. Подписание договора электронной понятным способом
+            <br />
+            3. Сохранение и дальнейшая передача договора
           </div>
         </QCardSection>
       </QCard>
@@ -164,6 +190,10 @@
       >
         Как это работает
       </h2>
+      <div class="text-subtitle1 text-center">
+        Система электронного документооборота GIC автоматизирует все стадии
+        производства
+      </div>
       <div
         :style="{
           marginLeft: $q.platform.is.desktop ? 'calc(50vw / 2)' : null,
@@ -282,40 +312,55 @@
       }"
       dark
     >
-      <QItemLabel header class="text-center text-subtitle1 text-uppercase"
-        >Социальные сети</QItemLabel
-      >
-      <QItem v-ripple clickable href="https://forum.gotointeractive.com">
-        <QCardSection>
-          <QItemLabel lines="1" class="text-left">Форум</QItemLabel>
-          <QItemLabel caption></QItemLabel>
-        </QCardSection>
-      </QItem>
+      <template v-if="forRus">
+        <!-- todo: ссылка на ВК и пр. -->
+      </template>
+      <template v-else>
+        <QItemLabel header class="text-center text-subtitle1 text-uppercase"
+          >Социальные сети</QItemLabel
+        >
+        <QItem v-ripple clickable href="https://forum.gotointeractive.com">
+          <QCardSection>
+            <QItemLabel lines="1" class="text-left">Форум</QItemLabel>
+            <QItemLabel caption></QItemLabel>
+          </QCardSection>
+        </QItem>
+        <QSeparator spaced dark />
+      </template>
 
-      <QSeparator spaced dark />
-
-      <QItemLabel header class="text-center text-subtitle1 text-uppercase">
-        <template v-if="locale === 'ru'">
+      <template v-if="forRus">
+        <QItemLabel header class="text-center text-subtitle1 text-uppercase">
           ООО "Виртуальный секретарь"
-        </template>
-        <template v-else>{{ author.name }}</template>
-      </QItemLabel>
-      <QItem v-ripple clickable :href="author.url">
-        <QCardSection>
-          <QItemLabel lines="1" class="text-left">Сайт</QItemLabel>
-          <QItemLabel caption>Ботификация жизни начинается здесь</QItemLabel>
-        </QCardSection>
-      </QItem>
-      <QItem v-ripple clickable :href="'mailto:' + author.email">
-        <QCardSection>
-          <QItemLabel lines="1" class="text-left">Поддержка</QItemLabel>
-          <QItemLabel caption>Обратиться в центр поддержки</QItemLabel>
-        </QCardSection>
-      </QItem>
+        </QItemLabel>
+        <QItem v-ripple clickable :href="'mailto:v-secretary@mail.ru'">
+          <QCardSection>
+            <QItemLabel lines="1" class="text-left">Поддержка</QItemLabel>
+            <QItemLabel caption>Обратиться в центр поддержки</QItemLabel>
+          </QCardSection>
+        </QItem>
+      </template>
+      <template v-else>
+        <QItemLabel header class="text-center text-subtitle1 text-uppercase">
+          {{ author.name }}
+        </QItemLabel>
+        <QItem v-ripple clickable :href="author.url">
+          <QCardSection>
+            <QItemLabel lines="1" class="text-left">Сайт</QItemLabel>
+            <QItemLabel caption>Ботификация жизни начинается здесь</QItemLabel>
+          </QCardSection>
+        </QItem>
+        <QItem v-ripple clickable :href="'mailto:' + author.email">
+          <QCardSection>
+            <QItemLabel lines="1" class="text-left">Поддержка</QItemLabel>
+            <QItemLabel caption>Обратиться в центр поддержки</QItemLabel>
+          </QCardSection>
+        </QItem>
+      </template>
     </QList>
   </QScrollArea>
 </template>
 <script lang="ts" setup>
+import { ref } from 'vue'
 import {
   useMeta,
   QIcon,
@@ -349,12 +394,14 @@ const metaData = {
   'og:title': $t('pages.welcome.title'),
 }
 
+const forRus = ref(locale.value === 'ru')
+
 async function onRegister() {
   await router.push({
     name: ROUTE_NAMES.TUTORIAL,
     query: {
       step: STEP.WELCOME,
-      lang: 'ru',
+      lang: locale.value,
     },
   })
 }

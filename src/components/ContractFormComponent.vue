@@ -412,6 +412,7 @@ const duration = ref<Duration>({
   from: formatDate(cloneStartDate),
   to: formatDate(afterYearDate),
 })
+const geo = ref('')
 
 function filterOptions(val: string, update: (callback: () => void) => void) {
   update(() => {
@@ -781,6 +782,9 @@ onMounted(async () => {
       type: InputType.url,
       value: contract.value.credentialSubject.participant.url,
     })
+  }
+  if (!navigator.onLine) {
+    return
   }
   $q.loading.show()
   try {
