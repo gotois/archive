@@ -86,6 +86,7 @@
         </div>
         <template v-if="item.object.length">
           <QSeparator />
+          <!--  FIXME: здесь вместо карусели будет только PDF -->
           <ContractCarouselComponent :model="item" />
         </template>
         <QSeparator />

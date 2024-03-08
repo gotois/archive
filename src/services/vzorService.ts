@@ -22,6 +22,7 @@ export default async function (
     }),
     headers: headers,
     method: 'POST',
+    signal: AbortSignal.timeout(15000),
   })
   return response.json()
 }

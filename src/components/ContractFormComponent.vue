@@ -207,6 +207,26 @@
       />
     </template>
     <QInput
+      v-model.trim="geo"
+      :label="'Lat and Lng'"
+      :hint="'Latitude and Longitude'"
+      type="text"
+      class="no-padding"
+      color="secondary"
+      :hide-hint="!$q.platform.is.desktop"
+      :dense="$q.platform.is.desktop"
+      :readonly="signing"
+      hide-bottom-space
+      outlined
+      square
+      autogrow
+      @focus="onFocusInput"
+    >
+      <template #prepend>
+        <QIcon name="map" />
+      </template>
+    </QInput>
+    <QInput
       v-model.trim="description"
       :label="$t('description.type')"
       :hint="$t('description.hint')"
@@ -583,6 +603,7 @@ async function prepareContract() {
     instrument_name: contractType.value,
     instrument_description: description.value,
     startTime: startDate,
+    location: {},
     endTime: dateNoLimit.value ? null : endDate,
     images: images,
   } as MyContract
@@ -709,9 +730,35 @@ async function recognizeImage(
   img.src = contentUrl
   const { data } = await worker.recognize(img)
   await worker.terminate()
-  const ld = await vzor(data.text)
-  contractType.value = ld.name
-  description.value = ld.description
+
+  // fixme два последовательных JSON RPC 2.0 запроса на API Server:
+  const ld1 = (await vzor('generate-ocr', {
+    content: data.text,
+    type: 'plain/text',
+  })) as {
+    text: string
+  }
+  const ld2 = (await vzor('generate-event', {
+    content: ld1.text,
+    type: 'plain/text',
+  })) as {
+    name: string
+    description: string | null
+    location: string | null
+    startDate: string | null
+    endDate: string | null
+    inLanguage: {
+      name: string
+    }
+    organizer: {
+      name: string
+      email: string | null
+      telephone: string | null
+      url: string | null
+    }
+  }
+  contractType.value = ld2.name
+  description.value = ld2.description
   // duration.value = {
   //   from: formatDate(ld.startDate),
   //   to: formatDate(ld.endDate),
