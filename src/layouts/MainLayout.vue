@@ -446,6 +446,16 @@
         <QSeparator class="q-mb-md" />
         <QSpace class="col" />
         <QChip
+          icon="note"
+          class="cursor-pointer full-width q-pa-md self-end"
+          color="transparent"
+          :dense="$q.platform.is.desktop"
+          square
+          clickable
+          :label="miniState ? '' : 'Пройти опрос'"
+          @click="onOpenNPS"
+        />
+        <QChip
           icon="support"
           class="cursor-pointer full-width q-pa-md self-end"
           color="transparent"
@@ -729,6 +739,16 @@ async function logOutFromPod() {
     message: $t('database.pod.disconnected'),
     type: 'positive',
   })
+}
+
+function onOpenNPS() {
+  // todo для VIP
+  // ... - https://docs.google.com/forms/d/e/1FAIpQLSdowzB3yyvMAQjlv_gWye1teBhV5LcYxXeX2PJjDDhsir5Fnw/viewform?usp=sf_link
+
+  // Для Free и Premium
+  window.open(
+    'https://docs.google.com/forms/d/e/1FAIpQLSdY3ao4duiZFp9jmM3-9d25gFFgWeklksssLDl4WZcoMS_CeQ/viewform?usp=sf_link',
+  )
 }
 
 function onOpenSupport() {
