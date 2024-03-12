@@ -345,12 +345,14 @@
                     <QOtp
                       v-if="showOTPDialog"
                       ref="otp"
-                      :separator="$q.screen.xs ? '' : ' '"
+                      :separator="''"
                       :outlined="!$q.screen.xs"
                       autofocus
                       :dense="$q.platform.is.desktop"
                       :num="6"
-                      class="flex flex-center"
+                      square
+                      field-classes="q-ml-xs q-mr-xs"
+                      class="flex-center"
                       @change="onOTPChange"
                       @complete="onOTPHandleComplete"
                     />

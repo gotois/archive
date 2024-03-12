@@ -11,7 +11,8 @@
       :num="6"
       :dense="$q.platform.is.desktop"
       :disabled="otpDisabled"
-      class="flex flex-center"
+      class="flex-center"
+      field-classes="q-ml-xs q-mr-xs"
       separator="-"
       outlined
       autofocus
