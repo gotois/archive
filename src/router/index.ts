@@ -1,6 +1,7 @@
 import { Notify, Loading, LocalStorage, SessionStorage } from 'quasar'
 import { route } from 'quasar/wrappers'
 import { createRouter, createWebHistory } from 'vue-router'
+import useTutorialStore from 'stores/tutorial'
 import useAuthStore from 'stores/auth'
 import usePodStore from 'stores/pod'
 import routes from './routes'
@@ -56,6 +57,7 @@ export default route(() => {
 
   Router.beforeEach((to, from) => {
     const authStore = useAuthStore()
+    const tutorialStore = useTutorialStore()
     switch (to.name) {
       case ROUTE_NAMES.PRIVACY: {
         return true
@@ -75,7 +77,7 @@ export default route(() => {
         break
       }
       case ROUTE_NAMES.TUTORIAL: {
-        if (LocalStorage.has('tutorialCompleted')) {
+        if (tutorialStore.tutorialCompleted) {
           return {
             name: ROUTE_NAMES.ARCHIVE,
             query: {
@@ -114,7 +116,7 @@ export default route(() => {
             break
           }
         }
-        if (!LocalStorage.has('tutorialCompleted')) {
+        if (!tutorialStore.tutorialCompleted) {
           if (to.path !== '/') {
             Notify.create({
               message: 'HTTP 403',

@@ -12,9 +12,9 @@ export default defineStore('tutorial', {
     tutorialCompleted: LocalStorage.getItem(tutorialKey) ?? false,
   }),
   actions: {
-    tutorialComplete() {
-      LocalStorage.set(tutorialKey, true)
-      this.tutorialCompleted = true
+    tutorialComplete(value: boolean) {
+      LocalStorage.set(tutorialKey, value)
+      this.tutorialCompleted = value
     },
   },
 })

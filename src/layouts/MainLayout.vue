@@ -97,7 +97,7 @@
             icon="app_registration"
             class="full-width q-pl-md q-pr-md q-mb-md block"
             :label="$t('navigation.register')"
-            @click="$router.push({ name: ROUTE_NAMES.PROMO })"
+            @click="register"
           />
           <QBtn
             v-else-if="isLoggedIn"
@@ -618,6 +618,7 @@ import { logout } from '@inrupt/solid-client-authn-browser'
 import useAuthStore from 'stores/auth'
 import useTFAStore from 'stores/tfa'
 import useContractStore from 'stores/contract'
+import useTutorialStore from 'stores/tutorial'
 import useProfileStore from 'stores/profile'
 import useWalletStore from 'stores/wallet'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
@@ -626,7 +627,7 @@ import { isTWA } from '../helpers/twaHelper'
 import { keyPair } from '../services/databaseService'
 import { createQR } from '../helpers/qrHelper'
 import { open } from '../helpers/urlHelper'
-import { ROUTE_NAMES } from '../router/routes'
+import { ROUTE_NAMES, STEP } from '../router/routes'
 
 const LocaleComponent = defineAsyncComponent(
   () => import('components/LocaleComponent.vue'),
@@ -659,14 +660,17 @@ const CalendarEventsComponent = defineAsyncComponent(
   () => import('components/CalendarEventsComponent.vue'),
 )
 
-const $t = useI18n().t
 const $q = useQuasar()
 const router = useRouter()
+const i18n = useI18n()
+const $t = i18n.t
+const locale = i18n.locale
 const authStore = useAuthStore()
 const tfaStore = useTFAStore()
 const contractStore = useContractStore()
 const profileStore = useProfileStore()
 const walletStore = useWalletStore()
+const tutorialStore = useTutorialStore()
 
 const { consumer, email, phone, avatar } = storeToRefs(profileStore)
 const { getArchiveNames, contractsCount } = storeToRefs(contractStore)
@@ -721,6 +725,17 @@ async function onSearch(searchText: string) {
     },
   })
   showSearch.value = false
+}
+
+function register() {
+  tutorialStore.tutorialComplete(false)
+  return router.push({
+    name: ROUTE_NAMES.TUTORIAL,
+    query: {
+      step: STEP.WELCOME,
+      lang: locale.value,
+    },
+  })
 }
 
 function loginToPod() {

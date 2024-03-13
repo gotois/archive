@@ -318,7 +318,7 @@ function setMeta(value: number) {
 
 function onCreateContract() {
   function end() {
-    tutorialStore.tutorialComplete()
+    tutorialStore.tutorialComplete(true)
     exportKeyPair()
     void router.push({
       name: ROUTE_NAMES.ARCHIVE,

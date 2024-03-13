@@ -126,7 +126,7 @@ async function demoSign() {
   profileStore.consumerPhone('+1234567890')
   profileStore.consumerDID(key.id)
   authStore.webId = demoUserWebId
-  tutorialStore.tutorialComplete()
+  tutorialStore.tutorialComplete(true)
   await router.push({
     name: ROUTE_NAMES.ARCHIVE,
   })
