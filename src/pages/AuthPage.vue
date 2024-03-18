@@ -8,7 +8,7 @@
     </p>
     <QOtp
       ref="otp"
-      :num="6"
+      :num="tfaLength"
       :dense="$q.platform.is.desktop"
       :disabled="otpDisabled"
       class="flex-center"
@@ -34,6 +34,8 @@ const $q = useQuasar()
 const router = useRouter()
 const authStore = useAuthStore()
 const tfaStore = useTFAStore()
+
+const tfaLength = 6
 
 const metaData = {
   'title': 'pages.auth.title',

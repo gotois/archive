@@ -345,14 +345,16 @@
                     <QOtp
                       v-if="showOTPDialog"
                       ref="otp"
-                      :separator="''"
                       :outlined="!$q.screen.xs"
-                      autofocus
                       :dense="$q.platform.is.desktop"
-                      :num="6"
+                      :num="tfaLength"
+                      :rules="[otpRule]"
                       square
+                      autofocus
+                      dark
                       field-classes="q-ml-xs q-mr-xs"
-                      class="flex-center"
+                      style="width: fit-content"
+                      class="q-ml-auto q-mr-auto"
                       @change="onOTPChange"
                       @complete="onOTPHandleComplete"
                     />
@@ -681,6 +683,7 @@ const bigScreen = computed(
   () => $q.platform.is.desktop && ($q.screen.xl || $q.screen.lg),
 )
 
+const tfaLength = 6
 const miniState = ref(bigScreen.value)
 const showOTPDialog = ref(false)
 const leftDrawerOpen = ref(false)
@@ -785,6 +788,12 @@ async function onFinishProfile() {
   })
 }
 
+function otpRule(token: string) {
+  if (token.length === tfaLength) {
+    return tfaStore.verify(token) || 'TFA Error'
+  }
+  return true
+}
 function onOTPChange(value: string) {
   if (!activated.value || value.length) {
     return
