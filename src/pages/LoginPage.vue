@@ -46,7 +46,6 @@
   </QPage>
 </template>
 <script lang="ts" setup>
-import { onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useMeta, useQuasar, QBtn, QChip, QPage, QCard, QTooltip } from 'quasar'
@@ -74,10 +73,15 @@ function onRemove() {
 
 async function onLogin() {
   $q.sessionStorage.remove('connect')
+  $q.sessionStorage.remove('restorePreviousSession')
+  $q.sessionStorage.remove('oidcIssuer')
   await tryLogin()
 }
 
-async function tryLogin(redirectUrl = window.location.origin) {
+async function tryLogin(
+  redirectUrl = window.location.origin +
+    String(router.currentRoute.value.query.fullPath ?? ''),
+) {
   try {
     $q.loading.show({
       message: $t('components.oidcIssuer.processing'),
@@ -109,17 +113,6 @@ function onOnlineAuthorize(oidcIssuer: string) {
   }
   podStore.setOIDCIssuer(oidcIssuer)
 }
-
-onMounted(async () => {
-  if (getOidcIssuer.value) {
-    await tryLogin(
-      router.currentRoute.value.query.fullPath
-        ? window.location.origin +
-            String(router.currentRoute.value.query.fullPath)
-        : null,
-    )
-  }
-})
 
 useMeta(metaData)
 </script>

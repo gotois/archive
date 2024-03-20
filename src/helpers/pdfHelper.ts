@@ -1,9 +1,5 @@
 import { ImageFormat, jsPDF } from 'jspdf'
-import { generate } from '@pdfme/generator'
-import { text, image } from '@pdfme/schemas'
-import { convert } from 'html-to-text'
 import { FormatContract } from '../types/models'
-import privacyNotice from '../ui/templates/privacy-notice'
 import { PDF_MIME_TYPE } from './mimeTypes'
 import pkg from '../../package.json'
 
@@ -43,24 +39,6 @@ function resizeImageA4(img: HTMLImageElement) {
     width: Number(Math.floor(width)),
     height: Number(Math.floor(height)),
   }
-}
-
-export async function createContractPDF(
-  html: string,
-  fileName = 'contract' + FILE_EXT,
-) {
-  const htmlText = convert(html, {
-    wordwrap: 80,
-  })
-  const inputs = [{ text: htmlText }]
-  const pdf = await generate({
-    template: privacyNotice,
-    inputs,
-    plugins: { text, image },
-  })
-  return new File([pdf.buffer], fileName, {
-    type: PDF_MIME_TYPE,
-  })
 }
 
 export async function createPDF(object: FormatContract) {

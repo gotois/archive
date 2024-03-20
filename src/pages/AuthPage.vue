@@ -11,9 +11,9 @@
       :num="tfaLength"
       :dense="$q.platform.is.desktop"
       :disabled="otpDisabled"
-      class="flex-center"
+      :input-styles="{ width: '32px' }"
       field-classes="q-ml-xs q-mr-xs"
-      separator="-"
+      square
       outlined
       autofocus
       @complete="onHandleComplete"

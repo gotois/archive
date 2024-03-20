@@ -351,7 +351,7 @@
                       :rules="[otpRule]"
                       square
                       autofocus
-                      dark
+                      :input-styles="{ width: '32px' }"
                       field-classes="q-ml-xs q-mr-xs"
                       style="width: fit-content"
                       class="q-ml-auto q-mr-auto"
