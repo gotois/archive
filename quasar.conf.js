@@ -10,16 +10,6 @@ module.exports = configure((ctx) => {
   if (ctx.dev) {
     require('dotenv').config()
   }
-  let basicAuth = ''
-  if (process.env.SERVER_RPC2_USERNAME && process.env.SERVER_RPC2_PASSWORD) {
-    basicAuth =
-      'Basic ' +
-      Buffer.from(
-        process.env.SERVER_RPC2_USERNAME +
-          ':' +
-          process.env.SERVER_RPC2_PASSWORD,
-      ).toString('base64')
-  }
   return {
     eslint: {
       fix: !ctx.prod,
@@ -56,7 +46,8 @@ module.exports = configure((ctx) => {
       env: {
         google_client_id: process.env.GOOGLE_CLIENT_ID,
         server: process.env.SERVER_RPC2,
-        server_basic_auth: basicAuth,
+        server_basic_auth_user: process.env.SERVER_RPC2_USERNAME,
+        server_basic_auth_pass: process.env.SERVER_RPC2_PASSWORD,
       },
       target: {
         browser: 'esnext',

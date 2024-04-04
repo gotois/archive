@@ -67,6 +67,7 @@
     "pinia": "2.1.7",
     "qrcode": "1.5.3",
     "quasar": "2.15.1",
+    "request-json-rpc2": "2.1.0",
     "rgbaster": "2.1.1",
     "tesseract.js": "5.0.5",
     "tweetnacl": "1.0.3",

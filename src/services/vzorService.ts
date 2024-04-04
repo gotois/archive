@@ -1,28 +1,25 @@
 import { uid } from 'quasar'
+import requestJsonRpc2 from 'request-json-rpc2'
 
-export default async function (
+export default function (
   method: string,
   params: { content: string; type?: string },
 ) {
   if (!process.env.server) {
     throw new Error('Unknown JSON-RPC2 server url')
   }
-  const headers = new Headers()
-  headers.append('Accept', 'application/json')
-  headers.append('Content-Type', 'application/json')
-  if (process.env.server_basic_auth) {
-    headers.set('Authorization', process.env.server_basic_auth)
-  }
-  const response = await fetch(process.env.server, {
-    body: JSON.stringify({
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return
+  return requestJsonRpc2({
+    url: process.env.server,
+    body: {
       jsonrpc: '2.0',
       method,
       params,
       id: uid(),
-    }),
-    headers: headers,
-    method: 'POST',
-    signal: AbortSignal.timeout(15000),
+    },
+    auth: {
+      user: process.env.server_basic_auth_user,
+      pass: process.env.server_basic_auth_pass,
+    },
   })
-  return response.json()
 }
