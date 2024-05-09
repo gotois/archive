@@ -294,6 +294,7 @@ import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
 import useWalletStore from 'stores/wallet'
 import usePodStore from 'stores/pod'
+import useGicStore from 'stores/gic'
 import MultiContactComponent from 'components/MultiContact.vue'
 import ContractCarouselComponent from 'components/ContractCarouselComponent.vue'
 import { readFilePromise } from '../helpers/fileHelper'
@@ -305,7 +306,6 @@ import { signMessageUsePhantom } from '../services/phantomWalletService'
 import { signMessageUseSecretKey } from '../services/cryptoService'
 import { keys, keyPair } from '../services/databaseService'
 import Dogovor from '../services/contractGeneratorService'
-import vzor from '../services/vzorService'
 import { Credential, MyContract, WalletType, ImageType } from '../types/models'
 
 const DateComponent = defineAsyncComponent(
@@ -346,6 +346,7 @@ const contractStore = useContractStore()
 const profileStore = useProfileStore()
 const walletStore = useWalletStore()
 const podStore = usePodStore()
+const gicStore = useGicStore()
 
 const { isLoggedIn } = storeToRefs(authStore)
 
@@ -732,38 +733,17 @@ async function recognizeImage(
   const { data } = await worker.recognize(img)
   await worker.terminate()
 
-  // fixme два последовательных JSON RPC 2.0 запроса на API Server:
-  const ld1 = (await vzor('generate-ocr', {
-    content: data.text,
-    type: 'plain/text',
-  })) as {
-    text: string
+  try {
+    const ld = await gicStore.document(data.text)
+    contractType.value = ld.name
+    description.value = ld.description
+    // duration.value = {
+    //   from: formatDate(ld.startDate),
+    //   to: formatDate(ld.endDate),
+    // }
+  } catch (error) {
+    console.error(error)
   }
-  const ld2 = (await vzor('generate-event', {
-    content: ld1.text,
-    type: 'plain/text',
-  })) as {
-    name: string
-    description: string | null
-    location: string | null
-    startDate: string | null
-    endDate: string | null
-    inLanguage: {
-      name: string
-    }
-    organizer: {
-      name: string
-      email: string | null
-      telephone: string | null
-      url: string | null
-    }
-  }
-  contractType.value = ld2.name
-  description.value = ld2.description
-  // duration.value = {
-  //   from: formatDate(ld.startDate),
-  //   to: formatDate(ld.endDate),
-  // }
 }
 
 defineExpose({

@@ -623,6 +623,7 @@ import useContractStore from 'stores/contract'
 import useTutorialStore from 'stores/tutorial'
 import useProfileStore from 'stores/profile'
 import useWalletStore from 'stores/wallet'
+import useGicStore from 'stores/gic'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
 import { indexAllDocuments } from '../services/searchService'
 import { isTWA } from '../helpers/twaHelper'
@@ -673,6 +674,7 @@ const contractStore = useContractStore()
 const profileStore = useProfileStore()
 const walletStore = useWalletStore()
 const tutorialStore = useTutorialStore()
+const gicStore = useGicStore()
 
 const { consumer, email, phone, avatar } = storeToRefs(profileStore)
 const { getArchiveNames, contractsCount } = storeToRefs(contractStore)
@@ -892,6 +894,7 @@ onMounted(async () => {
   if ($q.platform.is.desktop && contractsCount.value > 0) {
     await indexAllDocuments()
   }
+  await gicStore.ping()
 })
 </script>
 <style lang="scss">
