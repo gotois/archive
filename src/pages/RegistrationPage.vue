@@ -222,7 +222,6 @@ import useWalletStore from 'stores/wallet'
 import pkg from '../../package.json'
 import { ROUTE_NAMES, STEP } from '../router/routes'
 import { parse } from '../helpers/markdownHelper'
-import { createContractPDF } from '../services/pdfGenerator'
 import solidAuth from '../services/authService'
 import { keyPair } from '../services/databaseService'
 import Dogovor from '../services/contractGeneratorService'
@@ -421,6 +420,7 @@ async function mintPrivacyContract() {
   const contentType = response.headers.get('content-type')
 
   if (contentType.startsWith('text/markdown')) {
+    const { createContractPDF } = await import('../services/pdfGenerator')
     const md = await response.text()
     const html = parse(md)
     const file = await createContractPDF(html)

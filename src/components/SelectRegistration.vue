@@ -144,7 +144,7 @@ function freeSign() {
 }
 
 function premiumSign() {
-  console.warn('Premium is under construction')
+  alert('Premium is under construction')
   return false
 }
 </script>

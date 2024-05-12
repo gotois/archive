@@ -64,6 +64,7 @@ module.exports = configure((ctx) => {
       rtl: false, // https://v2.quasar.dev/options/rtl-support
       showProgress: true,
       gzip: true,
+      // analyze: true,
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
