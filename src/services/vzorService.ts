@@ -3,7 +3,10 @@ import requestJsonRpc2 from 'request-json-rpc2'
 
 export default function (
   method: string,
-  params: { content: string; type?: string },
+  params: {
+    type: string
+    object: { type: string; mediaType: string }[]
+  },
 ) {
   if (!process.env.server) {
     throw new Error('Unknown JSON-RPC2 server url')
