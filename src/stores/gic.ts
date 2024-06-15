@@ -12,7 +12,9 @@ export default defineStore('gic', {
   actions: {
     // делаем ping чтобы понять что есть доступ к GIC
     async ping() {
-      const request = (await vzor('ping', { content: 'hello' })) as {
+      const request = (await vzor('ping', {
+        content: 'hello',
+      })) as {
         text?: string
         error?: {
           code: number
@@ -29,16 +31,12 @@ export default defineStore('gic', {
       if (!this.available) {
         throw new Error('GIC Server Unavailable')
       }
-      // fixme два последовательных JSON RPC 2.0 запроса на API Server:
-      const ld1 = (await vzor('generate-ocr', {
-        content: content,
-        type: 'plain/text',
-      })) as {
-        text: string
-      }
-      const ld2 = (await vzor('generate-event', {
-        content: ld1.text,
-        type: 'plain/text',
+      const ld = (await vzor('generate-event', {
+        '@context': 'https://www.w3.org/ns/activitystreams',
+        'type': 'Activity',
+        'object': [{ type: 'Note', content: content, mediaType: 'text/plain' }],
+        // startTime: '2024-06-03T19:31:33.000Z',
+        // endTime: '2024-06-03T19:31:33.000Z',
       })) as {
         name: string
         description: string | null
@@ -48,6 +46,7 @@ export default defineStore('gic', {
         inLanguage: {
           name: string
         }
+        text: string
         organizer: {
           name: string
           email: string | null
@@ -55,7 +54,7 @@ export default defineStore('gic', {
           url: string | null
         }
       }
-      return ld2
+      return ld
     },
   },
 })

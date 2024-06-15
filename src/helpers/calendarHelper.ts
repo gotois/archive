@@ -39,6 +39,7 @@ export default (id: string, object: FormatContract) => {
     location = object.location.name
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   const event = createEvent({
     uid: uid as string,
     url: object.sameAs ? new URL(object.sameAs) : null,
@@ -52,7 +53,12 @@ export default (id: string, object: FormatContract) => {
     attach: attach,
     organizer: organizer,
     attendee: attendee,
-  })
+  }) as string
 
-  return icalendar(id, object.instrument.name, event)
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  const str = icalendar(id, { event }) as string
+  const encoder = new TextEncoder()
+  return new File([encoder.encode(str)], 'calendar.ics', {
+    type: 'text/calendar',
+  })
 }
