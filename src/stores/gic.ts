@@ -27,14 +27,16 @@ export default defineStore('gic', {
       }
       this.available = true
     },
-    async document(content: string) {
+    async document(
+      object: { type: string; content: string; mediaType: string }[],
+    ) {
       if (!this.available) {
         throw new Error('GIC Server Unavailable')
       }
-      const ld = (await vzor('generate-event', {
+      return (await vzor('generate-calendar', {
         '@context': 'https://www.w3.org/ns/activitystreams',
         'type': 'Activity',
-        'object': [{ type: 'Note', content: content, mediaType: 'text/plain' }],
+        'object': object,
         // startTime: '2024-06-03T19:31:33.000Z',
         // endTime: '2024-06-03T19:31:33.000Z',
       })) as {
@@ -54,7 +56,6 @@ export default defineStore('gic', {
           url: string | null
         }
       }
-      return ld
     },
   },
 })

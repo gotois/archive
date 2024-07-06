@@ -382,7 +382,6 @@ if (props.signing) {
   if (contract.value.credentialSubject.participant) {
     customers.value.push(contract.value.credentialSubject.participant)
   }
-
   if (credential.credentialSubject.participant) {
     customer.value = credential.credentialSubject.participant?.sameAs
   }
@@ -733,17 +732,13 @@ async function recognizeImage(
   const { data } = await worker.recognize(img)
   await worker.terminate()
 
-  try {
-    const ld = await gicStore.document(data.text)
-    contractType.value = ld.name
-    description.value = ld.description
-    // duration.value = {
-    //   from: formatDate(ld.startDate),
-    //   to: formatDate(ld.endDate),
-    // }
-  } catch (error) {
-    console.error(error)
-  }
+  return gicStore.document([
+    {
+      type: 'Note',
+      content: data.text,
+      mediaType: 'text/plain',
+    },
+  ])
 }
 
 defineExpose({
@@ -768,7 +763,13 @@ onMounted(async () => {
   }
   $q.loading.show()
   try {
-    await recognizeImage(contract.value.credentialSubject.object[0])
+    const ld = await recognizeImage(contract.value.credentialSubject.object[0])
+    contractType.value = ld.name
+    description.value = ld.description
+    // duration.value = {
+    //   from: formatDate(ld.startDate),
+    //   to: formatDate(ld.endDate),
+    // }
   } catch (e) {
     console.error(e)
   } finally {
