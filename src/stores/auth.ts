@@ -10,6 +10,7 @@ interface Store {
   openIdIsLoggedIn: boolean
   webId: WebId
   tryAuth: boolean
+  isTelegramWebApp: boolean
 }
 
 export const demoUserWebId = 'did:gic:demo' as WebId
@@ -21,6 +22,7 @@ export default defineStore('auth', {
     openIdSessionId: '',
     openIdExpirationDate: null,
     openIdIsLoggedIn: false,
+    isTelegramWebApp: false,
     webId: getDefaultSession().info.webId ?? demoUserWebId,
   }),
   actions: {

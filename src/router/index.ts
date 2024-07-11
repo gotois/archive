@@ -1,12 +1,11 @@
-import { Notify, Loading, LocalStorage, SessionStorage } from 'quasar'
+import { Loading, LocalStorage, Notify, SessionStorage } from 'quasar'
 import { route } from 'quasar/wrappers'
 import { createRouter, createWebHistory } from 'vue-router'
 import useTutorialStore from 'stores/tutorial'
 import useAuthStore from 'stores/auth'
 import usePodStore from 'stores/pod'
-import routes from './routes'
-import { ROUTE_NAMES } from './routes'
-import { reset, deleteDatabases } from '../services/databaseService'
+import routes, { ROUTE_NAMES } from './routes'
+import { deleteDatabases, reset } from '../services/databaseService'
 import solidAuth from '../services/authService'
 import { isTWA } from '../helpers/twaHelper'
 
@@ -58,6 +57,27 @@ export default route(() => {
   Router.beforeEach((to, from) => {
     const authStore = useAuthStore()
     const tutorialStore = useTutorialStore()
+    // http://localhost:8080/?view=telegram
+    // check if Telegram Web Apps
+    if (to.query.view === 'telegram') {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      if (!authStore.isTelegramWebApp) {
+        const script = document.createElement('script')
+        script.type = 'text/javascript'
+        script.src = 'https://telegram.org/js/telegram-web-app.js'
+        script.onload = function () {
+          authStore.isTelegramWebApp = true
+          tutorialStore.tutorialComplete(true)
+          // разворачиваем Telegram WebApp на все окно
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
+          window.Telegram.WebApp.expand()
+        }
+        document.head.appendChild(script)
+        return {
+          name: ROUTE_NAMES.ARCHIVE,
+        }
+      }
+    }
     switch (to.name) {
       case ROUTE_NAMES.PRIVACY: {
         return true

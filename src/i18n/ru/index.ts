@@ -65,6 +65,7 @@ export default {
   },
   header: {
     demo: 'Демо',
+    telegram: 'WebApp',
     free: 'Беспл.',
   },
   navigation: {

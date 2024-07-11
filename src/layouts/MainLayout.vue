@@ -26,7 +26,7 @@
           }"
         >
           <QBadge
-            :label="isDemo ? $t('header.demo') : $t('header.free')"
+            :label="headerBadge"
             transparent
             color="secondary"
             class="vertical-top q-ml-xs"
@@ -60,6 +60,7 @@
       </QToolbar>
     </QHeader>
     <QDrawer
+      v-if="!isTelegramWebApp"
       v-model="leftDrawerOpen"
       side="left"
       class="scroll-y"
@@ -678,12 +679,21 @@ const gicStore = useGicStore()
 
 const { consumer, email, phone, avatar } = storeToRefs(profileStore)
 const { getArchiveNames, contractsCount } = storeToRefs(contractStore)
-const { isLoggedIn, isDemo, webId } = storeToRefs(authStore)
+const { isLoggedIn, isDemo, isTelegramWebApp, webId } = storeToRefs(authStore)
 const { activated } = storeToRefs(tfaStore)
 const { getWalletLD } = storeToRefs(walletStore)
 const bigScreen = computed(
   () => $q.platform.is.desktop && ($q.screen.xl || $q.screen.lg),
 )
+const headerBadge = computed(() => {
+  if (isTelegramWebApp) {
+    return $t('header.telegram')
+  }
+  if (isDemo) {
+    return $t('header.demo')
+  }
+  return $t('header.free')
+})
 
 const tfaLength = 6
 const miniState = ref(bigScreen.value)

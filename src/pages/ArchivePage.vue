@@ -81,7 +81,11 @@
         </template>
       </QBanner>
     </template>
-    <QPageSticky position="bottom-right" :offset="[18, 18]">
+    <QPageSticky
+      v-if="!isTelegramWebApp"
+      position="bottom-right"
+      :offset="[18, 18]"
+    >
       <QFab
         ref="fab"
         hide-label
@@ -286,7 +290,7 @@ const NOTIFICATION_TIMER = 30000
 const currentPage = toRef(router.currentRoute.value.query, 'page')
 const scrollAreaRef = ref<InstanceType<typeof QScrollArea> | null>(null)
 const fab = ref<InstanceType<typeof QFab> | null>(null)
-const { isLoggedIn } = storeToRefs(authStore)
+const { isLoggedIn, isTelegramWebApp } = storeToRefs(authStore)
 const { formatContracts } = storeToRefs(contractStore)
 const isSearch = computed(
   () => router.currentRoute.value.name === ROUTE_NAMES.SEARCH,
