@@ -66,7 +66,7 @@ export default route(() => {
         script.type = 'text/javascript'
         script.src = 'https://telegram.org/js/telegram-web-app.js'
         script.onload = function () {
-          authStore.isTelegramWebApp = true
+          authStore.setTelegramWebApp(true)
           tutorialStore.tutorialComplete(true)
           // разворачиваем Telegram WebApp на все окно
           // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call

@@ -10,7 +10,7 @@ interface Store {
   openIdIsLoggedIn: boolean
   webId: WebId
   tryAuth: boolean
-  isTelegramWebApp: boolean
+  hasTelegramWebApp: boolean
 }
 
 export const demoUserWebId = 'did:gic:demo' as WebId
@@ -22,12 +22,19 @@ export default defineStore('auth', {
     openIdSessionId: '',
     openIdExpirationDate: null,
     openIdIsLoggedIn: false,
-    isTelegramWebApp: false,
+    hasTelegramWebApp:
+      SessionStorage.getItem('telegramWebApp') ??
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      Boolean(window?.Telegram?.WebApp?.version),
     webId: getDefaultSession().info.webId ?? demoUserWebId,
   }),
   actions: {
     setTryAuthValue() {
       LocalStorage.set('tryAuth', true)
+    },
+    setTelegramWebApp(value: boolean) {
+      SessionStorage.set('telegramWebApp', value)
+      this.hasTelegramWebApp = value
     },
     removeAuthValue() {
       SessionStorage.remove('isLoggedIn')
@@ -51,6 +58,9 @@ export default defineStore('auth', {
   getters: {
     isDemo(state) {
       return state.openIdSessionId.length === 0 && !state.tryAuth
+    },
+    isTelegramWebApp(state) {
+      return state.hasTelegramWebApp
     },
     isLoggedIn(state) {
       return state.openIdIsLoggedIn
