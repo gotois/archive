@@ -4,8 +4,8 @@
 # Мои договоры
 > Ваша персональная криптобезопасная база договоров.
 
-[![Android](https://img.shields.io/badge/Android-Install-green?style=for-the-badge&link=https://play.google.com/store/apps/details?id=ru.baskovsky.archive.twa)](https://play.google.com/store/apps/details?id=ru.baskovsky.archive.twa)
-[![Telegram](https://t.me/gotois_bot/App)](https://t.me/gotois_bot/App)
+[![Android](https://img.shields.io/badge/Android-Install-green?logo=android&style=for-the-badge&link=https://play.google.com/store/apps/details?id=ru.baskovsky.archive.twa)](https://play.google.com/store/apps/details?id=ru.baskovsky.archive.twa)
+[![Telegram](https://img.shields.io/badge/Telegram-gray?logo=telegram&style=for-the-badge&link=https://t.me/gotois_bot/App)](https://t.me/gotois_bot/App)
 [![Документация](https://img.shields.io/badge/%D0%94%D0%BE%D0%BA%D1%83%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D1%86%D0%B8%D1%8F-gray?style=for-the-badge&link=https://baskovsky.ru/2021/09/my-archive/)](https://baskovsky.ru/2021/09/my-archive/)
 
 ## Описание продукта
@@ -22,8 +22,8 @@
 
 ## Попробовать демонстрацию
 
-[PWA](https://archive.gotointeractive.com/)
-[Telegram WebApp](https://archive.gotointeractive.com/?view=telegram)
+- [PWA](https://archive.gotointeractive.com/)
+- [Telegram WebApp](https://archive.gotointeractive.com/?view=telegram)
 
 ---
 

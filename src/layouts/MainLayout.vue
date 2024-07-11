@@ -9,7 +9,9 @@
       <AndroidBarComponent v-if="isTWA" />
       <QToolbar>
         <QBtn
-          v-if="$q.screen.xs || $q.screen.sm || $q.screen.md"
+          v-if="
+            !isTelegramWebApp && ($q.screen.xs || $q.screen.sm || $q.screen.md)
+          "
           flat
           :class="{
             invisible: miniState,
