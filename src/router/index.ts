@@ -57,27 +57,7 @@ export default route(() => {
   Router.beforeEach((to, from) => {
     const authStore = useAuthStore()
     const tutorialStore = useTutorialStore()
-    // http://localhost:8080/?view=telegram
-    // check if Telegram Web Apps
-    if (to.query.view === 'telegram') {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      if (!authStore.isTelegramWebApp) {
-        const script = document.createElement('script')
-        script.type = 'text/javascript'
-        script.src = 'https://telegram.org/js/telegram-web-app.js'
-        script.onload = function () {
-          authStore.setTelegramWebApp(true)
-          tutorialStore.tutorialComplete(true)
-          // разворачиваем Telegram WebApp на все окно
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
-          window.Telegram.WebApp.expand()
-        }
-        document.head.appendChild(script)
-        return {
-          name: ROUTE_NAMES.ARCHIVE,
-        }
-      }
-    }
+
     switch (to.name) {
       case ROUTE_NAMES.PRIVACY: {
         return true

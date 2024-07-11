@@ -23,7 +23,7 @@ export default defineStore('auth', {
     openIdExpirationDate: null,
     openIdIsLoggedIn: false,
     hasTelegramWebApp:
-      SessionStorage.getItem('telegramWebApp') ??
+      Boolean(SessionStorage.getItem('telegramWebApp')) ??
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       Boolean(window?.Telegram?.WebApp?.version),
     webId: getDefaultSession().info.webId ?? demoUserWebId,

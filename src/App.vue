@@ -23,6 +23,8 @@ import usePodStore from 'stores/pod'
 import useAuthStore from 'stores/auth'
 import useProfileStore from 'stores/profile'
 import useWalletStore from 'stores/wallet'
+import useTutorialStore from 'stores/tutorial'
+import { ROUTE_NAMES } from './router/routes'
 import { getSolana } from './services/phantomWalletService'
 import { WalletType } from './types/models'
 import { isTWA } from './helpers/twaHelper'
@@ -36,6 +38,7 @@ const podStore = usePodStore()
 const authStore = useAuthStore()
 const profileStore = useProfileStore()
 const walletStore = useWalletStore()
+const tutorialStore = useTutorialStore()
 const events = getDefaultSession().events
 
 const webSite = {
@@ -201,6 +204,34 @@ if (solana) {
       message: $t('wallet.accountChanged'),
     })
   })
+}
+
+// check if Telegram Web Apps
+// http://localhost:8080/?view=telegram
+if (window.location.search.includes('view=telegram')) {
+  $q.loading.show()
+  const script = document.createElement('script')
+  script.type = 'text/javascript'
+  script.src = 'https://telegram.org/js/telegram-web-app.js'
+  script.onload = () => {
+    tutorialStore.tutorialComplete(true)
+    authStore.setTelegramWebApp(true)
+    // разворачиваем Telegram WebApp на все окно
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
+    window.Telegram.WebApp.expand()
+    $q.loading.hide()
+    return router.push({
+      name: ROUTE_NAMES.ARCHIVE,
+    })
+  }
+  script.onerror = () => {
+    $q.notify({
+      type: 'negative',
+      message: 'WebApp script failed',
+    })
+    $q.loading.hide()
+  }
+  document.head.appendChild(script)
 }
 
 useMeta(metaData)
