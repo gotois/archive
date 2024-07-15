@@ -764,7 +764,7 @@ onMounted(async () => {
   $q.loading.show()
   try {
     const ld = await recognizeImage(contract.value.credentialSubject.object[0])
-    contractType.value = ld.name
+    contractType.value = ld.summary
     description.value = ld.description
     // duration.value = {
     //   from: formatDate(ld.startDate),

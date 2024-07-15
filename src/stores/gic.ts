@@ -1,8 +1,18 @@
 import { defineStore } from 'pinia'
-import vzor from '../services/vzorService'
+import secretary from '../services/vzorService'
 
 interface Store {
   available: boolean
+}
+
+interface Calendar {
+  categories: string[]
+  description: string | null
+  end: string | null // like Date
+  location: string | null
+  organizer: string | null // has name, email, telephone, url
+  start: string
+  summary: string
 }
 
 export default defineStore('gic', {
@@ -12,20 +22,18 @@ export default defineStore('gic', {
   actions: {
     // делаем ping чтобы понять что есть доступ к GIC
     async ping() {
-      const request = (await vzor('ping', {
-        content: 'hello',
-      })) as {
-        text?: string
-        error?: {
-          code: number
-          message: string
-        }
-      }
-      if (request.error) {
-        console.warn('GIC Server: ', request.error.message)
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const { error, result } = await secretary('ping', {
+        '@context': 'https://www.w3.org/ns/activitystreams',
+        'type': 'Activity',
+        'startTime': new Date().toJSON(),
+      })
+      if (error) {
+        this.available = false
+        console.warn('GIC Server: ', error.message)
         return
       }
-      this.available = true
+      this.available = Boolean(result)
     },
     async document(
       object: { type: string; content: string; mediaType: string }[],
@@ -33,29 +41,13 @@ export default defineStore('gic', {
       if (!this.available) {
         throw new Error('GIC Server Unavailable')
       }
-      return (await vzor('generate-calendar', {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const { result } = await secretary('generate-calendar', {
         '@context': 'https://www.w3.org/ns/activitystreams',
         'type': 'Activity',
         'object': object,
-        // startTime: '2024-06-03T19:31:33.000Z',
-        // endTime: '2024-06-03T19:31:33.000Z',
-      })) as {
-        name: string
-        description: string | null
-        location: string | null
-        startDate: string | null
-        endDate: string | null
-        inLanguage: {
-          name: string
-        }
-        text: string
-        organizer: {
-          name: string
-          email: string | null
-          telephone: string | null
-          url: string | null
-        }
-      }
+      })
+      return JSON.parse(result) as Calendar
     },
   },
 })
