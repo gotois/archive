@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import secretary from '../services/vzorService'
+import secretary from '../services/secretary'
 
 interface Store {
   available: boolean
@@ -22,7 +22,6 @@ export default defineStore('gic', {
   actions: {
     // делаем ping чтобы понять что есть доступ к GIC
     async ping() {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const { error, result } = await secretary('ping', {
         '@context': 'https://www.w3.org/ns/activitystreams',
         'type': 'Activity',
@@ -41,7 +40,6 @@ export default defineStore('gic', {
       if (!this.available) {
         throw new Error('GIC Server Unavailable')
       }
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const { result } = await secretary('generate-calendar', {
         '@context': 'https://www.w3.org/ns/activitystreams',
         'type': 'Activity',
