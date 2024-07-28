@@ -1,15 +1,30 @@
 import { uid } from 'quasar'
 import requestJsonRpc2 from 'request-json-rpc2'
 
-export default function (
-  method: string,
-  params: {
-    '@context': string
-    'type': string
-    'object'?: { type: string; mediaType: string }[]
-    'startTime'?: string
-  },
-) {
+interface Calendar {
+  categories: string[]
+  description: string | null
+  start: string // like Date
+  end: string | null // like Date
+  location: string | null
+  organizer: string | null // has name, email, telephone, url
+  summary: string
+}
+
+export type ActivityObject = {
+  type: string
+  content?: string
+  mediaType: string
+}
+
+type Activity = {
+  '@context': string
+  'type': string
+  'object'?: ActivityObject
+  'startTime'?: string
+}
+
+function secretary(method: string, params: Activity) {
   if (!process.env.server) {
     throw new Error('Unknown JSON-RPC2 server url')
   }
@@ -26,4 +41,30 @@ export default function (
       pass: process.env.server_basic_auth_pass,
     },
   })
+}
+
+// Есть доступ к GIC
+export async function ping() {
+  try {
+    const { result } = await secretary('ping', {
+      '@context': 'https://www.w3.org/ns/activitystreams',
+      'type': 'Activity',
+      'startTime': new Date().toJSON(),
+    })
+    return Boolean(result)
+  } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    console.warn('GIC Server: ', error.message)
+    return false
+  }
+}
+
+export async function generateCalendar(activity: Activity) {
+  const { error, result } = await secretary('generate-calendar', activity)
+  if (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument
+    throw new Error(error.message)
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  return JSON.parse(result) as Calendar
 }

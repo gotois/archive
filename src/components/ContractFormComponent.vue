@@ -770,8 +770,8 @@ onMounted(async () => {
     //   from: formatDate(ld.startDate),
     //   to: formatDate(ld.endDate),
     // }
-  } catch (e) {
-    console.error(e)
+  } catch (error) {
+    console.error(error)
   } finally {
     $q.loading.hide()
   }
