@@ -40,11 +40,15 @@ export default defineStore('gic', {
       if (!this.available) {
         throw new Error('GIC Server Unavailable')
       }
-      const { result } = await secretary('generate-calendar', {
+      const { error, result } = await secretary('generate-calendar', {
         '@context': 'https://www.w3.org/ns/activitystreams',
         'type': 'Activity',
         'object': object,
       })
+      if (error) {
+        console.warn('GIC Server: ', error.message)
+        throw new Error(error.message)
+      }
       return JSON.parse(result) as Calendar
     },
   },
