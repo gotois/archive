@@ -27,9 +27,9 @@ export default defineStore('gic', {
         'type': 'Activity',
         'startTime': new Date().toJSON(),
       })
-      if (error) {
+      if (error as { message: string }) {
         this.available = false
-        console.warn('GIC Server: ', error?.message)
+        console.warn('GIC Server: ', error.message)
         return
       }
       this.available = Boolean(result)
@@ -45,9 +45,9 @@ export default defineStore('gic', {
         'type': 'Activity',
         'object': object,
       })
-      if (error) {
-        console.warn('GIC Server: ', error?.message)
-        throw new Error(error?.message)
+      if (error as { message: string }) {
+        console.warn('GIC Server: ', error.message)
+        throw new Error(error.message)
       }
       return JSON.parse(result) as Calendar
     },
