@@ -8,10 +8,10 @@ interface Store {
 interface Calendar {
   categories: string[]
   description: string | null
+  start: string // like Date
   end: string | null // like Date
   location: string | null
   organizer: string | null // has name, email, telephone, url
-  start: string
   summary: string
 }
 
@@ -29,12 +29,12 @@ export default defineStore('gic', {
       })
       if (error) {
         this.available = false
-        console.warn('GIC Server: ', error.message)
+        console.warn('GIC Server: ', error?.message)
         return
       }
       this.available = Boolean(result)
     },
-    async document(
+    async calendar(
       object: { type: string; content: string; mediaType: string }[],
     ) {
       if (!this.available) {
@@ -46,8 +46,8 @@ export default defineStore('gic', {
         'object': object,
       })
       if (error) {
-        console.warn('GIC Server: ', error.message)
-        throw new Error(error.message)
+        console.warn('GIC Server: ', error?.message)
+        throw new Error(error?.message)
       }
       return JSON.parse(result) as Calendar
     },

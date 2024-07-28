@@ -732,7 +732,7 @@ async function recognizeImage(
   const { data } = await worker.recognize(img)
   await worker.terminate()
 
-  return gicStore.document([
+  return gicStore.calendar([
     {
       type: 'Note',
       content: data.text,
