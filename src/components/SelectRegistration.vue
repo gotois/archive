@@ -23,10 +23,10 @@
         v-if="location === RU"
         class="full-width"
         square
-        label="ГосУслуги"
+        label="Telegram"
         @click="$emit('select', gosuslugiSign)"
       >
-        <QTooltip>Вход через ГосУслуги</QTooltip>
+        <QTooltip>Вход через Telegram</QTooltip>
       </QBtn>
       <QBtn
         v-else
