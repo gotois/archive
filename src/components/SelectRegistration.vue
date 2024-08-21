@@ -10,8 +10,9 @@
     }"
     @click="getClientInfo"
   >
-    <QBtnGroup v-if="!$q.loading.isActive" class="q-pa-md" flat>
+    <QBtnGroup class="q-pa-md" flat>
       <QBtn
+        v-if="!$q.loading.isActive"
         class="full-width"
         square
         label="Demo"
@@ -20,16 +21,7 @@
         <QTooltip>Demo sign</QTooltip>
       </QBtn>
       <QBtn
-        v-if="location === RU"
-        class="full-width"
-        square
-        label="Telegram"
-        @click="$emit('select', gosuslugiSign)"
-      >
-        <QTooltip>Вход через Telegram</QTooltip>
-      </QBtn>
-      <QBtn
-        v-else
+        v-if="!$q.loading.isActive && location !== RU"
         class="full-width"
         square
         label="Blockchain"
@@ -37,6 +29,13 @@
       >
         <QTooltip>Blockchain Solana</QTooltip>
       </QBtn>
+      <TelegramLogin
+        mode="callback"
+        :telegram-login="TG_BOT_NAME"
+        size="large"
+        radius="0"
+        @callback="telegramSign"
+      />
     </QBtnGroup>
   </QBtnDropdown>
   <QDialog
@@ -69,6 +68,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { telegramLoginTemp as TelegramLogin } from 'vue3-telegram-login'
 import {
   useQuasar,
   QDialog,
@@ -85,10 +85,11 @@ import useTutorialStore from 'stores/tutorial'
 import useProfileStore from 'stores/profile'
 import useAuthStore from 'stores/auth'
 import { demoUserWebId } from 'stores/auth'
+import PricingComponent from 'components/PricingComponent.vue'
 import { keyPair } from '../services/databaseService'
+import { TG_BOT_NAME } from '../services/telegram'
 import { ROUTE_NAMES } from '../router/routes'
 import { getCloudflareInfo } from '../services/cloudflare'
-import PricingComponent from 'components/PricingComponent.vue'
 
 defineEmits(['select'])
 
@@ -133,11 +134,6 @@ async function demoSign() {
   return false
 }
 
-function gosuslugiSign() {
-  alert('Вход через ГосУслуги в разработке')
-  return false
-}
-
 function freeSign() {
   console.log('Free sign')
   return true
@@ -145,6 +141,24 @@ function freeSign() {
 
 function premiumSign() {
   alert('Premium is under construction')
+  return false
+}
+
+async function telegramSign(user: {
+  first_name: string
+  last_name: string
+  id: string
+  username: string
+}) {
+  const key = await keyPair.generateNewKeyPair(user.id)
+  await keyPair.setKeyPair(key)
+  profileStore.consumerName(user.first_name + ' ' + user.last_name)
+  profileStore.consumerDID(key.id)
+  authStore.webId = demoUserWebId
+  tutorialStore.tutorialComplete(true)
+  await router.push({
+    name: ROUTE_NAMES.ARCHIVE,
+  })
   return false
 }
 </script>

@@ -194,11 +194,12 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import {
   exportFile,
-  useMeta,
-  useQuasar,
-  QIcon,
   QCard,
   QCardSection,
+  QDialog,
+  QExpansionItem,
+  QIcon,
+  QList,
   QPage,
   QScrollArea,
   QSpace,
@@ -206,14 +207,12 @@ import {
   QStepper,
   QStepperNavigation,
   QTooltip,
-  QList,
-  QExpansionItem,
-  QDialog,
+  useMeta,
+  useQuasar,
 } from 'quasar'
 import { storeToRefs } from 'pinia'
 import { WebId } from '@inrupt/solid-client'
-import useAuthStore from 'stores/auth'
-import { demoUserWebId } from 'stores/auth'
+import useAuthStore, { demoUserWebId } from 'stores/auth'
 import useTutorialStore from 'stores/tutorial'
 import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
@@ -526,32 +525,6 @@ onMounted(() => {
     $q.loading.hide()
   } else if (isLoggedIn.value && query.code && query.state) {
     step.value = STEP.FINAL
-  }
-
-  const script = document.createElement('script')
-  script.src = 'https://telegram.org/js/telegram-widget.js?22'
-  script.dataset.telegramLogin = 'gotois_bot'
-  script.dataset.size = 'large'
-  script.dataset.onauth = 'onTelegramAuth(user)'
-  script.dataset.requestAccess = 'write'
-  document.body.appendChild(script)
-
-  window.onTelegramAuth = (user: {
-    first_name: string
-    last_name: string
-    id: string
-    username: string
-  }) => {
-    console.log(
-      'Logged in as ' +
-        user.first_name +
-        ' ' +
-        user.last_name +
-        ' (' +
-        user.id +
-        (user.username ? ', @' + user.username : '') +
-        ')',
-    )
   }
 })
 </script>
