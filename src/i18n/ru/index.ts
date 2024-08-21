@@ -69,6 +69,7 @@ export default {
     free: 'Беспл.',
   },
   navigation: {
+    score: 'Пройти опрос',
     version: 'v.{version}',
     title: 'Настройки',
     register: 'Регистрация',

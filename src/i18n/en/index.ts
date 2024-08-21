@@ -68,6 +68,7 @@ export default {
     free: 'Free',
   },
   navigation: {
+    score: 'NPS',
     version: 'v.{version}',
     title: 'Settings',
     register: 'Registration',

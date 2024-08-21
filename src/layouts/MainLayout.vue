@@ -203,6 +203,7 @@
                 </template>
               </QInput>
               <QInput
+                v-if="!isDemo && email"
                 v-model.trim="email"
                 color="secondary"
                 type="email"
@@ -223,6 +224,7 @@
                 </template>
               </QInput>
               <QInput
+                v-if="!isDemo && phone"
                 v-model.trim="phone"
                 color="secondary"
                 type="tel"
@@ -244,7 +246,7 @@
                 </template>
               </QInput>
               <QField
-                v-if="getWalletLD.id"
+                v-if="!isDemo && getWalletLD.id"
                 label="DID"
                 color="secondary"
                 class="q-pt-md q-pb-md full-width"
@@ -459,7 +461,7 @@
           :dense="$q.platform.is.desktop"
           square
           clickable
-          :label="miniState ? '' : 'Пройти опрос'"
+          :label="miniState ? '' : $t('navigation.score')"
           @click="onOpenNPS"
         />
         <QChip
