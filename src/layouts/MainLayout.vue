@@ -344,6 +344,7 @@
                       height="250px"
                       class="cursor-pointer"
                       decoding="async"
+                      fetchpriority="high"
                       @click="open(authUri)"
                     />
                     <QSpace class="q-pa-xs" />

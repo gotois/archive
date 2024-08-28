@@ -8,6 +8,7 @@ const FILE_EXT = '.pdf'
 
 async function decodeImg(dataUrl: string) {
   const img = new Image()
+  img.fetchPriority = 'high'
   img.src = dataUrl
   try {
     await img.decode()
