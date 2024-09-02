@@ -340,7 +340,7 @@ function onSheet(item: FormatContract) {
       })
     }
   }
-  if (item.location) {
+  if (item.location && Object.keys(item.location).length > 0) {
     actions.push({
       label: $t('components.archiveList.sheet.map.label'),
       icon: 'map',
