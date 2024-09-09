@@ -141,7 +141,7 @@ function freeSign() {
 
 function premiumSign() {
   alert('Premium is under construction')
-  return false
+  return true
 }
 
 async function telegramSign(user: {

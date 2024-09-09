@@ -11,16 +11,25 @@ interface Calendar {
   summary: string
 }
 
-export type ActivityObject = {
-  type: string
-  content?: string
+export type ActivityObjectNote = {
+  type: 'Note'
+  content: string
   mediaType: string
+}
+
+export type ActivityObjectLink = {
+  type: 'Link'
+  href: string
 }
 
 type Activity = {
   '@context': string
   'type': string
-  'object'?: ActivityObject
+  'object'?:
+    | ActivityObjectNote
+    | ActivityObjectNote[]
+    | ActivityObjectLink
+    | ActivityObjectLink[]
   'startTime'?: string
 }
 

@@ -2,6 +2,27 @@ import { Platform } from 'quasar'
 import { open } from '../helpers/urlHelper'
 import { Place } from '../types/models'
 
+export function getCurrentPosition(): Promise<GeolocationPosition> {
+  if (!navigator.geolocation) {
+    return Promise.reject('navigator.geolocation error')
+  }
+  return new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        resolve(position)
+      },
+      (error) => {
+        reject(error.message)
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 1000,
+        timeout: 3600,
+      },
+    )
+  })
+}
+
 export function openMap(place: Place) {
   const query = place.name ?? ''
   const lat = place.geo.latitude

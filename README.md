@@ -95,7 +95,7 @@ npm run build
 
 - Выполните команду:
 ```bash
-bubblewrap build
+npm run build:apk
 ```
 - Откройте проект в `Android Studio`
 - Установите `Gradle`

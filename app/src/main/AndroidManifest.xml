@@ -23,6 +23,8 @@
     package="ru.baskovsky.archive.twa">
 
     
+        <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    
 
     
 
@@ -77,6 +79,10 @@
             <meta-data
                 android:name="android.support.customtabs.trusted.STATUS_BAR_COLOR"
                 android:resource="@color/colorPrimary" />
+
+            <meta-data
+                android:name="android.support.customtabs.trusted.STATUS_BAR_COLOR_DARK"
+                android:resource="@color/colorPrimaryDark" />
 
             <meta-data
                 android:name="android.support.customtabs.trusted.NAVIGATION_BAR_COLOR"
@@ -172,6 +178,10 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </service>
+
+        
+            <activity android:name="com.google.androidbrowserhelper.trusted.NotificationPermissionRequestActivity" />
+        
 
         
     </application>

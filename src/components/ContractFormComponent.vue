@@ -207,7 +207,7 @@
       />
     </template>
     <QInput
-      v-model.trim="geo"
+      v-model.trim="locationName"
       :label="'Lat and Lng'"
       :hint="'Latitude and Longitude'"
       type="text"
@@ -215,7 +215,7 @@
       color="secondary"
       :hide-hint="!$q.platform.is.desktop"
       :dense="$q.platform.is.desktop"
-      :readonly="signing"
+      readonly
       hide-bottom-space
       outlined
       square
@@ -268,7 +268,7 @@
   </QForm>
 </template>
 <script lang="ts" setup>
-import { PropType, ref, defineAsyncComponent, onMounted } from 'vue'
+import { PropType, ref, defineAsyncComponent, watch, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   uid,
@@ -306,6 +306,7 @@ import { signMessageUsePhantom } from '../services/phantomWalletService'
 import { signMessageUseSecretKey } from '../services/cryptoService'
 import { keys, keyPair } from '../services/databaseService'
 import Dogovor from '../services/contractGeneratorService'
+import { getCurrentPosition } from '../services/geoService'
 import { Credential, MyContract, WalletType, ImageType } from '../types/models'
 
 const DateComponent = defineAsyncComponent(
@@ -358,6 +359,16 @@ const customer = ref<WebId>(null)
 const isCustomerOrg = ref<boolean | null>(null)
 const description = ref<string | null>(null)
 const dateNoLimit = ref<boolean | null>(null)
+const locationName = ref('')
+const geo = ref<GeolocationCoordinates | null>(null)
+
+watch(
+  () => geo.value,
+  () => {
+    // todo давать более читаемое название локации
+    locationName.value = geo.value.latitude + ':' + geo.value.longitude
+  },
+)
 
 if (props.signing) {
   contract.value = props.dogovor.presentation
@@ -412,7 +423,6 @@ const duration = ref<Duration>({
   from: formatDate(cloneStartDate),
   to: formatDate(afterYearDate),
 })
-const geo = ref('')
 
 function filterOptions(val: string, update: (callback: () => void) => void) {
   update(() => {
@@ -604,7 +614,13 @@ async function prepareContract() {
     instrument_name: contractType.value,
     instrument_description: description.value,
     startTime: startDate,
-    location: {},
+    location: {
+      geo: {
+        latitude: geo.value?.latitude,
+        longitude: geo.value?.longitude,
+      },
+      name: locationName.value,
+    },
     endTime: dateNoLimit.value ? null : endDate,
     images: images,
   } as MyContract
@@ -723,22 +739,29 @@ async function recognizeImage(
   { contentUrl, encodingFormat }: ImageType,
   langs = 'eng+rus',
 ) {
-  if (!encodingFormat.startsWith('image')) {
-    return
+  if (encodingFormat.startsWith('image')) {
+    const worker = await createWorker(langs)
+    const img = new Image()
+    img.src = contentUrl
+    const { data } = await worker.recognize(img)
+    await worker.terminate()
+    return gicStore.calendar([
+      {
+        type: 'Note',
+        content: data.text,
+        mediaType: 'text/plain',
+      },
+    ])
+  } else if (encodingFormat === 'application/pdf') {
+    return gicStore.calendar([
+      {
+        type: 'Link',
+        href: contentUrl,
+      },
+    ])
+  } else {
+    throw new Error('Unknown format')
   }
-  const worker = await createWorker(langs)
-  const img = new Image()
-  img.src = contentUrl
-  const { data } = await worker.recognize(img)
-  await worker.terminate()
-
-  return gicStore.calendar([
-    {
-      type: 'Note',
-      content: data.text,
-      mediaType: 'text/plain',
-    },
-  ])
 }
 
 defineExpose({
@@ -762,6 +785,12 @@ onMounted(async () => {
     return
   }
   $q.loading.show()
+  try {
+    const { coords } = await getCurrentPosition()
+    geo.value = coords
+  } catch (error) {
+    console.error(error)
+  }
   try {
     const ld = await recognizeImage(contract.value.credentialSubject.object[0])
     contractType.value = ld.summary

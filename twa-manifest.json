@@ -5,6 +5,7 @@
   "launcherName": "Мои договоры",
   "display": "fullscreen",
   "themeColor": "#027BE3",
+  "themeColorDark": "#000000",
   "navigationColor": "#000000",
   "navigationColorDark": "#000000",
   "navigationDividerColor": "#000000",
@@ -13,13 +14,13 @@
   "enableNotifications": true,
   "startUrl": "/",
   "iconUrl": "https://archive.gotointeractive.com/icons/icon-512x512.png",
-  "splashScreenFadeOutDuration": 250,
+  "splashScreenFadeOutDuration": 150,
   "signingKey": {
     "path": "./android.keystore",
     "alias": "archive"
   },
-  "appVersionName": "4",
-  "appVersionCode": 4,
+  "appVersionName": "6",
+  "appVersionCode": 6,
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://archive.gotointeractive.com/manifest.json",
@@ -32,7 +33,7 @@
   "isChromeOSOnly": false,
   "isMetaQuest": false,
   "fullScopeUrl": "https://archive.gotointeractive.com/",
-  "minSdkVersion": 27,
+  "minSdkVersion": 34,
   "orientation": "any",
   "fingerprints": [
     {
@@ -41,5 +42,5 @@
   ],
   "additionalTrustedOrigins": [],
   "retainedBundles": [],
-  "appVersion": "4"
+  "appVersion": "6"
 }

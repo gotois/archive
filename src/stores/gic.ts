@@ -1,5 +1,10 @@
 import { defineStore } from 'pinia'
-import { ping, generateCalendar, ActivityObject } from '../services/secretary'
+import {
+  ping,
+  generateCalendar,
+  ActivityObjectNote,
+  ActivityObjectLink,
+} from '../services/secretary'
 
 interface Store {
   available: boolean
@@ -13,7 +18,7 @@ export default defineStore('gic', {
     async ping() {
       this.available = await ping()
     },
-    calendar(object: ActivityObject) {
+    calendar(object: ActivityObjectNote[] | ActivityObjectLink[]) {
       if (!this.available) {
         throw new Error('GIC Server Unavailable')
       }
