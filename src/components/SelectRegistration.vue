@@ -152,7 +152,8 @@ async function telegramSign(user: {
 }) {
   const key = await keyPair.generateNewKeyPair(user.id)
   await keyPair.setKeyPair(key)
-  profileStore.consumerName(user.first_name + ' ' + user.last_name)
+  const name = (user.first_name ?? '' + ' ' + user.last_name ?? '').trim()
+  profileStore.consumerName(name)
   profileStore.consumerDID(key.id)
   authStore.webId = demoUserWebId
   tutorialStore.tutorialComplete(true)
