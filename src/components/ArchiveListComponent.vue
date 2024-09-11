@@ -264,7 +264,7 @@ async function shareURL(url: string) {
   }
 }
 
-enum SheetAction {
+enum Action {
   LINK = 'link',
   SHARE = 'share',
   CALENDAR = 'calendar',
@@ -275,78 +275,92 @@ enum SheetAction {
   MAP = 'map',
 }
 
+type SheetAction = {
+  label?: string
+  icon?: string
+  color?: string
+  id?: Action
+}
+
 function onSheet(item: FormatContract) {
-  const actions = []
-  // Group 1 - Share local
+  let actions: SheetAction[] = []
+  const group1 = [] // Share local
   if (canShare) {
-    actions.push({
+    group1.push({
       label: $t('components.archiveList.sheet.share.label'),
       icon: $q.platform.is.android ? 'share' : 'ios_share',
       color: 'info',
-      id: SheetAction.SHARE,
+      id: Action.SHARE,
     })
   }
-  actions.push({
+  group1.push({
     label: $t('components.archiveList.sheet.event.native.label'),
     icon: 'event',
     color: 'info',
-    id: SheetAction.CALENDAR,
+    id: Action.CALENDAR,
   })
-  // Group 2 - Publish
-  if (actions.length) {
+  if (group1.length) {
+    actions = actions.concat(group1)
     actions.push({})
   }
+  const group2 = [] // Publish Group
   if (item.sameAs) {
-    actions.push({
+    group2.push({
       label: $t('components.archiveList.sheet.link.label'),
       icon: 'link',
       color: 'primary',
-      id: SheetAction.LINK,
+      id: Action.LINK,
     })
   }
   if ($q.platform.is.android) {
-    actions.push({
+    group2.push({
       label: $t('components.archiveList.sheet.event.google.label'),
       icon: 'event',
       color: 'secondary',
-      id: SheetAction.GOOGLE_CALENDAR,
+      id: Action.GOOGLE_CALENDAR,
     })
   }
-  // Group 3 - Message
-  if (item.participant.email || item.participant.telephone) {
+  if (group2.length) {
+    actions = actions.concat(group2)
     actions.push({})
+  }
+  const group3 = [] // Message Group
+  if (item.participant.email || item.participant.telephone) {
     if (item.participant.email) {
-      actions.push({
+      group3.push({
         label: $t('components.archiveList.sheet.mail.label'),
         icon: 'contact_mail',
         color: 'secondary',
-        id: SheetAction.MAIL,
+        id: Action.MAIL,
       })
     }
     if (item.participant.telephone) {
-      actions.push({
+      group3.push({
         label: $t('components.archiveList.sheet.telephone.label'),
         icon: 'call',
         color: 'secondary',
-        id: SheetAction.TELEPHONE,
+        id: Action.TELEPHONE,
       })
     }
     if (isVerified(item, publicKey.value)) {
-      actions.push({
+      group3.push({
         label: $t('components.archiveList.sheet.law.label'),
         icon: 'gavel',
         color: 'secondary',
-        id: SheetAction.LAW,
+        id: Action.LAW,
       })
     }
   }
   if (item.location && Object.keys(item.location).length > 0) {
-    actions.push({
+    group3.push({
       label: $t('components.archiveList.sheet.map.label'),
       icon: 'map',
       color: 'secondary',
-      id: SheetAction.MAP,
+      id: Action.MAP,
     })
+  }
+  if (group3.length) {
+    actions = actions.concat(group3)
   }
   const icalId = $t('organization.prodid')
 
@@ -358,32 +372,32 @@ function onSheet(item: FormatContract) {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
   }).onOk((action: { id: SheetAction }) => {
     switch (action.id) {
-      case SheetAction.SHARE: {
+      case Action.SHARE: {
         const icalFile = createCal(icalId, item)
         return shareFile(item.instrument.name, icalFile)
       }
-      case SheetAction.LINK: {
+      case Action.LINK: {
         const shareLink = window.location.origin + '/sign?from=' + item.sameAs
         return shareURL(shareLink)
       }
-      case SheetAction.GOOGLE_CALENDAR: {
+      case Action.GOOGLE_CALENDAR: {
         const url = googleMailUrl(item).toString()
         return open(url)
       }
-      case SheetAction.CALENDAR: {
+      case Action.CALENDAR: {
         const file = createCal(icalId, item)
         return saveIcal(file)
       }
-      case SheetAction.MAIL: {
+      case Action.MAIL: {
         return open(mailUrl(item))
       }
-      case SheetAction.TELEPHONE: {
+      case Action.TELEPHONE: {
         return open(item.participant.telephone)
       }
-      case SheetAction.LAW: {
+      case Action.LAW: {
         return sendToCourt()
       }
-      case SheetAction.MAP: {
+      case Action.MAP: {
         return openMap(item.location)
       }
       default: {

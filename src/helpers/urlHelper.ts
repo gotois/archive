@@ -14,10 +14,7 @@ export function validUrlString(url: string) {
     return false
   }
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  if (Reflect.has(URL, 'canParse') && !URL.canParse(url)) {
-    return false
-  }
-  return true
+  return !(Reflect.has(URL, 'canParse') && !URL.canParse(url))
 }
 
 export function open(url: string) {
