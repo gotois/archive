@@ -2,6 +2,13 @@ import { Platform } from 'quasar'
 import { open } from '../helpers/urlHelper'
 import { Place } from '../types/models'
 
+export function checkGeolocationPermission() {
+  if (!navigator.permissions) {
+    return Promise.reject('Текущий браузер не поддерживает API разрешений')
+  }
+  return navigator.permissions.query({ name: 'geolocation' })
+}
+
 export function getCurrentPosition(): Promise<GeolocationPosition> {
   if (!navigator.geolocation) {
     return Promise.reject('navigator.geolocation error')
@@ -12,7 +19,7 @@ export function getCurrentPosition(): Promise<GeolocationPosition> {
         resolve(position)
       },
       (error) => {
-        reject(error.message)
+        reject(error)
       },
       {
         enableHighAccuracy: true,

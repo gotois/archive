@@ -22,7 +22,24 @@
         :label="$t('settings.clean.ok')"
         color="negative"
         @click="onClearDatabase"
-      />
+      >
+        <QBadge
+          v-if="contractsCount > 0"
+          color="negative"
+          transparent
+          :dense="$q.platform.is.desktop"
+          class="q-ma-xs"
+          align="middle"
+          :style="{
+            height: $q.platform.is.mobile ? '24px' : 'auto',
+          }"
+          :rounded="$q.platform.is.desktop"
+        >
+          <template v-if="contractsCount">
+            {{ contractsCount > 999 ? '999+' : String(contractsCount) }}
+          </template>
+        </QBadge>
+      </QBtn>
       <QBtn
         v-if="isLoggedIn"
         flat
@@ -35,10 +52,18 @@
 </template>
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
-import { useQuasar, QBtn, QCardActions, QCardSection, QCard } from 'quasar'
+import {
+  useQuasar,
+  QBtn,
+  QBadge,
+  QCardActions,
+  QCardSection,
+  QCard,
+} from 'quasar'
 import { storeToRefs } from 'pinia'
 import useAuthStore from 'stores/auth'
 import usePodStore from 'stores/pod'
+import useContractStore from 'stores/contract'
 import { db } from '../services/databaseService'
 
 const emit = defineEmits(['onClear'])
@@ -46,8 +71,10 @@ const $t = useI18n().t
 const $q = useQuasar()
 const podStore = usePodStore()
 const authStore = useAuthStore()
+const contractStore = useContractStore()
 
 const { isLoggedIn } = storeToRefs(authStore)
+const { contractsCount } = storeToRefs(contractStore)
 
 async function onClearDatabasePlus() {
   emit('onClear')

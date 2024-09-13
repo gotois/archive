@@ -504,23 +504,6 @@
       >
         {{ $t('documentTypes.title') }}
       </p>
-      <QBadge
-        v-if="contractsCount > 0"
-        color="secondary"
-        transparent
-        :dense="$q.platform.is.desktop"
-        class="q-ma-xs"
-        align="middle"
-        :style="{
-          height: $q.platform.is.mobile ? '24px' : 'auto',
-        }"
-        :floating="$q.platform.is.desktop"
-        :rounded="$q.platform.is.desktop"
-      >
-        <template v-if="contractsCount">
-          {{ contractsCount > 999 ? '999+' : String(contractsCount) }}
-        </template>
-      </QBadge>
       <div
         style="height: calc(100dvh - 380px); overflow-x: hidden"
         class="scroll-y"

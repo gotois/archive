@@ -306,7 +306,11 @@ import { signMessageUsePhantom } from '../services/phantomWalletService'
 import { signMessageUseSecretKey } from '../services/cryptoService'
 import { keys, keyPair } from '../services/databaseService'
 import Dogovor from '../services/contractGeneratorService'
-import { getCurrentPosition } from '../services/geoService'
+import {
+  checkGeolocationPermission,
+  getCurrentPosition,
+} from '../services/geoService'
+import { ocrPrompt } from '../services/aiService'
 import { Credential, MyContract, WalletType, ImageType } from '../types/models'
 
 const DateComponent = defineAsyncComponent(
@@ -680,27 +684,37 @@ async function sign() {
 async function saveOffline() {
   loadingForm.value = true
   const id = uid()
-  const newContract = await prepareContract()
-  const resolver = demoUserWebId
-  const jsldContract = Dogovor.createContractLD(newContract, id, resolver)
-  const suite = await keyPair.getSuite()
-  const dogovor = await Dogovor.fromCredential(
-    'http://localhost/',
-    jsldContract,
-    suite,
-  )
-  await contractStore.addPresentation(dogovor.presentation)
-  emit('onCreate', dogovor)
-  onResetForm()
+  try {
+    const newContract = await prepareContract()
+    const resolver = demoUserWebId
+    const jsldContract = Dogovor.createContractLD(newContract, id, resolver)
+    const suite = await keyPair.getSuite()
+    const dogovor = await Dogovor.fromCredential(
+      'http://localhost/',
+      jsldContract,
+      suite,
+    )
+    await contractStore.addPresentation(dogovor.presentation)
+    emit('onCreate', dogovor)
+    onResetForm()
+  } catch (error) {
+    console.error(error)
+    $q.notify({
+      type: 'negative',
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      message: error.message,
+    })
+  } finally {
+    loadingForm.value = false
+  }
 }
 
 async function saveOnline() {
   loadingForm.value = true
-
+  const id = uid()
+  const url = String(podStore.getResourceBaseUrl) + id + '.ttl'
+  console.warn(url)
   try {
-    const id = uid()
-    const url = String(podStore.getResourceBaseUrl) + id + '.ttl'
-    console.warn(url)
     const newContract = await prepareContract()
     const gicId = walletStore?.publicKey?.toString()
     const resolver = gicId ? `did:gic:${gicId}` : demoUserWebId
@@ -781,24 +795,32 @@ onMounted(async () => {
       value: contract.value.credentialSubject.participant.url,
     })
   }
-  if (!navigator.onLine) {
-    return
-  }
   $q.loading.show()
   try {
-    const { coords } = await getCurrentPosition()
-    geo.value = coords
+    const geoLocationPermissionStatus = await checkGeolocationPermission()
+    if (geoLocationPermissionStatus.state !== 'denied') {
+      const { coords } = await getCurrentPosition()
+      geo.value = coords
+    }
+    geoLocationPermissionStatus.onchange = async () => {
+      const { coords } = await getCurrentPosition()
+      geo.value = coords
+    }
   } catch (error) {
     console.error(error)
   }
   try {
-    const ld = await recognizeImage(contract.value.credentialSubject.object[0])
-    contractType.value = ld.summary
-    description.value = ld.description
-    // duration.value = {
-    //   from: formatDate(ld.startDate),
-    //   to: formatDate(ld.endDate),
-    // }
+    if (navigator.onLine) {
+      const ld = await recognizeImage(
+        contract.value.credentialSubject.object[0],
+      )
+      contractType.value = ld.summary
+      description.value = ld.description
+      // duration.value = {
+      //   from: formatDate(ld.startDate),
+      //   to: formatDate(ld.endDate),
+      // }
+    }
   } catch (error) {
     console.error(error)
   } finally {
