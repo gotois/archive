@@ -759,6 +759,10 @@ async function recognizeImage(
     img.src = contentUrl
     const { data } = await worker.recognize(img)
     await worker.terminate()
+
+    // todo - передать в ИИ data.text и ocrPrompt, получив более точный текст
+    console.log(ocrPrompt)
+
     return gicStore.calendar([
       {
         type: 'Note',
