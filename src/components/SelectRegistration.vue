@@ -13,8 +13,10 @@
     <QBtnGroup class="q-pa-md" flat>
       <QBtn
         v-if="!$q.loading.isActive"
+        style="height: 40px"
         class="full-width"
         square
+        flat
         label="Demo"
         @click="$emit('select', demoSign)"
       >
@@ -22,8 +24,10 @@
       </QBtn>
       <QBtn
         v-if="!$q.loading.isActive && location !== RU"
+        style="height: 40px"
         class="full-width"
         square
+        flat
         label="Blockchain"
         @click="pricing = true"
       >
@@ -150,10 +154,11 @@ async function telegramSign(user: {
   id: string
   username: string
 }) {
-  const key = await keyPair.generateNewKeyPair(user.id)
+  const key = await keyPair.generateNewKeyPair('did:gic:' + user.id)
   await keyPair.setKeyPair(key)
   const name = user.first_name ?? '' + ' ' + user.last_name ?? ''
   profileStore.consumerName(name)
+  profileStore.consumerEmail('tester@gotointeractive.com')
   profileStore.consumerDID(key.id)
   authStore.webId = demoUserWebId
   tutorialStore.tutorialComplete(true)
