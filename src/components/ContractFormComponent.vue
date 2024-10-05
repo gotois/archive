@@ -751,7 +751,7 @@ async function saveOnline() {
 
 async function recognizeImage(
   { contentUrl, encodingFormat }: ImageType,
-  langs = 'eng+rus',
+  langs: string,
 ) {
   if (encodingFormat.startsWith('image')) {
     const worker = await createWorker(langs)
@@ -817,6 +817,7 @@ onMounted(async () => {
     if (navigator.onLine) {
       const ld = await recognizeImage(
         contract.value.credentialSubject.object[0],
+        'eng+rus',
       )
       contractType.value = ld.summary
       description.value = ld.description

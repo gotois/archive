@@ -249,7 +249,7 @@ import usePodStore from 'stores/pod'
 import useNotification from 'stores/notification'
 import { ROUTE_NAMES } from '../router/routes'
 import Dogovor from '../services/contractGeneratorService'
-import { validUrlString } from '../helpers/urlHelper'
+import { validUrlString, open } from '../helpers/urlHelper'
 import {
   PDF_MIME_TYPE,
   PNG_MIME_TYPE,
@@ -566,6 +566,10 @@ router.afterEach((to) => updateContracts(to.query))
 onBeforeMount(() => {
   if (!router.currentRoute.value.query.page) {
     router.currentRoute.value.query.page = '1'
+  }
+  if (typeof router.currentRoute.value.query.action === 'string') {
+    open(router.currentRoute.value.query.action)
+    return
   }
 })
 

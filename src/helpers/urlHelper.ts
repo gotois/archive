@@ -19,13 +19,19 @@ export function validUrlString(url: string) {
 
 export function open(url: string) {
   if (Platform.is.desktop) {
-    openURL(url, undefined, {
-      noopener: true,
-      noreferrer: true,
-      toolbar: false,
-      menubar: false,
-      popup: 1,
-    })
+    openURL(
+      url,
+      () => {
+        window.location.href = url
+      },
+      {
+        noopener: true,
+        noreferrer: true,
+        toolbar: false,
+        menubar: false,
+        popup: 1,
+      },
+    )
   } else {
     window.location.href = url
   }
