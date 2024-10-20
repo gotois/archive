@@ -1,7 +1,8 @@
 import { event as createEvent, default as icalendar } from 'ical-browser'
 import { FormatContract } from '../types/models'
+import { formatIcal } from './dateHelper'
 
-export default (id: string, object: FormatContract) => {
+export function createCal(id: string, object: FormatContract) {
   const attach: string[] = []
   for (const { contentUrl } of object.object) {
     attach.push(contentUrl)
@@ -61,4 +62,26 @@ export default (id: string, object: FormatContract) => {
   return new File([encoder.encode(str)], 'calendar.ics', {
     type: 'text/calendar',
   })
+}
+
+export function googleCalendarUrl(item: FormatContract) {
+  const link = new URL('https://calendar.google.com/calendar/render')
+  link.searchParams.append('action', 'TEMPLATE')
+  link.searchParams.append('text', item.instrument.name)
+  link.searchParams.append('details', item.instrument.description)
+  if (item.endTime) {
+    link.searchParams.append(
+      'dates',
+      formatIcal(item.startTime) + '/' + formatIcal(item.endTime),
+    )
+  } else {
+    link.searchParams.append(
+      'dates',
+      formatIcal(item.startTime) + '/' + formatIcal(item.startTime),
+    )
+  }
+  if (item.sameAs) {
+    link.searchParams.append('location', item.sameAs)
+  }
+  return link
 }

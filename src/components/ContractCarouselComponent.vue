@@ -44,7 +44,7 @@
           }"
           :img-style="{
             'border': navProps.active ? '1px solid var(--q-secondary)' : 'none',
-            'image-rendering': 'optimizeSpeed',
+            'image-rendering': 'high-quality',
           }"
           :src="item.object[navProps.index].contentUrl"
           placeholder-src="/icons/icon-128x128.png"

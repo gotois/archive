@@ -172,8 +172,8 @@ import { FormatContract } from '../types/models'
 import { isDateNotOk } from '../helpers/dateHelper'
 import { parse } from '../helpers/markdownHelper'
 import { readFilesPromise, fileShare, canShare } from '../helpers/fileHelper'
-import createCal from '../helpers/calendarHelper'
-import { mailUrl, googleMailUrl } from '../helpers/mailHelper'
+import { createCal, googleCalendarUrl } from '../helpers/calendarHelper'
+import { mailUrl } from '../helpers/mailHelper'
 import { isVerified } from '../helpers/contractHelper'
 import { open } from '../helpers/urlHelper'
 import { openMap } from '../services/geoService'
@@ -381,7 +381,7 @@ function onSheet(item: FormatContract) {
         return shareURL(shareLink)
       }
       case Action.GOOGLE_CALENDAR: {
-        const url = googleMailUrl(item).toString()
+        const url = googleCalendarUrl(item).toString()
         return open(url)
       }
       case Action.CALENDAR: {
