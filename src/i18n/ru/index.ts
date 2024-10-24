@@ -1,12 +1,13 @@
 import { format } from 'quasar'
+import pkg from '../../../package.json'
 
-const productName = 'Мои договоры'
+const productName = 'Секретарь'
 const { humanStorageSize } = format
 
 export default {
   productName,
   organization: {
-    prodid: `-//GIC DAO//NONSGML ${productName}//RU`,
+    prodid: `-//GIC DAO//NONSGML ${pkg.productName.toUpperCase()}//RU`,
   },
   opensearch: {
     title: 'Поиск по архиву договоров',
