@@ -1,7 +1,7 @@
 import ICAL from 'ical.js'
 import { date } from 'quasar'
 import { event as createEvent, default as icalendar } from 'ical-browser'
-import { FormatContract } from '../types/models'
+import { FormatContract, CalendarEventExternal } from '../types/models'
 import { formatIcal } from './dateHelper'
 
 export function createCal(id: string, object: FormatContract) {
@@ -114,5 +114,13 @@ export function convertIcalToEvent(ical: string) {
     people: vevent
       .getAllProperties('attendee')
       .map((att) => att.getFirstValue()),
-  }
+  } as CalendarEventExternal
+}
+
+export function formatToCalendarDate(elem: Date) {
+  return date.formatDate(elem, 'YYYY-MM-DD')
+}
+
+export function isCurrentDate(elem: Date, now = new Date()) {
+  return date.isSameDate(elem, now, 'day')
 }

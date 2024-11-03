@@ -241,3 +241,20 @@ export interface FullTextDocument {
   endTime: Date
   instrument_description: string
 }
+
+export interface CalendarEventExternal {
+  id: number | string
+  start: string
+  end: string
+  title?: string
+  people?: string[]
+  location?: string
+  description?: string
+  calendarId?: string
+  _customContent?: {
+    timeGrid?: string
+    dateGrid?: string
+    monthGrid?: string
+    monthAgenda?: string
+  }
+}
