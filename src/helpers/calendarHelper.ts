@@ -1,3 +1,5 @@
+import ICAL from 'ical.js'
+import { date } from 'quasar'
 import { event as createEvent, default as icalendar } from 'ical-browser'
 import { FormatContract } from '../types/models'
 import { formatIcal } from './dateHelper'
@@ -84,4 +86,33 @@ export function googleCalendarUrl(item: FormatContract) {
     link.searchParams.append('location', item.sameAs)
   }
   return link
+}
+
+export function convertIcalToEvent(ical: string) {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const icalData = ICAL.parse(ical)
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  const comp = new ICAL.Component(icalData)
+  const vevent = comp.getFirstSubcomponent('vevent')
+  const eventName = vevent.getFirstPropertyValue('summary')
+  const eventDescription = vevent.getFirstPropertyValue('description')
+  const dtStart = vevent
+    .getFirstPropertyValue('dtstart')
+    .toString()
+    .replace('Z', '')
+  const dtEnd = vevent
+    .getFirstPropertyValue('dtend')
+    .toString()
+    .replace('Z', '')
+  return {
+    id: '1' + Math.random() * 100, // todo - использовать id из ical
+    start: date.formatDate(dtStart, 'YYYY-MM-DD HH:mm'),
+    end: date.formatDate(dtEnd, 'YYYY-MM-DD HH:mm'),
+    title: eventName,
+    description: eventDescription,
+    location: vevent.getFirstPropertyValue('location') || '',
+    people: vevent
+      .getAllProperties('attendee')
+      .map((att) => att.getFirstValue()),
+  }
 }

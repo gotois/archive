@@ -1,6 +1,6 @@
 {
   "name": "contracts",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Take control of your contracts with our app",
   "keywords": [
     "archive",
@@ -51,6 +51,12 @@
     "@pdfme/common": "3.4.3",
     "@pdfme/generator": "3.4.3",
     "@quasar/extras": "1.16.12",
+    "@schedule-x/calendar-controls": "2.4.1",
+    "@schedule-x/current-time": "2.4.1",
+    "@schedule-x/event-modal": "2.4.1",
+    "@schedule-x/events-service": "2.4.1",
+    "@schedule-x/theme-default": "2.4.1",
+    "@schedule-x/vue": "2.3.1",
     "@solana/web3.js": "1.95.3",
     "credentials-context": "2.0.0",
     "dexie": "4.0.8",
@@ -58,6 +64,7 @@
     "ed25519-signature-2020-context": "1.1.0",
     "html-to-text": "9.0.5",
     "ical-browser": "0.0.14",
+    "ical.js": "2.1.0",
     "jsonld-document-loader": "2.2.0",
     "jspdf": "2.5.2",
     "jszip": "3.10.1",

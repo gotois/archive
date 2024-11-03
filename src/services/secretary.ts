@@ -1,4 +1,4 @@
-import { uid } from 'quasar'
+import { uid, date } from 'quasar'
 import requestJsonRpc2 from 'request-json-rpc2'
 
 interface Calendar {
@@ -76,4 +76,26 @@ export async function generateCalendar(activity: Activity) {
   }
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   return JSON.parse(result) as Calendar
+}
+
+// todo example from server
+export function loadCalendar(day: Date) {
+  return Promise.resolve([
+    `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+SUMMARY:Simple Event ${Math.random()}
+DTSTART:${date.formatDate(day, 'YYYYMMDD')}T090000
+DTEND:${date.formatDate(day, 'YYYYMMDD')}T100000
+END:VEVENT
+END:VCALENDAR`,
+    `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+SUMMARY:Simple Event 2
+DTSTART:${date.formatDate(new Date(), 'YYYYMMDD')}T080000
+DTEND:${date.formatDate(new Date(), 'YYYYMMDD')}T090000
+END:VEVENT
+END:VCALENDAR`,
+  ])
 }

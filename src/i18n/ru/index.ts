@@ -40,6 +40,9 @@ export default {
       oidc: { title: 'OIDC' },
       final: { title: 'Договор на использование' },
     },
+    calendar: {
+      title: 'Календарь',
+    },
     unknown: {
       seo: {
         title: 'Страница не найдена',

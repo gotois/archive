@@ -39,6 +39,9 @@ export default {
       oidc: { title: 'OIDC' },
       final: { title: 'Agreement for use' },
     },
+    calendar: {
+      title: 'Calendar',
+    },
     unknown: {
       seo: {
         title: 'Page not found',
