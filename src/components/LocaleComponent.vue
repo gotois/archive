@@ -5,7 +5,7 @@
       class="full-width"
       :dense="$q.platform.is.desktop"
       :outline="locale.startsWith('en')"
-      @click="changeLocale('en')"
+      @click="changeLocale('en-US')"
     />
     <QSeparator vertical />
     <QBtn
@@ -13,7 +13,7 @@
       class="full-width"
       :dense="$q.platform.is.desktop"
       :outline="locale.startsWith('ru')"
-      @click="changeLocale('ru')"
+      @click="changeLocale('ru-RU')"
     />
   </QBtnGroup>
 </template>

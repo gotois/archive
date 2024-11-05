@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <QBtn color="transparent">
     <div
       :class="{
         'text-grey-8': !$q.dark.isActive,
@@ -7,7 +7,7 @@
       }"
     >
       {{
-        new Intl.DateTimeFormat(i18n.locale, { weekday: 'short' }).format(
+        new Intl.DateTimeFormat(i18n.locale.value, { weekday: 'short' }).format(
           props.date,
         )
       }}
@@ -21,11 +21,11 @@
     >
       {{ props.date.getDate() }}
     </div>
-  </div>
+  </QBtn>
 </template>
 <script lang="ts" setup>
 import { PropType } from 'vue'
-import { useQuasar } from 'quasar'
+import { useQuasar, QBtn } from 'quasar'
 import { useI18n } from 'vue-i18n'
 
 const $q = useQuasar()

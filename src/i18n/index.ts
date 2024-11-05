@@ -1,9 +1,15 @@
 import ru from './ru'
 import en from './en'
 
+// https://schedule-x.dev/docs/calendar/supported-languages
+export enum Locale {
+  'ru-RU',
+  'en-GB',
+  'en-US',
+}
+
 export default {
-  ru,
-  en,
-  'en-US': en,
-  'en-GB': en,
+  [Locale['ru-RU']]: ru,
+  [Locale['en-GB']]: en,
+  [Locale['en-US']]: en,
 }

@@ -79,7 +79,10 @@ export async function generateCalendar(activity: Activity) {
   return JSON.parse(result) as Calendar
 }
 
-export async function loadCalendar(startDate: string, endDate?: string): Promise<string> {
+export async function loadCalendar(
+  startDate: string,
+  endDate?: string,
+): Promise<string[]> {
   const activity = {
     '@context': 'https://www.w3.org/ns/activitystreams',
     'type': 'Offer',
@@ -98,5 +101,5 @@ export async function loadCalendar(startDate: string, endDate?: string): Promise
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument
     throw new Error(error.message)
   }
-  return result
+  return result as unknown as string[]
 }

@@ -6,7 +6,7 @@
     class="fullscreen full-width full-height"
     :range="range"
     color="primary"
-    :first-day-of-week="locale === 'ru' ? 1 : null"
+    :first-day-of-week="locale.startsWith('ru') ? 1 : null"
     :locale="calendarLocale"
     :options="options"
     today-btn
@@ -55,7 +55,7 @@ const options = computed(() => {
 })
 
 const calendarLocale = computed(() => {
-  return locale.value === 'ru'
+  return locale.value.startsWith('ru')
     ? {
         days: $t('calendar.days').split('_'),
         daysShort: $t('calendar.daysShort').split('_'),

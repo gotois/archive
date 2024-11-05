@@ -56,9 +56,8 @@
           >
             <DayCalendar
               :key="index"
-              v-ripple
               style="width: 45px"
-              class="cursor-pointer q-pa-md day-calendar relative-position non-selectable flex items-center justify-center"
+              class="cursor-pointer q-pa-md rounded-borders relative-position non-selectable flex items-center justify-center"
               :class="{
                 'selected': isCurrentDate(item),
                 'bg-amber': isCurrentDate(item, controlDate),
@@ -105,19 +104,20 @@ import { formatToCalendarDate, isCurrentDate } from '../helpers/calendarHelper'
 import '@schedule-x/theme-default/dist/index.css'
 import useCalendarStore from 'stores/calendar'
 
+const currentDate = new Date()
+const CALENDAR_WEEK_NUM = 7
+const INITIAL_SCROLL = '07:00'
+
 const $q = useQuasar()
 const i18n = useI18n()
 const calendarControls = createCalendarControlsPlugin()
 const eventsServicePlugin = createEventsServicePlugin()
 const eventModal = createEventModalPlugin()
 const scrollController = createScrollControllerPlugin({
-  initialScroll: '07:00',
+  initialScroll: INITIAL_SCROLL,
 })
 const calendarStore = useCalendarStore()
 const $t = i18n.t
-
-const currentDate = new Date()
-const CALENDAR_WEEK_NUM = 7
 
 const metaData = {
   'title': $t('pages.calendar.title'),
@@ -134,7 +134,7 @@ const calendarApp = createCalendar({
   defaultView: viewDay.name,
   isDark: $q.dark.isActive,
   views: [createViewDay()],
-  events: [],
+  events: calendarStore.events,
   plugins: [
     createCurrentTimePlugin({
       fullWeekWidth: false,
@@ -197,10 +197,6 @@ function selectDay(item: Date) {
 useMeta(metaData)
 </script>
 <style lang="scss" scoped>
-.day-calendar {
-  border-radius: 12px;
-  height: max-content;
-}
 .selected {
   background-color: #ed6d3b;
 }

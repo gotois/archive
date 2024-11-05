@@ -5,7 +5,7 @@
     :options="options"
     class="no-box-shadow"
     default-view="Calendar"
-    :first-day-of-week="locale === 'ru' ? 1 : null"
+    :first-day-of-week="locale.startsWith('ru') ? 1 : null"
     :locale="calendarLocale"
     event-color="secondary"
     color="primary"
@@ -38,7 +38,7 @@ const events = ref([])
 const options = ref([])
 const model = ref(new Date())
 const calendarLocale = ref<unknown>(
-  locale.value === 'ru'
+  locale.value.startsWith('ru')
     ? {
         days: $t('calendar.days').split('_'),
         daysShort: $t('calendar.daysShort').split('_'),
