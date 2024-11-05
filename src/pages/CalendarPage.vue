@@ -34,7 +34,7 @@
           class="flex full-width full-height flex items-center justify-between shadow-4 no-wrap"
           :class="{
             'bg-black': !$q.dark.isActive,
-            'bg-white': $q.dark.isActive,
+            'bg-dark': $q.dark.isActive,
           }"
         >
           <QBtn
@@ -42,7 +42,7 @@
             flat
             dense
             square
-            :color="$q.dark.isActive ? 'black' : 'white'"
+            color="white"
             class="full-height"
             @click="loadPrevWeek"
           />
@@ -56,22 +56,23 @@
           >
             <DayCalendar
               :key="index"
+              :color="getColor(item)"
               style="width: 45px"
-              class="cursor-pointer q-pa-md rounded-borders relative-position non-selectable flex items-center justify-center"
-              :class="{
-                'selected': isCurrentDate(item),
-                'bg-amber': isCurrentDate(item, controlDate),
-              }"
+              class="cursor-pointer q-ml-xs q-mr-xs q-pa-md rounded-borders relative-position non-selectable flex items-center justify-center"
               :date="item"
               @click="selectDay(item)"
-            />
+            >
+              <QTooltip anchor="bottom middle" self="bottom middle">
+                {{ date.formatDate(item, 'YYYY-MM-DD') }}
+              </QTooltip>
+            </DayCalendar>
           </QVirtualScroll>
           <QBtn
             icon="arrow_right"
             flat
             dense
             square
-            :color="$q.dark.isActive ? 'black' : 'white'"
+            color="white"
             class="full-height"
             @click="loadNextWeek"
           />
@@ -89,6 +90,7 @@ import {
   QBtn,
   QCard,
   QCardSection,
+  QTooltip,
   date,
 } from 'quasar'
 import DayCalendar from 'components/DayCalendar.vue'
@@ -106,7 +108,7 @@ import useCalendarStore from 'stores/calendar'
 
 const currentDate = new Date()
 const CALENDAR_WEEK_NUM = 7
-const INITIAL_SCROLL = '07:00'
+const INITIAL_SCROLL = '06:30'
 
 const $q = useQuasar()
 const i18n = useI18n()
@@ -126,7 +128,7 @@ const metaData = {
 
 const virtualScroll = ref(null)
 const controlDate = ref<string>(formatToCalendarDate(currentDate))
-const weeks = ref(loadWeek(currentDate))
+const weeks = ref<Date[]>(loadWeek(currentDate))
 
 const calendarApp = createCalendar({
   selectedDate: controlDate.value,
@@ -194,16 +196,17 @@ function selectDay(item: Date) {
   calendarControls.setDate(day)
 }
 
+function getColor(item: Date) {
+  if (isCurrentDate(item, controlDate.value)) {
+    return $q.dark.isActive ? 'yellow-9' : 'grey-1'
+  } else if (isCurrentDate(item)) {
+    return $q.dark.isActive ? 'red-4' : 'yellow-9'
+  }
+  return 'transparent'
+}
+
 useMeta(metaData)
 </script>
-<style lang="scss" scoped>
-.selected {
-  background-color: #ed6d3b;
-}
-::-webkit-scrollbar {
-  background: transparent;
-}
-</style>
 <style lang="scss">
 .sx-vue-calendar-wrapper {
   height: 100dvh;

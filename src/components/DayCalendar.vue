@@ -1,5 +1,5 @@
 <template>
-  <QBtn color="transparent">
+  <QBtn :color="color" square>
     <div
       :class="{
         'text-grey-8': !$q.dark.isActive,
@@ -15,12 +15,13 @@
     <div
       class="text-bold text-center"
       :class="{
-        'text-black': $q.dark.isActive,
-        'text-white': !$q.dark.isActive,
+        'text-black': !$q.dark.isActive,
+        'text-white': $q.dark.isActive,
       }"
     >
       {{ props.date.getDate() }}
     </div>
+    <slot />
   </QBtn>
 </template>
 <script lang="ts" setup>
@@ -32,6 +33,11 @@ const $q = useQuasar()
 const i18n = useI18n()
 
 const props = defineProps({
+  color: {
+    type: String as PropType<string>,
+    default: 'transparent',
+    required: false,
+  },
   date: {
     type: Date as PropType<Date>,
     required: true,
