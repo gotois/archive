@@ -31,7 +31,7 @@
       </template>
       <template #headerContent>
         <div
-          class="full-width full-height flex items-center justify-between shadow-4"
+          class="flex full-width full-height flex items-center justify-between shadow-4 no-wrap"
           :class="{
             'bg-black': !$q.dark.isActive,
             'bg-white': $q.dark.isActive,
