@@ -394,7 +394,7 @@ const metaData = {
   'og:title': $t('pages.welcome.title'),
 }
 
-const forRus = ref(locale.value === 'ru')
+const forRus = ref(locale.value.startsWith('ru'))
 
 async function onRegister() {
   await router.push({
