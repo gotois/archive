@@ -12,9 +12,9 @@ export default defineStore('calendar', {
     events: [],
   }),
   actions: {
-    async loadCalendar(start: Date) {
-      const calendar = await loadCalendar(start)
-      this.events = calendar.map((ical) => convertIcalToEvent(ical))
+    async loadCalendar(day: string) {
+      const calendar = await loadCalendar(day)
+      this.events = calendar.map((icalEvent) => convertIcalToEvent(icalEvent))
     },
   },
 })

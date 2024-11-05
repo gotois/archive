@@ -2,7 +2,7 @@
   <div>
     <ScheduleXCalendar :calendar-app="calendarApp">
       <template #timeGridEvent="{ calendarEvent }">
-        <QCard flat :dark="!$q.dark.isActive">
+        <QCard v-ripple flat :dark="!$q.dark.isActive">
           <QCardSection>
             <div
               class="flex justify-between items-center"
@@ -30,41 +30,53 @@
         </QCard>
       </template>
       <template #headerContent>
-        <QBtn
-          icon="arrow_left"
-          flat
-          dense
-          class="full-height"
-          @click="loadPrevWeek"
-        />
-        <QVirtualScroll
-          ref="virtualScroll"
-          v-slot="{ item, index }"
-          class="date-area"
-          :items="weeks"
-          :item-size="MAX_SIZE"
-          virtual-scroll-horizontal
+        <div
+          class="full-width full-height flex items-center justify-between shadow-4"
+          :class="{
+            'bg-black': !$q.dark.isActive,
+            'bg-white': $q.dark.isActive,
+          }"
         >
-          <DayCalendar
-            :key="index"
-            v-ripple
-            style="width: 45px"
-            class="cursor-pointer q-pa-md day-calendar relative-position non-selectable flex items-center justify-center"
-            :class="{
-              'selected': isCurrentDate(item),
-              'bg-amber': isCurrentDate(item, controlDate),
-            }"
-            :date="item"
-            @click="selectDay(item)"
+          <QBtn
+            icon="arrow_left"
+            flat
+            dense
+            square
+            :color="$q.dark.isActive ? 'black' : 'white'"
+            class="full-height"
+            @click="loadPrevWeek"
           />
-        </QVirtualScroll>
-        <QBtn
-          icon="arrow_right"
-          flat
-          dense
-          class="full-height"
-          @click="loadNextWeek"
-        />
+          <QVirtualScroll
+            ref="virtualScroll"
+            v-slot="{ item, index }"
+            class="flex items-center q-mt-xs q-mb-xs"
+            :items="weeks"
+            :item-size="CALENDAR_WEEK_NUM"
+            virtual-scroll-horizontal
+          >
+            <DayCalendar
+              :key="index"
+              v-ripple
+              style="width: 45px"
+              class="cursor-pointer q-pa-md day-calendar relative-position non-selectable flex items-center justify-center"
+              :class="{
+                'selected': isCurrentDate(item),
+                'bg-amber': isCurrentDate(item, controlDate),
+              }"
+              :date="item"
+              @click="selectDay(item)"
+            />
+          </QVirtualScroll>
+          <QBtn
+            icon="arrow_right"
+            flat
+            dense
+            square
+            :color="$q.dark.isActive ? 'black' : 'white'"
+            class="full-height"
+            @click="loadNextWeek"
+          />
+        </div>
       </template>
     </ScheduleXCalendar>
   </div>
@@ -88,6 +100,7 @@ import { createCurrentTimePlugin } from '@schedule-x/current-time'
 import { createCalendarControlsPlugin } from '@schedule-x/calendar-controls'
 import { createEventsServicePlugin } from '@schedule-x/events-service'
 import { createEventModalPlugin } from '@schedule-x/event-modal'
+import { createScrollControllerPlugin } from '@schedule-x/scroll-controller'
 import { formatToCalendarDate, isCurrentDate } from '../helpers/calendarHelper'
 import '@schedule-x/theme-default/dist/index.css'
 import useCalendarStore from 'stores/calendar'
@@ -97,11 +110,13 @@ const i18n = useI18n()
 const calendarControls = createCalendarControlsPlugin()
 const eventsServicePlugin = createEventsServicePlugin()
 const eventModal = createEventModalPlugin()
+const scrollController = createScrollControllerPlugin({
+  initialScroll: '07:00',
+})
 const calendarStore = useCalendarStore()
 const $t = i18n.t
 
 const currentDate = new Date()
-const MAX_SIZE = 7
 const CALENDAR_WEEK_NUM = 7
 
 const metaData = {
@@ -110,11 +125,11 @@ const metaData = {
 }
 
 const virtualScroll = ref(null)
-const controlDate = ref(formatToCalendarDate(currentDate))
+const controlDate = ref<string>(formatToCalendarDate(currentDate))
 const weeks = ref(loadWeek(currentDate))
 
 const calendarApp = createCalendar({
-  selectedDate: formatToCalendarDate(currentDate),
+  selectedDate: controlDate.value,
   locale: i18n.locale.value,
   defaultView: viewDay.name,
   isDark: $q.dark.isActive,
@@ -122,21 +137,22 @@ const calendarApp = createCalendar({
   events: [],
   plugins: [
     createCurrentTimePlugin({
-      fullWeekWidth: true,
+      fullWeekWidth: false,
     }),
     calendarControls,
     eventsServicePlugin,
     eventModal,
+    scrollController,
   ],
   callbacks: {
     async onRangeUpdate(range): void {
       controlDate.value = range.start
 
-      await calendarStore.loadCalendar(new Date(range.start))
+      await calendarStore.loadCalendar(controlDate.value)
       eventsServicePlugin.set(calendarStore.events)
     },
     async onRender(): void {
-      await calendarStore.loadCalendar(currentDate)
+      await calendarStore.loadCalendar(controlDate.value)
       eventsServicePlugin.set(calendarStore.events)
 
       const currentIndexDay = weeks.value.findIndex((elem) =>
@@ -187,13 +203,6 @@ useMeta(metaData)
 }
 .selected {
   background-color: #ed6d3b;
-}
-.date-area {
-  width: 100%;
-  height: 120px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 }
 ::-webkit-scrollbar {
   background: transparent;

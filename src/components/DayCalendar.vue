@@ -2,8 +2,8 @@
   <div>
     <div
       :class="{
-        'text-grey-8': $q.dark.isActive,
-        'text-black-8': !$q.dark.isActive,
+        'text-grey-8': !$q.dark.isActive,
+        'text-black-8': $q.dark.isActive,
       }"
     >
       {{
@@ -15,8 +15,8 @@
     <div
       class="text-bold text-center"
       :class="{
-        'text-white': $q.dark.isActive,
-        'text-black': !$q.dark.isActive,
+        'text-black': $q.dark.isActive,
+        'text-white': !$q.dark.isActive,
       }"
     >
       {{ props.date.getDate() }}

@@ -1,4 +1,4 @@
-import { uid, date } from 'quasar'
+import { uid } from 'quasar'
 import requestJsonRpc2 from 'request-json-rpc2'
 
 interface Calendar {
@@ -30,6 +30,7 @@ type Activity = {
     | ActivityObjectNote[]
     | ActivityObjectLink
     | ActivityObjectLink[]
+    | { type: 'Activity' }
   'startTime'?: string
 }
 
@@ -78,24 +79,24 @@ export async function generateCalendar(activity: Activity) {
   return JSON.parse(result) as Calendar
 }
 
-// todo example from server
-export function loadCalendar(day: Date) {
-  return Promise.resolve([
-    `BEGIN:VCALENDAR
-VERSION:2.0
-BEGIN:VEVENT
-SUMMARY:Simple Event ${Math.random()}
-DTSTART:${date.formatDate(day, 'YYYYMMDD')}T090000
-DTEND:${date.formatDate(day, 'YYYYMMDD')}T100000
-END:VEVENT
-END:VCALENDAR`,
-    `BEGIN:VCALENDAR
-VERSION:2.0
-BEGIN:VEVENT
-SUMMARY:Simple Event 2
-DTSTART:${date.formatDate(new Date(), 'YYYYMMDD')}T080000
-DTEND:${date.formatDate(new Date(), 'YYYYMMDD')}T090000
-END:VEVENT
-END:VCALENDAR`,
-  ])
+export async function loadCalendar(startDate: string, endDate?: string): Promise<string> {
+  const activity = {
+    '@context': 'https://www.w3.org/ns/activitystreams',
+    'type': 'Offer',
+    'actor': {
+      type: 'Person',
+      id: 'http://sally.example.org', // todo - поменять актора на имя пользователя
+    },
+    'object': {
+      type: 'Activity',
+      startTime: startDate,
+      endTime: endDate,
+    },
+  }
+  const { error, result } = await secretary('get-calendar', activity)
+  if (error) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument
+    throw new Error(error.message)
+  }
+  return result
 }
