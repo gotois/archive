@@ -33,7 +33,7 @@
         <div
           class="flex full-width full-height flex items-center justify-between shadow-4 no-wrap"
           :class="{
-            'bg-black': !$q.dark.isActive,
+            'bg-light': !$q.dark.isActive,
             'bg-dark': $q.dark.isActive,
           }"
         >
@@ -42,7 +42,7 @@
             flat
             dense
             square
-            color="white"
+            :color="$q.dark.isActive ? 'light' : 'dark'"
             class="full-height"
             @click="loadPrevWeek"
           />
@@ -56,23 +56,19 @@
           >
             <DayCalendar
               :key="index"
-              :color="getColor(item)"
               style="width: 45px"
               class="cursor-pointer q-ml-xs q-mr-xs q-pa-md rounded-borders relative-position non-selectable flex items-center justify-center"
-              :date="item"
+              :day="item"
+              :selected-day="selectedDay"
               @click="selectDay(item)"
-            >
-              <QTooltip anchor="bottom middle" self="bottom middle">
-                {{ date.formatDate(item, 'YYYY-MM-DD') }}
-              </QTooltip>
-            </DayCalendar>
+            />
           </QVirtualScroll>
           <QBtn
             icon="arrow_right"
             flat
             dense
             square
-            color="white"
+            :color="$q.dark.isActive ? 'light' : 'dark'"
             class="full-height"
             @click="loadNextWeek"
           />
@@ -90,7 +86,6 @@ import {
   QBtn,
   QCard,
   QCardSection,
-  QTooltip,
   date,
 } from 'quasar'
 import DayCalendar from 'components/DayCalendar.vue'
@@ -127,11 +122,11 @@ const metaData = {
 }
 
 const virtualScroll = ref(null)
-const controlDate = ref<string>(formatToCalendarDate(currentDate))
+const selectedDay = ref<string>(formatToCalendarDate(currentDate))
 const weeks = ref<Date[]>(loadWeek(currentDate))
 
 const calendarApp = createCalendar({
-  selectedDate: controlDate.value,
+  selectedDate: selectedDay.value,
   locale: i18n.locale.value,
   defaultView: viewDay.name,
   isDark: $q.dark.isActive,
@@ -148,13 +143,13 @@ const calendarApp = createCalendar({
   ],
   callbacks: {
     async onRangeUpdate(range): void {
-      controlDate.value = range.start
+      selectedDay.value = range.start
 
-      await calendarStore.loadCalendar(controlDate.value)
+      await calendarStore.loadCalendar(selectedDay.value)
       eventsServicePlugin.set(calendarStore.events)
     },
     async onRender(): void {
-      await calendarStore.loadCalendar(controlDate.value)
+      await calendarStore.loadCalendar(selectedDay.value)
       eventsServicePlugin.set(calendarStore.events)
 
       const currentIndexDay = weeks.value.findIndex((elem) =>
@@ -196,20 +191,11 @@ function selectDay(item: Date) {
   calendarControls.setDate(day)
 }
 
-function getColor(item: Date) {
-  if (isCurrentDate(item, controlDate.value)) {
-    return $q.dark.isActive ? 'yellow-9' : 'grey-1'
-  } else if (isCurrentDate(item)) {
-    return $q.dark.isActive ? 'red-4' : 'yellow-9'
-  }
-  return 'transparent'
-}
-
 useMeta(metaData)
 </script>
 <style lang="scss">
 .sx-vue-calendar-wrapper {
-  height: 100dvh;
+  height: calc(100dvh - 50px);
 }
 .sx__week-grid__date-axis {
   display: none;

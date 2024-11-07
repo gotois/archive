@@ -28,6 +28,7 @@ import { ROUTE_NAMES } from './router/routes'
 import { getSolana } from './services/phantomWalletService'
 import { WalletType } from './types/models'
 import { isTWA } from './helpers/twaHelper'
+import { viewport } from '@telegram-apps/sdk-vue'
 import pkg from '../package.json'
 import twaMinifest from '../twa-manifest.json'
 
@@ -206,32 +207,51 @@ if (solana) {
   })
 }
 
+async function myAuth(): Promise<void> {
+  // Считаем что вне нативного Telegram WebApp мы находимся в Telegram WebApp
+  // Иначе проверяем все как следует
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  if (window?.Telegram?.WebApp?.platform === 'unknown') {
+    authStore.hasTelegramWebApp = true
+    $q.sessionStorage.set('telegramWebApp', true)
+  } else {
+    viewport.expand()
+    await authStore.tgWebAppAuth()
+  }
+  tutorialStore.tutorialComplete(true)
+  $q.loading.hide()
+  return router.push({
+    name: ROUTE_NAMES.CALENDAR,
+  })
+}
+
 // check if Telegram Web Apps
 // http://localhost:8080/?view=telegram
 if (window.location.search.includes('view=telegram')) {
   $q.loading.show()
-  const script = document.createElement('script')
-  script.type = 'text/javascript'
-  script.src = 'https://telegram.org/js/telegram-web-app.js'
-  script.onload = () => {
-    tutorialStore.tutorialComplete(true)
-    authStore.setTelegramWebApp(true)
-    // разворачиваем Telegram WebApp на все окно
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
-    window.Telegram.WebApp.expand()
-    $q.loading.hide()
-    return router.push({
-      name: ROUTE_NAMES.ARCHIVE,
-    })
+
+  if (window.Telegram) {
+    myAuth()
+      .then(() => {})
+      .catch((error) => console.error(error))
+  } else {
+    const script = document.createElement('script')
+    script.type = 'text/javascript'
+    script.src = 'https://telegram.org/js/telegram-web-app.js'
+    script.onload = () => {
+      myAuth()
+        .then(() => {})
+        .catch((error) => console.error(error))
+    }
+    script.onerror = () => {
+      $q.notify({
+        type: 'negative',
+        message: 'WebApp script failed',
+      })
+      $q.loading.hide()
+    }
+    document.head.appendChild(script)
   }
-  script.onerror = () => {
-    $q.notify({
-      type: 'negative',
-      message: 'WebApp script failed',
-    })
-    $q.loading.hide()
-  }
-  document.head.appendChild(script)
 }
 
 useMeta(metaData)

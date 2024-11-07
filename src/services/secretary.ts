@@ -1,5 +1,6 @@
 import { uid } from 'quasar'
 import requestJsonRpc2 from 'request-json-rpc2'
+import { RequestedContact } from '@telegram-apps/sdk-vue'
 
 interface Calendar {
   categories: string[]
@@ -32,6 +33,7 @@ type Activity = {
     | ActivityObjectLink[]
     | { type: 'Activity' }
   'startTime'?: string
+  'actor'?: unknown
 }
 
 function secretary(method: string, params: Activity) {
@@ -51,6 +53,22 @@ function secretary(method: string, params: Activity) {
       pass: process.env.server_basic_auth_pass,
     },
   })
+}
+
+export async function registration(requestedContact: RequestedContact) {
+  console.log('registration requestedContact', requestedContact)
+  const { result } = await secretary('registration', {
+    '@context': 'https://www.w3.org/ns/activitystreams',
+    'type': 'Activity',
+    'actor': {
+      id: requestedContact.contact.userId,
+      password: 'EXAMPLE PASSWORD',
+      name: requestedContact.contact.firstName,
+      to: requestedContact.contact.phoneNumber,
+    },
+    'hash': requestedContact.hash,
+  })
+  return result
 }
 
 // Есть доступ к GIC

@@ -12,6 +12,7 @@ export enum ROUTE_NAMES {
   TUTORIAL = 'tutorial',
   PRIVACY = 'privacy',
   LOGIN = 'login',
+  CALENDAR = 'calendar',
 }
 
 export enum STEP {
@@ -108,12 +109,12 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
-    path: '/' + 'calendar',
+    path: '/' + ROUTE_NAMES.CALENDAR,
     component: () => import('layouts/EmptyLayout.vue'),
     children: [
       {
         path: '',
-        name: 'calendar',
+        name: ROUTE_NAMES.CALENDAR,
         component: () => import('pages/CalendarPage.vue'),
       },
     ],

@@ -121,6 +121,9 @@ export function formatToCalendarDate(elem: Date) {
   return date.formatDate(elem, 'YYYY-MM-DD')
 }
 
-export function isCurrentDate(elem: Date, now = new Date()) {
+export function isCurrentDate(
+  elem: Date | string,
+  now: Date | string = new Date(),
+) {
   return date.isSameDate(elem, now, 'day')
 }

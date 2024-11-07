@@ -1,47 +1,58 @@
 <template>
-  <QBtn :color="color" square>
+  <QBtn :color="color" square unelevated>
     <div
       :class="{
-        'text-grey-8': !$q.dark.isActive,
+        'text-grey-9': !$q.dark.isActive,
         'text-black-8': $q.dark.isActive,
       }"
     >
       {{
         new Intl.DateTimeFormat(i18n.locale.value, { weekday: 'short' }).format(
-          props.date,
+          props.day,
         )
       }}
     </div>
     <div
       class="text-bold text-center"
       :class="{
-        'text-black': !$q.dark.isActive,
-        'text-white': $q.dark.isActive,
+        'text-grey-9': !$q.dark.isActive,
+        'text-black-8': $q.dark.isActive,
       }"
     >
-      {{ props.date.getDate() }}
+      {{ props.day.getDate() }}
     </div>
-    <slot />
+    <QTooltip anchor="bottom middle" self="bottom middle">
+      {{ date.formatDate(props.day, 'YYYY-MM-DD') }}
+    </QTooltip>
   </QBtn>
 </template>
 <script lang="ts" setup>
-import { PropType } from 'vue'
-import { useQuasar, QBtn } from 'quasar'
+import { PropType, computed } from 'vue'
+import { useQuasar, QBtn, QTooltip, date } from 'quasar'
 import { useI18n } from 'vue-i18n'
+import { isCurrentDate } from '../helpers/calendarHelper'
 
 const $q = useQuasar()
 const i18n = useI18n()
 
 const props = defineProps({
-  color: {
-    type: String as PropType<string>,
-    default: 'transparent',
-    required: false,
-  },
-  date: {
+  day: {
     type: Date as PropType<Date>,
     required: true,
-    default: false,
   },
+  selectedDay: {
+    type: String as PropType<string>,
+    default: null,
+  },
+})
+
+const color = computed(() => {
+  const { day, selectedDay } = props
+  if (isCurrentDate(day, selectedDay)) {
+    return 'green-6'
+  } else if (isCurrentDate(day)) {
+    return $q.dark.isActive ? 'yellow-10' : 'yellow-9'
+  }
+  return 'transparent'
 })
 </script>

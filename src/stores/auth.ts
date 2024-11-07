@@ -2,6 +2,8 @@ import { LocalStorage, SessionStorage } from 'quasar'
 import { defineStore } from 'pinia'
 import { WebId } from '@inrupt/solid-client'
 import { getDefaultSession } from '@inrupt/solid-client-authn-browser'
+import { registration } from '../services/secretary'
+import { sendData, requestContact } from '@telegram-apps/sdk-vue'
 
 interface Store {
   pinIsLoggedIn: boolean
@@ -32,9 +34,17 @@ export default defineStore('auth', {
     setTryAuthValue() {
       LocalStorage.set('tryAuth', true)
     },
-    setTelegramWebApp(value: boolean) {
-      SessionStorage.set('telegramWebApp', value)
-      this.hasTelegramWebApp = value
+    async tgWebAppAuth() {
+      if (!requestContact.isSupported()) {
+        throw new Error('requestContact is not Supported')
+      }
+      SessionStorage.set('telegramWebApp', true)
+      this.hasTelegramWebApp = true
+      const requestedContact = await requestContact()
+      const jwt = await registration(requestedContact)
+      // todo save jwt to localstorage
+      // ...
+      sendData(jwt)
     },
     removeAuthValue() {
       SessionStorage.remove('isLoggedIn')
