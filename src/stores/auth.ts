@@ -1,9 +1,9 @@
 import { LocalStorage, SessionStorage } from 'quasar'
 import { defineStore } from 'pinia'
+import { sendData, requestContact } from '@telegram-apps/sdk-vue'
 import { WebId } from '@inrupt/solid-client'
 import { getDefaultSession } from '@inrupt/solid-client-authn-browser'
 import { registration } from '../services/secretary'
-import { sendData, requestContact } from '@telegram-apps/sdk-vue'
 
 interface Store {
   pinIsLoggedIn: boolean

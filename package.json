@@ -20,15 +20,15 @@
   "repository": "github:gotois/archive",
   "productName": "Secretary",
   "author": {
-    "name": "GIC DAO",
-    "email": "v-secretary@mail.ru",
-    "url": "https://gotointeractive.com/"
+    "name": "Denis Baskovsky",
+    "email": "baskovsky@yandex.ru",
+    "url": "https://baskovsky.ru/"
   },
   "contributors": [
     {
-      "name": "Denis Baskovsky",
-      "email": "baskovsky@yandex.ru",
-      "url": "https://baskovsky.ru/"
+      "name": "Виртуальный секретарь",
+      "email": "v-secretary@mail.ru",
+      "url": "https://secretary.tb.ru"
     }
   ],
   "private": false,

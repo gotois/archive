@@ -56,7 +56,6 @@ function secretary(method: string, params: Activity) {
 }
 
 export async function registration(requestedContact: RequestedContact) {
-  console.log('registration requestedContact', requestedContact)
   const { result } = await secretary('registration', {
     '@context': 'https://www.w3.org/ns/activitystreams',
     'type': 'Activity',
