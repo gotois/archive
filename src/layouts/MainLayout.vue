@@ -1,6 +1,7 @@
 <template>
   <QLayout view="lHr lpR lfr">
     <QHeader
+      v-if="!isTMA"
       reveal
       :bordered="$q.platform.is.mobile"
       height-hint="98"
@@ -9,9 +10,7 @@
       <AndroidBarComponent v-if="isTWA" />
       <QToolbar>
         <QBtn
-          v-if="
-            !isTelegramWebApp && ($q.screen.xs || $q.screen.sm || $q.screen.md)
-          "
+          v-if="$q.screen.xs || $q.screen.sm || $q.screen.md"
           flat
           :class="{
             invisible: miniState,
@@ -62,7 +61,7 @@
       </QToolbar>
     </QHeader>
     <QDrawer
-      v-if="!isTelegramWebApp"
+      v-if="!isTMA"
       v-model="leftDrawerOpen"
       side="left"
       class="scroll-y"
@@ -353,7 +352,7 @@
                       ref="otp"
                       :outlined="!$q.screen.xs"
                       :dense="$q.platform.is.desktop"
-                      :num="tfaLength"
+                      :num="TFA_LENGTH"
                       :rules="[otpRule]"
                       square
                       autofocus
@@ -612,10 +611,11 @@ import useContractStore from 'stores/contract'
 import useTutorialStore from 'stores/tutorial'
 import useProfileStore from 'stores/profile'
 import useWalletStore from 'stores/wallet'
-import useGicStore from 'stores/gic'
+import useLangStore from 'stores/lang'
+import useCalendarStore from 'stores/calendar'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
 import { indexAllDocuments } from '../services/searchService'
-import { isTWA } from '../helpers/twaHelper'
+import { isTWA, isTMA } from '../helpers/twaHelper'
 import { keyPair } from '../services/databaseService'
 import { createQR } from '../helpers/qrHelper'
 import { open } from '../helpers/urlHelper'
@@ -656,25 +656,25 @@ const $q = useQuasar()
 const router = useRouter()
 const i18n = useI18n()
 const $t = i18n.t
-const locale = i18n.locale
 const authStore = useAuthStore()
 const tfaStore = useTFAStore()
+const langStore = useLangStore()
 const contractStore = useContractStore()
 const profileStore = useProfileStore()
 const walletStore = useWalletStore()
 const tutorialStore = useTutorialStore()
-const gicStore = useGicStore()
+const calendarStore = useCalendarStore()
 
 const { consumer, email, phone, avatar } = storeToRefs(profileStore)
 const { getArchiveNames, contractsCount } = storeToRefs(contractStore)
-const { isLoggedIn, isDemo, isTelegramWebApp, webId } = storeToRefs(authStore)
+const { isLoggedIn, isDemo, webId } = storeToRefs(authStore)
 const { activated } = storeToRefs(tfaStore)
 const { getWalletLD } = storeToRefs(walletStore)
 const bigScreen = computed(
   () => $q.platform.is.desktop && ($q.screen.xl || $q.screen.lg),
 )
 const headerBadge = computed(() => {
-  if (isTelegramWebApp) {
+  if (isTMA) {
     return $t('header.telegram')
   }
   if (isDemo) {
@@ -683,7 +683,7 @@ const headerBadge = computed(() => {
   return $t('header.free')
 })
 
-const tfaLength = 6
+const TFA_LENGTH = 6
 const miniState = ref(bigScreen.value)
 const showOTPDialog = ref(false)
 const leftDrawerOpen = ref(false)
@@ -736,7 +736,7 @@ function register() {
     name: ROUTE_NAMES.TUTORIAL,
     query: {
       step: STEP.WELCOME,
-      lang: locale.value,
+      lang: langStore.language,
     },
   })
 }
@@ -789,7 +789,7 @@ async function onFinishProfile() {
 }
 
 function otpRule(token: string) {
-  if (token.length === tfaLength) {
+  if (token.length === TFA_LENGTH) {
     return tfaStore.verify(token) || 'TFA Error'
   }
   return true
@@ -892,7 +892,7 @@ onMounted(async () => {
   if ($q.platform.is.desktop && contractsCount.value > 0) {
     await indexAllDocuments()
   }
-  await gicStore.ping()
+  await calendarStore.ping()
 })
 </script>
 <style lang="scss">

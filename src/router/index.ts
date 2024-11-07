@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import useTutorialStore from 'stores/tutorial'
 import useAuthStore from 'stores/auth'
 import usePodStore from 'stores/pod'
+import useLangStore from 'stores/lang'
 import routes, { ROUTE_NAMES } from './routes'
 import { deleteDatabases, reset } from '../services/databaseService'
 import solidAuth from '../services/authService'
@@ -20,7 +21,13 @@ export default route(() => {
   })
   // Если пользователь уже входил через Pod, пробуем авторизовать автоматически
   Router.beforeEach(async (to) => {
-    const { code, state, error, lang } = to.query
+    const { code, state, error, lang, debug } = to.query as {
+      code?: string
+      state?: string
+      error?: string
+      lang?: string
+      debug?: string
+    }
 
     // hack - специальный путь для сброса состояния приложения
     if (to.path === '/reset') {
@@ -31,8 +38,20 @@ export default route(() => {
       window.location.replace(ROUTE_NAMES.PROMO)
       return
     }
-    if (lang && !LocalStorage.has('locale')) {
-      LocalStorage.set('locale', lang)
+
+    if (debug) {
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/eruda'
+      document.body.append(script)
+      script.onload = function () {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,no-undef
+        eruda.init()
+      }
+    }
+
+    if (lang) {
+      const langStore = useLangStore()
+      langStore.setLang(lang)
     }
     if (error || !(code && state)) {
       return

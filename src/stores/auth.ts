@@ -1,9 +1,8 @@
 import { LocalStorage, SessionStorage } from 'quasar'
 import { defineStore } from 'pinia'
-import { sendData, requestContact } from '@telegram-apps/sdk-vue'
 import { WebId } from '@inrupt/solid-client'
+import { RequestedContact } from '@telegram-apps/sdk'
 import { getDefaultSession } from '@inrupt/solid-client-authn-browser'
-import { registration } from '../services/secretary'
 
 interface Store {
   pinIsLoggedIn: boolean
@@ -12,7 +11,7 @@ interface Store {
   openIdIsLoggedIn: boolean
   webId: WebId
   tryAuth: boolean
-  hasTelegramWebApp: boolean
+  jwt: string
 }
 
 export const demoUserWebId = 'did:gic:demo' as WebId
@@ -24,27 +23,12 @@ export default defineStore('auth', {
     openIdSessionId: '',
     openIdExpirationDate: null,
     openIdIsLoggedIn: false,
-    hasTelegramWebApp:
-      Boolean(SessionStorage.getItem('telegramWebApp')) ??
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      Boolean(window?.Telegram?.WebApp?.version),
     webId: getDefaultSession().info.webId ?? demoUserWebId,
+    jwt: LocalStorage.getItem('jwt') ?? null,
   }),
   actions: {
     setTryAuthValue() {
       LocalStorage.set('tryAuth', true)
-    },
-    async tgWebAppAuth() {
-      if (!requestContact.isSupported()) {
-        throw new Error('requestContact is not Supported')
-      }
-      SessionStorage.set('telegramWebApp', true)
-      this.hasTelegramWebApp = true
-      const requestedContact = await requestContact()
-      const jwt = await registration(requestedContact)
-      // todo save jwt to localstorage
-      // ...
-      sendData(jwt)
     },
     removeAuthValue() {
       SessionStorage.remove('isLoggedIn')
@@ -64,13 +48,37 @@ export default defineStore('auth', {
         this.setTryAuthValue()
       }
     },
+    async registration(requestedContact: RequestedContact) {
+      const response = await fetch(process.env.server + '/registration', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': this.basicAuth,
+        },
+        body: JSON.stringify(requestedContact),
+      })
+      if (!response.ok) {
+        throw new Error('Network response was not ok')
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const jwt: string = await response.json()
+      LocalStorage.set('jwt', jwt)
+      this.jwt = jwt
+    },
   },
   getters: {
+    basicAuth() {
+      return (
+        'Basic ' +
+        btoa(
+          process.env.server_basic_auth_user +
+            ':' +
+            process.env.server_basic_auth_pass,
+        )
+      )
+    },
     isDemo(state) {
       return state.openIdSessionId.length === 0 && !state.tryAuth
-    },
-    isTelegramWebApp(state) {
-      return state.hasTelegramWebApp
     },
     isLoggedIn(state) {
       return state.openIdIsLoggedIn

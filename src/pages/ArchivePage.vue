@@ -81,11 +81,7 @@
         </template>
       </QBanner>
     </template>
-    <QPageSticky
-      v-if="!isTelegramWebApp"
-      position="bottom-right"
-      :offset="[18, 18]"
-    >
+    <QPageSticky v-if="!isTMA" position="bottom-right" :offset="[18, 18]">
       <QFab
         ref="fab"
         hide-label
@@ -255,6 +251,7 @@ import {
   PNG_MIME_TYPE,
   JPG_MIME_TYPE,
 } from '../helpers/mimeTypes'
+import { isTMA } from '../helpers/twaHelper'
 import { FormatContract } from '../types/models'
 
 const ArchiveListComponent = defineAsyncComponent({
@@ -290,7 +287,7 @@ const NOTIFICATION_TIMER = 30000
 const currentPage = toRef(router.currentRoute.value.query, 'page')
 const scrollAreaRef = ref<InstanceType<typeof QScrollArea> | null>(null)
 const fab = ref<InstanceType<typeof QFab> | null>(null)
-const { isLoggedIn, isTelegramWebApp } = storeToRefs(authStore)
+const { isLoggedIn } = storeToRefs(authStore)
 const { formatContracts } = storeToRefs(contractStore)
 const isSearch = computed(
   () => router.currentRoute.value.name === ROUTE_NAMES.SEARCH,

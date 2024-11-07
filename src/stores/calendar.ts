@@ -1,19 +1,102 @@
+import { uid } from 'quasar'
 import { defineStore } from 'pinia'
-import { loadCalendar } from '../services/secretary'
+import requestJsonRpc2 from 'request-json-rpc2'
 import { convertIcalToEvent } from '../helpers/calendarHelper'
-import { CalendarEventExternal } from '../types/models'
+import useAuthStore from 'stores/auth'
+import {
+  ActivityObjectNote,
+  ActivityObjectLink,
+  Calendar,
+  CalendarEventExternal,
+} from '../types/models'
+
+const authStore = useAuthStore()
 
 interface Store {
+  available: boolean
   events: CalendarEventExternal[]
 }
 
 export default defineStore('calendar', {
   state: (): Store => ({
     events: [],
+    available: false,
   }),
   actions: {
-    async loadCalendar(day: string) {
-      const calendar = await loadCalendar(day)
+    async ping() {
+      if (!process.env.server) {
+        console.warn('Unknown server url')
+        this.available = false
+        return
+      }
+      try {
+        const response = await fetch(process.env.server + '/ping', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'text/plain',
+            'Authorization': authStore.basicAuth,
+          },
+        })
+        if (!response.ok) {
+          throw new Error('Network response was not ok')
+        }
+        this.available = Boolean(await response.text())
+      } catch (error) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        console.warn('GIC Server: ', error.message)
+        this.available = false
+      }
+    },
+    async calendar(object: ActivityObjectNote[] | ActivityObjectLink[]) {
+      if (!this.available) {
+        throw new Error('Server Unavailable')
+      }
+      const { error, result } = await requestJsonRpc2({
+        url: process.env.server + '/rpc',
+        body: {
+          jsonrpc: '2.0',
+          id: uid(),
+          method: 'generate-calendar',
+          params: {
+            '@context': 'https://www.w3.org/ns/activitystreams',
+            'type': 'Activity',
+            'object': object,
+          },
+        },
+        jwt: authStore.jwt,
+      })
+      if (error) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument
+        throw new Error(error.message)
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      return JSON.parse(result) as Calendar
+    },
+    async loadCalendar(startDate: string, endDate?: string) {
+      const activity = {
+        '@context': 'https://www.w3.org/ns/activitystreams',
+        'type': 'Offer',
+        'object': {
+          type: 'Activity',
+          startTime: startDate,
+          endTime: endDate,
+        },
+      }
+      const { error, result } = await requestJsonRpc2({
+        url: process.env.server + '/rpc',
+        body: {
+          jsonrpc: '2.0',
+          id: uid(),
+          method: 'get-calendar',
+          params: activity,
+        },
+        jwt: authStore.jwt,
+      })
+      if (error) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument
+        throw new Error(error.message)
+      }
+      const calendar = result as string[]
       this.events = calendar.map((icalEvent) => convertIcalToEvent(icalEvent))
     },
   },

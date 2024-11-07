@@ -100,6 +100,7 @@ import { createScrollControllerPlugin } from '@schedule-x/scroll-controller'
 import { formatToCalendarDate, isCurrentDate } from '../helpers/calendarHelper'
 import '@schedule-x/theme-default/dist/index.css'
 import useCalendarStore from 'stores/calendar'
+import useLangStore from 'stores/lang'
 
 const currentDate = new Date()
 const CALENDAR_WEEK_NUM = 7
@@ -107,13 +108,14 @@ const INITIAL_SCROLL = '06:30'
 
 const $q = useQuasar()
 const i18n = useI18n()
+const langStore = useLangStore()
+const calendarStore = useCalendarStore()
 const calendarControls = createCalendarControlsPlugin()
 const eventsServicePlugin = createEventsServicePlugin()
 const eventModal = createEventModalPlugin()
 const scrollController = createScrollControllerPlugin({
   initialScroll: INITIAL_SCROLL,
 })
-const calendarStore = useCalendarStore()
 const $t = i18n.t
 
 const metaData = {
@@ -127,7 +129,7 @@ const weeks = ref<Date[]>(loadWeek(currentDate))
 
 const calendarApp = createCalendar({
   selectedDate: selectedDay.value,
-  locale: i18n.locale.value,
+  locale: langStore.language,
   defaultView: viewDay.name,
   isDark: $q.dark.isActive,
   views: [createViewDay()],

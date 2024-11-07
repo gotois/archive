@@ -380,28 +380,29 @@ import {
 } from 'quasar'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
+import useLangStore from 'stores/lang'
 import { ROUTE_NAMES, STEP } from '../router/routes'
 import { applicationURL } from '../helpers/googlePlayHelper'
 import { author } from '../../package.json'
 
 const router = useRouter()
 const i18n = useI18n()
+const langStore = useLangStore()
 const $t = i18n.t
-const locale = i18n.locale
 
 const metaData = {
   'title': $t('pages.welcome.title'),
   'og:title': $t('pages.welcome.title'),
 }
 
-const forRus = ref(locale.value.startsWith('ru'))
+const forRus = ref(langStore.language.startsWith('ru'))
 
 async function onRegister() {
   await router.push({
     name: ROUTE_NAMES.TUTORIAL,
     query: {
       step: STEP.WELCOME,
-      lang: locale.value,
+      lang: langStore.language,
     },
   })
 }

@@ -117,7 +117,7 @@
           <p class="text-caption no-margin text-weight-light">
             {{ $t('tutorial.welcome.hint') }}
           </p>
-          <QStepperNavigation>
+          <QStepperNavigation v-if="!isTMA">
             <SelectRegistration @select="registrationCallback" />
           </QStepperNavigation>
         </QStep>
@@ -189,7 +189,7 @@
   </QPage>
 </template>
 <script lang="ts" setup>
-import { defineAsyncComponent, onMounted, ref, watch } from 'vue'
+import { defineAsyncComponent, onBeforeMount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import {
@@ -211,6 +211,7 @@ import {
   useQuasar,
 } from 'quasar'
 import { storeToRefs } from 'pinia'
+import { mainButton, sendData, requestContact, popup } from '@telegram-apps/sdk'
 import { WebId } from '@inrupt/solid-client'
 import useAuthStore, { demoUserWebId } from 'stores/auth'
 import useTutorialStore from 'stores/tutorial'
@@ -219,6 +220,7 @@ import useProfileStore from 'stores/profile'
 import usePodStore from 'stores/pod'
 import useWalletStore from 'stores/wallet'
 import pkg from '../../package.json'
+import { isTMA } from '../helpers/twaHelper'
 import { ROUTE_NAMES, STEP } from '../router/routes'
 import { parse } from '../helpers/markdownHelper'
 import solidAuth from '../services/authService'
@@ -507,6 +509,44 @@ async function onStep(step: number) {
 }
 
 setMeta(step.value)
+
+onBeforeMount(() => {
+  if (isTMA) {
+    mainButton.mount()
+    mainButton.setParams({
+      backgroundColor: '#000000',
+      hasShineEffect: true,
+      isEnabled: true,
+      isVisible: true,
+      text: $t('navigation.register'),
+      textColor: '#ffffff',
+    })
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    mainButton.onClick(async () => {
+      mainButton.setParams({
+        isLoaderVisible: true,
+      })
+      if (!requestContact.isSupported()) {
+        if (popup.isSupported()) {
+          await popup.open({
+            title: 'ERROR',
+            message: 'RequestContact is not supported. Try Again',
+          })
+        }
+        return
+      }
+      const requestedContact = await requestContact()
+      await authStore.registration(requestedContact)
+      tutorialStore.tutorialComplete(true)
+      sendData(
+        JSON.stringify({
+          type: 'registration',
+          data: authStore.jwt,
+        }),
+      )
+    })
+  }
+})
 
 onMounted(() => {
   const { query } = router.currentRoute.value

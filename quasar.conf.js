@@ -45,9 +45,9 @@ module.exports = configure((ctx) => {
     build: {
       env: {
         google_client_id: process.env.GOOGLE_CLIENT_ID,
-        server: process.env.SERVER_RPC2,
-        server_basic_auth_user: process.env.SERVER_RPC2_USERNAME,
-        server_basic_auth_pass: process.env.SERVER_RPC2_PASSWORD,
+        server: process.env.SERVER_HOST,
+        server_basic_auth_user: process.env.SERVER_HOST_USERNAME,
+        server_basic_auth_pass: process.env.SERVER_HOST_PASSWORD,
       },
       target: {
         browser: 'esnext',

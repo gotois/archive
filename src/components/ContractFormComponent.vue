@@ -294,7 +294,7 @@ import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
 import useWalletStore from 'stores/wallet'
 import usePodStore from 'stores/pod'
-import useGicStore from 'stores/gic'
+import useCalendarStore from 'stores/calendar'
 import MultiContactComponent from 'components/MultiContact.vue'
 import ContractCarouselComponent from 'components/ContractCarouselComponent.vue'
 import { readFilePromise } from '../helpers/fileHelper'
@@ -351,7 +351,7 @@ const contractStore = useContractStore()
 const profileStore = useProfileStore()
 const walletStore = useWalletStore()
 const podStore = usePodStore()
-const gicStore = useGicStore()
+const calendarStore = useCalendarStore()
 
 const { isLoggedIn } = storeToRefs(authStore)
 
@@ -763,7 +763,7 @@ async function recognizeImage(
     // todo - передать в ИИ data.text и ocrPrompt, получив более точный текст
     console.log(ocrPrompt)
 
-    return gicStore.calendar([
+    return calendarStore.calendar([
       {
         type: 'Note',
         content: data.text,
@@ -771,7 +771,7 @@ async function recognizeImage(
       },
     ])
   } else if (encodingFormat === 'application/pdf') {
-    return gicStore.calendar([
+    return calendarStore.calendar([
       {
         type: 'Link',
         href: contentUrl,

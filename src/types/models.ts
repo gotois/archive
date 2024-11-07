@@ -242,6 +242,16 @@ export interface FullTextDocument {
   instrument_description: string
 }
 
+export interface Calendar {
+  categories: string[]
+  description: string | null
+  start: string // like Date
+  end: string | null // like Date
+  location: string | null
+  organizer: string | null // has name, email, telephone, url
+  summary: string
+}
+
 export interface CalendarEventExternal {
   id: number | string
   start: string
@@ -257,4 +267,28 @@ export interface CalendarEventExternal {
     monthGrid?: string
     monthAgenda?: string
   }
+}
+
+export type ActivityObjectNote = {
+  type: 'Note'
+  content: string
+  mediaType: string
+}
+
+export type ActivityObjectLink = {
+  type: 'Link'
+  href: string
+}
+
+export type Activity = {
+  '@context': string
+  'type': string
+  'object'?:
+    | ActivityObjectNote
+    | ActivityObjectNote[]
+    | ActivityObjectLink
+    | ActivityObjectLink[]
+    | { type: 'Activity' }
+  'startTime'?: string
+  'actor'?: unknown
 }

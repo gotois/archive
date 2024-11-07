@@ -6,7 +6,7 @@
     class="fullscreen full-width full-height"
     :range="range"
     color="primary"
-    :first-day-of-week="locale.startsWith('ru') ? 1 : null"
+    :first-day-of-week="langStore.language.startsWith('ru') ? 1 : null"
     :locale="calendarLocale"
     :options="options"
     today-btn
@@ -23,10 +23,11 @@
 import { ref, computed, PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { QBtn, QDate, date } from 'quasar'
+import useLangStore from 'stores/lang'
 
 const i18n = useI18n()
+const langStore = useLangStore()
 const $t = i18n.t
-const locale = i18n.locale
 
 interface Range {
   day: number
@@ -55,7 +56,7 @@ const options = computed(() => {
 })
 
 const calendarLocale = computed(() => {
-  return locale.value.startsWith('ru')
+  return langStore.language.startsWith('ru')
     ? {
         days: $t('calendar.days').split('_'),
         daysShort: $t('calendar.daysShort').split('_'),

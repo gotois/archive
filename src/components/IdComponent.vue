@@ -115,6 +115,7 @@ import {
 } from 'quasar'
 import { storeToRefs } from 'pinia'
 import useProfileStore from 'stores/profile'
+import useLangStore from 'stores/lang'
 import { isTWA } from '../helpers/twaHelper'
 import { parseJwt } from '../helpers/dataHelper'
 import { DIDTable } from '../types/models'
@@ -127,8 +128,8 @@ const emit = defineEmits(['finish'])
 const $q = useQuasar()
 const i18n = useI18n()
 const $t = i18n.t
-const locale = i18n.locale
 const profileStore = useProfileStore()
+const langStore = useLangStore()
 
 const useGoogleId = ref(false)
 const { did, consumer, email } = storeToRefs(profileStore)
@@ -155,7 +156,7 @@ function onKeyDID(key: DIDTable) {
 
 function loadGoogleId(): Promise<unknown> {
   return new Promise((resolve, reject) => {
-    const lang = locale.value.replace(/-.+/, '')
+    const lang = langStore.language.replace(/-.+/, '')
     const googleid = document.createElement('script')
     googleid.setAttribute(
       'src',

@@ -5,7 +5,7 @@
     :options="options"
     class="no-box-shadow"
     default-view="Calendar"
-    :first-day-of-week="locale.startsWith('ru') ? 1 : null"
+    :first-day-of-week="langStore.language.startsWith('ru') ? 1 : null"
     :locale="calendarLocale"
     event-color="secondary"
     color="primary"
@@ -20,6 +20,7 @@ import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { QDate, date } from 'quasar'
 import useContractStore from 'stores/contract'
+import useLangStore from 'stores/lang'
 import { ContractDate } from '../types/models'
 
 interface NavigationDate {
@@ -28,8 +29,8 @@ interface NavigationDate {
 }
 
 const i18n = useI18n()
+const langStore = useLangStore()
 const $t = i18n.t
-const locale = i18n.locale
 
 const emit = defineEmits(['select'])
 const contractStore = useContractStore()
@@ -38,7 +39,7 @@ const events = ref([])
 const options = ref([])
 const model = ref(new Date())
 const calendarLocale = ref<unknown>(
-  locale.value.startsWith('ru')
+  langStore.language.startsWith('ru')
     ? {
         days: $t('calendar.days').split('_'),
         daysShort: $t('calendar.daysShort').split('_'),

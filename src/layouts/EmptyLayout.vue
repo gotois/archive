@@ -1,10 +1,15 @@
 <template>
   <QLayout view="hHr LpR lfr">
-    <QHeader bordered class="text-primary bg-transparent" height-hint="98">
+    <QHeader
+      v-if="!isTMA"
+      bordered
+      class="text-primary bg-transparent"
+      height-hint="98"
+    >
       <AndroidBarComponent v-if="isTWA" />
       <QToolbar>
         <QBtn
-          v-if="$route.name !== 'tutorial'"
+          v-if="$route.name !== ROUTE_NAMES.TUTORIAL"
           to="/"
           color="primary"
           icon="arrow_back"
@@ -35,7 +40,8 @@ import {
 } from 'quasar'
 import { RouterView } from 'vue-router'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
-import { isTWA } from '../helpers/twaHelper'
+import { isTWA, isTMA } from '../helpers/twaHelper'
+import { ROUTE_NAMES } from '../router/routes'
 
 const AndroidBarComponent = defineAsyncComponent(
   () => import('components/AndroidBarComponent.vue'),

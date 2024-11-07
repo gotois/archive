@@ -59,7 +59,7 @@
     "@schedule-x/theme-default": "2.4.1",
     "@schedule-x/vue": "2.3.1",
     "@solana/web3.js": "1.95.3",
-    "@telegram-apps/sdk-vue": "1.0.1",
+    "@telegram-apps/sdk": "2.5.2",
     "credentials-context": "2.0.0",
     "dexie": "4.0.8",
     "dexie-export-import": "4.1.2",

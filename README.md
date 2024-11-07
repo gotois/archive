@@ -65,9 +65,9 @@ npm i
 ### Сборка и запуск PWA
 
 - Опционально установите `GOOGLE_CLIENT_ID` ([google-one-tap](https://developers.google.com/identity/gsi/web/guides/display-google-one-tap)) в качестве переменной среды.
-- Опционально установите `SERVER_RPC2` в качестве переменной среды вашего JSON-RPC2 сервера.
-- Опционально установите `SERVER_RPC2_USERNAME` в качестве переменной среды BASIC AUTH вашего JSON-RPC2 сервера.
-- Опционально установите `SERVER_RPC2_PASSWORD` в качестве переменной среды BASIC AUTH вашего JSON-RPC2 сервера.
+- Опционально установите `SERVER_HOST` в качестве переменной среды вашего сервера.
+- Опционально установите `SERVER_HOST_USERNAME` в качестве переменной среды BASIC AUTH вашего сервера.
+- Опционально установите `SERVER_HOST_PASSWORD` в качестве переменной среды BASIC AUTH вашего сервера.
 
 #### Запуск в режиме разработки (hot-code reloading, error reporting, etc.)
 ```bash

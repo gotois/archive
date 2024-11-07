@@ -16,6 +16,7 @@ export default {
 import { useI18n } from 'vue-i18n'
 import { RouterView } from 'vue-router'
 import { useMeta, useQuasar } from 'quasar'
+import { init, viewport } from '@telegram-apps/sdk'
 import { EVENTS } from '@inrupt/solid-client-authn-core'
 import { getDefaultSession } from '@inrupt/solid-client-authn-browser'
 import { useRouter } from 'vue-router'
@@ -23,12 +24,9 @@ import usePodStore from 'stores/pod'
 import useAuthStore from 'stores/auth'
 import useProfileStore from 'stores/profile'
 import useWalletStore from 'stores/wallet'
-import useTutorialStore from 'stores/tutorial'
-import { ROUTE_NAMES } from './router/routes'
 import { getSolana } from './services/phantomWalletService'
 import { WalletType } from './types/models'
-import { isTWA } from './helpers/twaHelper'
-import { viewport } from '@telegram-apps/sdk-vue'
+import { isTWA, isTMA } from './helpers/twaHelper'
 import pkg from '../package.json'
 import twaMinifest from '../twa-manifest.json'
 
@@ -39,7 +37,6 @@ const podStore = usePodStore()
 const authStore = useAuthStore()
 const profileStore = useProfileStore()
 const walletStore = useWalletStore()
-const tutorialStore = useTutorialStore()
 const events = getDefaultSession().events
 
 const webSite = {
@@ -207,51 +204,9 @@ if (solana) {
   })
 }
 
-async function myAuth(): Promise<void> {
-  // Считаем что вне нативного Telegram WebApp мы находимся в Telegram WebApp
-  // Иначе проверяем все как следует
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  if (window?.Telegram?.WebApp?.platform === 'unknown') {
-    authStore.hasTelegramWebApp = true
-    $q.sessionStorage.set('telegramWebApp', true)
-  } else {
-    viewport.expand()
-    await authStore.tgWebAppAuth()
-  }
-  tutorialStore.tutorialComplete(true)
-  $q.loading.hide()
-  return router.push({
-    name: ROUTE_NAMES.CALENDAR,
-  })
-}
-
-// check if Telegram Web Apps
-// http://localhost:8080/?view=telegram
-if (window.location.search.includes('view=telegram')) {
-  $q.loading.show()
-
-  if (window.Telegram) {
-    myAuth()
-      .then(() => {})
-      .catch((error) => console.error(error))
-  } else {
-    const script = document.createElement('script')
-    script.type = 'text/javascript'
-    script.src = 'https://telegram.org/js/telegram-web-app.js'
-    script.onload = () => {
-      myAuth()
-        .then(() => {})
-        .catch((error) => console.error(error))
-    }
-    script.onerror = () => {
-      $q.notify({
-        type: 'negative',
-        message: 'WebApp script failed',
-      })
-      $q.loading.hide()
-    }
-    document.head.appendChild(script)
-  }
+if (isTMA) {
+  init()
+  viewport.expand()
 }
 
 useMeta(metaData)

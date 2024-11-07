@@ -166,6 +166,7 @@ import {
 import { storeToRefs } from 'pinia'
 import useAuthStore from 'stores/auth'
 import useWalletStore from 'stores/wallet'
+import useLangStore from 'stores/lang'
 import ContractCarouselComponent from 'components/ContractCarouselComponent.vue'
 import ContractStory from 'components/ContractStory.vue'
 import { FormatContract } from '../types/models'
@@ -181,8 +182,8 @@ import { TG_BOT_NAME } from '../services/telegram'
 
 const $q = useQuasar()
 const i18n = useI18n()
+const langStore = useLangStore()
 const $t = i18n.t
-const locale = i18n.locale
 
 const props = defineProps({
   paginationCount: {
@@ -227,7 +228,7 @@ function getItems(from: number, size: number): FormatContract[] {
 }
 
 function prettyDate(item: FormatContract) {
-  const formatterDate = new Intl.DateTimeFormat(locale.value, {
+  const formatterDate = new Intl.DateTimeFormat(langStore.language, {
     year: 'numeric',
     month: 'short',
     day: 'numeric',

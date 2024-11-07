@@ -7,9 +7,9 @@
       }"
     >
       {{
-        new Intl.DateTimeFormat(i18n.locale.value, { weekday: 'short' }).format(
-          props.day,
-        )
+        new Intl.DateTimeFormat(langStore.language, {
+          weekday: 'short',
+        }).format(props.day)
       }}
     </div>
     <div
@@ -29,11 +29,11 @@
 <script lang="ts" setup>
 import { PropType, computed } from 'vue'
 import { useQuasar, QBtn, QTooltip, date } from 'quasar'
-import { useI18n } from 'vue-i18n'
+import useLangStore from 'stores/lang'
 import { isCurrentDate } from '../helpers/calendarHelper'
 
 const $q = useQuasar()
-const i18n = useI18n()
+const langStore = useLangStore()
 
 const props = defineProps({
   day: {
