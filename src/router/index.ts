@@ -1,4 +1,4 @@
-import { Loading, LocalStorage, Notify, SessionStorage } from 'quasar'
+import { Platform, Loading, LocalStorage, Notify, SessionStorage } from 'quasar'
 import { route } from 'quasar/wrappers'
 import { createRouter, createWebHistory } from 'vue-router'
 import useTutorialStore from 'stores/tutorial'
@@ -8,7 +8,8 @@ import useLangStore from 'stores/lang'
 import routes, { ROUTE_NAMES } from './routes'
 import { deleteDatabases, reset } from '../services/databaseService'
 import solidAuth from '../services/authService'
-import { isTWA } from '../helpers/twaHelper'
+import { isTWA, isTMA } from '../helpers/twaHelper'
+import { appendTelegramWebAppScript } from '../services/telegram'
 
 export default route(() => {
   const Router = createRouter({
@@ -40,12 +41,17 @@ export default route(() => {
     }
 
     if (debug) {
-      const script = document.createElement('script')
-      script.src = 'https://cdn.jsdelivr.net/npm/eruda'
-      document.body.append(script)
-      script.onload = function () {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,no-undef
-        eruda.init()
+      if (!Platform.is.desktop) {
+        const script = document.createElement('script')
+        script.src = 'https://cdn.jsdelivr.net/npm/eruda'
+        document.body.append(script)
+        script.onload = function () {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,no-undef
+          eruda.init()
+        }
+      }
+      if (isTMA) {
+        appendTelegramWebAppScript()
       }
     }
     if (lang) {
