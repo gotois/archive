@@ -48,7 +48,6 @@ export default route(() => {
         eruda.init()
       }
     }
-
     if (lang) {
       const langStore = useLangStore()
       langStore.setLang(lang)

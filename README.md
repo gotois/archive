@@ -24,7 +24,7 @@
 ## Попробовать демонстрацию
 
 - [PWA](https://archive.gotointeractive.com/)
-- [Telegram WebApp](https://archive.gotointeractive.com/?view=telegram)
+- [Telegram WebApp](https://t.me/gotois_bot/App)
 
 ---
 
@@ -32,12 +32,13 @@
 Сервис "Мои договоры" использует стандарты PWA и LinkedData, предоставляя клиентам следующие возможности:
 
 - `Адаптивный дизайн` для мобильной, таблет и десктопной версии;
+- `Telegram Mini Apps` для быстрого доступа через Telegram;
 - Доступ к договорам в режиме `Offline`;
 - Хранения договоров в семантическом формате `schema.org`;
 - Надежное хранилище договоров внутри `IndexDB`;
 - `Шифрование` передачи данных;
 - Цифровая подпись с помощью `Linked Data Proofs`;
-- Авторизация через блокчейн-кошелек `Phantom` или нативный ключ `Solana`;
+- Авторизация через блокчейн-кошелек `Phantom`, нативный ключ `Solana` или по номеру телефона;
 - `Полнотекстовый поиск` документов;
 - Поиск документов через календарь;
 - Поиск документа через `OpenSearch`;
@@ -66,10 +67,11 @@ npm i
 
 - Опционально установите `GOOGLE_CLIENT_ID` ([google-one-tap](https://developers.google.com/identity/gsi/web/guides/display-google-one-tap)) в качестве переменной среды.
 - Опционально установите `SERVER_HOST` в качестве переменной среды вашего сервера.
-- Опционально установите `SERVER_HOST_USERNAME` в качестве переменной среды BASIC AUTH вашего сервера.
-- Опционально установите `SERVER_HOST_PASSWORD` в качестве переменной среды BASIC AUTH вашего сервера.
+- Опционально установите `SERVER_HOST_USERNAME` и `SERVER_HOST_PASSWORD` в качестве переменной среды BASIC AUTH вашего сервера.
 
-#### Запуск в режиме разработки (hot-code reloading, error reporting, etc.)
+#### Запуск в режиме разработки
+> hot-code reloading, error reporting, etc.
+
 ```bash
 npm run dev
 ```
@@ -101,10 +103,10 @@ npm run build:apk
 - Установите `Gradle`
 - Выполните шаги по сборке соответствующие настройке настоящего build.gradle
 
-### Запуск TWA в эмуляторе
+#### Запуск TWA в эмуляторе
 ```bash
 bubblewrap install
 ```
 
 ---
-Сделано на принципах [Манифеста GIC DAO](https://gotointeractive.com/manifest).
+Сделано на принципах [GIC DAO](https://gotointeractive.com/manifest).

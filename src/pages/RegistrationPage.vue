@@ -8,6 +8,7 @@
         flat
         alternative-labels
         contracted
+        :header-class="isTMA ? 'hidden' : ''"
         :swipeable="false"
         :animated="!$q.platform.is.desktop"
         :vertical="!$q.platform.is.desktop"
