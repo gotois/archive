@@ -1,5 +1,10 @@
 <template>
-  <div>
+  <QPage
+    :class="{
+      'bg-transparent': $q.dark.isActive,
+      'bg-grey-1': !$q.dark.isActive,
+    }"
+  >
     <ScheduleXCalendar :calendar-app="calendarApp">
       <template #timeGridEvent="{ calendarEvent }">
         <QCard v-ripple flat :dark="!$q.dark.isActive">
@@ -75,7 +80,7 @@
         </div>
       </template>
     </ScheduleXCalendar>
-  </div>
+  </QPage>
 </template>
 <script lang="ts" setup>
 import { ref } from 'vue'
@@ -83,6 +88,7 @@ import {
   useQuasar,
   useMeta,
   QVirtualScroll,
+  QPage,
   QBtn,
   QCard,
   QCardSection,
@@ -197,7 +203,7 @@ useMeta(metaData)
 </script>
 <style lang="scss">
 .sx-vue-calendar-wrapper {
-  height: calc(100dvh - 50px);
+  height: calc(100dvh - 88px);
 }
 .sx__week-grid__date-axis {
   display: none;

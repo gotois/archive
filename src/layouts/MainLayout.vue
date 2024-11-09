@@ -568,6 +568,22 @@
         @on-search="onSearch"
       />
     </QPageContainer>
+    <QFooter
+      elevated
+      class="bg-transparent"
+      :class="{
+        'text-dark': !$q.dark.isActive,
+        'text-light': $q.dark.isActive,
+      }"
+    >
+      <QTabs
+        :dense="$q.platform.is.desktop"
+        :align="$q.platform.is.desktop ? 'center' : 'justify'"
+      >
+        <QRouteTab icon="home" to="/" />
+        <QRouteTab icon="schedule" to="/calendar" exact />
+      </QTabs>
+    </QFooter>
   </QLayout>
 </template>
 <script lang="ts" setup>
@@ -576,6 +592,9 @@ import { useI18n } from 'vue-i18n'
 import {
   useQuasar,
   QDialog,
+  QFooter,
+  QTabs,
+  QRouteTab,
   QBtn,
   QField,
   QPageContainer,

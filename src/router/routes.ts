@@ -110,7 +110,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/' + ROUTE_NAMES.CALENDAR,
-    component: () => import('layouts/EmptyLayout.vue'),
+    component: () => import('layouts/MainLayout.vue'),
     children: [
       {
         path: '',
