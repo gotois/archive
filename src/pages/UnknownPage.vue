@@ -16,7 +16,7 @@
         glossy
         push
         unelevated
-        :to="{ name: 'archive', query: { page: 1 } }"
+        :to="{ name: ROUTE_NAMES.ARCHIVE, query: { page: 1 } }"
         :label="$t('pages.unknown.submit')"
         no-caps
       />
@@ -26,6 +26,7 @@
 <script lang="ts" setup>
 import { useMeta, QBtn } from 'quasar'
 import { useI18n } from 'vue-i18n'
+import { ROUTE_NAMES } from '../router/routes'
 
 const $t = useI18n().t
 

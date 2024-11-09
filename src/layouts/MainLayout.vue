@@ -569,19 +569,19 @@
       />
     </QPageContainer>
     <QFooter
-      elevated
-      class="bg-transparent"
+      bordered
       :class="{
-        'text-dark': !$q.dark.isActive,
-        'text-light': $q.dark.isActive,
+        'bg-light text-dark': !$q.dark.isActive,
+        'bg-dark text-light': $q.dark.isActive,
       }"
     >
       <QTabs
+        switch-indicator
         :dense="$q.platform.is.desktop"
         :align="$q.platform.is.desktop ? 'center' : 'justify'"
       >
         <QRouteTab icon="home" to="/" />
-        <QRouteTab icon="schedule" to="/calendar" exact />
+        <QRouteTab icon="schedule" :to="{ name: ROUTE_NAMES.CALENDAR }" exact />
       </QTabs>
     </QFooter>
   </QLayout>

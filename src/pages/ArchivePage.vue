@@ -76,7 +76,7 @@
             outline
             :icon="$q.platform.is.desktop ? 'explore' : ''"
             :label="$t('list.explore')"
-            :to="{ name: 'archive', query: { page: 1 } }"
+            :to="{ name: ROUTE_NAMES.ARCHIVE, query: { page: 1 } }"
           />
         </template>
       </QBanner>

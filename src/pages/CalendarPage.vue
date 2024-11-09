@@ -5,81 +5,83 @@
       'bg-grey-1': !$q.dark.isActive,
     }"
   >
-    <ScheduleXCalendar :calendar-app="calendarApp">
-      <template #timeGridEvent="{ calendarEvent }">
-        <QCard v-ripple flat :dark="!$q.dark.isActive">
-          <QCardSection>
-            <div
-              class="flex justify-between items-center"
-              :class="{
-                'text-black': $q.dark.isActive,
-                'text-white': !$q.dark.isActive,
-              }"
-            >
-              <div class="text-subtitle2 text-bold">
-                {{ calendarEvent.title }}
+    <QScrollArea visible class="absolute-full fit">
+      <ScheduleXCalendar :calendar-app="calendarApp">
+        <template #timeGridEvent="{ calendarEvent }">
+          <QCard v-ripple flat :dark="!$q.dark.isActive">
+            <QCardSection>
+              <div
+                class="flex justify-between items-center"
+                :class="{
+                  'text-black': $q.dark.isActive,
+                  'text-white': !$q.dark.isActive,
+                }"
+              >
+                <div class="text-subtitle2 text-bold">
+                  {{ calendarEvent.title }}
+                </div>
+                <div class="text-caption">
+                  {{ date.formatDate(new Date(calendarEvent.start), 'HH:MM') }}
+                  -
+                  {{ date.formatDate(new Date(calendarEvent.end), 'HH:MM') }}
+                </div>
               </div>
-              <div class="text-caption">
-                {{ date.formatDate(new Date(calendarEvent.start), 'HH:MM') }}
-                -
-                {{ date.formatDate(new Date(calendarEvent.end), 'HH:MM') }}
+              <div v-if="calendarEvent.location" class="ellipsis-2-lines">
+                📍 {{ calendarEvent.location }}
               </div>
-            </div>
-            <div v-if="calendarEvent.location" class="ellipsis-2-lines">
-              📍 {{ calendarEvent.location }}
-            </div>
-            <div v-if="calendarEvent.description" class="ellipsis-2-lines">
-              {{ calendarEvent.description }}
-            </div>
-          </QCardSection>
-        </QCard>
-      </template>
-      <template #headerContent>
-        <div
-          class="flex full-width full-height flex items-center justify-between shadow-4 no-wrap"
-          :class="{
-            'bg-light': !$q.dark.isActive,
-            'bg-dark': $q.dark.isActive,
-          }"
-        >
-          <QBtn
-            icon="arrow_left"
-            flat
-            dense
-            square
-            :color="$q.dark.isActive ? 'light' : 'dark'"
-            class="full-height"
-            @click="loadPrevWeek"
-          />
-          <QVirtualScroll
-            ref="virtualScroll"
-            v-slot="{ item, index }"
-            class="flex items-center q-mt-xs q-mb-xs"
-            :items="weeks"
-            :item-size="CALENDAR_WEEK_NUM"
-            virtual-scroll-horizontal
+              <div v-if="calendarEvent.description" class="ellipsis-2-lines">
+                {{ calendarEvent.description }}
+              </div>
+            </QCardSection>
+          </QCard>
+        </template>
+        <template #headerContent>
+          <div
+            class="flex full-width full-height flex items-center justify-between shadow-4 no-wrap"
+            :class="{
+              'bg-light': !$q.dark.isActive,
+              'bg-dark': $q.dark.isActive,
+            }"
           >
-            <DayCalendar
-              :key="index"
-              style="width: 45px"
-              class="cursor-pointer q-ml-xs q-mr-xs q-pa-md rounded-borders relative-position non-selectable flex items-center justify-center"
-              :day="item"
-              :selected-day="selectedDay"
-              @click="selectDay(item)"
+            <QBtn
+              icon="arrow_left"
+              flat
+              dense
+              square
+              :color="$q.dark.isActive ? 'light' : 'dark'"
+              class="full-height"
+              @click="loadPrevWeek"
             />
-          </QVirtualScroll>
-          <QBtn
-            icon="arrow_right"
-            flat
-            dense
-            square
-            :color="$q.dark.isActive ? 'light' : 'dark'"
-            class="full-height"
-            @click="loadNextWeek"
-          />
-        </div>
-      </template>
-    </ScheduleXCalendar>
+            <QVirtualScroll
+              ref="virtualScroll"
+              v-slot="{ item, index }"
+              class="flex items-center q-mt-xs q-mb-xs"
+              :items="weeks"
+              :item-size="CALENDAR_WEEK_NUM"
+              virtual-scroll-horizontal
+            >
+              <DayCalendar
+                :key="index"
+                style="width: 45px"
+                class="cursor-pointer q-ml-xs q-mr-xs q-pa-md rounded-borders relative-position non-selectable flex items-center justify-center"
+                :day="item"
+                :selected-day="selectedDay"
+                @click="selectDay(item)"
+              />
+            </QVirtualScroll>
+            <QBtn
+              icon="arrow_right"
+              flat
+              dense
+              square
+              :color="$q.dark.isActive ? 'light' : 'dark'"
+              class="full-height"
+              @click="loadNextWeek"
+            />
+          </div>
+        </template>
+      </ScheduleXCalendar>
+    </QScrollArea>
   </QPage>
 </template>
 <script lang="ts" setup>
@@ -203,7 +205,7 @@ useMeta(metaData)
 </script>
 <style lang="scss">
 .sx-vue-calendar-wrapper {
-  height: calc(100dvh - 88px);
+  height: 100%;
 }
 .sx__week-grid__date-axis {
   display: none;

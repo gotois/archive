@@ -601,9 +601,9 @@ async function prepareContract() {
     object: contract.value.credentialSubject.object,
   })
   const images = []
-  for (const pdf of pdfFiles) {
-    const image = await readFilePromise(pdf)
-    images.push(image)
+  for (const file of pdfFiles) {
+    const pdf = await readFilePromise(file)
+    images.push(pdf)
   }
 
   return {

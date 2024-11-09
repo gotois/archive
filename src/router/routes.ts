@@ -50,7 +50,7 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
-    path: '/archive',
+    path: '/' + ROUTE_NAMES.ARCHIVE,
     redirect: '/',
   },
   {
