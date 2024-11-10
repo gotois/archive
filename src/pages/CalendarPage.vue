@@ -39,7 +39,7 @@
           <div
             class="flex full-width full-height flex items-center justify-between shadow-4 no-wrap"
             :class="{
-              'bg-light': !$q.dark.isActive,
+              'bg-white': !$q.dark.isActive,
               'bg-dark': $q.dark.isActive,
             }"
           >

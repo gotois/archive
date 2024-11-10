@@ -571,7 +571,7 @@
     <QFooter
       bordered
       :class="{
-        'bg-light text-dark': !$q.dark.isActive,
+        'bg-white text-dark': !$q.dark.isActive,
         'bg-dark text-light': $q.dark.isActive,
       }"
     >

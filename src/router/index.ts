@@ -10,6 +10,7 @@ import { deleteDatabases, reset } from '../services/databaseService'
 import solidAuth from '../services/authService'
 import { isTWA, isTMA } from '../helpers/twaHelper'
 import { appendTelegramWebAppScript } from '../services/telegram'
+import { appendErundaScript } from '../services/debug'
 
 export default route(() => {
   const Router = createRouter({
@@ -42,15 +43,9 @@ export default route(() => {
 
     if (debug) {
       if (!Platform.is.desktop) {
-        const script = document.createElement('script')
-        script.src = 'https://cdn.jsdelivr.net/npm/eruda'
-        document.body.append(script)
-        script.onload = function () {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,no-undef
-          eruda.init()
-        }
+        appendErundaScript()
       }
-      if (isTMA) {
+      if (!isTMA) {
         appendTelegramWebAppScript()
       }
     }

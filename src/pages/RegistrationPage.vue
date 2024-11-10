@@ -509,6 +509,47 @@ async function onStep(step: number) {
   scroll.value.setScrollPosition('vertical', step * 30, 100)
 }
 
+async function mainClickFn() {
+  if (mainButton.isLoaderVisible()) {
+    return
+  }
+  mainButton.setParams({
+    isLoaderVisible: true,
+  })
+  if (requestContact.isSupported()) {
+    try {
+      const requestedContact = await requestContact()
+      await authStore.registration(requestedContact)
+      tutorialStore.tutorialComplete(true)
+      sendData(
+        JSON.stringify({
+          type: 'registration',
+          data: authStore.jwt,
+        }),
+      )
+    } catch (error) {
+      console.error(error)
+    }
+  } else {
+    const errorMessage = 'RequestContact is not supported'
+    console.error(errorMessage)
+    if (popup.isSupported()) {
+      await popup.open({
+        title: 'RequestContact ERROR',
+        message: errorMessage,
+      })
+    } else {
+      $q.notify({
+        type: 'negative',
+        message: errorMessage,
+      })
+    }
+  }
+  mainButton.setParams({
+    isLoaderVisible: false,
+  })
+}
+
 setMeta(step.value)
 
 onBeforeMount(() => {
@@ -523,29 +564,7 @@ onBeforeMount(() => {
       textColor: '#ffffff',
     })
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    mainButton.onClick(async () => {
-      mainButton.setParams({
-        isLoaderVisible: true,
-      })
-      if (!requestContact.isSupported()) {
-        if (popup.isSupported()) {
-          await popup.open({
-            title: 'ERROR',
-            message: 'RequestContact is not supported. Try Again',
-          })
-        }
-        return
-      }
-      const requestedContact = await requestContact()
-      await authStore.registration(requestedContact)
-      tutorialStore.tutorialComplete(true)
-      sendData(
-        JSON.stringify({
-          type: 'registration',
-          data: authStore.jwt,
-        }),
-      )
-    })
+    mainButton.onClick(mainClickFn)
   }
 })
 
