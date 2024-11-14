@@ -48,6 +48,10 @@ export default defineStore('auth', {
         this.setTryAuthValue()
       }
     },
+    // todo - сделать авторизацию по ТГ для тех кто уже регистрировался в Секретаре
+    authorizationByTg(initData: unknown) {
+      console.warn('WIP: получаем новый JWT', initData)
+    },
     async registration(requestedContact: RequestedContact) {
       const response = await fetch(process.env.server + '/registration', {
         method: 'POST',

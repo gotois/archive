@@ -1,5 +1,10 @@
 <template>
-  <QPage :class="$q.dark.isActive ? 'bg-transparent' : 'bg-grey-1'">
+  <QPage
+    :class="{
+      'bg-transparent': $q.dark.isActive,
+      'bg-grey-1': !$q.dark.isActive,
+    }"
+  >
     <QScrollArea ref="scroll" visible class="absolute-full fit">
       <QStepper
         ref="stepper"
@@ -517,33 +522,17 @@ async function mainClickFn() {
     isLoaderVisible: true,
   })
   if (requestContact.isSupported()) {
-    try {
-      const requestedContact = await requestContact()
-      await authStore.registration(requestedContact)
-      tutorialStore.tutorialComplete(true)
-      sendData(
-        JSON.stringify({
-          type: 'registration',
-          data: authStore.jwt,
-        }),
-      )
-    } catch (error) {
-      console.error(error)
-    }
+    const requestedContact = await requestContact()
+    await authStore.registration(requestedContact)
+    tutorialStore.tutorialComplete(true)
+    sendData(
+      JSON.stringify({
+        type: 'registration',
+        data: authStore.jwt,
+      }),
+    )
   } else {
-    const errorMessage = 'RequestContact is not supported'
-    console.error(errorMessage)
-    if (popup.isSupported()) {
-      await popup.open({
-        title: 'RequestContact ERROR',
-        message: errorMessage,
-      })
-    } else {
-      $q.notify({
-        type: 'negative',
-        message: errorMessage,
-      })
-    }
+    throw new Error('RequestContact is not supported')
   }
   mainButton.setParams({
     isLoaderVisible: false,
@@ -564,7 +553,24 @@ onBeforeMount(() => {
       textColor: '#ffffff',
     })
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    mainButton.onClick(mainClickFn)
+    mainButton.onClick(async () => {
+      try {
+        await mainClickFn()
+      } catch (error) {
+        console.error(error)
+        if (popup.isSupported()) {
+          await popup.open({
+            title: 'RequestContact ERROR',
+            message: error.message as string,
+          })
+        } else {
+          $q.notify({
+            type: 'negative',
+            message: error.message as string,
+          })
+        }
+      }
+    })
   }
 })
 

@@ -203,9 +203,23 @@ function selectDay(item: Date) {
 
 useMeta(metaData)
 </script>
+<style scoped>
+::-webkit-scrollbar {
+  height: 0;
+  background: transparent;
+}
+</style>
 <style lang="scss">
 .sx-vue-calendar-wrapper {
   height: 100%;
+
+  ::-webkit-scrollbar {
+    height: 0;
+    background: transparent;
+  }
+}
+.sx__calendar {
+  border: none;
 }
 .sx__week-grid__date-axis {
   display: none;

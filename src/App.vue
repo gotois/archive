@@ -16,7 +16,7 @@ export default {
 import { useI18n } from 'vue-i18n'
 import { RouterView } from 'vue-router'
 import { useMeta, useQuasar } from 'quasar'
-import { init, viewport } from '@telegram-apps/sdk'
+import { init, viewport, initData } from '@telegram-apps/sdk'
 import { EVENTS } from '@inrupt/solid-client-authn-core'
 import { getDefaultSession } from '@inrupt/solid-client-authn-browser'
 import { useRouter } from 'vue-router'
@@ -207,6 +207,7 @@ if (solana) {
 if (isTMA) {
   init()
   viewport.expand()
+  authStore.authorizationByTg(initData)
 }
 
 useMeta(metaData)

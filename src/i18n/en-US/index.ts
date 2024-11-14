@@ -7,7 +7,9 @@ const { humanStorageSize } = format
 export default {
   productName,
   organization: {
-    prodid: `-//GIC DAO//NONSGML ${pkg.productName.toUpperCase()}//RU`,
+    prodid: `-//GIC DAO//NONSGML ${productName.toUpperCase()} ${
+      pkg.version
+    }//EN`,
   },
   opensearch: {
     title: 'Search in the archive of contracts',
