@@ -35,7 +35,7 @@
       </QBtn>
       <TelegramLogin
         mode="callback"
-        :telegram-login="TG_BOT_NAME"
+        :telegram-login="TELEGRAM_BOT_NAME"
         size="large"
         radius="0"
         @callback="telegramSign"
@@ -91,7 +91,7 @@ import useAuthStore from 'stores/auth'
 import { demoUserWebId } from 'stores/auth'
 import PricingComponent from 'components/PricingComponent.vue'
 import { keyPair } from '../services/databaseService'
-import { TG_BOT_NAME } from '../services/telegram'
+import { TELEGRAM_BOT_NAME } from '../services/telegram'
 import { ROUTE_NAMES } from '../router/routes'
 import { getCloudflareInfo } from '../services/cloudflare'
 
@@ -148,6 +148,7 @@ function premiumSign() {
   return true
 }
 
+// fixme - переделать отправку на сервер
 async function telegramSign(user: {
   first_name: string
   last_name: string

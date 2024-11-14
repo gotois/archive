@@ -217,7 +217,13 @@ import {
   useQuasar,
 } from 'quasar'
 import { storeToRefs } from 'pinia'
-import { mainButton, sendData, requestContact, popup } from '@telegram-apps/sdk'
+import {
+  mainButton,
+  sendData,
+  requestContact,
+  popup,
+  hapticFeedbackNotificationOccurred,
+} from '@telegram-apps/sdk'
 import { WebId } from '@inrupt/solid-client'
 import useAuthStore, { demoUserWebId } from 'stores/auth'
 import useTutorialStore from 'stores/tutorial'
@@ -525,6 +531,11 @@ async function mainClickFn() {
     const requestedContact = await requestContact()
     await authStore.registration(requestedContact)
     tutorialStore.tutorialComplete(true)
+
+    if (hapticFeedbackNotificationOccurred.isAvailable()) {
+      hapticFeedbackNotificationOccurred('success')
+    }
+
     sendData(
       JSON.stringify({
         type: 'registration',

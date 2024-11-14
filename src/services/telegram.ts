@@ -1,4 +1,4 @@
-export const TG_BOT_NAME = 'gotois_bot'
+export const TELEGRAM_BOT_NAME = process.env.telegram_bot_name
 
 export function appendTelegramWebAppScript(
   cb?: () => void,

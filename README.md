@@ -24,7 +24,7 @@
 ## Попробовать демонстрацию
 
 - [PWA](https://archive.gotointeractive.com/)
-- [Telegram WebApp](https://t.me/gotois_bot/App)
+- [Telegram MiniApp](https://t.me/gotois_bot/App)
 
 ---
 
@@ -63,9 +63,10 @@ git clone git@github.com:gotois/archive.git && cd archive
 npm i
 ```
 
-### Сборка и запуск PWA
+### Сборка и запуск
 
 - Опционально установите `GOOGLE_CLIENT_ID` ([google-one-tap](https://developers.google.com/identity/gsi/web/guides/display-google-one-tap)) в качестве переменной среды.
+- Опционально установите `TELEGRAM_BOT_NAME` в качестве переменной среды.
 - Опционально установите `SERVER_HOST` в качестве переменной среды вашего сервера.
 - Опционально установите `SERVER_HOST_USERNAME` и `SERVER_HOST_PASSWORD` в качестве переменной среды BASIC AUTH вашего сервера.
 
@@ -81,7 +82,7 @@ npm run dev
 npm run build
 ```
 
-### Сборка и запуск TWA
+#### Сборка и запуск TWA
 
 - Установите в twa-manifest.json свой signingKey:
 ```json5
@@ -103,7 +104,7 @@ npm run build:apk
 - Установите `Gradle`
 - Выполните шаги по сборке соответствующие настройке настоящего build.gradle
 
-#### Запуск TWA в эмуляторе
+##### Запуск TWA в эмуляторе
 ```bash
 bubblewrap install
 ```

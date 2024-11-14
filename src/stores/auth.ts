@@ -1,7 +1,7 @@
 import { LocalStorage, SessionStorage } from 'quasar'
 import { defineStore } from 'pinia'
 import { WebId } from '@inrupt/solid-client'
-import { RequestedContact } from '@telegram-apps/sdk'
+import { RequestedContact, retrieveLaunchParams } from '@telegram-apps/sdk'
 import { getDefaultSession } from '@inrupt/solid-client-authn-browser'
 
 interface Store {
@@ -48,9 +48,25 @@ export default defineStore('auth', {
         this.setTryAuthValue()
       }
     },
-    // todo - сделать авторизацию по ТГ для тех кто уже регистрировался в Секретаре
-    authorizationByTg(initData: unknown) {
-      console.warn('WIP: получаем новый JWT', initData)
+    async authorizationByTg() {
+      const { initDataRaw } = retrieveLaunchParams()
+      if (!initDataRaw?.length) {
+        throw new Error('Empty telegram init data')
+      }
+      const response = await fetch(process.env.server + '/auth', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'plain/text',
+          'Authorization': `tma ${initDataRaw}`,
+        },
+      })
+      if (!response.ok) {
+        throw new Error('Network response was not ok')
+      }
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const jwt: string = await response.text()
+      LocalStorage.set('jwt', jwt)
+      this.jwt = jwt
     },
     async registration(requestedContact: RequestedContact) {
       const response = await fetch(process.env.server + '/registration', {
@@ -71,6 +87,7 @@ export default defineStore('auth', {
     },
   },
   getters: {
+    // todo - в будущем использовать настоящий индивидуальный логин и пароль от пользователя
     basicAuth() {
       return (
         'Basic ' +
@@ -84,6 +101,7 @@ export default defineStore('auth', {
     isDemo(state) {
       return state.openIdSessionId.length === 0 && !state.tryAuth
     },
+    // todo - нужно разделение описания, так как сейчас можно быть залогиненым как через Solid, так и через Telegram
     isLoggedIn(state) {
       return state.openIdIsLoggedIn
     },

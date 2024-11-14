@@ -13,10 +13,11 @@ export default {
 }
 </script>
 <script lang="ts" setup>
+import { onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterView } from 'vue-router'
 import { useMeta, useQuasar } from 'quasar'
-import { init, viewport, initData } from '@telegram-apps/sdk'
+import { init, viewport } from '@telegram-apps/sdk'
 import { EVENTS } from '@inrupt/solid-client-authn-core'
 import { getDefaultSession } from '@inrupt/solid-client-authn-browser'
 import { useRouter } from 'vue-router'
@@ -121,8 +122,8 @@ const metaData = {
 events.on(EVENTS.SESSION_RESTORED, async (urlString) => {
   const url = new URL(urlString)
   $q.sessionStorage.remove('connect')
-  authStore.openIdHandleIncoming()
   try {
+    authStore.openIdHandleIncoming()
     await podStore.setResourceRootUrl()
     await router.push({
       path: url.pathname,
@@ -178,37 +179,42 @@ events.on(EVENTS.ERROR, (error) => {
   console.error('Login error:', error)
 })
 
-const solana = getSolana()
-if (solana) {
-  solana.on('connect', (/*publicKey*/) => {
-    console.warn('connected to phantom account')
-  })
-  solana.on('disconnect', () => {
-    console.warn('Phantom disconnect')
-    $q.notify({
-      type: 'warning',
-      message: $t('wallet.disconnected'),
-    })
-  })
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  solana.on('accountChanged', async (publicKey: string) => {
-    console.warn('accountChanged')
-    await walletStore.setKeypare({
-      publicKey: publicKey,
-      type: WalletType.Phantom,
-    })
-    $q.notify({
-      type: 'warning',
-      message: $t('wallet.accountChanged'),
-    })
-  })
-}
-
 if (isTMA) {
   init()
   viewport.expand()
-  authStore.authorizationByTg(initData)
+} else {
+  const solana = getSolana()
+  if (solana) {
+    solana.on('connect', (/*publicKey*/) => {
+      console.warn('connected to phantom account')
+    })
+    solana.on('disconnect', () => {
+      console.warn('Phantom disconnect')
+      $q.notify({
+        type: 'warning',
+        message: $t('wallet.disconnected'),
+      })
+    })
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    solana.on('accountChanged', async (publicKey: string) => {
+      console.warn('accountChanged')
+      await walletStore.setKeypare({
+        publicKey: publicKey,
+        type: WalletType.Phantom,
+      })
+      $q.notify({
+        type: 'warning',
+        message: $t('wallet.accountChanged'),
+      })
+    })
+  }
 }
+
+onMounted(async () => {
+  if (isTMA) {
+    await authStore.authorizationByTg()
+  }
+})
 
 useMeta(metaData)
 </script>

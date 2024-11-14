@@ -44,6 +44,7 @@ module.exports = configure((ctx) => {
     // Full list of options: https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
       env: {
+        telegram_bot_name: process.env.TELEGRAM_BOT_NAME,
         google_client_id: process.env.GOOGLE_CLIENT_ID,
         server: process.env.SERVER_HOST,
         server_basic_auth_user: process.env.SERVER_HOST_USERNAME,

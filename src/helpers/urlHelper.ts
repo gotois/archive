@@ -1,4 +1,5 @@
 import { openURL, Platform } from 'quasar'
+import { openLink, openTelegramLink } from '@telegram-apps/sdk'
 
 export function validUrlString(url: string) {
   if (!url || url.length < 10) {
@@ -18,7 +19,16 @@ export function validUrlString(url: string) {
 }
 
 export function open(url: string) {
-  if (Platform.is.desktop) {
+  if (openLink.isAvailable()) {
+    if (url.includes('//t.me/') && openTelegramLink.isAvailable()) {
+      openTelegramLink(url)
+    } else {
+      openLink(url, {
+        tryBrowser: 'chrome',
+        tryInstantView: true,
+      })
+    }
+  } else if (Platform.is.desktop) {
     openURL(
       url,
       () => {
