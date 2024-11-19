@@ -580,8 +580,8 @@
         :dense="$q.platform.is.desktop"
         :align="$q.platform.is.desktop ? 'center' : 'justify'"
       >
-        <QRouteTab icon="home" to="/" />
-        <QRouteTab icon="schedule" :to="{ name: ROUTE_NAMES.CALENDAR }" exact />
+        <QRouteTab icon="home" :to="{ name: ROUTE_NAMES.ARCHIVE }" />
+        <QRouteTab icon="schedule" :to="{ name: ROUTE_NAMES.CALENDAR }" />
       </QTabs>
     </QFooter>
   </QLayout>
@@ -635,6 +635,7 @@ import useCalendarStore from 'stores/calendar'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
 import { indexAllDocuments } from '../services/searchService'
 import { isTWA, isTMA } from '../helpers/twaHelper'
+import { formatToCalendarDate } from '../helpers/calendarHelper'
 import { keyPair } from '../services/databaseService'
 import { createQR } from '../helpers/qrHelper'
 import { open } from '../helpers/urlHelper'
@@ -873,13 +874,17 @@ function onRemoveArchiveName(name: string) {
   contractStore.removeContractName(name)
 }
 
-async function onFilterById(ids: number[]) {
-  if (!ids) {
+async function onFilterById(strDate: string) {
+  if (!strDate) {
     return
   }
   $q.loading.show()
-  await contractStore.filteredByIds({
-    ids: ids,
+  const date = formatToCalendarDate(new Date(strDate))
+  await router.push({
+    name: ROUTE_NAMES.CALENDAR,
+    query: {
+      date: date,
+    },
   })
   $q.loading.hide()
 }

@@ -52,12 +52,7 @@ const calendarLocale = ref<unknown>(
 let contractDates: ContractDate[] = []
 
 function selectDate(date: string) {
-  const filtered = contractDates
-    .filter(({ start, end }) => {
-      return start >= date || date <= end
-    })
-    .map(({ id }) => id)
-  emit('select', filtered)
+  emit('select', date)
 }
 
 function fillDates(dates: ContractDate[], { month, year }: NavigationDate) {

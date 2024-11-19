@@ -37,7 +37,7 @@
         </template>
         <template #headerContent>
           <div
-            class="flex full-width full-height flex items-center justify-between shadow-4 no-wrap"
+            class="flex full-width full-height items-center justify-between shadow-4 no-wrap"
             :class="{
               'bg-white': !$q.dark.isActive,
               'bg-dark': $q.dark.isActive,
@@ -46,16 +46,15 @@
             <QBtn
               icon="arrow_left"
               flat
-              dense
               square
+              :dense="$q.platform.is.desktop"
               :color="$q.dark.isActive ? 'light' : 'dark'"
-              class="full-height"
               @click="loadPrevWeek"
             />
             <QVirtualScroll
               ref="virtualScroll"
               v-slot="{ item, index }"
-              class="flex items-center q-mt-xs q-mb-xs"
+              class="q-mt-xs q-mb-xs"
               :items="weeks"
               :item-size="CALENDAR_WEEK_NUM"
               virtual-scroll-horizontal
@@ -72,10 +71,8 @@
             <QBtn
               icon="arrow_right"
               flat
-              dense
-              square
+              :dense="$q.platform.is.desktop"
               :color="$q.dark.isActive ? 'light' : 'dark'"
-              class="full-height"
               @click="loadNextWeek"
             />
           </div>
@@ -85,18 +82,19 @@
   </QPage>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import {
   useQuasar,
   useMeta,
   QVirtualScroll,
+  QScrollArea,
   QPage,
   QBtn,
   QCard,
   QCardSection,
   date,
 } from 'quasar'
-import DayCalendar from 'components/DayCalendar.vue'
+import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { ScheduleXCalendar } from '@schedule-x/vue'
 import { viewDay, createCalendar, createViewDay } from '@schedule-x/calendar'
@@ -105,16 +103,18 @@ import { createCalendarControlsPlugin } from '@schedule-x/calendar-controls'
 import { createEventsServicePlugin } from '@schedule-x/events-service'
 import { createEventModalPlugin } from '@schedule-x/event-modal'
 import { createScrollControllerPlugin } from '@schedule-x/scroll-controller'
-import { formatToCalendarDate, isCurrentDate } from '../helpers/calendarHelper'
-import '@schedule-x/theme-default/dist/index.css'
+import DayCalendar from 'components/DayCalendar.vue'
 import useCalendarStore from 'stores/calendar'
 import useLangStore from 'stores/lang'
+import '@schedule-x/theme-default/dist/index.css'
+import { formatToCalendarDate, isCurrentDate } from '../helpers/calendarHelper'
+import { ROUTE_NAMES } from '../router/routes'
 
-const currentDate = new Date()
 const CALENDAR_WEEK_NUM = 7
 const INITIAL_SCROLL = '06:30'
 
 const $q = useQuasar()
+const router = useRouter()
 const i18n = useI18n()
 const langStore = useLangStore()
 const calendarStore = useCalendarStore()
@@ -131,8 +131,14 @@ const metaData = {
   'og:title': $t('pages.calendar.title'),
 }
 
+const selectedDay = computed(
+  () =>
+    (router.currentRoute.value.query.date as string) ??
+    formatToCalendarDate(new Date()),
+)
+
+const currentDate = new Date()
 const virtualScroll = ref(null)
-const selectedDay = ref<string>(formatToCalendarDate(currentDate))
 const weeks = ref<Date[]>(loadWeek(currentDate))
 
 const calendarApp = createCalendar({
@@ -153,9 +159,14 @@ const calendarApp = createCalendar({
   ],
   callbacks: {
     async onRangeUpdate(range): void {
-      selectedDay.value = range.start
-
-      await calendarStore.loadCalendar(selectedDay.value)
+      const date = formatToCalendarDate(new Date(range.start))
+      await router.push({
+        name: ROUTE_NAMES.CALENDAR,
+        query: {
+          date: date,
+        },
+      })
+      await calendarStore.loadCalendar(range.start)
       eventsServicePlugin.set(calendarStore.events)
     },
     async onRender(): void {
