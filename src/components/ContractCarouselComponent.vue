@@ -160,8 +160,8 @@
           round
           color="white"
           text-color="primary"
-          :icon="icon(item.object[currentSlide - 1].encodingFormat)"
-          @click="onShowFullImage(item)"
+          :icon="icon(fullscreen)"
+          @click="onShowFullImage()"
         >
           <QTooltip v-if="fullscreen">
             {{ $t('archiveList.closeFile') }}
@@ -186,13 +186,11 @@ import {
   QCarouselSlide,
   QCarouselControl,
   QCarousel,
-  Platform,
 } from 'quasar'
 import analyze from 'rgbaster'
 import ImageContextMenu from 'components/ImageContextMenu.vue'
 import SwipeToClose from 'components/SwipeToClose.vue'
 import { FormatContract } from '../types/models'
-import { open } from '../helpers/urlHelper'
 import { PDF_MIME_TYPE } from '../helpers/mimeTypes'
 
 interface Props {
@@ -214,11 +212,9 @@ async function getColorFromImage(contentUrl: string) {
   return color
 }
 
-function icon(encodingFormat: string) {
-  if (fullscreen.value) {
+function icon(fullscreen) {
+  if (fullscreen) {
     return 'fullscreen_exit'
-  } else if (Platform.is.safari && encodingFormat === PDF_MIME_TYPE) {
-    return 'open_in_full'
   } else {
     return 'fullscreen'
   }
@@ -240,12 +236,7 @@ async function prominentBGColors() {
   )
 }
 
-function onShowFullImage(object: FormatContract) {
-  const { contentUrl, encodingFormat } = object.object[currentSlide.value - 1]
-
-  if (Platform.is.safari && encodingFormat === PDF_MIME_TYPE) {
-    return open(contentUrl)
-  }
+function onShowFullImage() {
   fullscreen.value = !fullscreen.value
 }
 </script>

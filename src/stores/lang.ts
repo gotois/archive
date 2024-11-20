@@ -35,7 +35,7 @@ export default defineStore('lang', {
         return this.lang
       }
       const i18n = useI18n()
-      return i18n.locale.value
+      return String(i18n.locale.value)
     },
   },
 })

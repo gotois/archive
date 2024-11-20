@@ -64,6 +64,9 @@
           <template v-else-if="isFilter">{{
             $t('archive.filterEmpty')
           }}</template>
+          <template v-else-if="contractStore.contractsCount > 0">
+            <QSpinner color="primary" size="3em" />
+          </template>
           <template v-else>
             {{ $t('archive.empty') }}
           </template>
@@ -224,6 +227,7 @@ import {
   QPullToRefresh,
   QScrollArea,
   QPage,
+  QSpinner,
   QBanner,
   QBtn,
   QPageSticky,
@@ -315,6 +319,7 @@ const isDragging = ref(false)
 watch(
   () => router.currentRoute.value.query,
   (value) => {
+    contractStore.contracts = [] // clear before load
     currentPage.value = String(value.page)
   },
 )
@@ -405,7 +410,6 @@ async function onPaginate(page: number) {
     },
   })
   $q.loading.hide()
-  scrollAreaRef.value.setScrollPosition('vertical', 0, 150)
 }
 
 async function removeContract(item: FormatContract) {
@@ -414,6 +418,7 @@ async function removeContract(item: FormatContract) {
       contract: item,
       usePod: isLoggedIn.value,
     })
+    scrollAreaRef.value.setScrollPosition('vertical', 0, 150)
     $q.notify({
       type: 'positive',
       message: $t('contract.removeDialog.success', {
@@ -568,12 +573,12 @@ onBeforeMount(() => {
     open(router.currentRoute.value.query.action)
     return
   }
-})
-
-onMounted(async () => {
   setTimeout(() => {
     notificationStore.check()
   }, NOTIFICATION_TIMER)
+})
+
+onMounted(async () => {
   await updateContracts(router.currentRoute.value.query)
 })
 </script>

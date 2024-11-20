@@ -25,7 +25,7 @@
       </QItem>
       <QSeparator />
       <QItem
-        v-if="canWrite"
+        v-if="canWrite && !$q.platform.is.safari"
         v-close-popup
         :dense="$q.platform.is.desktop"
         clickable

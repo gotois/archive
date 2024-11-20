@@ -274,7 +274,7 @@
                 </template>
               </QField>
               <PhantomWalletLogin
-                v-else
+                v-if="!isDemo"
                 :label="$t('tutorial.wallet.title')"
                 icon="wallet"
                 content-class="full-width q-mb-md"
@@ -550,12 +550,9 @@
     <QPageContainer>
       <RouterView
         class="q-ml-auto q-mr-auto"
-        :class="{
-          'q-card--bordered': $q.platform.is.desktop,
-        }"
         :style="
           $q.platform.is.desktop
-            ? 'border-top-left-radius: 12px; border-top-right-radius: 12px; max-width: 768px'
+            ? 'border-top-left-radius: 12px; border-top-right-radius: 12px;'
             : 'inherit'
         "
       />

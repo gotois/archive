@@ -353,6 +353,13 @@ export default {
     searchText: 'Contract type or performer',
     cancel: 'Close',
   },
+  calendar: {
+    days: 'Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday_Sunday',
+    daysShort: 'Su_Mo_Tu_We_Th_Fr_Sa',
+    months:
+      'January_February_March_April_May_June_July_August_September_October_November_December',
+    monthsShort: 'Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec',
+  },
   components: {
     phantomWallet: {
       label: 'Private Key Solana',

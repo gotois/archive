@@ -16,7 +16,7 @@
   </QDate>
 </template>
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { QDate, date } from 'quasar'
 import useContractStore from 'stores/contract'
@@ -30,24 +30,27 @@ interface NavigationDate {
 
 const i18n = useI18n()
 const langStore = useLangStore()
+const contractStore = useContractStore()
 const $t = i18n.t
 
 const emit = defineEmits(['select'])
-const contractStore = useContractStore()
 
 const events = ref([])
 const options = ref([])
 const model = ref(new Date())
-const calendarLocale = ref<unknown>(
-  langStore.language.startsWith('ru')
+
+const calendarLocale = computed(() => {
+  return langStore.language.startsWith('ru')
     ? {
         days: $t('calendar.days').split('_'),
         daysShort: $t('calendar.daysShort').split('_'),
         months: $t('calendar.months').split('_'),
         monthsShort: $t('calendar.monthsShort').split('_'),
+        firstDayOfWeek: 1,
+        format24h: true,
       }
-    : null,
-)
+    : null
+})
 
 let contractDates: ContractDate[] = []
 

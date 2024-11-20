@@ -137,7 +137,7 @@ const selectedDay = computed(
     formatToCalendarDate(new Date()),
 )
 
-const currentDate = new Date()
+const currentDate = new Date(selectedDay.value)
 const virtualScroll = ref(null)
 const weeks = ref<Date[]>(loadWeek(currentDate))
 
@@ -223,6 +223,7 @@ useMeta(metaData)
 <style lang="scss">
 .sx-vue-calendar-wrapper {
   height: 100%;
+  max-width: calc(100dvi - 1px);
 
   ::-webkit-scrollbar {
     height: 0;
