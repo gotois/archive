@@ -1,3 +1,7 @@
+import { uid } from 'quasar'
+import { getFileExt } from './dataHelper'
+import { PNG_MIME_TYPE } from './mimeTypes'
+
 export function readFilePromise(file: File | Blob) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
@@ -36,4 +40,24 @@ export async function fileShare(file: File, title?: string) {
       throw error
     }
   }
+}
+
+export async function getFileFromUrl(image: { contentUrl: string }) {
+  const base64Response = await fetch(image.contentUrl)
+  const blob = await base64Response.blob()
+  const ext = getFileExt(blob.type)
+
+  return new File([blob], `file_${uid()}.${ext}`, {
+    type: blob.type,
+  })
+}
+
+export async function convertBlobToPng(blob: Blob) {
+  const imageBitmap = await createImageBitmap(blob)
+  const canvas = document.createElement('canvas')
+  canvas.width = imageBitmap.width
+  canvas.height = imageBitmap.height
+  const ctx = canvas.getContext('2d')
+  ctx.drawImage(imageBitmap, 0, 0)
+  return new Promise<Blob>((resolve) => canvas.toBlob(resolve, PNG_MIME_TYPE))
 }

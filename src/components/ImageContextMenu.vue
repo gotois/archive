@@ -5,7 +5,7 @@
         v-close-popup
         :dense="$q.platform.is.desktop"
         clickable
-        @click="open(image.contentUrl)"
+        @click="openFile(image)"
       >
         <QItemSection>
           {{ $t('components.imageContextMenu.open') }}
@@ -13,7 +13,7 @@
       </QItem>
       <QSeparator />
       <QItem
-        v-if="canShare"
+        v-if="canShare && !$q.platform.is.firefox"
         v-close-popup
         :dense="$q.platform.is.desktop"
         clickable
@@ -50,8 +50,13 @@ import {
   QSeparator,
 } from 'quasar'
 import { open } from '../helpers/urlHelper'
-import { getFileExt } from '../helpers/dataHelper'
-import { fileShare, canShare } from '../helpers/fileHelper'
+import {
+  fileShare,
+  canShare,
+  getFileFromUrl,
+  convertBlobToPng,
+} from '../helpers/fileHelper'
+import { PNG_MIME_TYPE } from '../helpers/mimeTypes'
 
 defineProps({
   image: {
@@ -69,13 +74,14 @@ const $q = useQuasar()
 
 const canWrite = ref(Reflect.has(navigator.clipboard, 'write'))
 
+async function openFile(image: { contentUrl: string }) {
+  const file = await getFileFromUrl(image)
+  const url = URL.createObjectURL(file)
+  open(url)
+}
+
 async function onFileShare(image: { contentUrl: string }) {
-  const base64Response = await fetch(image.contentUrl)
-  const blob = await base64Response.blob()
-  const ext = getFileExt(blob.type)
-  const file = new File([blob], `file.${ext}`, {
-    type: blob.type,
-  })
+  const file = await getFileFromUrl(image)
   try {
     await fileShare(file)
   } catch (error) {
@@ -90,9 +96,10 @@ async function onFileShare(image: { contentUrl: string }) {
 async function onCopy(contentUrl: string) {
   const base64Response = await fetch(contentUrl)
   const blob = await base64Response.blob()
+  const pngBlob = await convertBlobToPng(blob)
   const clipboardItem = new ClipboardItem(
     {
-      [blob.type]: blob,
+      [PNG_MIME_TYPE]: pngBlob,
     },
     {
       presentationStyle: 'attachment',

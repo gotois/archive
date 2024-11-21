@@ -19,8 +19,6 @@ export function validUrlString(url: string) {
 }
 
 export function open(url: string) {
-  // todo - для url содержащий PDF нужно открывать в режиме iFrame
-  // ...
   if (openLink.isAvailable()) {
     if (url.includes('//t.me/') && openTelegramLink.isAvailable()) {
       openTelegramLink(url)
@@ -44,9 +42,7 @@ export function open(url: string) {
         popup: 1,
       },
     )
-  } else if (Platform.is.mobile) {
-    window.open(url, '_blank')
   } else {
-    window.location.href = url
+    window.open(url, '_blank')
   }
 }

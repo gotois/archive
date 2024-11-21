@@ -1,6 +1,7 @@
 import { ImageFormat, jsPDF } from 'jspdf'
 import { FormatContract } from '../types/models'
 import { PDF_MIME_TYPE } from './mimeTypes'
+import { getFileFromUrl } from './fileHelper'
 import pkg from '../../package.json'
 
 const { productName } = pkg
@@ -66,10 +67,7 @@ export async function createPDF(object: FormatContract) {
 
   for (const { contentUrl, encodingFormat } of formatImages) {
     if (encodingFormat === PDF_MIME_TYPE) {
-      const res = await fetch(contentUrl)
-      const blob: Blob = await res.blob()
-      const fileName = title + FILE_EXT
-      const file = new File([blob], fileName, { type: encodingFormat })
+      const file = await getFileFromUrl({ contentUrl })
       files.push(file)
       continue
     }
