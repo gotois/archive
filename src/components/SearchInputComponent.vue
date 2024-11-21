@@ -25,12 +25,28 @@
     @update:model-value="onSearchText"
     @filter="onFilterSelect"
   >
-    <template v-if="!searching" #prepend>
-      <QIcon v-if="!hasText" name="search" />
-      <QIcon v-else name="clear" class="cursor-pointer" @click="clearText" />
-    </template>
-    <template v-else-if="searching" #prepend>
-      <QSpinner color="primary" />
+    <template #prepend>
+      <QBtn
+        icon="arrow_drop_down"
+        flat
+        square
+        :fab-mini="$q.platform.is.desktop"
+        :fab="!$q.platform.is.desktop"
+      >
+        <QMenu>
+          <QList>
+            <QItem v-close-popup clickable @click="filterType">
+              <QItemSection>Недавно добавленные</QItemSection>
+            </QItem>
+            <QItem v-close-popup clickable @click="filterType">
+              <QItemSection>Скоро заканчивающиеся</QItemSection>
+            </QItem>
+            <QItem v-close-popup clickable @click="filterType">
+              <QItemSection>Недавно закрытые</QItemSection>
+            </QItem>
+          </QList>
+        </QMenu>
+      </QBtn>
     </template>
     <template #no-option>
       <QItem>
@@ -39,13 +55,33 @@
         </QItemSection>
       </QItem>
     </template>
+    <template #append>
+      <template v-if="!searching">
+        <QIcon v-if="!hasText" name="search" />
+        <QIcon v-else name="clear" class="cursor-pointer" @click="clearText" />
+      </template>
+      <template v-else-if="searching">
+        <QSpinner color="primary" />
+      </template>
+    </template>
   </QSelect>
 </template>
 <script lang="ts" setup>
 import { ref, onMounted, PropType } from 'vue'
-import { QSelect, QItem, QItemSection, QSpinner, QIcon } from 'quasar'
+import {
+  useQuasar,
+  QBtn,
+  QSelect,
+  QItem,
+  QItemSection,
+  QSpinner,
+  QIcon,
+  QMenu,
+  QList,
+} from 'quasar'
 import { miniSearch } from '../services/searchService'
 
+const $q = useQuasar()
 const select = ref<InstanceType<typeof QSelect> | null>(null)
 const searchText = ref('')
 const searchOptions = ref([])
@@ -68,6 +104,17 @@ function onSearchText(value: string) {
   emit('search', value)
   select.value.blur()
   clearText()
+}
+
+function filterType() {
+  alert('WIP')
+
+  // Filter like this?
+  // const filtered = contractDates
+  //   .filter(({ start, end }) => {
+  //     return start >= date || date <= end
+  //   })
+  //   .map(({ id }) => id)
 }
 
 function clearText() {
