@@ -10,6 +10,7 @@
     :locale="calendarLocale"
     :options="options"
     today-btn
+    square
     @range-start="onRangeStart"
     @range-end="onRangeEnd"
     @update:model-value="range ? null : $emit('select', model)"
@@ -35,7 +36,7 @@ interface Range {
   year: number
 }
 
-const model = ref(new Date())
+const model = ref<Date>(new Date())
 const rangeStart = ref<Range>(null)
 
 const emit = defineEmits(['select'])
@@ -54,7 +55,6 @@ const options = computed(() => {
   }
   return limitOptionsFn
 })
-
 const calendarLocale = computed(() => {
   return langStore.language.startsWith('ru')
     ? {

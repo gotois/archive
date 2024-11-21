@@ -10,6 +10,7 @@
     event-color="secondary"
     color="primary"
     minimal
+    square
     @navigation="updateEvents"
     @update:model-value="selectDate"
   >
@@ -21,12 +22,7 @@ import { useI18n } from 'vue-i18n'
 import { QDate, date } from 'quasar'
 import useContractStore from 'stores/contract'
 import useLangStore from 'stores/lang'
-import { ContractDate } from '../types/models'
-
-interface NavigationDate {
-  year: number
-  month: number
-}
+import { ContractDate, NavigationDate } from '../types/models'
 
 const i18n = useI18n()
 const langStore = useLangStore()

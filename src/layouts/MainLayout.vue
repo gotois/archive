@@ -36,7 +36,7 @@
         <template v-if="contractsCount > 0">
           <SearchInputComponent
             v-if="$q.platform.is.desktop"
-            autofocus
+            :autofocus="$q.platform.is.desktop"
             @search="(value) => onSearch(value)"
           />
           <QBtn

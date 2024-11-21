@@ -4,6 +4,9 @@
       'bg-transparent': $q.dark.isActive,
       'bg-grey-1': !$q.dark.isActive,
     }"
+    :style="{
+      'max-width': $q.platform.is.desktop ? '720px' : 'auto',
+    }"
   >
     <QScrollArea visible class="absolute-full fit">
       <ScheduleXCalendar :calendar-app="calendarApp">
@@ -46,6 +49,7 @@
             <QBtn
               icon="arrow_left"
               flat
+              fab
               square
               :dense="$q.platform.is.desktop"
               :color="$q.dark.isActive ? 'light' : 'dark'"
@@ -71,6 +75,8 @@
             <QBtn
               icon="arrow_right"
               flat
+              fab
+              square
               :dense="$q.platform.is.desktop"
               :color="$q.dark.isActive ? 'light' : 'dark'"
               @click="loadNextWeek"
@@ -130,16 +136,19 @@ const metaData = {
   'title': $t('pages.calendar.title'),
   'og:title': $t('pages.calendar.title'),
 }
-
-const selectedDay = computed(
-  () =>
-    (router.currentRoute.value.query.date as string) ??
-    formatToCalendarDate(new Date()),
-)
-
-const currentDate = new Date(selectedDay.value)
+const weeks = ref<Date[]>([])
 const virtualScroll = ref(null)
-const weeks = ref<Date[]>(loadWeek(currentDate))
+
+const selectedDay = computed(() => {
+  const currentDate =
+    (router.currentRoute.value.query.date as string) ??
+    formatToCalendarDate(new Date())
+
+  // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+  weeks.value = loadWeek(new Date(currentDate))
+
+  return currentDate
+})
 
 const calendarApp = createCalendar({
   selectedDate: selectedDay.value,
@@ -197,14 +206,28 @@ function loadWeek(now: Date) {
   return dates
 }
 
-function loadPrevWeek() {
-  currentDate.setDate(currentDate.getDate() - CALENDAR_WEEK_NUM)
-  weeks.value = loadWeek(currentDate)
+async function loadPrevWeek() {
+  const day = new Date(selectedDay.value)
+  day.setDate(day.getDate() - CALENDAR_WEEK_NUM)
+  const date = formatToCalendarDate(day)
+  await router.push({
+    name: ROUTE_NAMES.CALENDAR,
+    query: {
+      date: date,
+    },
+  })
 }
 
-function loadNextWeek() {
-  currentDate.setDate(currentDate.getDate() + CALENDAR_WEEK_NUM)
-  weeks.value = loadWeek(currentDate)
+async function loadNextWeek() {
+  const day = new Date(selectedDay.value)
+  day.setDate(day.getDate() + CALENDAR_WEEK_NUM)
+  const date = formatToCalendarDate(day)
+  await router.push({
+    name: ROUTE_NAMES.CALENDAR,
+    query: {
+      date: date,
+    },
+  })
 }
 
 function selectDay(item: Date) {

@@ -12,7 +12,7 @@
           {{ $t('archive.tooltip') }}
         </QTooltip>
         <SearchInputComponent
-          autofocus
+          :autofocus="$q.platform.is.desktop"
           :label="$t('searchDialog.searchText')"
           @search="(value) => $emit('onSearch', value)"
         />
@@ -30,7 +30,9 @@
   </QDialog>
 </template>
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
 import {
+  useQuasar,
   QDialog,
   QBtn,
   QCard,
@@ -42,4 +44,7 @@ import SearchInputComponent from 'components/SearchInputComponent.vue'
 import { indexAllDocuments } from '../services/searchService'
 
 defineEmits(['onSearch'])
+
+const $t = useI18n().t
+const $q = useQuasar()
 </script>

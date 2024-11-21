@@ -1,9 +1,10 @@
 <template>
-  <QBtnGroup square>
+  <QBtnGroup square flat>
     <QBtn
       label="en"
       class="full-width"
       :dense="$q.platform.is.desktop"
+      fab-mini
       :outline="langStore.language === 'en-US'"
       @click="changeLocale('en-US')"
     />
@@ -12,6 +13,7 @@
       label="ru"
       class="full-width"
       :dense="$q.platform.is.desktop"
+      fab-mini
       :outline="langStore.language === 'ru-RU'"
       @click="changeLocale('ru-RU')"
     />

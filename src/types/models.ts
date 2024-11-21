@@ -292,3 +292,8 @@ export type Activity = {
   'startTime'?: string
   'actor'?: unknown
 }
+
+export interface NavigationDate {
+  year: number
+  month: number
+}
