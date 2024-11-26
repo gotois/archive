@@ -759,14 +759,10 @@ async function recognizeImage(
     img.src = contentUrl
     const { data } = await worker.recognize(img)
     await worker.terminate()
-
-    // todo - передать в ИИ data.text и ocrPrompt, получив более точный текст
-    console.log(ocrPrompt)
-
     return calendarStore.calendar([
       {
         type: 'Note',
-        content: data.text,
+        content: ocrPrompt + '::' + data.text,
         mediaType: 'text/plain',
       },
     ])
@@ -828,6 +824,10 @@ onMounted(async () => {
     }
   } catch (error) {
     console.error(error)
+    $q.notify({
+      type: 'negative',
+      message: error.message as string,
+    })
   } finally {
     $q.loading.hide()
   }

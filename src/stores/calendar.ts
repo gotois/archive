@@ -51,7 +51,7 @@ export default defineStore('calendar', {
       if (!this.available) {
         throw new Error('Server Unavailable')
       }
-      const { error, result } = await requestJsonRpc2({
+      const request = {
         url: process.env.server + '/rpc',
         body: {
           jsonrpc: '2.0',
@@ -63,14 +63,22 @@ export default defineStore('calendar', {
             'object': object,
           },
         },
-        jwt: authStore.jwt,
-      })
+      }
+      if (authStore.jwt) {
+        request.jwt = authStore.jwt
+      } else {
+        request.auth = {
+          user: process.env.server_basic_auth_user,
+          pass: process.env.server_basic_auth_pass,
+        }
+      }
+      const { error, result } = await requestJsonRpc2(request)
       if (error) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument
         throw new Error(error.message)
       }
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      return JSON.parse(result) as Calendar
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
+      return JSON.parse(result.data) as Calendar
     },
     async loadCalendar(startDate: string, endDate?: string) {
       const activity = {
@@ -82,7 +90,7 @@ export default defineStore('calendar', {
           endTime: endDate,
         },
       }
-      const { error, result } = await requestJsonRpc2({
+      const request = {
         url: process.env.server + '/rpc',
         body: {
           jsonrpc: '2.0',
@@ -90,8 +98,16 @@ export default defineStore('calendar', {
           method: 'get-calendar',
           params: activity,
         },
-        jwt: authStore.jwt,
-      })
+      }
+      if (authStore.jwt) {
+        request.jwt = authStore.jwt
+      } else {
+        request.auth = {
+          user: process.env.server_basic_auth_user,
+          pass: process.env.server_basic_auth_pass,
+        }
+      }
+      const { error, result } = await requestJsonRpc2(request)
       if (error) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument
         throw new Error(error.message)

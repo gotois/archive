@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { WebId } from '@inrupt/solid-client'
 import { RequestedContact, retrieveLaunchParams } from '@telegram-apps/sdk'
 import { getDefaultSession } from '@inrupt/solid-client-authn-browser'
+import { isTMA } from '../helpers/twaHelper'
 
 interface Store {
   pinIsLoggedIn: boolean
@@ -49,15 +50,11 @@ export default defineStore('auth', {
       }
     },
     async authorizationByTg() {
-      const { initDataRaw } = retrieveLaunchParams()
-      if (!initDataRaw?.length) {
-        throw new Error('Empty telegram init data')
-      }
       const response = await fetch(process.env.server + '/auth', {
         method: 'GET',
         headers: {
           'Content-Type': 'plain/text',
-          'Authorization': `tma ${initDataRaw}`,
+          'Authorization': this.tmaAuth,
         },
       })
       if (!response.ok) {
@@ -65,6 +62,9 @@ export default defineStore('auth', {
       }
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const jwt: string = await response.text()
+      if (!jwt) {
+        throw new Error('jwt is empty')
+      }
       LocalStorage.set('jwt', jwt)
       this.jwt = jwt
     },
@@ -97,6 +97,16 @@ export default defineStore('auth', {
             process.env.server_basic_auth_pass,
         )
       )
+    },
+    tmaAuth() {
+      if (!isTMA) {
+        return
+      }
+      const { initDataRaw } = retrieveLaunchParams()
+      if (!initDataRaw?.length) {
+        throw new Error('Empty telegram init data')
+      }
+      return `tma ${initDataRaw}`
     },
     isDemo(state) {
       return state.openIdSessionId.length === 0 && !state.tryAuth
