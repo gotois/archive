@@ -13,6 +13,7 @@ export enum ROUTE_NAMES {
   PRIVACY = 'privacy',
   LOGIN = 'login',
   CALENDAR = 'calendar',
+  ABOUT = 'about',
 }
 
 export enum STEP {
@@ -127,6 +128,17 @@ const routes: RouteRecordRaw[] = [
         path: '',
         name: ROUTE_NAMES.LOGIN,
         component: () => import('pages/LoginPage.vue'),
+      },
+    ],
+  },
+  {
+    path: '/' + ROUTE_NAMES.ABOUT,
+    component: () => import('layouts/EmptyLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: ROUTE_NAMES.ABOUT,
+        component: () => import('pages/AboutPage.vue'),
       },
     ],
   },

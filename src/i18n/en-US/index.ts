@@ -74,6 +74,7 @@ export default {
     free: 'Free',
   },
   navigation: {
+    about: 'About',
     score: 'NPS',
     version: 'v.{version}',
     title: 'Settings',

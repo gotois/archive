@@ -455,38 +455,16 @@
         <QSeparator class="q-mb-md" />
         <QSpace class="col" />
         <QChip
-          icon="note"
+          icon="more_vert"
           class="cursor-pointer full-width q-pa-md self-end"
           color="transparent"
           :dense="$q.platform.is.desktop"
           square
           clickable
-          :label="miniState ? '' : $t('navigation.score')"
-          @click="onOpenNPS"
+          :label="miniState ? '' : $t('navigation.about')"
+          :disable="router.currentRoute.value.name === ROUTE_NAMES.ABOUT"
+          @click="router.push({ name: ROUTE_NAMES.ABOUT })"
         />
-        <QChip
-          icon="support"
-          class="cursor-pointer full-width q-pa-md self-end"
-          color="transparent"
-          :dense="$q.platform.is.desktop"
-          square
-          clickable
-          :disable="router.currentRoute.value.name === ROUTE_NAMES.SUPPORT"
-          :label="miniState ? '' : $t('navigation.support.free.label')"
-          @click="onOpenSupport"
-        >
-          <QTooltip
-            v-if="
-              $q.platform.is.mac ||
-              $q.platform.is.linux ||
-              $q.platform.is.win ||
-              $q.platform.is.safari
-            "
-          >
-            <!--todo поддержать логику premium/vip-->
-            {{ $t('navigation.support.free.tooltip') }}
-          </QTooltip>
-        </QChip>
       </QList>
     </QDrawer>
     <QDrawer
@@ -775,22 +753,6 @@ async function logOutFromPod() {
   $q.notify({
     message: $t('database.pod.disconnected'),
     type: 'positive',
-  })
-}
-
-function onOpenNPS() {
-  // todo для VIP
-  // ... - https://docs.google.com/forms/d/e/1FAIpQLSdowzB3yyvMAQjlv_gWye1teBhV5LcYxXeX2PJjDDhsir5Fnw/viewform?usp=sf_link
-
-  // Для Free и Premium
-  window.open(
-    'https://docs.google.com/forms/d/e/1FAIpQLSdY3ao4duiZFp9jmM3-9d25gFFgWeklksssLDl4WZcoMS_CeQ/viewform?usp=sf_link',
-  )
-}
-
-function onOpenSupport() {
-  return router.push({
-    name: ROUTE_NAMES.SUPPORT,
   })
 }
 

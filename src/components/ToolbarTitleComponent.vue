@@ -13,16 +13,12 @@
       @click="onOpenRepo"
     >
       {{ $t('productName') }}
-      <QTooltip>
-        {{ $t('navigation.version', { version: navigatorVersion }) }}
-      </QTooltip>
     </span>
     <slot />
   </QToolbarTitle>
 </template>
 <script lang="ts" setup>
-import { toRef } from 'vue'
-import { QToolbarTitle, QTooltip, QIcon } from 'quasar'
+import { QToolbarTitle, QIcon } from 'quasar'
 import { useRouter } from 'vue-router'
 import { open } from '../helpers/urlHelper'
 import pkg from '../../package.json'
@@ -30,7 +26,6 @@ import { ROUTE_NAMES } from '../router/routes'
 
 const router = useRouter()
 
-const navigatorVersion = toRef(pkg, 'version')
 const [domain, repo] = pkg.repository.split(':')
 
 async function onOpenRepo(e: Event) {

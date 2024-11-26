@@ -75,6 +75,7 @@ export default {
     free: 'Беспл.',
   },
   navigation: {
+    about: 'О приложении',
     score: 'Пройти опрос',
     version: 'v.{version}',
     title: 'Настройки',
