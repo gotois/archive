@@ -43,11 +43,6 @@ const routes: RouteRecordRaw[] = [
         name: ROUTE_NAMES.SEARCH,
         component: () => import('pages/ArchivePage.vue'),
       },
-      {
-        path: ROUTE_NAMES.SUPPORT,
-        name: ROUTE_NAMES.SUPPORT,
-        component: () => import('pages/SupportPage.vue'),
-      },
     ],
   },
   {
@@ -73,6 +68,17 @@ const routes: RouteRecordRaw[] = [
         path: '',
         name: ROUTE_NAMES.AUTH,
         component: () => import('pages/AuthPage.vue'),
+      },
+    ],
+  },
+  {
+    path: '/' + ROUTE_NAMES.SUPPORT,
+    component: () => import('layouts/EmptyLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: ROUTE_NAMES.SUPPORT,
+        component: () => import('pages/SupportPage.vue'),
       },
     ],
   },

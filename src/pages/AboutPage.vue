@@ -58,7 +58,7 @@
           square
           clickable
           :label="'Telegram channel'"
-          :click="() => open('https://t.me/turbostate')"
+          @click="openTGChannel"
         />
       </div>
     </QScrollArea>
@@ -93,19 +93,29 @@ const metaData = {
   'og:title': 'About',
 }
 
+function openTGChannel() {
+  open('https://t.me/turbostate')
+}
+
 function onOpenNPS() {
   // todo для VIP
   // ... - https://docs.google.com/forms/d/e/1FAIpQLSdowzB3yyvMAQjlv_gWye1teBhV5LcYxXeX2PJjDDhsir5Fnw/viewform?usp=sf_link
 
   // Для Free и Premium
-  open(
-    'https://docs.google.com/forms/d/e/1FAIpQLSdY3ao4duiZFp9jmM3-9d25gFFgWeklksssLDl4WZcoMS_CeQ/viewform?usp=sf_link',
-  )
+  return router.push({
+    name: ROUTE_NAMES.SUPPORT,
+    query: {
+      url: 'https://docs.google.com/forms/d/e/1FAIpQLSdY3ao4duiZFp9jmM3-9d25gFFgWeklksssLDl4WZcoMS_CeQ/viewform?usp=sf_link',
+    },
+  })
 }
 
 function onOpenSupport() {
   return router.push({
     name: ROUTE_NAMES.SUPPORT,
+    query: {
+      url: 'https://docs.google.com/forms/d/e/1FAIpQLSdVkv7OPOU2n20YKhl3sBwwhjAV_KuFqFncNNfnIgUTp3_8RA/viewform?embedded=true',
+    },
   })
 }
 

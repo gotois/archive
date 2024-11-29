@@ -24,7 +24,7 @@
 ## Попробовать демонстрацию
 
 - [PWA](https://archive.gotointeractive.com/)
-- [Telegram MiniApp](https://t.me/gotois_bot/App)
+- [TMA](https://t.me/gotois_bot/App)
 
 ---
 
@@ -53,6 +53,7 @@
 - Поддержка Импорта/Экспорта базы данных в файл формате `zip`;
 - Загрузка/Выгрузка данных через `SOLiD протокол` на собственный `Pod`;
 - Распознавание `OCR`;
+- Искусственный интеллект `Секретарь`;
 - Отсутствие телеметрии;
 
 ## Самостоятельная установка
@@ -68,7 +69,6 @@ npm i
 - Опционально установите `GOOGLE_CLIENT_ID` ([google-one-tap](https://developers.google.com/identity/gsi/web/guides/display-google-one-tap)) в качестве переменной среды.
 - Опционально установите `TELEGRAM_BOT_NAME` в качестве переменной среды.
 - Опционально установите `SERVER_HOST` в качестве переменной среды вашего сервера.
-- Опционально установите `SERVER_HOST_USERNAME` и `SERVER_HOST_PASSWORD` в качестве переменной среды BASIC AUTH вашего сервера.
 
 #### Запуск в режиме разработки
 > hot-code reloading, error reporting, etc.

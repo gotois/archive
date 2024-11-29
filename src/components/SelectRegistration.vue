@@ -71,6 +71,7 @@
 </template>
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { telegramLoginTemp as TelegramLogin } from 'vue3-telegram-login'
 import {
@@ -94,13 +95,16 @@ import { keyPair } from '../services/databaseService'
 import { TELEGRAM_BOT_NAME } from '../services/telegram'
 import { ROUTE_NAMES } from '../router/routes'
 import { getCloudflareInfo } from '../services/cloudflare'
+import { TelegramUser } from '../types/models'
 
 defineEmits(['select'])
 
 const RU = 'RU'
 
-const $q = useQuasar()
 const router = useRouter()
+const $q = useQuasar()
+const i18n = useI18n()
+const $t = i18n.t
 const profileStore = useProfileStore()
 const authStore = useAuthStore()
 const tutorialStore = useTutorialStore()
@@ -126,11 +130,12 @@ async function getClientInfo() {
 async function demoSign() {
   const key = await keyPair.generateNewKeyPair(demoUserWebId)
   await keyPair.setKeyPair(key)
-  profileStore.consumerName('Test User')
-  profileStore.consumerEmail('tester@gotointeractive.com')
+  profileStore.consumerName('Demo User')
+  profileStore.consumerEmail('demo@gotointeractive.com')
   profileStore.consumerPhone('+1234567890')
   profileStore.consumerDID(key.id)
   authStore.webId = demoUserWebId
+  authStore.setLoginAndPassword('demo', 'demo')
   tutorialStore.tutorialComplete(true)
   await router.push({
     name: ROUTE_NAMES.ARCHIVE,
@@ -148,20 +153,15 @@ function premiumSign() {
   return true
 }
 
-// fixme - переделать отправку на сервер
-async function telegramSign(user: {
-  first_name: string
-  last_name: string
-  id: string
-  username: string
-}) {
-  const key = await keyPair.generateNewKeyPair('did:gic:' + user.id)
+async function telegramSign(user: TelegramUser) {
+  await authStore.registration(user)
+  const key = await keyPair.generateNewKeyPair('did:gic:' + user.id) // todo - использовать id из ответа сервера
   await keyPair.setKeyPair(key)
   const name = user.first_name ?? '' + ' ' + user.last_name ?? ''
   profileStore.consumerName(name)
-  profileStore.consumerEmail('tester@gotointeractive.com')
+  profileStore.consumerEmail('demo@gotointeractive.com') // todo - использовать email из ответа сервера
   profileStore.consumerDID(key.id)
-  authStore.webId = demoUserWebId
+  authStore.webId = demoUserWebId // todo - использовать webId из ответа сервера
   tutorialStore.tutorialComplete(true)
   await router.push({
     name: ROUTE_NAMES.ARCHIVE,

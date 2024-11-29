@@ -68,8 +68,8 @@ export default defineStore('calendar', {
         request.jwt = authStore.jwt
       } else {
         request.auth = {
-          user: process.env.server_basic_auth_user,
-          pass: process.env.server_basic_auth_pass,
+          user: authStore.login,
+          pass: authStore.password,
         }
       }
       const { error, result } = await requestJsonRpc2(request)
@@ -103,8 +103,8 @@ export default defineStore('calendar', {
         request.jwt = authStore.jwt
       } else {
         request.auth = {
-          user: process.env.server_basic_auth_user,
-          pass: process.env.server_basic_auth_pass,
+          user: authStore.login,
+          pass: authStore.password,
         }
       }
       const { error, result } = await requestJsonRpc2(request)

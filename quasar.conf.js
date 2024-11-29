@@ -47,8 +47,6 @@ module.exports = configure((ctx) => {
         telegram_bot_name: process.env.TELEGRAM_BOT_NAME,
         google_client_id: process.env.GOOGLE_CLIENT_ID,
         server: process.env.SERVER_HOST,
-        server_basic_auth_user: process.env.SERVER_HOST_USERNAME,
-        server_basic_auth_pass: process.env.SERVER_HOST_PASSWORD,
       },
       target: {
         browser: 'esnext',

@@ -4,6 +4,7 @@ import { WebId } from '@inrupt/solid-client'
 import { RequestedContact, retrieveLaunchParams } from '@telegram-apps/sdk'
 import { getDefaultSession } from '@inrupt/solid-client-authn-browser'
 import { isTMA } from '../helpers/twaHelper'
+import { TelegramUser } from '../types/models'
 
 interface Store {
   pinIsLoggedIn: boolean
@@ -13,6 +14,8 @@ interface Store {
   webId: WebId
   tryAuth: boolean
   jwt: string
+  login?: string
+  password?: string
 }
 
 export const demoUserWebId = 'did:gic:demo' as WebId
@@ -26,8 +29,16 @@ export default defineStore('auth', {
     openIdIsLoggedIn: false,
     webId: getDefaultSession().info.webId ?? demoUserWebId,
     jwt: LocalStorage.getItem('jwt') ?? null,
+    login: LocalStorage.getItem('login') ?? null,
+    password: LocalStorage.getItem('password') ?? null,
   }),
   actions: {
+    setLoginAndPassword(login: string, password: string) {
+      this.login = login
+      this.password = password
+      LocalStorage.set('login', login)
+      LocalStorage.set('password', password)
+    },
     setTryAuthValue() {
       LocalStorage.set('tryAuth', true)
     },
@@ -68,7 +79,7 @@ export default defineStore('auth', {
       LocalStorage.set('jwt', jwt)
       this.jwt = jwt
     },
-    async registration(requestedContact: RequestedContact) {
+    async registration(requestedContact: RequestedContact | TelegramUser) {
       const response = await fetch(process.env.server + '/registration', {
         method: 'POST',
         headers: {
@@ -87,16 +98,11 @@ export default defineStore('auth', {
     },
   },
   getters: {
-    // todo - в будущем использовать настоящий индивидуальный логин и пароль от пользователя
-    basicAuth() {
-      return (
-        'Basic ' +
-        btoa(
-          process.env.server_basic_auth_user +
-            ':' +
-            process.env.server_basic_auth_pass,
-        )
-      )
+    basicAuth(): string {
+      if (!this.login || !this.password) {
+        return
+      }
+      return 'Basic ' + btoa(this.login + ':' + this.password)
     },
     tmaAuth() {
       if (!isTMA) {
