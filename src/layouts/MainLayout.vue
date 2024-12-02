@@ -276,8 +276,12 @@
               <PhantomWalletLogin
                 v-if="!isDemo"
                 :label="$t('tutorial.wallet.title')"
+                color="white"
+                text-color="black"
                 icon="wallet"
                 content-class="full-width q-mb-md"
+                @skip="onSkipWallet"
+                @error="onWalletError"
               />
               <QBtn
                 v-if="!isDemo"
@@ -869,6 +873,25 @@ async function openOTPDialog() {
   authUri.value = authURI
   authUriQR.value = await createQR(authURI)
   showOTPDialog.value = true
+}
+
+function onWalletError(error: Error) {
+  $q.notify({
+    color: 'negative',
+    message:
+      error.name === 'DatabaseClosedError' ? error.message : $t('wallet.fail'),
+  })
+}
+
+function onSkipWallet() {
+  const dialog = $q.dialog({
+    message: $t('tutorial.welcome.demoHint'),
+    cancel: true,
+    persistent: true,
+  })
+  dialog.onOk(() => {
+    // emit('free')
+  })
 }
 
 onMounted(async () => {

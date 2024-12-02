@@ -25,93 +25,109 @@
         {{ $t('components.phantomWallet.open') }}
       </QTooltip>
     </QBtn>
-    <QDialog v-model="showDialog" square persistent>
-      <QCard class="q-pa-md">
-        <QForm v-if="!hasPhantomWallet" greedy @submit="onWalletComplete">
-          <QInput
-            v-model.trim="walletPrivateKey"
-            :label="$t('components.phantomWallet.label')"
-            :type="isPwd ? 'password' : 'text'"
-            :hint="$t('components.phantomWallet.hint')"
-            :maxlength="88"
-            :hide-bottom-space="!$q.platform.is.desktop"
-            color="secondary"
-            name="wallet"
-            autocomplete="off"
-            autofocus
-            outlined
-          >
-            <template #prepend>
-              <QIcon name="key" />
-            </template>
-            <template #append>
-              <QIcon
-                :name="isPwd ? 'visibility_off' : 'visibility'"
-                class="cursor-pointer q-mr-md"
-                @click="isPwd = !isPwd"
-              />
-              <QBtn icon="info" flat no-wrap round class="no-padding">
-                <QTooltip anchor="center left" self="center middle">
-                  {{ $t('components.phantomWallet.info') }}
-                </QTooltip>
-              </QBtn>
-            </template>
-          </QInput>
-          <QSelect
-            v-model="solanaClusterApiURL"
-            :options="solanaClusters"
-            :prefix="prefix"
-            :label="'Solana Cluster'"
-            :hide-bottom-space="!$q.platform.is.desktop"
-            :behavior="$q.platform.is.ios ? 'dialog' : 'menu'"
-            color="secondary"
-            name="contractType"
-            spellcheck="false"
-            options-selected-class="text-secondary"
-            class="q-mt-md q-mb-md"
-            use-input
-            hide-dropdown-icon
-            hide-selected
-            fill-input
-            map-options
-            outlined
-            square
-            @update:model-value="setSolanaClusterApiUrl"
-            @new-value="onNewSolanaClusterApiUrl"
-          >
-            <template #prepend>
-              <QIcon name="web" />
-            </template>
-            <template #option="{ itemProps, opt }">
-              <QItem v-bind="itemProps">
-                <QItemSection>
-                  <QItemLabel>{{ opt.label }}</QItemLabel>
-                  <QItemLabel caption>{{ opt.description }}</QItemLabel>
-                </QItemSection>
-              </QItem>
-            </template>
-          </QSelect>
-          <QBtn
-            :color="
-              walletPrivateKey.length === 0 || solanaClusterApiURL.length === 0
-                ? 'secondary'
-                : 'accent'
-            "
-            :label="
-              walletPrivateKey.length === 0 || solanaClusterApiURL.length === 0
-                ? $t('components.phantomWallet.skip')
-                : $t('components.phantomWallet.ok')
-            "
-            :class="{
-              'full-width': !$q.platform.is.desktop,
-            }"
-            @click="
-              walletPrivateKey.length === 0 || solanaClusterApiURL.length === 0
-                ? $emit('skip')
-                : onWalletComplete()
-            "
-          />
-        </QForm>
+    <QDialog
+      v-model="showDialog"
+      square
+      persistent
+      transition-show="slide-up"
+      transition-hide="slide-down"
+    >
+      <QCard
+        class="overflow-hidden-y q-pb-lg"
+        :class="{
+          'bg-grey-4 text-white': !$q.dark.isActive,
+          'bg-dark text-white': $q.dark.isActive,
+        }"
+      >
+        <QBar>
+          <QSpace />
+          <QBtn v-close-popup dense flat icon="close" />
+        </QBar>
+        <QCardSection class="full-height overflow-hidden-y">
+          <QForm v-if="!hasPhantomWallet" greedy @submit="onWalletComplete">
+            <QInput
+              v-model.trim="walletPrivateKey"
+              :label="$t('components.phantomWallet.label')"
+              :type="isPwd ? 'password' : 'text'"
+              :hint="$t('components.phantomWallet.hint')"
+              :maxlength="88"
+              :hide-bottom-space="!$q.platform.is.desktop"
+              color="secondary"
+              name="wallet"
+              autocomplete="off"
+              autofocus
+              outlined
+            >
+              <template #prepend>
+                <QIcon name="key" />
+              </template>
+              <template #append>
+                <QIcon
+                  :name="isPwd ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer q-mr-md"
+                  @click="isPwd = !isPwd"
+                />
+                <QBtn icon="info" flat no-wrap round class="no-padding">
+                  <QTooltip anchor="center left" self="center middle">
+                    {{ $t('components.phantomWallet.info') }}
+                  </QTooltip>
+                </QBtn>
+              </template>
+            </QInput>
+            <QSelect
+              v-model="solanaClusterApiURL"
+              :options="solanaClusters"
+              :prefix="prefix"
+              :label="'Solana Cluster'"
+              :hide-bottom-space="!$q.platform.is.desktop"
+              :behavior="$q.platform.is.ios ? 'dialog' : 'menu'"
+              color="secondary"
+              name="contractType"
+              spellcheck="false"
+              options-selected-class="text-secondary"
+              class="q-mt-md q-mb-md"
+              use-input
+              hide-dropdown-icon
+              hide-selected
+              fill-input
+              map-options
+              outlined
+              square
+              @update:model-value="setSolanaClusterApiUrl"
+              @new-value="onNewSolanaClusterApiUrl"
+            >
+              <template #prepend>
+                <QIcon name="web" />
+              </template>
+              <template #option="{ itemProps, opt }">
+                <QItem v-bind="itemProps">
+                  <QItemSection>
+                    <QItemLabel>{{ opt.label }}</QItemLabel>
+                    <QItemLabel caption>{{ opt.description }}</QItemLabel>
+                  </QItemSection>
+                </QItem>
+              </template>
+            </QSelect>
+            <QBtn
+              :color="
+                walletPrivateKey.length === 0 ||
+                solanaClusterApiURL.length === 0
+                  ? 'secondary'
+                  : 'accent'
+              "
+              :label="$t('components.phantomWallet.ok')"
+              :class="{
+                'full-width': !$q.platform.is.desktop,
+              }"
+              @click="
+                walletPrivateKey.length === 0 ||
+                solanaClusterApiURL.length === 0
+                  ? $emit('skip')
+                  : onWalletComplete()
+              "
+            />
+          </QForm>
+        </QCardSection>
       </QCard>
     </QDialog>
   </template>
@@ -132,6 +148,9 @@ import {
   QItemSection,
   QTooltip,
   QItemLabel,
+  QBar,
+  QSpace,
+  QCardSection,
 } from 'quasar'
 import { useI18n } from 'vue-i18n'
 import { clusterApiUrl } from '@solana/web3.js'

@@ -28,21 +28,22 @@ export function open(url: string) {
         tryInstantView: true,
       })
     }
-  } else if (Platform.is.desktop) {
-    openURL(
-      url,
-      () => {
-        window.location.href = url
-      },
-      {
-        noopener: true,
-        noreferrer: true,
-        toolbar: false,
-        menubar: false,
-        popup: 1,
-      },
-    )
-  } else {
-    window.open(url, '_blank')
   }
+  openURL(
+    url,
+    () => {
+      if (Platform.is.desktop) {
+        window.open(url, '_blank')
+      } else {
+        window.location.href = url
+      }
+    },
+    {
+      noopener: true,
+      noreferrer: true,
+      toolbar: false,
+      menubar: false,
+      popup: 1,
+    },
+  )
 }

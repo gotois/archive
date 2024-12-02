@@ -63,7 +63,7 @@ export default {
   archive: {
     search: 'Search',
     tooltip: 'Start typing',
-    empty: 'Add your first contract.',
+    empty: 'Add your first commitment.',
     searchEmpty: 'Nothing found. Try changing your search options.',
     filterEmpty: 'Nothing is selected.',
     notfound: 'No results',
@@ -269,7 +269,6 @@ export default {
       title: 'Free',
       description: 'Service: Contract storage',
       price: 'per user/month',
-      ok: 'Start Free',
       support: {
         title: 'Support',
         values: {
@@ -289,7 +288,6 @@ export default {
       title: 'Premium',
       description: 'Project: Full liability management',
       price: 'per user/month',
-      ok: 'Start a trial',
       support: {
         title: 'Premium Support',
         values: {
@@ -314,7 +312,6 @@ export default {
       title: 'VIP',
       description: 'Solution: “Pocket Lawyer”',
       price: 'per user/month',
-      ok: 'Contact Sales',
       support: {
         title: 'Luxury Support',
         values: {

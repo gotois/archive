@@ -1,208 +1,161 @@
 <template>
-  <QScrollArea class="absolute-full fit">
-    <div
-      class="items-start justify-center self-start items-stretch"
-      :class="{
-        'row q-pa-md q-gutter-md': $q.platform.is.desktop,
-        'row q-gutter-xs': $q.platform.is.ipad,
-      }"
+  <div
+    class="items-start justify-center self-start items-stretch"
+    :class="{
+      'row q-pa-md q-gutter-md': $q.platform.is.desktop,
+      'row q-gutter-xs': $q.platform.is.ipad,
+    }"
+  >
+    <QCard
+      square
+      :flat="$q.platform.is.mobile"
+      :bordered="$q.platform.is.desktop"
+      class="col bg-white text-dark col-3"
     >
-      <QCard
-        square
-        :flat="$q.platform.is.mobile"
-        :bordered="$q.platform.is.desktop"
-        class="col bg-white text-dark col-3"
-      >
-        <QCardSection class="text-center">
-          <div class="text-h5 text-weight-bolder">
-            {{ $t('pricing.free.title') }}
-          </div>
-          <div class="text-subtitle2 text-weight-light q-pb-md">
-            {{ $t('pricing.free.description') }}
-          </div>
-          <div>
-            <span class="vertical-middle text-h4">{{ basePrice }}</span>
-            {{ $t('pricing.free.price') }}
-          </div>
-          <QBtn
-            v-if="router.currentRoute.value.name !== ROUTE_NAMES.PRICING"
-            :label="$t('pricing.free.ok')"
-            color="white"
-            text-color="black"
-            class="full-width q-mt-md"
-            size="md"
-            square
+      <QCardSection class="text-center">
+        <div class="text-h5 text-weight-bolder">
+          {{ $t('pricing.free.title') }}
+        </div>
+        <div class="text-subtitle2 text-weight-light q-pb-md">
+          {{ $t('pricing.free.description') }}
+        </div>
+        <div>
+          <span class="vertical-middle text-h4">{{ basePrice }}</span>
+          {{ $t('pricing.free.price') }}
+        </div>
+      </QCardSection>
+      <QSeparator inset color="grey-3" />
+      <QCardSection>
+        <QList
+          :dense="$q.platform.is.desktop"
+          bordered
+          class="rounded-borders bg-grey-1"
+        >
+          <QTree
+            class="full-width"
+            :nodes="freeSupport"
+            :default-expand-all="$q.platform.is.desktop"
             :dense="$q.platform.is.desktop"
-            @click="$emit('free')"
+            node-key="label"
+            text-color="dark"
           />
-        </QCardSection>
-        <QSeparator inset color="grey-3" />
-        <QCardSection>
-          <QList
+          <QTree
+            class="full-width"
+            :nodes="freeFunctional"
+            :default-expand-all="$q.platform.is.desktop"
             :dense="$q.platform.is.desktop"
-            bordered
-            class="rounded-borders bg-grey-1"
-          >
-            <QTree
-              class="full-width"
-              :nodes="freeSupport"
-              :default-expand-all="$q.platform.is.desktop"
-              :dense="$q.platform.is.desktop"
-              node-key="label"
-              text-color="dark"
-            />
-            <QTree
-              class="full-width"
-              :nodes="freeFunctional"
-              :default-expand-all="$q.platform.is.desktop"
-              :dense="$q.platform.is.desktop"
-              node-key="label"
-              text-color="dark"
-            />
-          </QList>
-        </QCardSection>
-      </QCard>
-      <QCard
-        square
-        :flat="$q.platform.is.mobile"
-        :bordered="$q.platform.is.desktop"
-        class="bg-primary text-white col-3"
-      >
-        <QCardSection class="text-center">
-          <div class="text-h5 text-weight-bolder">
-            {{ $t('pricing.premium.title') }}
-          </div>
-          <div class="text-subtitle2 text-weight-light q-pb-md">
-            {{ $t('pricing.premium.description') }}
-          </div>
-          <div>
-            <span class="vertical-middle text-h4">
-              {{ premiumPrice }}
-            </span>
-            {{ $t('pricing.premium.price') }}
-          </div>
-          <PhantomWalletLogin
-            v-if="router.currentRoute.value.name !== ROUTE_NAMES.PRICING"
-            :label="$t('pricing.premium.ok')"
-            color="white"
-            text-color="black"
-            content-class="full-width q-mt-md"
-            @skip="onSkipWallet"
-            @error="onWalletError"
-            @complete="$emit('premium')"
+            node-key="label"
+            text-color="dark"
           />
-        </QCardSection>
-        <QSeparator inset color="grey-5" />
-        <QCardSection>
-          <QList
+        </QList>
+      </QCardSection>
+    </QCard>
+    <QCard
+      square
+      :flat="$q.platform.is.mobile"
+      :bordered="$q.platform.is.desktop"
+      class="bg-primary text-white col-3"
+    >
+      <QCardSection class="text-center">
+        <div class="text-h5 text-weight-bolder">
+          {{ $t('pricing.premium.title') }}
+        </div>
+        <div class="text-subtitle2 text-weight-light q-pb-md">
+          {{ $t('pricing.premium.description') }}
+        </div>
+        <div>
+          <span class="vertical-middle text-h4">
+            {{ premiumPrice }}
+          </span>
+          {{ $t('pricing.premium.price') }}
+        </div>
+      </QCardSection>
+      <QSeparator inset color="grey-5" />
+      <QCardSection>
+        <QList
+          :dense="$q.platform.is.desktop"
+          bordered
+          class="rounded-borders bg-grey-1"
+        >
+          <QTree
+            class="full-width"
+            :nodes="premiumSupport"
+            :default-expand-all="$q.platform.is.desktop"
             :dense="$q.platform.is.desktop"
-            bordered
-            class="rounded-borders bg-grey-1"
-          >
-            <QTree
-              class="full-width"
-              :nodes="premiumSupport"
-              :default-expand-all="$q.platform.is.desktop"
-              :dense="$q.platform.is.desktop"
-              node-key="label"
-              text-color="dark"
-            />
-            <QTree
-              class="full-width"
-              :nodes="premiumFunctional"
-              :default-expand-all="$q.platform.is.desktop"
-              :dense="$q.platform.is.desktop"
-              node-key="label"
-              text-color="dark"
-            />
-          </QList>
-        </QCardSection>
-      </QCard>
-      <QCard
-        square
-        :flat="$q.platform.is.mobile"
-        :bordered="$q.platform.is.desktop"
-        class="bg-black text-white col-3"
-      >
-        <QCardSection class="text-center">
-          <div class="text-h5 text-weight-bolder">
-            {{ $t('pricing.vip.title') }}
-          </div>
-          <div class="text-subtitle2 text-weight-light q-pb-md">
-            {{ $t('pricing.vip.description') }}
-          </div>
-          <div>
-            <span class="vertical-middle text-h4">
-              {{ vipPrice }}
-            </span>
-            {{ $t('pricing.vip.price') }}
-          </div>
-          <QBtn
-            v-if="router.currentRoute.value.name !== ROUTE_NAMES.PRICING"
-            size="md"
-            class="full-width q-mt-md"
-            color="white"
-            text-color="black"
-            square
-            :dense="$q.platform.is.desktop"
-            :label="$t('pricing.vip.ok')"
-            @click="onVip"
+            node-key="label"
+            text-color="dark"
           />
-        </QCardSection>
-        <QSeparator inset color="grey-8" />
-        <QCardSection>
-          <QList
+          <QTree
+            class="full-width"
+            :nodes="premiumFunctional"
+            :default-expand-all="$q.platform.is.desktop"
             :dense="$q.platform.is.desktop"
-            bordered
-            class="rounded-borders bg-grey-1"
-          >
-            <QTree
-              class="full-width"
-              :nodes="vipSupport"
-              :default-expand-all="$q.platform.is.desktop"
-              :dense="$q.platform.is.desktop"
-              node-key="label"
-              text-color="dark"
-            />
-            <QTree
-              class="full-width"
-              :nodes="vipFunctional"
-              :default-expand-all="$q.platform.is.desktop"
-              :dense="$q.platform.is.desktop"
-              node-key="label"
-              text-color="dark"
-            />
-          </QList>
-        </QCardSection>
-      </QCard>
-    </div>
-  </QScrollArea>
+            node-key="label"
+            text-color="dark"
+          />
+        </QList>
+      </QCardSection>
+    </QCard>
+    <QCard
+      square
+      :flat="$q.platform.is.mobile"
+      :bordered="$q.platform.is.desktop"
+      class="bg-black text-white col-3"
+    >
+      <QCardSection class="text-center">
+        <div class="text-h5 text-weight-bolder">
+          {{ $t('pricing.vip.title') }}
+        </div>
+        <div class="text-subtitle2 text-weight-light q-pb-md">
+          {{ $t('pricing.vip.description') }}
+        </div>
+        <div>
+          <span class="vertical-middle text-h4">
+            {{ vipPrice }}
+          </span>
+          {{ $t('pricing.vip.price') }}
+        </div>
+      </QCardSection>
+      <QSeparator inset color="grey-8" />
+      <QCardSection>
+        <QList
+          :dense="$q.platform.is.desktop"
+          bordered
+          class="rounded-borders bg-grey-1"
+        >
+          <QTree
+            class="full-width"
+            :nodes="vipSupport"
+            :default-expand-all="$q.platform.is.desktop"
+            :dense="$q.platform.is.desktop"
+            node-key="label"
+            text-color="dark"
+          />
+          <QTree
+            class="full-width"
+            :nodes="vipFunctional"
+            :default-expand-all="$q.platform.is.desktop"
+            :dense="$q.platform.is.desktop"
+            node-key="label"
+            text-color="dark"
+          />
+        </QList>
+      </QCardSection>
+    </QCard>
+  </div>
 </template>
 <script lang="ts" setup>
-import { ref, defineAsyncComponent } from 'vue'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRouter } from 'vue-router'
 import {
   useQuasar,
-  QScrollArea,
   QCard,
   QCardSection,
-  QBtn,
   QSeparator,
   QList,
   QTree,
 } from 'quasar'
-import { open } from '../helpers/urlHelper'
-import pkg from '../../package.json'
-import { ROUTE_NAMES } from '../router/routes'
 
-const emit = defineEmits(['free', 'premium'])
-
-const PhantomWalletLogin = defineAsyncComponent(
-  () => import('components/PhantomWalletLogin.vue'),
-)
-
-const router = useRouter()
 const $q = useQuasar()
 const $t = useI18n().t
 
@@ -288,28 +241,4 @@ const vipFunctional = ref([
     ],
   },
 ])
-
-function onWalletError(error: Error) {
-  $q.notify({
-    color: 'negative',
-    message:
-      error.name === 'DatabaseClosedError' ? error.message : $t('wallet.fail'),
-  })
-}
-
-function onSkipWallet() {
-  const dialog = $q.dialog({
-    message: $t('tutorial.welcome.demoHint'),
-    cancel: true,
-    persistent: true,
-  })
-  dialog.onOk(() => {
-    emit('free')
-  })
-}
-
-function onVip() {
-  const { email } = pkg.contributors[0]
-  open(`mailto:${email}?subject=VIP`)
-}
 </script>

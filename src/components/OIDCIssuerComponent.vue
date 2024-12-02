@@ -12,6 +12,7 @@
       :dense="$q.platform.is.desktop"
       type="url"
       :use-input="!oidcIssuer"
+      disable-tab-selection
       square
       autofocus
       bottom-slots
@@ -20,6 +21,7 @@
       map-options
       input-debounce="0"
       clearable
+      autocomplete="on"
       @new-value="onNewValueIssuer"
       @clear="() => (oidcIssuer = '')"
     >
@@ -60,7 +62,11 @@ defineProps({
   },
 })
 
-const loginOptions = ref(['login.inrupt.com', 'login.inrupt.net'])
+const loginOptions = ref([
+  'login.inrupt.com',
+  'login.inrupt.net',
+  'login.gotointeractive.com', // todo - WIP GIC DAO OIDC
+])
 const oidcIssuer = ref('')
 const prefix = ref('https://')
 

@@ -181,6 +181,11 @@
 
     <QSpace class="q-mt-xl" />
 
+    <QCard class="q-pa-md" flat>
+      <!--  AND location !== RU-->
+      <PricingComponent class="fit" />
+    </QCard>
+
     <QTimeline class="q-mt-md q-mb-md q-pl-md q-pr-md">
       <h2
         :class="{
@@ -312,50 +317,19 @@
       }"
       dark
     >
-      <template v-if="forRus">
-        <!-- todo: ссылка на ВК и пр. -->
-      </template>
-      <template v-else>
-        <QItemLabel header class="text-center text-subtitle1 text-uppercase"
-          >Социальные сети</QItemLabel
-        >
-        <QItem v-ripple clickable href="https://forum.gotointeractive.com">
-          <QCardSection>
-            <QItemLabel lines="1" class="text-left">Форум</QItemLabel>
-            <QItemLabel caption></QItemLabel>
-          </QCardSection>
-        </QItem>
-        <QSeparator spaced dark />
-      </template>
-
-      <template v-if="forRus">
-        <QItemLabel header class="text-center text-subtitle1 text-uppercase">
-          ООО "Виртуальный секретарь"
-        </QItemLabel>
-        <QItem v-ripple clickable :href="'mailto:v-secretary@mail.ru'">
-          <QCardSection>
-            <QItemLabel lines="1" class="text-left">Поддержка</QItemLabel>
-            <QItemLabel caption>Обратиться в центр поддержки</QItemLabel>
-          </QCardSection>
-        </QItem>
-      </template>
-      <template v-else>
-        <QItemLabel header class="text-center text-subtitle1 text-uppercase">
-          {{ author.name }}
-        </QItemLabel>
-        <QItem v-ripple clickable :href="author.url">
-          <QCardSection>
-            <QItemLabel lines="1" class="text-left">Сайт</QItemLabel>
-            <QItemLabel caption>Ботификация жизни начинается здесь</QItemLabel>
-          </QCardSection>
-        </QItem>
-        <QItem v-ripple clickable :href="'mailto:' + author.email">
-          <QCardSection>
-            <QItemLabel lines="1" class="text-left">Поддержка</QItemLabel>
-            <QItemLabel caption>Обратиться в центр поддержки</QItemLabel>
-          </QCardSection>
-        </QItem>
-      </template>
+      <QSeparator spaced dark />
+      <QItemLabel header class="text-center">
+        ООО "Виртуальный секретарь"
+      </QItemLabel>
+      <QItemLabel caption class="text-center text-uppercase">
+        ИНН 2632123201
+      </QItemLabel>
+      <QItem v-ripple clickable dense @click="onSupport">
+        <QCardSection>
+          <QItemLabel lines="1" class="text-left">Поддержка</QItemLabel>
+          <QItemLabel caption>Обратиться в центр поддержки</QItemLabel>
+        </QCardSection>
+      </QItem>
     </QList>
   </QScrollArea>
 </template>
@@ -381,9 +355,11 @@ import {
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import useLangStore from 'stores/lang'
+import PricingComponent from 'components/PricingComponent.vue'
 import { ROUTE_NAMES, STEP } from '../router/routes'
 import { applicationURL } from '../helpers/googlePlayHelper'
-import { author } from '../../package.json'
+import { open } from '../helpers/urlHelper'
+import pkg from '../../package.json'
 
 const router = useRouter()
 const i18n = useI18n()
@@ -405,6 +381,11 @@ async function onRegister() {
       lang: langStore.language,
     },
   })
+}
+
+function onSupport() {
+  const { email } = pkg.contributors[0]
+  open(`mailto:${email}?subject=SUPPORT`)
 }
 
 useMeta(metaData)
