@@ -10,7 +10,7 @@
       square
       :flat="$q.platform.is.mobile"
       :bordered="$q.platform.is.desktop"
-      class="col bg-white text-dark col-3"
+      class="col bg-grey-1 text-dark col-3"
     >
       <QCardSection class="text-center">
         <div class="text-h5 text-weight-bolder">
@@ -159,9 +159,9 @@ import {
 const $q = useQuasar()
 const $t = useI18n().t
 
-const basePrice = '0 SOL'
-const premiumPrice = '1 SOL'
-const vipPrice = '3 SOL'
+const basePrice = '0 RUB'
+const premiumPrice = '299 RUB'
+const vipPrice = '999 RUB'
 
 const freeSupport = ref([
   {

@@ -52,7 +52,7 @@
         :inline-actions="$q.platform.is.desktop"
         :dense="$q.platform.is.desktop"
         rounded
-        class="q-pa-lg flex absolute-center flex-center self-center text-black-9 text-left"
+        class="q-pa-lg flex absolute-center flex-center self-center text-black-9 text-center"
         :style="{
           'max-width': $q.platform.is.desktop ? '720px' : '600px',
         }"
@@ -262,7 +262,10 @@ const ArchiveListComponent = defineAsyncComponent({
   loader: () => import('components/ArchiveListComponent.vue'),
   delay: 0,
   loadingComponent: h(QSkeleton, {
-    class: 'absolute-full',
+    style: {
+      'height': '460px',
+      'max-width': '720px',
+    },
   }),
 })
 const ContractFormComponent = defineAsyncComponent({

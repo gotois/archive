@@ -1,6 +1,7 @@
 import { LocalStorage } from 'quasar'
 import { defineStore } from 'pinia'
 import { useI18n } from 'vue-i18n'
+import { normalizeLocale } from '../i18n'
 
 interface Store {
   lang: string
@@ -12,20 +13,7 @@ export default defineStore('lang', {
   }),
   actions: {
     setLang(lang: string) {
-      switch (lang) {
-        case 'en': {
-          this.lang = 'en-US'
-          break
-        }
-        case 'ru': {
-          this.lang = 'ru-RU'
-          break
-        }
-        default: {
-          this.lang = lang
-          break
-        }
-      }
+      this.lang = normalizeLocale(lang)
       LocalStorage.set('locale', this.lang)
     },
   },

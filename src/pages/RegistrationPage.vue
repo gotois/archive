@@ -288,10 +288,19 @@ watch(
   },
 )
 
-function registrationCallback(cb: () => boolean) {
-  const hasNext = cb()
-  if (hasNext) {
-    stepper.value.next()
+async function registrationCallback(cb: () => Promise<boolean>) {
+  try {
+    const hasNext = await cb()
+    if (hasNext) {
+      stepper.value.next()
+      return
+    }
+  } catch (error) {
+    console.error(error)
+    $q.notify({
+      type: 'negative',
+      message: error.message as string,
+    })
   }
 }
 

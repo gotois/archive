@@ -9,6 +9,23 @@ export enum Locale {
   'en-US' = 'en-US',
 }
 
+export function normalizeLocale(lang: string) {
+  switch (lang.toLowerCase()) {
+    case 'ru':
+    case 'ru-ru': {
+      return Locale['ru-RU']
+    }
+    case 'en':
+    case 'en-us':
+    case 'en-gb': {
+      return Locale['en-US']
+    }
+    default: {
+      return Locale['en-US']
+    }
+  }
+}
+
 export default {
   [Locale['ru-RU']]: ru,
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

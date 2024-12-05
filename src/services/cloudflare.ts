@@ -1,4 +1,4 @@
-export async function getCloudflareInfo() {
+export default async function () {
   const trace = await fetch('https://1.1.1.1/cdn-cgi/trace')
   const data = await trace.text()
   const arr = data

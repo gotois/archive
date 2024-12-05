@@ -15,7 +15,7 @@
       field-classes="q-ml-xs q-mr-xs"
       square
       outlined
-      autofocus
+      :autofocus="$q.platform.is.desktop"
       @complete="onHandleComplete"
     />
   </QPage>

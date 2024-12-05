@@ -84,7 +84,6 @@ export default defineStore('auth', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': this.basicAuth,
         },
         body: JSON.stringify(requestedContact),
       })

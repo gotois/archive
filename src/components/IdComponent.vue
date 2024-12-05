@@ -28,7 +28,7 @@
     class="q-gutter-md"
     autocapitalize="off"
     autocomplete="off"
-    autofocus
+    :autofocus="$q.platform.is.desktop"
     greedy
     @submit="$emit('finish')"
   >

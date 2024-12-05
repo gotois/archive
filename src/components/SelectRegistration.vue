@@ -1,5 +1,14 @@
 <template>
+  <TelegramLogin
+    v-if="isProductionApp"
+    mode="callback"
+    :telegram-login="TELEGRAM_BOT_NAME"
+    size="large"
+    radius="0"
+    @callback="telegramSign"
+  />
   <QBtnDropdown
+    v-else
     :label="$t('tutorial.welcome.ok')"
     color="accent"
     square
@@ -8,7 +17,6 @@
     :class="{
       'full-width': !$q.platform.is.desktop,
     }"
-    @click="getClientInfo"
   >
     <QBtnGroup class="q-pa-md" flat>
       <QBtn
@@ -20,20 +28,12 @@
         label="Demo"
         @click="$emit('select', demoSign)"
       >
-        <QTooltip>Demo sign</QTooltip>
+        <QTooltip>Demo Sign</QTooltip>
       </QBtn>
-      <TelegramLogin
-        mode="callback"
-        :telegram-login="TELEGRAM_BOT_NAME"
-        size="large"
-        radius="0"
-        @callback="telegramSign"
-      />
     </QBtnGroup>
   </QBtnDropdown>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { telegramLoginTemp as TelegramLogin } from 'vue3-telegram-login'
 import { useQuasar, QTooltip, QBtn, QBtnGroup, QBtnDropdown } from 'quasar'
@@ -42,8 +42,8 @@ import useAuthStore from 'stores/auth'
 import { demoUserWebId } from 'stores/auth'
 import { keyPair } from '../services/databaseService'
 import { TELEGRAM_BOT_NAME } from '../services/telegram'
-import { getCloudflareInfo } from '../services/cloudflare'
 import { TelegramUser } from '../types/models'
+import { isProductionApp } from '../helpers/googlePlayHelper'
 
 defineEmits(['select'])
 
@@ -70,7 +70,6 @@ async function getClientInfo() {
   }
 }
 
-async function demoSign() {
   const key = await keyPair.generateNewKeyPair(demoUserWebId)
   await keyPair.setKeyPair(key)
   profileStore.consumerPhone('+1234567890')
@@ -81,6 +80,11 @@ async function demoSign() {
 }
 
 async function telegramSign(user: TelegramUser) {
+  try {
+    await profileStore.setNetworkUser()
+  } catch {
+    // ignore
+  }
   await authStore.registration(user)
   const name = user.first_name ?? '' + ' ' + user.last_name ?? ''
   profileStore.consumerName(name)

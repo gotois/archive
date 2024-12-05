@@ -2,6 +2,7 @@ import { LocalStorage } from 'quasar'
 import { defineStore } from 'pinia'
 import { getEmailProperty, getGravatarURL } from '../helpers/schemaHelper'
 import { validUrlString } from '../helpers/urlHelper'
+import getLocation from '../services/cloudflare'
 
 interface State {
   did: string
@@ -9,6 +10,7 @@ interface State {
   email: string
   phone: string
   avatar: string
+  loc: string
 }
 
 export default defineStore('profile', {
@@ -18,8 +20,13 @@ export default defineStore('profile', {
     email: LocalStorage.getItem('email') ?? '',
     phone: LocalStorage.getItem('phone') ?? '',
     avatar: LocalStorage.getItem('avatar') ?? '',
+    loc: undefined,
   }),
   actions: {
+    async setNetworkUser() {
+      const { loc } = await getLocation()
+      this.loc = loc
+    },
     consumerDID(value: string) {
       const did = value.trim()
       LocalStorage.set('did', did)

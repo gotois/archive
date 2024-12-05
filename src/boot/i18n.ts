@@ -1,7 +1,7 @@
-import { boot } from 'quasar/wrappers'
 import { LocalStorage } from 'quasar'
+import { boot } from 'quasar/wrappers'
 import { createI18n } from 'vue-i18n'
-import { Locale } from '../i18n'
+import { Locale, normalizeLocale } from '../i18n'
 import messages from '../i18n'
 
 export type MessageLanguages = keyof typeof messages
@@ -26,10 +26,10 @@ declare module 'vue-i18n' {
 export default boot(({ app }) => {
   const locale = LocalStorage.has('locale')
     ? String(LocalStorage.getItem('locale'))
-    : navigator.language ?? Locale['ru-RU']
+    : navigator.language
 
   const i18n = createI18n({
-    locale: locale,
+    locale: normalizeLocale(locale),
     fallbackLocale: Locale['en-US'],
     legacy: false,
     messages,

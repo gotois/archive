@@ -359,7 +359,7 @@
                       :num="TFA_LENGTH"
                       :rules="[otpRule]"
                       square
-                      autofocus
+                      :autofocus="$q.platform.is.desktop"
                       :input-styles="{ width: '32px' }"
                       field-classes="q-ml-xs q-mr-xs"
                       style="width: fit-content"
