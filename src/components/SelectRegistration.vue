@@ -75,9 +75,18 @@ async function telegramSign(user: TelegramUser) {
   } catch {
     // ignore
   }
-  await authStore.registration(user)
-  const name = user.first_name ?? '' + ' ' + user.last_name ?? ''
-  profileStore.consumerName(name)
-  return true
+  try {
+    await authStore.registration(user)
+    const name = user.first_name ?? '' + ' ' + user.last_name ?? ''
+    profileStore.consumerName(name)
+    return true
+  } catch (error) {
+    console.error(error)
+    $q.notify({
+      color: 'negative',
+      message: error.message as string,
+    })
+    return false
+  }
 }
 </script>

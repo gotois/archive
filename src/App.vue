@@ -212,7 +212,15 @@ if (isTMA) {
 
 onMounted(async () => {
   if (isTMA) {
-    await authStore.authorizationByTg()
+    try {
+      await authStore.authorizationByTg()
+    } catch (error) {
+      console.error(error)
+      $q.notify({
+        type: 'negative',
+        message: error.message as string,
+      })
+    }
   }
 })
 
