@@ -53,22 +53,12 @@ const $t = i18n.t
 const profileStore = useProfileStore()
 const authStore = useAuthStore()
 
-const location = ref('')
-
-async function getClientInfo() {
-  if (location.value !== '') {
-    return
-  }
-  $q.loading.show()
+async function demoSign() {
   try {
-    const { loc } = await getCloudflareInfo()
-    location.value = loc
-  } catch (e) {
-    console.error(e)
-  } finally {
-    $q.loading.hide()
+    await profileStore.setNetworkUser()
+  } catch {
+    // ignore
   }
-}
 
   const key = await keyPair.generateNewKeyPair(demoUserWebId)
   await keyPair.setKeyPair(key)

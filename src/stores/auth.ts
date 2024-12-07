@@ -61,7 +61,7 @@ export default defineStore('auth', {
       }
     },
     async authorizationByTg() {
-      const response = await fetch(process.env.server + '/auth', {
+      const response = await fetch(process.env.server + '/authorization', {
         method: 'GET',
         headers: {
           'Content-Type': 'plain/text',
@@ -80,7 +80,7 @@ export default defineStore('auth', {
       this.jwt = jwt
     },
     async registration(requestedContact: RequestedContact | TelegramUser) {
-      const response = await fetch(process.env.server + '/registration', {
+      const response = await fetch(process.env.server + '/authorization', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
