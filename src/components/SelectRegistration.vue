@@ -26,7 +26,7 @@
         square
         flat
         label="Demo"
-        @click="$emit('select', demoSign)"
+        @click="emit('select', demoSign)"
       >
         <QTooltip>Demo Sign</QTooltip>
       </QBtn>
@@ -45,7 +45,7 @@ import { TELEGRAM_BOT_NAME } from '../services/telegram'
 import { TelegramUser } from '../types/models'
 import { isProductionApp } from '../helpers/googlePlayHelper'
 
-defineEmits(['select'])
+const emit = defineEmits(['select'])
 
 const $q = useQuasar()
 const i18n = useI18n()
@@ -75,18 +75,15 @@ async function telegramSign(user: TelegramUser) {
   } catch {
     // ignore
   }
-  try {
-    await authStore.registration(user)
-    const name = user.first_name ?? '' + ' ' + user.last_name ?? ''
-    profileStore.consumerName(name)
-    return true
-  } catch (error) {
-    console.error(error)
-    $q.notify({
-      color: 'negative',
-      message: error.message as string,
-    })
-    return false
-  }
+  emit('select', async () => {
+    try {
+      await authStore.registration(user)
+      const name = user.first_name ?? '' + ' ' + user.last_name ?? ''
+      profileStore.consumerName(name)
+      return true
+    } catch (error) {
+      return false
+    }
+  })
 }
 </script>

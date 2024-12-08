@@ -294,6 +294,11 @@ async function registrationCallback(cb: () => Promise<boolean>) {
     if (hasNext) {
       stepper.value.next()
       return
+    } else {
+      $q.notify({
+        type: 'negative',
+        message: 'Cannot register',
+      })
     }
   } catch (error) {
     console.error(error)
