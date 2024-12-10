@@ -443,7 +443,7 @@ function exportKeyPair() {
 }
 
 async function mintPrivacyContract() {
-  const response = await fetch(window.location.origin + '/docs/privacy.md')
+  const response = await fetch(window.location.origin + '/docs/agreement.md')
   const contentType = response.headers.get('content-type')
 
   if (contentType.startsWith('text/markdown')) {
@@ -478,6 +478,8 @@ async function mintPrivacyContract() {
     })
 
     return dogovor
+  } else {
+    throw new Error('Unknown content type')
   }
 }
 
