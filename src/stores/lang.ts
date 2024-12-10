@@ -25,5 +25,8 @@ export default defineStore('lang', {
       const i18n = useI18n()
       return String(i18n.locale.value)
     },
+    isRussian(): boolean {
+      return this.lang.startsWith('ru')
+    },
   },
 })

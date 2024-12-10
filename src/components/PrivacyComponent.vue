@@ -9,7 +9,7 @@ import { parse } from '../helpers/markdownHelper'
 const html = ref('')
 
 onMounted(async () => {
-  const response = await fetch('docs/agreement.md')
+  const response = await fetch('docs/privacy.md')
   const md = await response.text()
   html.value = parse(md)
 })

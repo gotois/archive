@@ -19,7 +19,7 @@
       <h1
         class="text-white text-uppercase text-center text-weight-light no-margin no-padding"
         :style="{
-          'font-size': $q.platform.is.mobile ? '5vmax' : '3vmax',
+          'font-size': !$q.platform.is.desktop ? '5vmax' : '3vmax',
           'line-height': 1,
         }"
       >
@@ -30,7 +30,7 @@
         style="font-size: x-large; line-height: 1"
         :class="{
           'text-center no-padding': $q.platform.is.desktop,
-          'text-left q-pa-md': $q.platform.is.mobile,
+          'text-left q-pa-md': !$q.platform.is.desktop,
         }"
       >
         Решение упрощает хранение и обмен документами для физических и
@@ -68,7 +68,7 @@
       <div class="flex justify-center row">
         <QCardSection class="flex q-pt-none text-left col-12">
           <QBtn
-            v-if="!forRus"
+            v-if="!langStore.isRussian"
             icon="play_arrow"
             color="black"
             :href="applicationURL"
@@ -125,7 +125,7 @@
     <div
       class="flex justify-center"
       :class="{
-        row: !$q.platform.is.mobile,
+        row: $q.platform.is.desktop,
       }"
     >
       <QCard class="q-ma-md col-3" :bordered="$q.platform.is.desktop" flat>
@@ -330,13 +330,20 @@
           <QItemLabel caption>Обратиться в центр поддержки</QItemLabel>
         </QCardSection>
       </QItem>
+      <QItem v-ripple clickable dense @click="onPrivacy">
+        <QCardSection>
+          <QItemLabel lines="1" class="text-left"
+            >Политика обработки персональных данных
+          </QItemLabel>
+        </QCardSection>
+      </QItem>
     </QList>
   </QScrollArea>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue'
 import {
   useMeta,
+  useQuasar,
   QIcon,
   QBtn,
   QScrollArea,
@@ -365,16 +372,15 @@ const router = useRouter()
 const i18n = useI18n()
 const langStore = useLangStore()
 const $t = i18n.t
+const $q = useQuasar()
 
 const metaData = {
   'title': $t('pages.welcome.title'),
   'og:title': $t('pages.welcome.title'),
 }
 
-const forRus = ref(langStore.language.startsWith('ru'))
-
-async function onRegister() {
-  await router.push({
+function onRegister() {
+  return router.push({
     name: ROUTE_NAMES.TUTORIAL,
     query: {
       step: STEP.WELCOME,
@@ -384,8 +390,14 @@ async function onRegister() {
 }
 
 function onSupport() {
-  const { email } = pkg.contributors[0]
+  const [{ email }] = pkg.contributors
   open(`mailto:${email}?subject=SUPPORT`)
+}
+
+function onPrivacy() {
+  return router.push({
+    name: ROUTE_NAMES.PRIVACY,
+  })
 }
 
 useMeta(metaData)

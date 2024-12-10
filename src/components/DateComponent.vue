@@ -6,7 +6,7 @@
     class="fullscreen full-width full-height"
     :range="range"
     color="primary"
-    :first-day-of-week="langStore.language.startsWith('ru') ? 1 : null"
+    :first-day-of-week="langStore.isRussian ? 1 : null"
     :locale="calendarLocale"
     :options="options"
     today-btn
@@ -46,7 +46,6 @@ const props = defineProps({
     default: false,
   },
 })
-
 const options = computed(() => {
   if (props.range) {
     if (rangeStart.value) {
@@ -56,7 +55,7 @@ const options = computed(() => {
   return limitOptionsFn
 })
 const calendarLocale = computed(() => {
-  return langStore.language.startsWith('ru')
+  return langStore.isRussian
     ? {
         days: $t('calendar.days').split('_'),
         daysShort: $t('calendar.daysShort').split('_'),
