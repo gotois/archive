@@ -111,6 +111,7 @@ export function convertIcalToEvent(ical: string) {
     start: date.formatDate(dtStart, 'YYYY-MM-DD HH:mm'),
     end: date.formatDate(dtEnd, 'YYYY-MM-DD HH:mm'),
     title: eventName,
+    calendarId: 'secretary', // todo использовать разные форматы календаря такие как work, etc
     description: eventDescription,
     location: vevent.getFirstPropertyValue('location') || null,
     people: vevent

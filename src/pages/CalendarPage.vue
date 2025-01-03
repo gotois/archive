@@ -10,8 +10,45 @@
   >
     <QScrollArea visible class="absolute-full fit">
       <ScheduleXCalendar :calendar-app="calendarApp">
+        <template #dateGridEvent="{ calendarEvent }">
+          <QCard
+            v-ripple
+            flat
+            :dark="!$q.dark.isActive"
+            bordered
+            square
+            class="fit"
+          >
+            <QCardSection>
+              <div
+                class="flex justify-between items-center"
+                :class="{
+                  'text-black': $q.dark.isActive,
+                  'text-white': !$q.dark.isActive,
+                }"
+              >
+                <div class="text-subtitle2 text-bold">
+                  {{ calendarEvent.title }}
+                </div>
+              </div>
+              <div v-if="calendarEvent.location" class="ellipsis-2-lines">
+                📍 {{ calendarEvent.location }}
+              </div>
+              <div v-if="calendarEvent.description" class="ellipsis-2-lines">
+                {{ calendarEvent.description }}
+              </div>
+            </QCardSection>
+          </QCard>
+        </template>
         <template #timeGridEvent="{ calendarEvent }">
-          <QCard v-ripple flat :dark="!$q.dark.isActive">
+          <QCard
+            v-ripple
+            flat
+            :dark="!$q.dark.isActive"
+            bordered
+            square
+            class="fit"
+          >
             <QCardSection>
               <div
                 class="flex justify-between items-center"
@@ -24,6 +61,7 @@
                   {{ calendarEvent.title }}
                 </div>
                 <div class="text-caption">
+                  ⏰
                   {{ date.formatDate(new Date(calendarEvent.start), 'HH:mm') }}
                   -
                   {{ date.formatDate(new Date(calendarEvent.end), 'HH:mm') }}
@@ -112,9 +150,9 @@ import { createScrollControllerPlugin } from '@schedule-x/scroll-controller'
 import DayCalendar from 'components/DayCalendar.vue'
 import useCalendarStore from 'stores/calendar'
 import useLangStore from 'stores/lang'
-import '@schedule-x/theme-default/dist/index.css'
 import { formatToCalendarDate, isCurrentDate } from '../helpers/calendarHelper'
 import { ROUTE_NAMES } from '../router/routes'
+import '@schedule-x/theme-shadcn/dist/index.css'
 
 const CALENDAR_WEEK_NUM = 7
 const INITIAL_SCROLL = '06:30'
@@ -141,11 +179,13 @@ const virtualScroll = ref(null)
 const selectedDay = ref(null)
 
 const calendarApp = createCalendar({
+  theme: 'shadcn',
   selectedDate:
     (router.currentRoute.value.query.date as string) ??
     formatToCalendarDate(new Date()),
   locale: langStore.language,
   defaultView: viewDay.name,
+  firstDayOfWeek: 1,
   isDark: $q.dark.isActive,
   views: [createViewDay()],
   events: calendarStore.events,
@@ -158,6 +198,7 @@ const calendarApp = createCalendar({
     eventModal,
     scrollController,
   ],
+  isResponsive: false,
   callbacks: {
     async onRangeUpdate(range): void {
       const date = formatToCalendarDate(new Date(range.start))
@@ -260,5 +301,8 @@ useMeta(metaData)
 }
 .sx__calendar-header {
   padding: 0;
+}
+.sx__date-grid-cell {
+  height: clamp(80px, 1.25rem, 24px) !important;
 }
 </style>
