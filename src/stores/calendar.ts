@@ -80,7 +80,7 @@ export default defineStore('calendar', {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
       return JSON.parse(result.data) as Calendar
     },
-    async loadCalendar(startDate: string, endDate?: string) {
+    async loadCalendar(startDate: Date, endDate?: Date) {
       const activity = {
         '@context': 'https://www.w3.org/ns/activitystreams',
         'type': 'Offer',

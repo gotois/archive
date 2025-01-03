@@ -58,7 +58,8 @@ export function createCal(id: string, object: FormatContract) {
     attendee: attendee,
   }) as string
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   const str = icalendar(id, { event }) as string
   const encoder = new TextEncoder()
   return new File([encoder.encode(str)], 'calendar.ics', {
@@ -96,6 +97,7 @@ export function convertIcalToEvent(ical: string) {
   const vevent = comp.getFirstSubcomponent('vevent')
   const eventName = vevent.getFirstPropertyValue('summary')
   const eventDescription = vevent.getFirstPropertyValue('description')
+  const uid = vevent.getFirstPropertyValue('uid')
   const dtStart = vevent
     .getFirstPropertyValue('dtstart')
     .toString()
@@ -105,12 +107,12 @@ export function convertIcalToEvent(ical: string) {
     .toString()
     .replace('Z', '')
   return {
-    id: '1' + Math.random() * 100, // todo - использовать id из ical
+    id: uid,
     start: date.formatDate(dtStart, 'YYYY-MM-DD HH:mm'),
     end: date.formatDate(dtEnd, 'YYYY-MM-DD HH:mm'),
     title: eventName,
     description: eventDescription,
-    location: vevent.getFirstPropertyValue('location') || '',
+    location: vevent.getFirstPropertyValue('location') || null,
     people: vevent
       .getAllProperties('attendee')
       .map((att) => att.getFirstValue()),

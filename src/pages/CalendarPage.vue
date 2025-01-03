@@ -88,7 +88,7 @@
   </QPage>
 </template>
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import {
   useQuasar,
   useMeta,
@@ -138,20 +138,12 @@ const metaData = {
 }
 const weeks = ref<Date[]>([])
 const virtualScroll = ref(null)
-
-const selectedDay = computed(() => {
-  const currentDate =
-    (router.currentRoute.value.query.date as string) ??
-    formatToCalendarDate(new Date())
-
-  // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-  weeks.value = loadWeek(new Date(currentDate))
-
-  return currentDate
-})
+const selectedDay = ref(null)
 
 const calendarApp = createCalendar({
-  selectedDate: selectedDay.value,
+  selectedDate:
+    (router.currentRoute.value.query.date as string) ??
+    formatToCalendarDate(new Date()),
   locale: langStore.language,
   defaultView: viewDay.name,
   isDark: $q.dark.isActive,
@@ -175,16 +167,13 @@ const calendarApp = createCalendar({
           date: date,
         },
       })
-      try {
-        await calendarStore.loadCalendar(range.start)
-        eventsServicePlugin.set(calendarStore.events)
-      } catch (error) {
-        console.error(error)
-      }
+      selectedDay.value = date
     },
     async onRender(): void {
-      await calendarStore.loadCalendar(selectedDay.value)
-      eventsServicePlugin.set(calendarStore.events)
+      const date =
+        (router.currentRoute.value.query.date as string) ??
+        formatToCalendarDate(new Date())
+      await loadWeek(new Date(date))
 
       const currentIndexDay = weeks.value.findIndex((elem) =>
         isCurrentDate(elem),
@@ -195,43 +184,47 @@ const calendarApp = createCalendar({
   },
 })
 
-function loadWeek(now: Date) {
+async function loadWeek(now: Date) {
   const startOfWeek = new Date(
     now.setDate(now.getDate() - ((now.getDay() + 6) % CALENDAR_WEEK_NUM)),
   )
   const endOfWeek = new Date(
     now.setDate(now.getDate() - now.getDay() + CALENDAR_WEEK_NUM),
   )
-
   const dates = []
   for (let d = startOfWeek; d <= endOfWeek; d.setDate(d.getDate() + 1)) {
+    // для последнего дня недели устанавливаем крайнее значение времени
+    if (d.getDay() === 0) {
+      d.setHours(23, 59, 59, 999)
+    }
     dates.push(new Date(d))
   }
-  return dates
+  try {
+    await calendarStore.loadCalendar(dates.at(0), dates.at(-1))
+    eventsServicePlugin.set(calendarStore.events)
+  } catch (error) {
+    console.error(error)
+  }
+
+  weeks.value = dates
 }
 
 async function loadPrevWeek() {
-  const day = new Date(selectedDay.value)
+  const currentDate =
+    (router.currentRoute.value.query.date as string) ??
+    formatToCalendarDate(new Date())
+  const day = new Date(currentDate)
   day.setDate(day.getDate() - CALENDAR_WEEK_NUM)
-  const date = formatToCalendarDate(day)
-  await router.push({
-    name: ROUTE_NAMES.CALENDAR,
-    query: {
-      date: date,
-    },
-  })
+  await loadWeek(day)
 }
 
 async function loadNextWeek() {
-  const day = new Date(selectedDay.value)
+  const currentDate =
+    (router.currentRoute.value.query.date as string) ??
+    formatToCalendarDate(new Date())
+  const day = new Date(currentDate)
   day.setDate(day.getDate() + CALENDAR_WEEK_NUM)
-  const date = formatToCalendarDate(day)
-  await router.push({
-    name: ROUTE_NAMES.CALENDAR,
-    query: {
-      date: date,
-    },
-  })
+  await loadWeek(day)
 }
 
 function selectDay(item: Date) {
