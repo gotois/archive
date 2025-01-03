@@ -56,7 +56,7 @@ export default defineStore('calendar', {
         body: {
           jsonrpc: '2.0',
           id: uid(),
-          method: 'generate-calendar',
+          method: 'add-calendar',
           params: {
             '@context': 'https://www.w3.org/ns/activitystreams',
             'type': 'Activity',
@@ -112,7 +112,8 @@ export default defineStore('calendar', {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument
         throw new Error(error.message)
       }
-      const calendar = result as string[]
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
+      const calendar = result.data as string[]
       this.events = calendar.map((icalEvent) => convertIcalToEvent(icalEvent))
     },
   },

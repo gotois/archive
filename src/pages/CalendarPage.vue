@@ -24,9 +24,9 @@
                   {{ calendarEvent.title }}
                 </div>
                 <div class="text-caption">
-                  {{ date.formatDate(new Date(calendarEvent.start), 'HH:MM') }}
+                  {{ date.formatDate(new Date(calendarEvent.start), 'HH:mm') }}
                   -
-                  {{ date.formatDate(new Date(calendarEvent.end), 'HH:MM') }}
+                  {{ date.formatDate(new Date(calendarEvent.end), 'HH:mm') }}
                 </div>
               </div>
               <div v-if="calendarEvent.location" class="ellipsis-2-lines">
@@ -175,8 +175,12 @@ const calendarApp = createCalendar({
           date: date,
         },
       })
-      await calendarStore.loadCalendar(range.start)
-      eventsServicePlugin.set(calendarStore.events)
+      try {
+        await calendarStore.loadCalendar(range.start)
+        eventsServicePlugin.set(calendarStore.events)
+      } catch (error) {
+        console.error(error)
+      }
     },
     async onRender(): void {
       await calendarStore.loadCalendar(selectedDay.value)
