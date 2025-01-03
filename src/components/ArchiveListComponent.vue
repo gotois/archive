@@ -9,8 +9,14 @@
         :class="{
           'q-mt-md': index > 0,
         }"
-        :description="item.instrument.description"
         :title="item.instrument.name"
+        :description="item.instrument.description"
+        :same-as="item.instrument.sameAs"
+        :location="item.location"
+        :email="item.participant.email"
+        :telephone="item.participant.telephone"
+        @on-remove="() => emit('onRemove', item)"
+        @on-edit="() => emit('onEdit', item)"
       />
     </template>
     <template v-if="paginationCount > 0" #after>
@@ -58,7 +64,7 @@ const props = defineProps({
     required: true,
   },
 })
-const emit = defineEmits(['onPaginate'])
+const emit = defineEmits(['onPaginate', 'onRemove', 'onEdit'])
 
 const contracts = toRef(props, 'contracts', [])
 const page = ref(props.page)

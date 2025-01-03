@@ -20,7 +20,7 @@
           <QTooltip>{{ title }}</QTooltip>
         </p>
         <div
-          v-if="item.instrument.description"
+          v-if="description"
           class="full-width text-caption q-pb-md text-grey no-margin"
           v-html="parse(description)"
         ></div>
@@ -38,7 +38,7 @@
           <QList bordered separator padding :dense="$q.platform.is.desktop">
             <QItem v-close-popup clickable @click="emit('onEdit', item)">
               <QItemSection side>
-                <QItemLabel v-if="isLoggedIn && item.sameAs" overline caption>
+                <QItemLabel v-if="isLoggedIn && sameAs" overline caption>
                   {{ $t('archiveList.pod') }}
                 </QItemLabel>
                 <QItemLabel class="text-uppercase">
@@ -48,7 +48,7 @@
             </QItem>
             <QItem v-close-popup clickable @click="emit('onRemove', item)">
               <QItemSection side>
-                <QItemLabel v-if="isLoggedIn && item.sameAs" overline caption>
+                <QItemLabel v-if="isLoggedIn && sameAs" overline caption>
                   {{ $t('archiveList.pod') }}
                 </QItemLabel>
                 <QItemLabel class="text-negative text-uppercase">
@@ -130,10 +130,11 @@ import { isVerified } from '../helpers/contractHelper'
 import { open } from '../helpers/urlHelper'
 import { openMap } from '../services/geoService'
 import { TELEGRAM_BOT_NAME } from '../services/telegram'
-import { FormatContract } from '../types/models'
+import { FormatContract, Place } from '../types/models'
 
 const emit = defineEmits(['onRemove', 'onEdit'])
 const props = defineProps({
+  // todo: нужно отказаться от передачи целиком :item="item" а передавать только нужные параметры
   item: {
     type: Object as PropType<FormatContract>,
     required: true,
@@ -143,6 +144,22 @@ const props = defineProps({
     required: true,
   },
   description: {
+    type: String as PropType<string>,
+    default: '',
+  },
+  sameAs: {
+    type: String as PropType<string>,
+    default: '',
+  },
+  location: {
+    type: Object as PropType<Place>,
+    default: null,
+  },
+  email: {
+    type: String as PropType<string>,
+    default: '',
+  },
+  telephone: {
     type: String as PropType<string>,
     default: '',
   },
@@ -206,7 +223,7 @@ function onSheet(item: FormatContract) {
     actions.push({})
   }
   const group2 = [] // Publish Group
-  if (item.sameAs) {
+  if (props.sameAs) {
     group2.push({
       label: $t('components.archiveList.sheet.link.label'),
       icon: 'link',
@@ -227,8 +244,8 @@ function onSheet(item: FormatContract) {
     actions.push({})
   }
   const group3 = [] // Message Group
-  if (item.participant.email || item.participant.telephone) {
-    if (item.participant.email) {
+  if (props.email || props.telephone) {
+    if (props.email) {
       group3.push({
         label: $t('components.archiveList.sheet.mail.label'),
         icon: 'contact_mail',
@@ -236,7 +253,7 @@ function onSheet(item: FormatContract) {
         id: Action.MAIL,
       })
     }
-    if (item.participant.telephone) {
+    if (props.telephone) {
       group3.push({
         label: $t('components.archiveList.sheet.telephone.label'),
         icon: 'call',
@@ -253,7 +270,7 @@ function onSheet(item: FormatContract) {
       })
     }
   }
-  if (item.location && Object.keys(item.location).length > 0) {
+  if (props.location && Object.keys(props.location).length > 0) {
     group3.push({
       label: $t('components.archiveList.sheet.map.label'),
       icon: 'map',
@@ -276,10 +293,10 @@ function onSheet(item: FormatContract) {
     switch (action.id) {
       case Action.SHARE: {
         const icalFile = createCal(icalId, item)
-        return shareFile(item.instrument.name, icalFile)
+        return shareFile(props.title, icalFile)
       }
       case Action.LINK: {
-        const shareLink = window.location.origin + '/sign?from=' + item.sameAs
+        const shareLink = window.location.origin + '/sign?from=' + props.sameAs
         return shareURL(shareLink)
       }
       case Action.GOOGLE_CALENDAR: {
@@ -294,13 +311,13 @@ function onSheet(item: FormatContract) {
         return open(mailUrl(item))
       }
       case Action.TELEPHONE: {
-        return open(item.participant.telephone)
+        return open(props.telephone)
       }
       case Action.LAW: {
         return sendToCourt()
       }
       case Action.MAP: {
-        return openMap(item.location)
+        return openMap(props.location)
       }
       default: {
         console.warn('Unknown id')
