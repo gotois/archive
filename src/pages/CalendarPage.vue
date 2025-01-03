@@ -170,10 +170,9 @@ const calendarApp = createCalendar({
       selectedDay.value = date
     },
     async onRender(): void {
-      const date =
-        (router.currentRoute.value.query.date as string) ??
-        formatToCalendarDate(new Date())
-      await loadWeek(new Date(date))
+      const currentDate = getCurrentDateRoute()
+      const day = new Date(currentDate)
+      await loadWeek(day)
 
       const currentIndexDay = weeks.value.findIndex((elem) =>
         isCurrentDate(elem),
@@ -210,18 +209,21 @@ async function loadWeek(now: Date) {
 }
 
 async function loadPrevWeek() {
-  const currentDate =
-    (router.currentRoute.value.query.date as string) ??
-    formatToCalendarDate(new Date())
+  const currentDate = getCurrentDateRoute()
   const day = new Date(currentDate)
   day.setDate(day.getDate() - CALENDAR_WEEK_NUM)
   await loadWeek(day)
 }
 
-async function loadNextWeek() {
-  const currentDate =
+function getCurrentDateRoute() {
+  return (
     (router.currentRoute.value.query.date as string) ??
     formatToCalendarDate(new Date())
+  )
+}
+
+async function loadNextWeek() {
+  const currentDate = getCurrentDateRoute()
   const day = new Date(currentDate)
   day.setDate(day.getDate() + CALENDAR_WEEK_NUM)
   await loadWeek(day)

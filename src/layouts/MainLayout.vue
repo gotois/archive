@@ -526,7 +526,7 @@
       </div>
       <CalendarEventsComponent
         class="absolute-bottom q-ml-auto q-mr-auto q-mb-none q-mt-md"
-        @select="onFilterById"
+        @select="onCalendarByDate"
       />
     </QDrawer>
     <QPageContainer>
@@ -837,7 +837,7 @@ function onRemoveArchiveName(name: string) {
   contractStore.removeContractName(name)
 }
 
-async function onFilterById(strDate: string) {
+async function onCalendarByDate(strDate: string) {
   if (!strDate) {
     return
   }
