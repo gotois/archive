@@ -1,35 +1,50 @@
 <template>
   <QToolbarTitle class="non-selectable">
-    <QIcon
-      v-show="!$q.dark.isActive"
-      class="cursor-pointer orientation-landscape"
-      style="vertical-align: text-top"
-      name="img:/icons/safari-pinned-tab.svg"
-      @click="onOpenRepo"
-    />
-    <span
-      v-if="!$q.platform.is.android"
-      class="cursor-pointer text-center"
+    <QBadge
+      transparent
+      color="secondary"
+      class="vertical-middle cursor-pointer"
       @click="onOpenRepo"
     >
-      {{ $t('productName') }}
-    </span>
-    <slot />
+      <QIcon
+        v-show="!$q.dark.isActive && !$q.platform.is.android"
+        class="orientation-landscape"
+        style="vertical-align: text-top"
+        name="img:/icons/safari-pinned-tab.svg"
+      />
+      {{ headerBadge }}
+    </QBadge>
   </QToolbarTitle>
 </template>
 <script lang="ts" setup>
-import { QToolbarTitle, QIcon } from 'quasar'
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { QToolbarTitle, QIcon, QBadge, useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 import { open } from '../helpers/urlHelper'
 import pkg from '../../package.json'
+import { isTMA } from '../helpers/twaHelper'
 import { ROUTE_NAMES } from '../router/routes'
 
 const router = useRouter()
+const i18n = useI18n()
+const $q = useQuasar()
+const $t = i18n.t
 
 const [domain, repo] = pkg.repository.split(':')
 
+const headerBadge = computed(() => {
+  let name = $t('productName') + ' '
+  if (isTMA) {
+    name += $t('header.telegram') + ' '
+  }
+  name += $t('header.demo') + ' '
+  return name.trim()
+})
+
 async function onOpenRepo(e: Event) {
   e.preventDefault()
+  // todo - уведомления нужно запрашивать в самом начале
   if ('Notification' in window && Notification.permission === 'default') {
     await Notification.requestPermission()
   }

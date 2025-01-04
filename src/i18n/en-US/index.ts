@@ -71,7 +71,6 @@ export default {
   header: {
     demo: 'Demo',
     telegram: 'MiniApp',
-    free: 'Free',
   },
   navigation: {
     about: 'About',

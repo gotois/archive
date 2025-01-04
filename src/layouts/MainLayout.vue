@@ -21,35 +21,7 @@
           icon="settings"
           @click="onToggleLeftDrawer"
         />
-        <ToolbarTitleComponent
-          :class="{
-            'text-center': !$q.platform.is.desktop,
-          }"
-        >
-          <QBadge
-            :label="headerBadge"
-            transparent
-            color="secondary"
-            class="vertical-top q-ml-xs"
-          />
-        </ToolbarTitleComponent>
-        <template v-if="contractsCount > 0">
-          <SearchInputComponent
-            v-if="$q.platform.is.desktop"
-            :autofocus="$q.platform.is.desktop"
-            @search="(value) => onSearch(value)"
-          />
-          <QBtn
-            v-else
-            flat
-            round
-            :dense="$q.platform.is.desktop"
-            class="cursor-pointer"
-            name="search"
-            icon="search"
-            @click="showSearch = true"
-          />
-        </template>
+        <ToolbarTitleComponent class="text-center" />
         <QBtn
           v-if="$q.screen.xs || $q.screen.sm || $q.screen.md"
           flat
@@ -590,7 +562,6 @@ import {
   QForm,
   QList,
   QDrawer,
-  QBadge,
   QToolbar,
   QHeader,
   QLayout,
@@ -672,15 +643,6 @@ const { getWalletLD } = storeToRefs(walletStore)
 const bigScreen = computed(
   () => $q.platform.is.desktop && ($q.screen.xl || $q.screen.lg),
 )
-const headerBadge = computed(() => {
-  if (isTMA) {
-    return $t('header.telegram')
-  }
-  if (isDemo) {
-    return $t('header.demo')
-  }
-  return $t('header.free')
-})
 
 const TFA_LENGTH = 6
 const miniState = ref(bigScreen.value)
