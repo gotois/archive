@@ -7,7 +7,7 @@
       @click="onOpenRepo"
     >
       <QIcon
-        v-show="!$q.dark.isActive && !$q.platform.is.android"
+        v-show="!$q.platform.is.android"
         class="orientation-landscape"
         style="vertical-align: text-top"
         name="img:/icons/safari-pinned-tab.svg"
