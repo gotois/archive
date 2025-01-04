@@ -17,13 +17,12 @@
   </QToolbarTitle>
 </template>
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { QToolbarTitle, QIcon, QBadge, useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 import { open } from '../helpers/urlHelper'
 import pkg from '../../package.json'
-import { isTMA } from '../helpers/twaHelper'
 import { ROUTE_NAMES } from '../router/routes'
 
 const router = useRouter()
@@ -33,14 +32,7 @@ const $t = i18n.t
 
 const [domain, repo] = pkg.repository.split(':')
 
-const headerBadge = computed(() => {
-  let name = $t('productName') + ' '
-  if (isTMA) {
-    name += $t('header.telegram') + ' '
-  }
-  name += $t('header.demo') + ' '
-  return name.trim()
-})
+const headerBadge = ref($t('productName') + ' ' + $t('header.demo'))
 
 async function onOpenRepo(e: Event) {
   e.preventDefault()

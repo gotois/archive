@@ -91,7 +91,14 @@
         </span>
       </div>
       <div class="row items-center">
-        <ContractStory :item="item" />
+        <div
+          class="absolute overflow-hidden text-left ellipsis"
+          style="left: 32px; right: 0"
+        >
+          <QIcon :name="itemIsOrganization(item) ? 'group' : 'face'" />
+          {{ item.participant.url }}
+          {{ sameAs }}
+        </div>
       </div>
     </QCardSection>
   </QCard>
@@ -119,7 +126,6 @@ import { storeToRefs } from 'pinia'
 import useAuthStore from 'stores/auth'
 import useWalletStore from 'stores/wallet'
 import ContractCarouselComponent from 'components/ContractCarouselComponent.vue'
-import ContractStory from 'components/ContractStory.vue'
 import useLangStore from 'stores/lang'
 import { parse } from '../helpers/markdownHelper'
 import { isDateNotOk } from '../helpers/dateHelper'
@@ -394,5 +400,9 @@ async function shareURL(url: string) {
       message: $t('components.archiveList.sheet.link.fail'),
     })
   }
+}
+
+function itemIsOrganization(item: FormatContract) {
+  return item.participant['@type'] === 'https://schema.org/Organization'
 }
 </script>

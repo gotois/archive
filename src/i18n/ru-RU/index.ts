@@ -71,7 +71,6 @@ export default {
   },
   header: {
     demo: 'Демо',
-    telegram: 'MiniApp',
   },
   navigation: {
     about: 'О приложении',

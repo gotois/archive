@@ -70,7 +70,6 @@ export default {
   },
   header: {
     demo: 'Demo',
-    telegram: 'MiniApp',
   },
   navigation: {
     about: 'About',
