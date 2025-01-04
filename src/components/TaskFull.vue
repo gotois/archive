@@ -135,7 +135,7 @@ import { mailUrl } from '../helpers/mailHelper'
 import { isVerified } from '../helpers/contractHelper'
 import { open } from '../helpers/urlHelper'
 import { openMap } from '../services/geoService'
-import { TELEGRAM_BOT_NAME } from '../services/telegram'
+import { TELEGRAM_MINI_APPS_URL } from '../services/telegram'
 import { FormatContract, Place } from '../types/models'
 
 const emit = defineEmits(['onRemove', 'onEdit'])
@@ -353,8 +353,7 @@ type SheetAction = {
 
 function sendToCourt() {
   console.warn('This functionality is under development.')
-  const myAction = 'start'
-  open(`https://t.me/${TELEGRAM_BOT_NAME}?start=${myAction}`)
+  open(TELEGRAM_MINI_APPS_URL)
 }
 
 async function saveIcal(file: File) {

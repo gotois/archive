@@ -23,7 +23,7 @@
           'line-height': 1,
         }"
       >
-        Подписать "Мои&#x202F;договоры" онлайн
+        Ваш "Виртуальный&#x202F;секретарь"
       </h1>
       <h2
         class="text-white text-weight-medium"
@@ -33,8 +33,9 @@
           'text-left q-pa-md': !$q.platform.is.desktop,
         }"
       >
-        Решение упрощает хранение и обмен документами для физических и
-        юридических лиц в любом бизнес-процессе.
+        Решение автоматизирует планирование, повышает продуктивность и помогает
+        достичь баланса между работой и жизнью, индивидуально адаптируясь под
+        потребности каждого пользователя.
       </h2>
 
       <QCardActions align="center">
@@ -69,24 +70,33 @@
         <QCardSection class="flex q-pt-none text-left col-12">
           <QBtn
             v-if="!langStore.isRussian"
+            class="q-ma-xs"
             icon="play_arrow"
             color="black"
-            :href="applicationURL"
+            :href="GOOGLE_PLAY_URL"
           >
             Google Play
           </QBtn>
-          <!-- todo - для РФ нужны кнопки VK и пр. -->
+          <QBtn
+            icon="telegram"
+            class="q-ma-xs"
+            color="blue"
+            :href="TELEGRAM_MINI_APPS_URL"
+          >
+            Telegram
+          </QBtn>
         </QCardSection>
       </div>
     </QCard>
 
     <h2
       :class="{
-        'text-center': $q.platform.is.desktop,
+        'text-center q-ma-md': $q.platform.is.desktop,
         'q-pl-md q-pr-md': !$q.platform.is.desktop,
       }"
-      >Делаем ЭДО для всех</h2
     >
+      Персональный помощник для управления временем и задачами
+    </h2>
 
     <div class="flex justify-center full-width">
       <QCard
@@ -116,7 +126,7 @@
 
     <h2
       :class="{
-        'text-center': $q.platform.is.desktop,
+        'text-center q-ma-md': $q.platform.is.desktop,
         'q-pl-md q-pr-md': !$q.platform.is.desktop,
       }"
     >
@@ -130,10 +140,11 @@
     >
       <QCard class="q-ma-md col-3" :bordered="$q.platform.is.desktop" flat>
         <QCardSection>
-          <div class="text-h6">Электронный архив</div>
+          <div class="text-h6">Электронный архив задач и расписаний</div>
           <div class="text-subtitle2">
-            Надёжное децентрализованное хранение всех документов для компаний и
-            частных лиц.
+            Виртуальный секретарь сохраняет и упорядочивает ваши планы, задачи и
+            события, обеспечивая их доступность и простое управление через
+            цифровую децентрализованную платформу.
           </div>
         </QCardSection>
       </QCard>
@@ -141,39 +152,44 @@
         <QCardSection>
           <div class="text-h6">Безопасность данных</div>
           <div class="text-subtitle2">
-            Каждый наш клиент контролирует свои данные используя
-            децентрализованное хранилище Solid Pod.
+            Система защищает ваши данные с помощью современных методов
+            шифрования и дает полный контроль над информацией, интегрированной с
+            внешними источниками.
           </div>
         </QCardSection>
       </QCard>
       <QCard class="q-ma-md col-3" :bordered="$q.platform.is.desktop" flat>
         <QCardSection>
-          <div class="text-h6">Дружелюбная платформа</div>
+          <div class="text-h6">Дружелюбная и адаптивная платформа</div>
           <div class="text-subtitle2">
-            Интерфейс спроектирован для удобного обмена документами через
-            маршруты согласования.
+            Интерфейс виртуального секретаря интуитивно понятен, а алгоритмы
+            искусственного интеллекта помогают организовать задачи и принимать
+            решения с учетом ваших предпочтений.
           </div>
         </QCardSection>
       </QCard>
       <QCard class="q-ma-md col-3" :bordered="$q.platform.is.desktop" flat>
         <QCardSection>
-          <div class="text-h6">Доступность</div>
+          <div class="text-h6">Доступность и поддержка</div>
           <div class="text-subtitle2">
-            Обеспечиваем помощь и техническую поддержку для быстрого старта.
+            Платформа предоставляет круглосуточную поддержку и инструменты для
+            быстрого начала работы, независимо от уровня технологической
+            подготовки пользователя.
           </div>
         </QCardSection>
       </QCard>
       <QCard class="q-ma-md col-3" :bordered="$q.platform.is.desktop" flat>
         <QCardSection>
           <div class="text-h6"
-            >Обеспечение согласования договоренностей между участниками</div
+            >Обеспечение согласованности в управлении временем между
+            участниками</div
           >
           <div class="text-subtitle2">
-            1. Загрузка документа договора
+            1. Создание расписания и его синхронизация с внешними системами.
             <br />
-            2. Подписание договора электронной понятным способом
+            2. Рекомендации по приоритетам на основе анализа данных.
             <br />
-            3. Сохранение и дальнейшая передача договора
+            3. Хранение, обновление и автоматическая передача договора.
           </div>
         </QCardSection>
       </QCard>
@@ -364,7 +380,8 @@ import { useRouter } from 'vue-router'
 import useLangStore from 'stores/lang'
 import PricingComponent from 'components/PricingComponent.vue'
 import { ROUTE_NAMES, STEP } from '../router/routes'
-import { applicationURL } from '../helpers/googlePlayHelper'
+import { GOOGLE_PLAY_URL } from '../helpers/googlePlayHelper'
+import { TELEGRAM_MINI_APPS_URL } from '../services/telegram'
 import { open } from '../helpers/urlHelper'
 import pkg from '../../package.json'
 

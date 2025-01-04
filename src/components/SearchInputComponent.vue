@@ -78,10 +78,21 @@ import {
   QIcon,
   QMenu,
   QList,
+  QFile,
+  QTooltip,
+  QInput,
+  QFab,
 } from 'quasar'
+import { useI18n } from 'vue-i18n'
 import { miniSearch } from '../services/searchService'
+import {
+  PDF_MIME_TYPE,
+  PNG_MIME_TYPE,
+  JPG_MIME_TYPE,
+} from '../helpers/mimeTypes'
 
 const $q = useQuasar()
+const $t = useI18n().t
 const select = ref<InstanceType<typeof QSelect> | null>(null)
 const searchText = ref('')
 const searchOptions = ref([])

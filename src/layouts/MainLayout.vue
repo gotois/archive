@@ -568,6 +568,8 @@ import {
   QSpace,
   QCard,
   QCardSection,
+  QBtnDropdown,
+  QPageSticky,
   exportFile,
   copyToClipboard,
 } from 'quasar'
@@ -583,6 +585,7 @@ import useWalletStore from 'stores/wallet'
 import useLangStore from 'stores/lang'
 import useCalendarStore from 'stores/calendar'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
+import ChatDialog from 'components/ChatDialog.vue'
 import { indexAllDocuments } from '../services/searchService'
 import { isTWA, isTMA } from '../helpers/twaHelper'
 import { formatToCalendarDate } from '../helpers/calendarHelper'

@@ -19,3 +19,6 @@ export function appendTelegramWebAppScript(
   }
   document.head.appendChild(script)
 }
+
+const myAction = 'start'
+export const TELEGRAM_MINI_APPS_URL = `https://t.me/${TELEGRAM_BOT_NAME}?start=${myAction}`

@@ -21,7 +21,7 @@ import { useMeta, useQuasar, QPage } from 'quasar'
 import { useRouter } from 'vue-router'
 import { isTWA } from '../helpers/twaHelper'
 import { open } from '../helpers/urlHelper'
-import { applicationURL } from '../helpers/googlePlayHelper'
+import { GOOGLE_PLAY_URL } from '../helpers/googlePlayHelper'
 
 const $t = useI18n().t
 const router = useRouter()
@@ -35,7 +35,7 @@ const metaData = {
 
 onMounted(() => {
   if (isTWA) {
-    open(applicationURL)
+    open(GOOGLE_PLAY_URL)
     return router.push({
       name: 'archive',
     })
