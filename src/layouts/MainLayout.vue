@@ -497,9 +497,34 @@
         />
       </div>
       <CalendarEventsComponent
-        class="absolute-bottom q-ml-auto q-mr-auto q-mb-none q-mt-md"
+        class="absolute-bottom q-ml-auto q-mr-auto q-mb-md q-mt-md"
         @select="onCalendarByDate"
       />
+      <QPageSticky v-if="!isTMA" position="bottom" :offset="[0, 0]" expand>
+        <div
+          class="q-pa-md row justify-between absolute-bottom fit"
+          style="min-width: 320px"
+        >
+          <QInput
+            square
+            flat
+            unelevated
+            :hide-hint="!$q.platform.is.desktop"
+            :hide-bottom-space="!$q.platform.is.desktop"
+            :dense="$q.platform.is.desktop"
+            color="primary"
+            label-color="secondary"
+            :bg-color="$q.dark.isActive ? 'dark' : 'white'"
+            class="no-margin full-width"
+            :label="'Say something...'"
+          >
+          </QInput>
+          <q-popup-proxy cover>
+            <ChatDialog />
+            <SearchInputComponent @search="(value) => onSearch(value)" />
+          </q-popup-proxy>
+        </div>
+      </QPageSticky>
     </QDrawer>
     <QPageContainer>
       <RouterView
@@ -568,7 +593,6 @@ import {
   QSpace,
   QCard,
   QCardSection,
-  QBtnDropdown,
   QPageSticky,
   exportFile,
   copyToClipboard,
