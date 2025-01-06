@@ -5,14 +5,17 @@
     >
       <TaskFull
         :key="index"
-        :item="item"
         :class="{
           'q-mt-md': index > 0,
         }"
         :title="item.instrument.name"
+        :attaches="item.object"
+        :start-time="item.startTime"
+        :end-time="item.endTime"
         :description="item.instrument.description"
         :same-as="item.instrument.sameAs"
         :location="item.location"
+        :link="item.participant.url"
         :email="item.participant.email"
         :telephone="item.participant.telephone"
         @on-remove="() => emit('onRemove', item)"

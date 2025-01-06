@@ -1,17 +1,15 @@
-import { FormatContract } from '../types/models'
-
-export function mailUrl(item: FormatContract) {
-  let str = item.participant.email
-  if (item.agent.email) {
-    const bccEmail = item.agent.email.replace('mailto:', '')
+export function mailUrl(email: string, subject: string, link: string) {
+  let str = email
+  if (email) {
+    const bccEmail = email.replace('mailto:', '')
     str += '?bcc=' + bccEmail
   }
-  if (item.instrument.name) {
-    str += '&subject=' + item.instrument.name
+  if (subject) {
+    str += '&subject=' + subject
   }
-  let body = `Hello ${item.participant.sameAs}.\n\n`
-  if (item.sameAs) {
-    body += `Link: ${item.sameAs}`
+  let body = `Hello ${link}.\n\n`
+  if (body) {
+    body += `Link: ${link}`
   }
   if (body) {
     str += '&body=' + encodeURIComponent(body)

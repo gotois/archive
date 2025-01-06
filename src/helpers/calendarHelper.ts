@@ -67,24 +67,30 @@ export function createCal(id: string, object: FormatContract) {
   })
 }
 
-export function googleCalendarUrl(item: FormatContract) {
+export function googleCalendarUrl(
+  text: string,
+  details: string,
+  startTime: Date,
+  endTime: Date,
+  sameAs: string,
+) {
   const link = new URL('https://calendar.google.com/calendar/render')
   link.searchParams.append('action', 'TEMPLATE')
-  link.searchParams.append('text', item.instrument.name)
-  link.searchParams.append('details', item.instrument.description)
-  if (item.endTime) {
+  link.searchParams.append('text', text)
+  link.searchParams.append('details', details)
+  if (endTime) {
     link.searchParams.append(
       'dates',
-      formatIcal(item.startTime) + '/' + formatIcal(item.endTime),
+      formatIcal(startTime) + '/' + formatIcal(endTime),
     )
   } else {
     link.searchParams.append(
       'dates',
-      formatIcal(item.startTime) + '/' + formatIcal(item.startTime),
+      formatIcal(startTime) + '/' + formatIcal(startTime),
     )
   }
-  if (item.sameAs) {
-    link.searchParams.append('location', item.sameAs)
+  if (sameAs) {
+    link.searchParams.append('location', sameAs)
   }
   return link
 }

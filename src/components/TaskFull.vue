@@ -10,12 +10,13 @@
             'ellipsis': $q.platform.is.desktop,
           }"
         >
-          <template v-if="isVerified(item, publicKey)">
+<!--          TODO теперь функция верификации должна проводиться на сервере -->
+<!--          <template v-if="isVerified(item, publicKey)">
             <QIcon name="verified" />
           </template>
           <template v-else>
             <QIcon name="error" color="warning" />
-          </template>
+          </template>-->
           {{ title }}
           <QTooltip>{{ title }}</QTooltip>
         </p>
@@ -36,7 +37,7 @@
       >
         <QMenu transition-show="jump-down" transition-duration="200">
           <QList bordered separator padding :dense="$q.platform.is.desktop">
-            <QItem v-close-popup clickable @click="emit('onEdit', item)">
+            <QItem v-close-popup clickable @click="emit('onEdit')">
               <QItemSection side>
                 <QItemLabel v-if="isLoggedIn && sameAs" overline caption>
                   {{ $t('archiveList.pod') }}
@@ -46,7 +47,7 @@
                 </QItemLabel>
               </QItemSection>
             </QItem>
-            <QItem v-close-popup clickable @click="emit('onRemove', item)">
+            <QItem v-close-popup clickable @click="emit('onRemove')">
               <QItemSection side>
                 <QItemLabel v-if="isLoggedIn && sameAs" overline caption>
                   {{ $t('archiveList.pod') }}
@@ -60,9 +61,9 @@
         </QMenu>
       </QBtn>
     </div>
-    <template v-if="item.object.length">
+    <template v-if="attaches.length">
       <QSeparator />
-      <ContractCarouselComponent :model="item" />
+      <ContractCarouselComponent :model="attaches" />
     </template>
     <QSeparator />
     <QCardSection>
@@ -73,7 +74,7 @@
         icon="send"
         class="absolute"
         style="top: 0; left: 18px; transform: translateY(-50%)"
-        @click="onSheet(item)"
+        @click="onSheet()"
       >
         <QTooltip>
           {{ $t('archiveList.shareFile') }}
@@ -83,11 +84,13 @@
         <QIcon
           style="align-self: center"
           class="q-pr-xs"
-          :name="itemScheduled(item) ? 'history_toggle_off' : 'schedule'"
-          :color="itemScheduled(item) ? 'negative' : 'orange-9'"
+          :name="itemScheduled(endTime) ? 'history_toggle_off' : 'schedule'"
+          :color="itemScheduled(endTime) ? 'negative' : 'orange-9'"
         />
-        <span :class="itemScheduled(item) ? 'text-negative' : 'text-orange-9'">
-          {{ prettyDate(item) }}
+        <span
+          :class="itemScheduled(endTime) ? 'text-negative' : 'text-orange-9'"
+        >
+          {{ prettyDate(startTime, endTime) }}
         </span>
       </div>
       <div class="row items-center">
@@ -95,8 +98,8 @@
           class="absolute overflow-hidden text-left ellipsis"
           style="left: 32px; right: 0"
         >
-          <QIcon :name="itemIsOrganization(item) ? 'group' : 'face'" />
-          {{ item.participant.url }}
+          <QIcon :name="itemIsOrganization() ? 'group' : 'face'" />
+          {{ link }}
           {{ sameAs }}
         </div>
       </div>
@@ -180,12 +183,11 @@ import { isDateNotOk } from '../helpers/dateHelper'
 import { readFilesPromise, fileShare, canShare } from '../helpers/fileHelper'
 import { createCal, googleCalendarUrl } from '../helpers/calendarHelper'
 import { mailUrl } from '../helpers/mailHelper'
-import { isVerified } from '../helpers/contractHelper'
 import { open } from '../helpers/urlHelper'
 import { openMap } from '../services/geoService'
 import useContractStore from 'stores/contract'
 import { TELEGRAM_MINI_APPS_URL } from '../services/telegram'
-import { FormatContract, Place } from '../types/models'
+import { FormatImageType, Place } from '../types/models'
 import { ROUTE_NAMES } from '../router/routes'
 
 const router = useRouter()
@@ -195,10 +197,17 @@ const { getArchiveNames } = storeToRefs(contractStore)
 
 const emit = defineEmits(['onRemove', 'onEdit'])
 const props = defineProps({
-  // todo: нужно отказаться от передачи целиком :item="item" а передавать только нужные параметры
-  item: {
-    type: Object as PropType<FormatContract>,
+  attaches: {
+    type: Array as PropType<FormatImageType[]>,
+    default: () => [],
+  },
+  startTime: {
+    type: Date as PropType<Date>,
     required: true,
+  },
+  endTime: {
+    type: Date as PropType<Date>,
+    default: null,
   },
   title: {
     type: String as PropType<string>,
@@ -224,6 +233,10 @@ const props = defineProps({
     type: String as PropType<string>,
     default: '',
   },
+  link: {
+    type: String as PropType<string>,
+    default: '',
+  },
 })
 
 const $q = useQuasar()
@@ -236,33 +249,26 @@ const $t = i18n.t
 const { isLoggedIn } = storeToRefs(authStore)
 const { publicKey } = storeToRefs(walletStore)
 
-function itemScheduled(item: FormatContract) {
-  return item.endTime !== null && item.endTime < new Date()
+function itemScheduled(endTime: Date) {
+  return endTime !== null && endTime < new Date()
 }
 
-function prettyDate(item: FormatContract) {
+function prettyDate(startTime: Date, endTime?: Date) {
   const formatterDate = new Intl.DateTimeFormat(langStore.language, {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
   })
-  if (
-    !isDateNotOk(item.startTime) &&
-    (item.endTime === null || item.endTime === undefined)
-  ) {
-    return formatterDate.format(item.startTime)
+  if (!isDateNotOk(startTime) && (endTime === null || endTime === undefined)) {
+    return formatterDate.format(startTime)
   }
-  if (isDateNotOk(item.startTime) || isDateNotOk(item.endTime)) {
+  if (isDateNotOk(startTime) || isDateNotOk(endTime)) {
     return ''
   }
-  return (
-    formatterDate.format(item.startTime) +
-    ' — ' +
-    formatterDate.format(item.endTime)
-  )
+  return formatterDate.format(startTime) + ' — ' + formatterDate.format(endTime)
 }
 
-function onSheet(item: FormatContract) {
+function onSheet() {
   let actions: SheetAction[] = []
   const group1 = [] // Share local
   if (canShare) {
@@ -322,14 +328,14 @@ function onSheet(item: FormatContract) {
         id: Action.TELEPHONE,
       })
     }
-    if (isVerified(item, publicKey.value)) {
-      group3.push({
-        label: $t('components.archiveList.sheet.law.label'),
-        icon: 'gavel',
-        color: 'secondary',
-        id: Action.LAW,
-      })
-    }
+    // if (isVerified(item, publicKey.value)) {
+    //   group3.push({
+    //     label: $t('components.archiveList.sheet.law.label'),
+    //     icon: 'gavel',
+    //     color: 'secondary',
+    //     id: Action.LAW,
+    //   })
+    // }
   }
   if (props.location && Object.keys(props.location).length > 0) {
     group3.push({
@@ -342,7 +348,7 @@ function onSheet(item: FormatContract) {
   if (group3.length) {
     actions = actions.concat(group3)
   }
-  const icalId = $t('organization.prodid')
+  // const icalId = $t('organization.prodid')
 
   $q.bottomSheet({
     title: $t('components.archiveList.sheet.title'),
@@ -353,23 +359,33 @@ function onSheet(item: FormatContract) {
   }).onOk((action: { id: SheetAction }) => {
     switch (action.id) {
       case Action.SHARE: {
-        const icalFile = createCal(icalId, item)
-        return shareFile(props.title, icalFile)
+        console.warn('WIP Action.SHARE: поддержать создание календаря')
+        // const icalFile = createCal(icalId, item)
+        // return shareFile(props.title, icalFile)
+        break
       }
       case Action.LINK: {
         const shareLink = window.location.origin + '/sign?from=' + props.sameAs
         return shareURL(shareLink)
       }
       case Action.GOOGLE_CALENDAR: {
-        const url = googleCalendarUrl(item).toString()
+        const url = googleCalendarUrl(
+          props.title,
+          props.description,
+          props.startTime,
+          props.endTime,
+          props.sameAs,
+        ).toString()
         return open(url)
       }
       case Action.CALENDAR: {
-        const file = createCal(icalId, item)
-        return saveIcal(file)
+        console.warn('WIP Action.CALENDAR: поддержать создание календаря')
+        // const file = createCal(icalId, item)
+        // return saveIcal(file)
+        break
       }
       case Action.MAIL: {
-        return open(mailUrl(item))
+        return open(mailUrl(props.email, props.title, props.sameAs))
       }
       case Action.TELEPHONE: {
         return open(props.telephone)
@@ -456,8 +472,9 @@ async function shareURL(url: string) {
   }
 }
 
-function itemIsOrganization(item: FormatContract) {
-  return item.participant['@type'] === 'https://schema.org/Organization'
+function itemIsOrganization() {
+  // todo - нужно прокидывать тип через props
+  return true
 }
 
 function onRemoveArchiveName(name: string) {

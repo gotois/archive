@@ -167,7 +167,7 @@ interface BaseSchemaType {
   '@type': string
 }
 
-interface FormatImageType extends BaseSchemaType, ImageType {}
+export interface FormatImageType extends BaseSchemaType, ImageType {}
 
 export interface ImageType {
   contentUrl: string

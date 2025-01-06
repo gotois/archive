@@ -600,7 +600,7 @@ const notificationStore = useNotification()
 const NOTIFICATION_TIMER = 30000
 
 const { consumer, email, phone, avatar } = storeToRefs(profileStore)
-const { getArchiveNames, contractsCount } = storeToRefs(contractStore)
+const { contractsCount } = storeToRefs(contractStore)
 const { isLoggedIn, isDemo, webId } = storeToRefs(authStore)
 const { activated } = storeToRefs(tfaStore)
 const { getWalletLD } = storeToRefs(walletStore)

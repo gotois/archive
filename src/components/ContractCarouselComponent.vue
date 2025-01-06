@@ -5,8 +5,8 @@
     transition-prev="slide-right"
     transition-next="slide-left"
     control-color="secondary"
-    :navigation="!fullscreen && item.object.length > 1"
-    :arrows="$q.platform.is.desktop && item.object.length > 1"
+    :navigation="!fullscreen && item.length > 1"
+    :arrows="$q.platform.is.desktop && item.length > 1"
     animated
     swipeable
     infinite
@@ -14,9 +14,7 @@
     <template #navigation-icon="navProps">
       <div class="q-pa-md non-selectable">
         <QIcon
-          v-if="
-            [PDF_MIME_TYPE].includes(item.object[navProps.index].encodingFormat)
-          "
+          v-if="[PDF_MIME_TYPE].includes(item[navProps.index].encodingFormat)"
           name="picture_as_pdf"
           size="64px"
           color="info"
@@ -46,7 +44,7 @@
             'border': navProps.active ? '1px solid var(--q-secondary)' : 'none',
             'image-rendering': 'high-quality',
           }"
-          :src="item.object[navProps.index].contentUrl"
+          :src="item[navProps.index].contentUrl"
           placeholder-src="/icons/icon-128x128.png"
           decoding="async"
           fetchpriority="low"
@@ -61,7 +59,7 @@
     <QCarouselSlide
       v-for="(
         { contentUrl, encodingFormat, caption = '' }, objectIndex
-      ) in item.object"
+      ) in item"
       :key="objectIndex"
       class="no-margin no-padding"
       :name="objectIndex + 1"
@@ -107,14 +105,11 @@
                 height: '400px',
               }"
               :class="{
-                grabbing: item.object.length > 1,
+                grabbing: item.length > 1,
               }"
               color="info"
             >
-              <ImageContextMenu
-                v-if="!fullscreen"
-                :image="item.object[objectIndex]"
-              />
+              <ImageContextMenu v-if="!fullscreen" :image="item[objectIndex]" />
             </QIcon>
           </template>
           <template v-else>
@@ -127,7 +122,7 @@
               :loading="fullscreen ? 'eager' : 'lazy'"
               :decoding="fullscreen ? 'sync' : 'async'"
               :class="{
-                grabbing: item.object.length > 1,
+                grabbing: item.length > 1,
               }"
               fetchpriority="high"
               no-spinner
@@ -145,10 +140,7 @@
               <div v-if="caption.length" class="absolute-top-left text-caption">
                 {{ caption }}
               </div>
-              <ImageContextMenu
-                v-if="!fullscreen"
-                :image="item.object[objectIndex]"
-              />
+              <ImageContextMenu v-if="!fullscreen" :image="item[objectIndex]" />
             </QImg>
           </template>
         </SwipeToClose>
@@ -177,6 +169,7 @@
 <script lang="ts" setup>
 import { ref, toRef } from 'vue'
 import {
+  useQuasar,
   QBtn,
   QSkeleton,
   QIcon,
@@ -190,16 +183,22 @@ import {
 import analyze from 'rgbaster'
 import ImageContextMenu from 'components/ImageContextMenu.vue'
 import SwipeToClose from 'components/SwipeToClose.vue'
-import { FormatContract } from '../types/models'
 import { PDF_MIME_TYPE } from '../helpers/mimeTypes'
 
+const $q = useQuasar()
+
 interface Props {
-  model: FormatContract
+  model: {
+    // todo set type FormatImageType
+    encodingFormat: string
+    contentUrl: string
+    caption?: string
+  }[]
 }
 
 const props = defineProps<Props>()
 
-const item = toRef<FormatContract>(props, 'model')
+const item = toRef(props, 'model')
 const currentSlide = ref(1)
 const fullscreen = ref(false)
 const color = ref('white')
