@@ -169,8 +169,9 @@
     <QDialog
       v-model="creatingNewContract"
       :allow-focus-outside="false"
-      position="standard"
+      position="top"
       persistent
+      maximized
       no-shake
       transition-show="slide-up"
       transition-hide="slide-down"
@@ -182,14 +183,20 @@
           'bg-dark text-white': $q.dark.isActive,
         }"
       >
-        <QCardSection class="fit overflow-auto">
-          <ContractFormComponent
-            v-if="dogovor"
-            :dogovor="dogovor"
-            :signing="false"
-            @on-create="onCreateContract"
-          />
-        </QCardSection>
+        <QBar :dense="false" :dark="false" class="bg-grey-2">
+          <QSpace />
+          <QBtn v-close-popup flat color="dark" icon="close" />
+        </QBar>
+        <QScrollArea visible style="height: calc(100dvh - 32px)">
+          <QCardSection class="fit overflow-auto q-pt-none">
+            <ContractFormComponent
+              v-if="dogovor"
+              :dogovor="dogovor"
+              :signing="false"
+              @on-create="onCreateContract"
+            />
+          </QCardSection>
+        </QScrollArea>
       </QCard>
     </QDialog>
   </QPage>
@@ -213,6 +220,8 @@ import {
   QStepper,
   QStepperNavigation,
   QTooltip,
+  QBar,
+  QBtn,
   useMeta,
   useQuasar,
 } from 'quasar'

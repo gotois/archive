@@ -24,9 +24,6 @@ export default {
     sign: {
       title: 'Sign a contract',
     },
-    archive: {
-      title: 'Archive of contracts',
-    },
     auth: {
       title: 'Authorization',
       caption: 'Enter key',
@@ -42,7 +39,7 @@ export default {
       final: { title: 'Agreement for use' },
     },
     calendar: {
-      title: 'Calendar',
+      title: 'Calendar of contracts',
     },
     unknown: {
       seo: {

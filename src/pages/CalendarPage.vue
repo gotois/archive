@@ -8,8 +8,13 @@
       'max-width': $q.platform.is.desktop ? '720px' : 'auto',
     }"
   >
-    <QScrollArea visible class="absolute-full fit">
-      <ScheduleXCalendar :calendar-app="calendarApp">
+    <QScrollArea
+      :visible="$q.platform.is.desktop"
+      :delay="500"
+      class="absolute-full fit"
+    >
+      <QPullToRefresh class="absolute-full fit" @refresh="onRefresh">
+        <ScheduleXCalendar :calendar-app="calendarApp">
         <template #dateGridEvent="{ calendarEvent }">
           <CalendarEventCard
             class="fit"
@@ -88,6 +93,7 @@
           </div>
         </template>
       </ScheduleXCalendar>
+      </QPullToRefresh>
     </QScrollArea>
   </QPage>
 </template>
@@ -100,6 +106,7 @@ import {
   QScrollArea,
   QPage,
   QBtn,
+  QPullToRefresh,
 } from 'quasar'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -113,13 +120,22 @@ import DayCalendar from 'components/DayCalendar.vue'
 import CalendarEventCard from 'components/CalendarEventCard.vue'
 import useCalendarStore from 'stores/calendar'
 import useLangStore from 'stores/lang'
+import usePodStore from 'stores/pod'
 import { formatToCalendarDate, isCurrentDate } from '../helpers/calendarHelper'
 import { ROUTE_NAMES } from '../router/routes'
 import '@schedule-x/theme-shadcn/dist/index.css'
 
+const podStore = usePodStore()
+
 const CalendarEventsComponent = defineAsyncComponent(
   () => import('components/CalendarEventsComponent.vue'),
 )
+
+function onRefresh(done: () => void) {
+  console.log('aaa')
+  // await updateContracts(router.currentRoute.value.query)
+  done()
+}
 
 const CALENDAR_WEEK_NUM = 7
 const INITIAL_SCROLL = '06:30'
@@ -140,6 +156,7 @@ const metaData = {
   'title': $t('pages.calendar.title'),
   'og:title': $t('pages.calendar.title'),
 }
+
 const weeks = ref<Date[]>([])
 const virtualScroll = ref(null)
 const selectedDay = ref(null)

@@ -25,9 +25,6 @@ export default {
     sign: {
       title: 'Подпись договора',
     },
-    archive: {
-      title: 'Архив договоров',
-    },
     auth: {
       title: 'Авторизация',
       caption: 'Введите ключ',
@@ -43,7 +40,7 @@ export default {
       final: { title: 'Договор на использование' },
     },
     calendar: {
-      title: 'Календарь',
+      title: 'Календарь договоров',
     },
     unknown: {
       seo: {

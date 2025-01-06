@@ -36,7 +36,9 @@ function resizeImageA4(img: HTMLImageElement) {
     width *= MAX_HEIGHT / height
     height = MAX_HEIGHT
   }
-
+  if (!Number.isSafeInteger(width) || !Number.isSafeInteger(height)) {
+    throw new Error('Is not a safe integer')
+  }
   return {
     width: Number(Math.floor(width)),
     height: Number(Math.floor(height)),
