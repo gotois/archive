@@ -93,6 +93,14 @@
               :color="$q.dark.isActive ? 'light' : 'dark'"
               @click="loadPrevWeek"
             />
+            <q-btn icon="event" round flat outline color="secondary">
+              <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                <CalendarEventsComponent
+                  class="q-ml-auto q-mr-auto q-mb-md q-mt-md"
+                  @select="onCalendarByDate"
+                />
+              </q-popup-proxy>
+            </q-btn>
             <QVirtualScroll
               ref="virtualScroll"
               v-slot="{ item, index }"
@@ -126,7 +134,7 @@
   </QPage>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, defineAsyncComponent } from 'vue'
 import {
   useQuasar,
   useMeta,
@@ -153,6 +161,10 @@ import useLangStore from 'stores/lang'
 import { formatToCalendarDate, isCurrentDate } from '../helpers/calendarHelper'
 import { ROUTE_NAMES } from '../router/routes'
 import '@schedule-x/theme-shadcn/dist/index.css'
+
+const CalendarEventsComponent = defineAsyncComponent(
+  () => import('components/CalendarEventsComponent.vue'),
+)
 
 const CALENDAR_WEEK_NUM = 7
 const INITIAL_SCROLL = '06:30'
@@ -273,6 +285,21 @@ async function loadNextWeek() {
 function selectDay(item: Date) {
   const day = formatToCalendarDate(item)
   calendarControls.setDate(day)
+}
+
+async function onCalendarByDate(strDate: string) {
+  if (!strDate) {
+    return
+  }
+  $q.loading.show()
+  const date = formatToCalendarDate(new Date(strDate))
+  await router.push({
+    name: ROUTE_NAMES.CALENDAR,
+    query: {
+      date: date,
+    },
+  })
+  $q.loading.hide()
 }
 
 useMeta(metaData)

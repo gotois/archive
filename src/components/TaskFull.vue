@@ -100,13 +100,61 @@
           {{ sameAs }}
         </div>
       </div>
+      <p
+        class="block full-width text-h6 text-left q-mb-md no-border-radius non-selectable no-pointer-events"
+      >
+        tags:
+      </p>
+      <div
+        style="height: calc(100dvh - 380px); overflow-x: hidden"
+        class="scroll-y"
+      >
+        <QChip
+          v-for="([name, value], objectKey) in getArchiveNames"
+          :key="objectKey"
+          :dense="$q.platform.is.desktop"
+          square
+          outline
+          class="row"
+          style="max-width: calc(100% - 8px)"
+          :ripple="false"
+          :disable="router.currentRoute.value.query.name === name"
+          :selected="router.currentRoute.value.query.name === name"
+          :color="value.recommendation ? 'orange' : ''"
+          :clickable="value.count > 0"
+          :removable="value.recommendation"
+          @remove="onRemoveArchiveName(name as string)"
+          @click="onSelectArchiveName(name, value)"
+        >
+          <QAvatar
+            v-if="value.count > 1"
+            :color="$q.dark.isActive ? 'white' : 'dark'"
+            :text-color="$q.dark.isActive ? 'dark' : 'white'"
+            square
+          >
+            {{ value.count }}
+          </QAvatar>
+          <div class="ellipsis">{{ name }}</div>
+          <QTooltip>{{ name }}</QTooltip>
+        </QChip>
+        <QSkeleton
+          v-show="getArchiveNames.length === 0"
+          type="QChip"
+          animation="blink"
+          width="100%"
+        />
+      </div>
     </QCardSection>
   </QCard>
 </template>
 <script lang="ts" setup>
 import { PropType } from 'vue'
+import { useRouter } from 'vue-router'
 import {
   useQuasar,
+  QSkeleton,
+  QAvatar,
+  QChip,
   QBtn,
   QIcon,
   QItemLabel,
@@ -135,8 +183,15 @@ import { mailUrl } from '../helpers/mailHelper'
 import { isVerified } from '../helpers/contractHelper'
 import { open } from '../helpers/urlHelper'
 import { openMap } from '../services/geoService'
+import useContractStore from 'stores/contract'
 import { TELEGRAM_MINI_APPS_URL } from '../services/telegram'
 import { FormatContract, Place } from '../types/models'
+import { ROUTE_NAMES } from '../router/routes'
+
+const router = useRouter()
+const contractStore = useContractStore()
+
+const { getArchiveNames } = storeToRefs(contractStore)
 
 const emit = defineEmits(['onRemove', 'onEdit'])
 const props = defineProps({
@@ -403,5 +458,25 @@ async function shareURL(url: string) {
 
 function itemIsOrganization(item: FormatContract) {
   return item.participant['@type'] === 'https://schema.org/Organization'
+}
+
+function onRemoveArchiveName(name: string) {
+  contractStore.removeContractName(name)
+}
+
+async function onSelectArchiveName(
+  name: string,
+  value: { count: number; recommendation: boolean },
+) {
+  if (value.count === 0) {
+    return
+  }
+  await router.push({
+    name: ROUTE_NAMES.FILTER,
+    query: {
+      name: name,
+      page: 1,
+    },
+  })
 }
 </script>

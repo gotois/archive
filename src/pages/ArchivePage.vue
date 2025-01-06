@@ -185,13 +185,7 @@
       >
         <QBar :dense="false" :dark="false" class="bg-grey-2">
           <QSpace />
-          <QBtn
-            v-close-popup
-            flat
-            color="dark"
-            icon="close"
-            @click="clearFabData"
-          />
+          <QBtn v-close-popup flat color="dark" icon="close" />
         </QBar>
         <QScrollArea visible style="height: calc(100dvh - 32px)">
           <QCardSection class="q-pt-none">

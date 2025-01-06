@@ -97,9 +97,6 @@ export default {
     back: 'Вернуться',
     noscript: 'Включите JavaScript для запуска приложения.',
   },
-  documentTypes: {
-    title: 'Типы договоров',
-  },
   settings: {
     native: {
       profile: 'Личные данные',

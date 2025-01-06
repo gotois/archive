@@ -96,9 +96,6 @@ export default {
     back: 'Back',
     noscript: 'Please enable JavaScript to run the application.',
   },
-  documentTypes: {
-    title: 'Contract types',
-  },
   settings: {
     native: {
       profile: 'My profile',

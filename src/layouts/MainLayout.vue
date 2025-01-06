@@ -452,54 +452,6 @@
       show-if-above
       bordered
     >
-      <p
-        class="block full-width text-h6 text-left q-mb-md no-border-radius non-selectable no-pointer-events"
-      >
-        {{ $t('documentTypes.title') }}
-      </p>
-      <div
-        style="height: calc(100dvh - 380px); overflow-x: hidden"
-        class="scroll-y"
-      >
-        <QChip
-          v-for="([name, value], objectKey) in getArchiveNames"
-          :key="objectKey"
-          :dense="$q.platform.is.desktop"
-          square
-          outline
-          class="row"
-          style="max-width: calc(100% - 8px)"
-          :ripple="false"
-          :disable="router.currentRoute.value.query.name === name"
-          :selected="router.currentRoute.value.query.name === name"
-          :color="value.recommendation ? 'orange' : ''"
-          :clickable="value.count > 0"
-          :removable="value.recommendation"
-          @remove="onRemoveArchiveName(name as string)"
-          @click="onSelectArchiveName(name, value)"
-        >
-          <QAvatar
-            v-if="value.count > 1"
-            :color="$q.dark.isActive ? 'white' : 'dark'"
-            :text-color="$q.dark.isActive ? 'dark' : 'white'"
-            square
-          >
-            {{ value.count }}
-          </QAvatar>
-          <div class="ellipsis">{{ name }}</div>
-          <QTooltip>{{ name }}</QTooltip>
-        </QChip>
-        <QSkeleton
-          v-show="getArchiveNames.length === 0"
-          type="QChip"
-          animation="blink"
-          width="100%"
-        />
-      </div>
-      <CalendarEventsComponent
-        class="absolute-bottom q-ml-auto q-mr-auto q-mb-md q-mt-md"
-        @select="onCalendarByDate"
-      />
       <QPageSticky v-if="!isTMA" position="bottom" :offset="[0, 0]" expand>
         <div
           class="q-pa-md row justify-between absolute-bottom fit"
@@ -574,9 +526,7 @@ import {
   QBtn,
   QField,
   QPageContainer,
-  QSkeleton,
   QTooltip,
-  QAvatar,
   QChip,
   QImg,
   QSeparator,
@@ -612,7 +562,6 @@ import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
 import ChatDialog from 'components/ChatDialog.vue'
 import { indexAllDocuments } from '../services/searchService'
 import { isTWA, isTMA } from '../helpers/twaHelper'
-import { formatToCalendarDate } from '../helpers/calendarHelper'
 import { keyPair } from '../services/databaseService'
 import { createQR } from '../helpers/qrHelper'
 import { open } from '../helpers/urlHelper'
@@ -644,9 +593,6 @@ const PhantomWalletLogin = defineAsyncComponent(
 )
 const AndroidBarComponent = defineAsyncComponent(
   () => import('components/AndroidBarComponent.vue'),
-)
-const CalendarEventsComponent = defineAsyncComponent(
-  () => import('components/CalendarEventsComponent.vue'),
 )
 
 const $q = useQuasar()
@@ -820,41 +766,6 @@ function onOTPHandleComplete(token: string) {
     }
   })
   showOTPDialog.value = false
-}
-
-function onRemoveArchiveName(name: string) {
-  contractStore.removeContractName(name)
-}
-
-async function onCalendarByDate(strDate: string) {
-  if (!strDate) {
-    return
-  }
-  $q.loading.show()
-  const date = formatToCalendarDate(new Date(strDate))
-  await router.push({
-    name: ROUTE_NAMES.CALENDAR,
-    query: {
-      date: date,
-    },
-  })
-  $q.loading.hide()
-}
-
-async function onSelectArchiveName(
-  name: string,
-  value: { count: number; recommendation: boolean },
-) {
-  if (value.count === 0) {
-    return
-  }
-  await router.push({
-    name: ROUTE_NAMES.FILTER,
-    query: {
-      name: name,
-      page: 1,
-    },
-  })
 }
 
 async function openOTPDialog() {
