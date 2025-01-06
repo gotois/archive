@@ -31,17 +31,17 @@ const routes: RouteRecordRaw[] = [
       {
         path: '',
         name: ROUTE_NAMES.ARCHIVE,
-        component: () => import('pages/ArchivePage.vue'),
+        component: () => import('pages/CalendarPage.vue'),
       },
       {
         path: ROUTE_NAMES.FILTER,
         name: ROUTE_NAMES.FILTER,
-        component: () => import('pages/ArchivePage.vue'),
+        component: () => import('pages/CalendarPage.vue'),
       },
       {
         path: ROUTE_NAMES.SEARCH,
         name: ROUTE_NAMES.SEARCH,
-        component: () => import('pages/ArchivePage.vue'),
+        component: () => import('pages/CalendarPage.vue'),
       },
     ],
   },

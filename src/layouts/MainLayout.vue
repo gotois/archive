@@ -452,7 +452,7 @@
       show-if-above
       bordered
     >
-      <ChatDialog style="height: calc(100dvh - 380px);" />
+      <ChatDialog style="height: calc(100dvh - 80px)" />
       <QPageSticky position="bottom" :offset="[0, 0]" expand>
         <div class="fit">
           <SearchInputComponent @search="(value) => onSearch(value)" />
@@ -489,8 +489,8 @@
         :dense="$q.platform.is.desktop"
         :align="$q.platform.is.desktop ? 'center' : 'justify'"
       >
-        <QRouteTab icon="home" :to="{ name: ROUTE_NAMES.ARCHIVE }" />
-        <QRouteTab icon="schedule" :to="{ name: ROUTE_NAMES.CALENDAR }" />
+        <QRouteTab icon="schedule" :to="{ name: ROUTE_NAMES.ARCHIVE }" />
+        <QRouteTab icon="event" :to="{ name: ROUTE_NAMES.CALENDAR }" />
       </QTabs>
     </QFooter>
   </QLayout>

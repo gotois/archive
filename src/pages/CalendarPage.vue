@@ -9,96 +9,98 @@
     }"
   >
     <QScrollArea
+      ref="scrollAreaRef"
       :visible="$q.platform.is.desktop"
       :delay="500"
       class="absolute-full fit"
     >
       <QPullToRefresh class="absolute-full fit" @refresh="onRefresh">
         <ScheduleXCalendar :calendar-app="calendarApp">
-        <template #dateGridEvent="{ calendarEvent }">
-          <CalendarEventCard
-            class="fit"
-            :title="calendarEvent.title"
-            :start="new Date(calendarEvent.start)"
-            :end="new Date(calendarEvent.end)"
-            :location="calendarEvent.location"
-            :description="calendarEvent.description"
-          />
-        </template>
-        <template #timeGridEvent="{ calendarEvent }">
-          <CalendarEventCard
-            class="fit"
-            :title="calendarEvent.title"
-            :start="new Date(calendarEvent.start)"
-            :end="new Date(calendarEvent.end)"
-            :location="calendarEvent.location"
-            :description="calendarEvent.description"
-          />
-        </template>
-        <template #headerContent>
-          <div
-            class="flex full-width full-height items-center justify-between shadow-4 no-wrap"
-            :class="{
-              'bg-white': !$q.dark.isActive,
-              'bg-dark': $q.dark.isActive,
-            }"
-          >
-            <QBtn
-              icon="arrow_left"
-              flat
-              fab
-              square
-              :dense="$q.platform.is.desktop"
-              :color="$q.dark.isActive ? 'light' : 'dark'"
-              @click="loadPrevWeek"
+          <template #dateGridEvent="{ calendarEvent }">
+            <CalendarEventCard
+              class="fit"
+              :title="calendarEvent.title"
+              :start="new Date(calendarEvent.start)"
+              :end="new Date(calendarEvent.end)"
+              :location="calendarEvent.location"
+              :description="calendarEvent.description"
+              @on-edit="onEdit(calendarEvent)"
+              @on-remove="onRemove(calendarEvent)"
             />
-            <q-btn icon="event" round flat outline color="secondary">
-              <q-popup-proxy
-                cover
-                transition-show="scale"
-                transition-hide="scale"
-              >
-                <CalendarEventsComponent
-                  class="q-ml-auto q-mr-auto q-mb-md q-mt-md"
-                  @select="onCalendarByDate"
-                />
-              </q-popup-proxy>
-            </q-btn>
-            <QVirtualScroll
-              ref="virtualScroll"
-              v-slot="{ item, index }"
-              class="q-mt-xs q-mb-xs"
-              :items="weeks"
-              :item-size="CALENDAR_WEEK_NUM"
-              virtual-scroll-horizontal
+          </template>
+          <template #timeGridEvent="{ calendarEvent }">
+            <CalendarEventCard
+              class="fit"
+              :title="calendarEvent.title"
+              :start="new Date(calendarEvent.start)"
+              :end="new Date(calendarEvent.end)"
+              :location="calendarEvent.location"
+              :description="calendarEvent.description"
+            />
+          </template>
+          <template #headerContent>
+            <div
+              class="flex full-width full-height items-center justify-between shadow-4 no-wrap"
+              :class="{
+                'bg-white': !$q.dark.isActive,
+                'bg-dark': $q.dark.isActive,
+              }"
             >
-              <DayCalendar
-                :key="index"
-                style="width: 45px"
-                class="cursor-pointer q-ml-xs q-mr-xs q-pa-md rounded-borders relative-position non-selectable flex items-center justify-center"
-                :day="item"
-                :selected-day="selectedDay"
-                @click="selectDay(item)"
+              <QBtn
+                icon="arrow_left"
+                flat
+                fab
+                square
+                :dense="$q.platform.is.desktop"
+                :color="$q.dark.isActive ? 'light' : 'dark'"
+                @click="loadPrevWeek"
               />
-            </QVirtualScroll>
-            <QBtn
-              icon="arrow_right"
-              flat
-              fab
-              square
-              :dense="$q.platform.is.desktop"
-              :color="$q.dark.isActive ? 'light' : 'dark'"
-              @click="loadNextWeek"
-            />
-          </div>
-        </template>
-      </ScheduleXCalendar>
+              <q-btn icon="event" round flat outline color="secondary">
+                <q-popup-proxy
+                  cover
+                  transition-show="scale"
+                  transition-hide="scale"
+                >
+                  <CalendarEventsComponent
+                    class="q-ml-auto q-mr-auto q-mb-md q-mt-md"
+                    @select="onCalendarByDate"
+                  />
+                </q-popup-proxy>
+              </q-btn>
+              <QVirtualScroll
+                ref="virtualScroll"
+                v-slot="{ item, index }"
+                class="q-mt-xs q-mb-xs"
+                :items="weeks"
+                virtual-scroll-horizontal
+              >
+                <DayCalendar
+                  :key="index"
+                  style="width: 45px"
+                  class="cursor-pointer q-ml-xs q-mr-xs q-pa-md rounded-borders relative-position non-selectable flex items-center justify-center"
+                  :day="item"
+                  :selected-day="selectedDay"
+                  @click="selectDay(item)"
+                />
+              </QVirtualScroll>
+              <QBtn
+                icon="arrow_right"
+                flat
+                fab
+                square
+                :dense="$q.platform.is.desktop"
+                :color="$q.dark.isActive ? 'light' : 'dark'"
+                @click="loadNextWeek"
+              />
+            </div>
+          </template>
+        </ScheduleXCalendar>
       </QPullToRefresh>
     </QScrollArea>
   </QPage>
 </template>
 <script lang="ts" setup>
-import { ref, defineAsyncComponent } from 'vue'
+import { ref, defineAsyncComponent, onBeforeMount } from 'vue'
 import {
   useQuasar,
   useMeta,
@@ -108,6 +110,7 @@ import {
   QBtn,
   QPullToRefresh,
 } from 'quasar'
+import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { ScheduleXCalendar } from '@schedule-x/vue'
@@ -124,7 +127,13 @@ import usePodStore from 'stores/pod'
 import { formatToCalendarDate, isCurrentDate } from '../helpers/calendarHelper'
 import { ROUTE_NAMES } from '../router/routes'
 import '@schedule-x/theme-shadcn/dist/index.css'
+import useAuthStore from 'stores/auth'
+import useContractStore from 'stores/contract'
+import { FormatContract } from '../types/models'
 
+const authStore = useAuthStore()
+const contractStore = useContractStore()
+const { isLoggedIn } = storeToRefs(authStore)
 const podStore = usePodStore()
 
 const CalendarEventsComponent = defineAsyncComponent(
@@ -151,6 +160,7 @@ const scrollController = createScrollControllerPlugin({
   initialScroll: INITIAL_SCROLL,
 })
 const $t = i18n.t
+const scrollAreaRef = ref<InstanceType<typeof QScrollArea> | null>(null)
 
 const metaData = {
   'title': $t('pages.calendar.title'),
@@ -183,7 +193,7 @@ const calendarApp = createCalendar({
   isResponsive: false,
   callbacks: {
     async onRangeUpdate(range): void {
-      const date = formatToCalendarDate(new Date(range.start))
+      const date = formatToCalendarDate(new Date(range.start)) // todo - это должно браться из router.currentRoute.value.query
       await router.push({
         name: ROUTE_NAMES.CALENDAR,
         query: {
@@ -255,6 +265,18 @@ async function loadNextWeek() {
 function selectDay(item: Date) {
   const day = formatToCalendarDate(item)
   calendarControls.setDate(day)
+
+  /* todo - нужно при селекте дня обновлять роутер например так:
+  $q.loading.show()
+  await router.push({
+    name: router.currentRoute.value.name,
+    query: {
+      page: page,
+      name: router.currentRoute.value.query?.name,
+    },
+  })
+  $q.loading.hide()
+  */
 }
 
 async function onCalendarByDate(strDate: string) {
@@ -271,6 +293,153 @@ async function onCalendarByDate(strDate: string) {
   })
   $q.loading.hide()
 }
+
+async function removeContract(item: FormatContract) {
+  try {
+    await contractStore.removeContract({
+      contract: item,
+      usePod: isLoggedIn.value,
+    })
+    scrollAreaRef.value.setScrollPosition('vertical', 0, 150)
+    $q.notify({
+      type: 'positive',
+      message: $t('contract.removeDialog.success', {
+        name: item.instrument.name,
+      }),
+    })
+  } catch (error) {
+    console.error(error)
+    $q.notify({
+      type: 'negative',
+      message: $t('contract.removeDialog.fail'),
+    })
+  }
+}
+
+function onRemove(item: FormatContract) {
+  $q.notify({
+    message:
+      !isLoggedIn.value && item.sameAs
+        ? $t('contract.removeDialog.message')
+        : $t('contract.removeDialog.isLoginMessage'),
+    type: 'negative',
+    position: 'center',
+    group: false,
+    multiLine: true,
+    textColor: 'white',
+    timeout: 7500,
+    attrs: {
+      role: 'alertdialog',
+    },
+    actions: [
+      {
+        icon: 'check_circle',
+        label: $t('contract.removeDialog.ok'),
+        color: 'white',
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        async handler() {
+          await removeContract(item)
+        },
+      },
+      {
+        icon: 'cancel',
+        label: $t('contract.removeDialog.cancel'),
+        color: 'white',
+      },
+    ],
+  })
+}
+
+function onEdit(item: FormatContract) {
+  const dialog = $q.dialog({
+    message: $t('contract.editDialog.message'),
+    prompt: {
+      model: '',
+      type: 'text',
+    },
+    cancel: true,
+  })
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  dialog.onOk(async (value: string) => {
+    try {
+      // item.instrument.description = value
+      await editContract(item)
+      $q.notify({
+        type: 'positive',
+        message: $t('contract.editDialog.success'),
+      })
+    } catch (error) {
+      console.error(error)
+      $q.notify({
+        color: 'negative',
+        message: $t('contract.editDialog.fail'),
+      })
+    }
+  })
+}
+
+async function editContract(item: FormatContract) {
+  await contractStore.editContract(item)
+
+  if (isLoggedIn.value) {
+    // todo - поддержать обновление на Pod и в Секретаре
+    // await podStore.updateIntoPod(item)
+  }
+}
+
+/* пример обработки роутероа
+watch(
+  () => router.currentRoute.value.query,
+  (value) => {
+    contractStore.contracts = [] // clear before load
+    currentPage.value = String(value.page)
+  },
+)
+// router.afterEach((to) => updateContracts(to.query))
+
+async function updateContracts({
+  page,
+  name,
+}: LocationQuery | { page: number; name: string }) {
+  page = Number(page || 1)
+  if (Number.isNaN(page)) {
+    return
+  }
+  const offset = (page - 1) * LIMIT
+  const query = String(name ?? '')
+
+  switch (router.currentRoute.value.name) {
+    case ROUTE_NAMES.SEARCH: {
+      await contractStore.searchFromContracts({
+        query,
+        offset,
+        limit: LIMIT,
+      })
+      break
+    }
+    case ROUTE_NAMES.FILTER: {
+      await contractStore.filterFromContracts(query)
+      break
+    }
+    default: {
+      await contractStore.loadAllContracts({
+        offset,
+        limit: LIMIT,
+      })
+      break
+    }
+  }
+  $q.loading.hide()
+}
+*/
+
+onBeforeMount(() => {
+  /* todo - сделать проверку, что если нет текущего дня, то мы его добавляем напримере:
+  if (!router.currentRoute.value.query.page) {
+    router.currentRoute.value.query.page = '1'
+  }
+   */
+})
 
 useMeta(metaData)
 </script>

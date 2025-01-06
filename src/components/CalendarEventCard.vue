@@ -36,16 +36,8 @@
         :link="''"
         :email="''"
         :telephone="''"
-        @on-remove="
-          () => {
-            console.log('remove')
-          }
-        "
-        @on-edit="
-          () => {
-            console.log('edit')
-          }
-        "
+        @on-remove="emit('onRemove')"
+        @on-edit="emit('onEdit')"
       />
     </q-popup-proxy>
   </QCard>
@@ -54,6 +46,8 @@
 import { PropType } from 'vue'
 import { QCard, QCardSection, date } from 'quasar'
 import TaskFull from 'components/TaskFull.vue'
+
+const emit = defineEmits(['onRemove', 'onEdit'])
 
 defineProps({
   title: {

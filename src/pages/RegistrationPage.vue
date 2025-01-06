@@ -202,7 +202,14 @@
   </QPage>
 </template>
 <script lang="ts" setup>
-import { defineAsyncComponent, onBeforeMount, onMounted, ref, watch } from 'vue'
+import {
+  h,
+  defineAsyncComponent,
+  onBeforeMount,
+  onMounted,
+  ref,
+  watch,
+} from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import {
@@ -222,6 +229,7 @@ import {
   QTooltip,
   QBar,
   QBtn,
+  QSkeleton,
   useMeta,
   useQuasar,
 } from 'quasar'
@@ -257,9 +265,16 @@ const OIDCIssuerComponent = defineAsyncComponent(
 const IdComponent = defineAsyncComponent(
   () => import('components/IdComponent.vue'),
 )
-const ContractFormComponent = defineAsyncComponent(
-  () => import('components/ContractFormComponent.vue'),
-)
+const ContractFormComponent = defineAsyncComponent({
+  loader: () => import('components/ContractFormComponent.vue'),
+  delay: 0,
+  loadingComponent: h(QSkeleton, {
+    style: {
+      'height': '460px',
+      'max-width': '720px',
+    },
+  }),
+})
 
 const $t = useI18n().t
 const $q = useQuasar()
