@@ -444,7 +444,7 @@
       </QList>
     </QDrawer>
     <QDrawer
-      v-if="getArchiveNames.length"
+      v-if="!isTMA"
       v-model="rightDrawerOpen"
       side="right"
       :width="320"
@@ -452,29 +452,10 @@
       show-if-above
       bordered
     >
-      <QPageSticky v-if="!isTMA" position="bottom" :offset="[0, 0]" expand>
-        <div
-          class="q-pa-md row justify-between absolute-bottom fit"
-          style="min-width: 320px"
-        >
-          <QInput
-            square
-            flat
-            unelevated
-            :hide-hint="!$q.platform.is.desktop"
-            :hide-bottom-space="!$q.platform.is.desktop"
-            :dense="$q.platform.is.desktop"
-            color="primary"
-            label-color="secondary"
-            :bg-color="$q.dark.isActive ? 'dark' : 'white'"
-            class="no-margin full-width"
-            :label="'Say something...'"
-          >
-          </QInput>
-          <q-popup-proxy cover>
-            <ChatDialog />
-            <SearchInputComponent @search="(value) => onSearch(value)" />
-          </q-popup-proxy>
+      <ChatDialog />
+      <QPageSticky position="bottom" :offset="[0, 0]" expand>
+        <div class="fit">
+          <SearchInputComponent @search="(value) => onSearch(value)" />
         </div>
       </QPageSticky>
     </QDrawer>
@@ -515,7 +496,13 @@
   </QLayout>
 </template>
 <script lang="ts" setup>
-import { ref, computed, defineAsyncComponent, onMounted } from 'vue'
+import {
+  ref,
+  computed,
+  defineAsyncComponent,
+  onBeforeMount,
+  onMounted,
+} from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   useQuasar,
@@ -557,6 +544,7 @@ import useTutorialStore from 'stores/tutorial'
 import useProfileStore from 'stores/profile'
 import useWalletStore from 'stores/wallet'
 import useLangStore from 'stores/lang'
+import useNotification from 'stores/notification'
 import useCalendarStore from 'stores/calendar'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
 import ChatDialog from 'components/ChatDialog.vue'
@@ -607,6 +595,9 @@ const profileStore = useProfileStore()
 const walletStore = useWalletStore()
 const tutorialStore = useTutorialStore()
 const calendarStore = useCalendarStore()
+const notificationStore = useNotification()
+
+const NOTIFICATION_TIMER = 30000
 
 const { consumer, email, phone, avatar } = storeToRefs(profileStore)
 const { getArchiveNames, contractsCount } = storeToRefs(contractStore)
@@ -793,6 +784,16 @@ function onSkipWallet() {
     // emit('free')
   })
 }
+
+onBeforeMount(() => {
+  setTimeout(() => {
+    notificationStore.check()
+  }, NOTIFICATION_TIMER)
+  if (typeof router.currentRoute.value.query.action === 'string') {
+    open(router.currentRoute.value.query.action)
+    return
+  }
+})
 
 onMounted(async () => {
   if ($q.platform.is.desktop && contractsCount.value > 0) {

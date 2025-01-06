@@ -566,13 +566,6 @@ onBeforeMount(() => {
   if (!router.currentRoute.value.query.page) {
     router.currentRoute.value.query.page = '1'
   }
-  if (typeof router.currentRoute.value.query.action === 'string') {
-    open(router.currentRoute.value.query.action)
-    return
-  }
-  setTimeout(() => {
-    notificationStore.check()
-  }, NOTIFICATION_TIMER)
 })
 
 onMounted(async () => {
