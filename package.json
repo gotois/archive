@@ -53,7 +53,6 @@
     "@quasar/extras": "1.16.15",
     "@schedule-x/calendar-controls": "2.12.1",
     "@schedule-x/current-time": "2.12.1",
-    "@schedule-x/event-modal": "2.12.1",
     "@schedule-x/events-service": "2.12.1",
     "@schedule-x/scroll-controller": "2.12.1",
     "@schedule-x/theme-shadcn": "2.12.1",

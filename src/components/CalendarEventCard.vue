@@ -1,0 +1,80 @@
+<template>
+  <QCard v-ripple flat :dark="!$q.dark.isActive" bordered square style="">
+    <QCardSection>
+      <div
+        class="flex justify-between items-center"
+        :class="{
+          'text-black': $q.dark.isActive,
+          'text-white': !$q.dark.isActive,
+        }"
+      >
+        <div class="text-subtitle2 text-bold">
+          {{ title }}
+        </div>
+      </div>
+      <div class="text-caption text-red">
+        ⏰
+        {{ date.formatDate(start, 'HH:mm') }}
+        -
+        {{ date.formatDate(end, 'HH:mm') }}
+      </div>
+      <div v-if="location" class="ellipsis-2-lines"> 📍 {{ location }} </div>
+      <div v-if="description" class="ellipsis-2-lines">
+        {{ description }}
+      </div>
+    </QCardSection>
+    <q-popup-proxy>
+      <TaskFull
+        style="width: 640px"
+        :title="title"
+        :description="description"
+        :attaches="[]"
+        :start-time="start"
+        :end-time="end"
+        :same-as="''"
+        :location="null"
+        :link="''"
+        :email="''"
+        :telephone="''"
+        @on-remove="
+          () => {
+            console.log('remove')
+          }
+        "
+        @on-edit="
+          () => {
+            console.log('edit')
+          }
+        "
+      />
+    </q-popup-proxy>
+  </QCard>
+</template>
+<script lang="ts" setup>
+import { PropType } from 'vue'
+import { QCard, QCardSection, date } from 'quasar'
+import TaskFull from 'components/TaskFull.vue'
+
+defineProps({
+  title: {
+    type: String as PropType<string>,
+    required: true,
+  },
+  start: {
+    type: Date as PropType<Date>,
+    default: null,
+  },
+  end: {
+    type: Date as PropType<Date>,
+    default: null,
+  },
+  location: {
+    type: String as PropType<string>,
+    default: null,
+  },
+  description: {
+    type: String as PropType<string>,
+    default: null,
+  },
+})
+</script>

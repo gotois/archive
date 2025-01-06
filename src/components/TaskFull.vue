@@ -103,15 +103,7 @@
           {{ sameAs }}
         </div>
       </div>
-      <p
-        class="block full-width text-h6 text-left q-mb-md no-border-radius non-selectable no-pointer-events"
-      >
-        tags:
-      </p>
-      <div
-        style="height: calc(100dvh - 380px); overflow-x: hidden"
-        class="scroll-y"
-      >
+      <div style="overflow-x: hidden" class="scroll-y">
         <QChip
           v-for="([name, value], objectKey) in getArchiveNames"
           :key="objectKey"

@@ -11,70 +11,24 @@
     <QScrollArea visible class="absolute-full fit">
       <ScheduleXCalendar :calendar-app="calendarApp">
         <template #dateGridEvent="{ calendarEvent }">
-          <QCard
-            v-ripple
-            flat
-            :dark="!$q.dark.isActive"
-            bordered
-            square
+          <CalendarEventCard
             class="fit"
-          >
-            <QCardSection>
-              <div
-                class="flex justify-between items-center"
-                :class="{
-                  'text-black': $q.dark.isActive,
-                  'text-white': !$q.dark.isActive,
-                }"
-              >
-                <div class="text-subtitle2 text-bold">
-                  {{ calendarEvent.title }}
-                </div>
-              </div>
-              <div v-if="calendarEvent.location" class="ellipsis-2-lines">
-                📍 {{ calendarEvent.location }}
-              </div>
-              <div v-if="calendarEvent.description" class="ellipsis-2-lines">
-                {{ calendarEvent.description }}
-              </div>
-            </QCardSection>
-          </QCard>
+            :title="calendarEvent.title"
+            :start="new Date(calendarEvent.start)"
+            :end="new Date(calendarEvent.end)"
+            :location="calendarEvent.location"
+            :description="calendarEvent.description"
+          />
         </template>
         <template #timeGridEvent="{ calendarEvent }">
-          <QCard
-            v-ripple
-            flat
-            :dark="!$q.dark.isActive"
-            bordered
-            square
+          <CalendarEventCard
             class="fit"
-          >
-            <QCardSection>
-              <div
-                class="flex justify-between items-center"
-                :class="{
-                  'text-black': $q.dark.isActive,
-                  'text-white': !$q.dark.isActive,
-                }"
-              >
-                <div class="text-subtitle2 text-bold">
-                  {{ calendarEvent.title }}
-                </div>
-                <div class="text-caption">
-                  ⏰
-                  {{ date.formatDate(new Date(calendarEvent.start), 'HH:mm') }}
-                  -
-                  {{ date.formatDate(new Date(calendarEvent.end), 'HH:mm') }}
-                </div>
-              </div>
-              <div v-if="calendarEvent.location" class="ellipsis-2-lines">
-                📍 {{ calendarEvent.location }}
-              </div>
-              <div v-if="calendarEvent.description" class="ellipsis-2-lines">
-                {{ calendarEvent.description }}
-              </div>
-            </QCardSection>
-          </QCard>
+            :title="calendarEvent.title"
+            :start="new Date(calendarEvent.start)"
+            :end="new Date(calendarEvent.end)"
+            :location="calendarEvent.location"
+            :description="calendarEvent.description"
+          />
         </template>
         <template #headerContent>
           <div
@@ -94,7 +48,11 @@
               @click="loadPrevWeek"
             />
             <q-btn icon="event" round flat outline color="secondary">
-              <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+              <q-popup-proxy
+                cover
+                transition-show="scale"
+                transition-hide="scale"
+              >
                 <CalendarEventsComponent
                   class="q-ml-auto q-mr-auto q-mb-md q-mt-md"
                   @select="onCalendarByDate"
@@ -142,9 +100,6 @@ import {
   QScrollArea,
   QPage,
   QBtn,
-  QCard,
-  QCardSection,
-  date,
 } from 'quasar'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -153,9 +108,9 @@ import { viewDay, createCalendar, createViewDay } from '@schedule-x/calendar'
 import { createCurrentTimePlugin } from '@schedule-x/current-time'
 import { createCalendarControlsPlugin } from '@schedule-x/calendar-controls'
 import { createEventsServicePlugin } from '@schedule-x/events-service'
-import { createEventModalPlugin } from '@schedule-x/event-modal'
 import { createScrollControllerPlugin } from '@schedule-x/scroll-controller'
 import DayCalendar from 'components/DayCalendar.vue'
+import CalendarEventCard from 'components/CalendarEventCard.vue'
 import useCalendarStore from 'stores/calendar'
 import useLangStore from 'stores/lang'
 import { formatToCalendarDate, isCurrentDate } from '../helpers/calendarHelper'
@@ -176,7 +131,6 @@ const langStore = useLangStore()
 const calendarStore = useCalendarStore()
 const calendarControls = createCalendarControlsPlugin()
 const eventsServicePlugin = createEventsServicePlugin()
-const eventModal = createEventModalPlugin()
 const scrollController = createScrollControllerPlugin({
   initialScroll: INITIAL_SCROLL,
 })
@@ -207,7 +161,6 @@ const calendarApp = createCalendar({
     }),
     calendarControls,
     eventsServicePlugin,
-    eventModal,
     scrollController,
   ],
   isResponsive: false,
