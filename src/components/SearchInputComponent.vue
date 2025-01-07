@@ -135,6 +135,11 @@
         </template>
       </template>
     </QSelect>
+    <CreateNewDogovor
+      v-if="creatingNewContract"
+      :dogovor="dogovor"
+      @on-create="() => {}"
+    />
   </div>
 </template>
 <script lang="ts" setup>
@@ -153,12 +158,14 @@ import {
 } from 'quasar'
 import { useI18n } from 'vue-i18n'
 import { miniSearch } from '../services/searchService'
+import CreateNewDogovor from 'components/CreateNewDogovor.vue'
 import {
   PDF_MIME_TYPE,
   PNG_MIME_TYPE,
   JPG_MIME_TYPE,
 } from '../helpers/mimeTypes'
 import useChatStore from 'stores/chat'
+import Dogovor from '../services/contractGeneratorService'
 
 const $q = useQuasar()
 const $t = useI18n().t
@@ -173,6 +180,9 @@ const showed = ref(false)
 const hasText = computed(() => inputText.value !== '')
 const isDragging = ref(false)
 const files = ref([])
+const dogovor = ref<Dogovor | null>(null)
+
+const creatingNewContract = ref(false)
 
 const emit = defineEmits(['search'])
 

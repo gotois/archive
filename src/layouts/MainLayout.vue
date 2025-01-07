@@ -114,7 +114,7 @@
         >
           <QItemSection class="q-pa-md">
             <p>{{ $t('settings.consumer.description') }}</p>
-            <Profile />
+            <UserProfile />
           </QItemSection>
         </QExpansionItem>
         <QSeparator />
@@ -382,12 +382,11 @@ import useAuthStore from 'stores/auth'
 import useTFAStore from 'stores/tfa'
 import useContractStore from 'stores/contract'
 import useTutorialStore from 'stores/tutorial'
-import useProfileStore from 'stores/profile'
 import useLangStore from 'stores/lang'
 import useNotification from 'stores/notification'
 import useCalendarStore from 'stores/calendar'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
-import Profile from 'components/Profile.vue'
+import UserProfile from 'components/UserProfile.vue'
 import ChatDialog from 'components/ChatDialog.vue'
 import { indexAllDocuments } from '../services/searchService'
 import { isTWA, isTMA } from '../helpers/twaHelper'
@@ -429,14 +428,12 @@ const authStore = useAuthStore()
 const tfaStore = useTFAStore()
 const langStore = useLangStore()
 const contractStore = useContractStore()
-const profileStore = useProfileStore()
 const tutorialStore = useTutorialStore()
 const calendarStore = useCalendarStore()
 const notificationStore = useNotification()
 
 const NOTIFICATION_TIMER = 30000
 
-const { email } = storeToRefs(profileStore)
 const { contractsCount } = storeToRefs(contractStore)
 const { isLoggedIn, isDemo } = storeToRefs(authStore)
 const { activated } = storeToRefs(tfaStore)

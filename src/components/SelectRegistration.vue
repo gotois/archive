@@ -78,8 +78,10 @@ async function telegramSign(user: TelegramUser) {
   emit('select', async () => {
     try {
       await authStore.registration(user)
-      const name = user.first_name ?? '' + ' ' + user.last_name ?? ''
-      profileStore.consumerName(name)
+      // fixme - устаревшее, теперь данные берутся из сервера
+      // но нужно поддержать на сервере чтобы данные брались такого вида first_name + last_name
+      // const name = user.first_name ?? '' + ' ' + user.last_name ?? ''
+      // profileStore.consumerName(name)
       return true
     } catch (error) {
       return false

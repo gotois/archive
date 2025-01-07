@@ -1,7 +1,11 @@
 import ICAL from 'ical.js'
 import { date } from 'quasar'
 import { event as createEvent, default as icalendar } from 'ical-browser'
-import { FormatContract, CalendarEventExternal } from '../types/models'
+import {
+  FormatContract,
+  CalendarEventExternal,
+  ContractTable,
+} from '../types/models'
 import { formatIcal } from './dateHelper'
 
 export function createCal(id: string, object: FormatContract) {
@@ -93,6 +97,19 @@ export function googleCalendarUrl(
     link.searchParams.append('location', sameAs)
   }
   return link
+}
+
+export function convertSchemaPodToEvent(contract: ContractTable) {
+  return {
+    id: contract.id,
+    start: date.formatDate(contract.startTime, 'YYYY-MM-DD HH:mm'),
+    end: date.formatDate(contract.endTime, 'YYYY-MM-DD HH:mm'),
+    title: contract.instrument_name,
+    calendarId: 'pod', // todo использовать разные форматы календаря такие как work, etc
+    description: contract.instrument_description,
+    // location: vevent.getFirstPropertyValue('location') || null,
+    // people: ,
+  } as CalendarEventExternal
 }
 
 export function convertIcalToEvent(ical: string) {

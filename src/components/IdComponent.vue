@@ -44,7 +44,7 @@
     />
     <KeypairComponent v-else @on-key="onKeyDID" />
     <QInput
-      v-model.trim="consumer"
+      v-model.trim="getPersonLD.name"
       :label="$t('consumer.type')"
       :rules="[(val) => val && val.length > 3]"
       name="consumer"
@@ -132,13 +132,12 @@ const profileStore = useProfileStore()
 const langStore = useLangStore()
 
 const useGoogleId = ref(false)
-const { did, consumer, email } = storeToRefs(profileStore)
+const { did, getPersonLD, email } = storeToRefs(profileStore)
 
 const googleClientId = computed(() => process.env.google_client_id)
 const consumerValid = computed(() => {
   return Boolean(
-    // fixme - поддержать используя getPersonLD
-    consumer.value.length > 3 &&
+    getPersonLD.value.name.length > 3 &&
       patterns.testPattern.email(email.value) &&
       did.value,
   )

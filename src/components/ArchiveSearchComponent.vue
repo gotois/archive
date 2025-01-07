@@ -11,7 +11,7 @@
         <QTooltip>
           {{ $t('archive.tooltip') }}
         </QTooltip>
-        <SearchInputComponent
+        <InputComponent
           :autofocus="$q.platform.is.desktop"
           :label="$t('searchDialog.searchText')"
           @search="(value) => $emit('onSearch', value)"
@@ -40,7 +40,7 @@ import {
   QTooltip,
   QCardActions,
 } from 'quasar'
-import SearchInputComponent from 'components/SearchInputComponent.vue'
+import InputComponent from 'components/SearchInputComponent.vue'
 import { indexAllDocuments } from '../services/searchService'
 
 defineEmits(['onSearch'])

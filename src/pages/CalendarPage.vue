@@ -358,7 +358,7 @@ function onEdit(item: FormatContract) {
     cancel: true,
   })
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  dialog.onOk(async (value: string) => {
+  dialog.onOk(async (/*value: string*/) => {
     try {
       // item.instrument.description = value
       await editContract(item)
