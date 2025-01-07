@@ -296,11 +296,12 @@
       show-if-above
       bordered
     >
-      <ChatDialog style="height: calc(100dvh - 80px)" />
-      <QPageSticky position="bottom" :offset="[0, 0]" expand>
-        <div class="fit">
-          <SearchInputComponent @search="(value) => onSearch(value)" />
-        </div>
+      <ChatDialog style="height: calc(100dvh - 100px)" />
+      <QPageSticky position="bottom-left" :offset="[0, 0]" expand>
+        <SearchInputComponent
+          style="width: 320px"
+          @search="(value) => onSearch(value)"
+        />
       </QPageSticky>
     </QDrawer>
     <QPageContainer>

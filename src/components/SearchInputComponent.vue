@@ -138,21 +138,18 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, onMounted, PropType } from 'vue'
+import { ref, onMounted, PropType, computed } from 'vue'
 import {
   useQuasar,
-  QBtn,
   QSelect,
   QItem,
   QItemSection,
   QSpinner,
   QIcon,
-  QMenu,
-  QList,
   QFile,
   QTooltip,
-  QInput,
-  QFab,
+  QBtnDropdown,
+  QBtn,
 } from 'quasar'
 import { useI18n } from 'vue-i18n'
 import { miniSearch } from '../services/searchService'

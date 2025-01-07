@@ -188,9 +188,8 @@
           <QBtn v-close-popup flat color="dark" icon="close" />
         </QBar>
         <QScrollArea visible style="height: calc(100dvh - 32px)">
-          <QCardSection class="fit overflow-auto q-pt-none">
+          <QCardSection v-if="dogovor" class="fit overflow-auto q-pt-none">
             <ContractFormComponent
-              v-if="dogovor"
               :dogovor="dogovor"
               :signing="false"
               @on-create="onCreateContract"
@@ -303,7 +302,7 @@ const creatingNewContract = ref(false)
 const dogovor = ref<InstanceType<typeof Dogovor> | null>(null)
 
 const { isLoggedIn } = storeToRefs(authStore)
-const { did, consumer, phone, email } = storeToRefs(profileStore)
+const { did, getPersonLD, phone, email } = storeToRefs(profileStore)
 
 watch(
   () => step.value,
@@ -466,20 +465,21 @@ function exportKeyPair() {
   })
 }
 
-async function mintPrivacyContract() {
-  const response = await fetch(window.location.origin + '/docs/agreement.md')
+async function mintPrivacyContract(url: string) {
+  const response = await fetch(url)
   const contentType = response.headers.get('content-type')
 
-  if (contentType.startsWith('text/markdown')) {
-    const { createContractPDF } = await import('../services/pdfGenerator')
+  if (contentType.startsWith('text/')) {
     const md = await response.text()
-    const html = parse(md)
+    const html = parse(md) as string
+
+    const { createContractPDF } = await import('../services/pdfGenerator')
     const file = await createContractPDF(html)
 
     const dogovor = Dogovor.mintContract({
       agent: {
         type: 'Organization',
-        name: consumer.value,
+        name: getPersonLD.name,
         email: email.value,
       },
       participant: {
@@ -531,7 +531,9 @@ async function onFinish() {
       // ...
     }
 
-    dogovor.value = await mintPrivacyContract()
+    dogovor.value = await mintPrivacyContract(
+      window.location.origin + '/docs/agreement.md',
+    )
     creatingNewContract.value = true
   } catch (error) {
     console.error(error)
