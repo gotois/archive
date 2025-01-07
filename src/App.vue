@@ -153,10 +153,7 @@ events.on(EVENTS.LOGIN, async () => {
     $q.sessionStorage.remove('connect')
   }
   try {
-    const { name, email, avatar } = await podStore.getProfileFOAF()
-    if (name) {
-      profileStore.consumerName(name)
-    }
+    const { email, avatar } = await podStore.getProfileFOAF()
     if (email) {
       profileStore.consumerEmail(email)
     }

@@ -6,7 +6,7 @@ export function getFileExt(mimeType: string) {
   return mimeType.split('/')[1]
 }
 
-export function parseJwt(token: string): unknown {
+export function parseJwt(token: string) {
   try {
     return JSON.parse(atob(token.split('.')[1]))
   } catch {

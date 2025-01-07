@@ -521,7 +521,6 @@ async function onFinish() {
     if (isLoggedIn.value) {
       await podStore.initPod()
     }
-    profileStore.consumerName(consumer.value)
     profileStore.consumerEmail(email.value)
     profileStore.consumerPhone(phone.value)
     await profileStore.setAvatar(email.value)

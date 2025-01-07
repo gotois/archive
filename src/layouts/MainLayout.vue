@@ -114,163 +114,7 @@
         >
           <QItemSection class="q-pa-md">
             <p>{{ $t('settings.consumer.description') }}</p>
-            <QForm
-              ref="nameForm"
-              autocapitalize="off"
-              autocomplete="off"
-              greedy
-              @submit="onFinishProfile"
-            >
-              <QField
-                v-if="isLoggedIn"
-                label="WebId"
-                color="secondary"
-                class="q-pb-md full-width"
-                outlined
-                stack-label
-              >
-                <template #prepend>
-                  <QIcon name="web" />
-                </template>
-                <template #control>
-                  <div
-                    class="self-center no-outline no-margin no-padding non-selectable ellipsis absolute"
-                    style="left: 0; right: 0"
-                    >{{ webId }}</div
-                  >
-                </template>
-                <template #append>
-                  <QIcon
-                    name="content_copy"
-                    class="cursor-pointer"
-                    @click="onCopyText(webId)"
-                  />
-                </template>
-              </QField>
-              <QInput
-                v-model.trim="consumer"
-                color="secondary"
-                type="text"
-                outlined
-                :clearable="!isDemo"
-                :readonly="isDemo"
-                stack-label
-                :hide-hint="!$q.platform.is.desktop"
-                :label="$t('consumer.type')"
-                :rules="[
-                  (val) => (val && val.length > 0) || $t('consumer.rules'),
-                ]"
-                name="consumer"
-                autocomplete="on"
-              >
-                <template #prepend>
-                  <QIcon
-                    class="rounded-borders"
-                    :class="{
-                      'bg-white': avatar,
-                    }"
-                    :name="avatar ? 'img:' + avatar : 'face'"
-                  />
-                </template>
-              </QInput>
-              <QInput
-                v-if="!isDemo && email"
-                v-model.trim="email"
-                color="secondary"
-                type="email"
-                outlined
-                :clearable="!isDemo"
-                :readonly="isDemo"
-                stack-label
-                :hide-hint="!$q.platform.is.desktop"
-                :hide-bottom-space="!email"
-                :label="$t('consumer.email')"
-                :rules="['email']"
-                :error-message="$t('consumer.emailRules')"
-                name="email"
-                autocomplete="off"
-              >
-                <template #prepend>
-                  <QIcon name="email" />
-                </template>
-              </QInput>
-              <QInput
-                v-if="!isDemo && phone"
-                v-model.trim="phone"
-                color="secondary"
-                type="tel"
-                mask="### ### ####"
-                :fill-mask="!isDemo"
-                outlined
-                :clearable="!isDemo"
-                :readonly="isDemo"
-                stack-label
-                :hide-hint="!$q.platform.is.desktop"
-                :hide-bottom-space="!phone"
-                :label="$t('consumer.phone')"
-                :error-message="$t('consumer.phoneRules')"
-                name="tel"
-                autocomplete="on"
-              >
-                <template #prepend>
-                  <QIcon name="phone" />
-                </template>
-              </QInput>
-              <QField
-                v-if="!isDemo && getWalletLD.id"
-                label="DID"
-                color="secondary"
-                class="q-pt-md q-pb-md full-width"
-                outlined
-                readonly
-                stack-label
-                hide-bottom-space
-              >
-                <template #prepend>
-                  <QIcon name="wallet" />
-                </template>
-                <template #control>
-                  <div
-                    class="self-center no-outline no-margin no-padding non-selectable ellipsis absolute"
-                    style="left: 0; right: 0"
-                  >
-                    {{ getWalletLD.id }}
-                  </div>
-                </template>
-                <template #append>
-                  <QIcon
-                    name="content_copy"
-                    class="cursor-pointer"
-                    @click="onCopyText(getWalletLD.id)"
-                  />
-                </template>
-              </QField>
-              <PhantomWalletLogin
-                v-if="!isDemo"
-                :label="$t('tutorial.wallet.title')"
-                color="white"
-                text-color="black"
-                icon="wallet"
-                content-class="full-width q-mb-md"
-                @skip="onSkipWallet"
-                @error="onWalletError"
-              />
-              <QBtn
-                v-if="!isDemo"
-                :label="$t('consumer.save')"
-                icon="save"
-                class="full-width"
-                round
-                :dense="$q.platform.is.desktop"
-                square
-                :class="{
-                  'q-mt-md': consumer?.length === 0,
-                }"
-                :outline="!consumer?.length && !email?.length"
-                type="submit"
-                color="secondary"
-              />
-            </QForm>
+            <Profile />
           </QItemSection>
         </QExpansionItem>
         <QSeparator />
@@ -511,7 +355,6 @@ import {
   QTabs,
   QRouteTab,
   QBtn,
-  QField,
   QPageContainer,
   QTooltip,
   QChip,
@@ -520,8 +363,6 @@ import {
   QItemSection,
   QExpansionItem,
   QIcon,
-  QInput,
-  QForm,
   QList,
   QDrawer,
   QToolbar,
@@ -532,7 +373,6 @@ import {
   QCardSection,
   QPageSticky,
   exportFile,
-  copyToClipboard,
 } from 'quasar'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
@@ -542,11 +382,11 @@ import useTFAStore from 'stores/tfa'
 import useContractStore from 'stores/contract'
 import useTutorialStore from 'stores/tutorial'
 import useProfileStore from 'stores/profile'
-import useWalletStore from 'stores/wallet'
 import useLangStore from 'stores/lang'
 import useNotification from 'stores/notification'
 import useCalendarStore from 'stores/calendar'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
+import Profile from 'components/Profile.vue'
 import ChatDialog from 'components/ChatDialog.vue'
 import { indexAllDocuments } from '../services/searchService'
 import { isTWA, isTMA } from '../helpers/twaHelper'
@@ -576,9 +416,6 @@ const ArchiveSearchComponent = defineAsyncComponent(
 const QOtp = defineAsyncComponent(
   () => import('quasar-app-extension-q-otp/src/component/QOtp.vue'),
 )
-const PhantomWalletLogin = defineAsyncComponent(
-  () => import('components/PhantomWalletLogin.vue'),
-)
 const AndroidBarComponent = defineAsyncComponent(
   () => import('components/AndroidBarComponent.vue'),
 )
@@ -592,18 +429,16 @@ const tfaStore = useTFAStore()
 const langStore = useLangStore()
 const contractStore = useContractStore()
 const profileStore = useProfileStore()
-const walletStore = useWalletStore()
 const tutorialStore = useTutorialStore()
 const calendarStore = useCalendarStore()
 const notificationStore = useNotification()
 
 const NOTIFICATION_TIMER = 30000
 
-const { consumer, email, phone, avatar } = storeToRefs(profileStore)
+const { email } = storeToRefs(profileStore)
 const { contractsCount } = storeToRefs(contractStore)
-const { isLoggedIn, isDemo, webId } = storeToRefs(authStore)
+const { isLoggedIn, isDemo } = storeToRefs(authStore)
 const { activated } = storeToRefs(tfaStore)
-const { getWalletLD } = storeToRefs(walletStore)
 const bigScreen = computed(
   () => $q.platform.is.desktop && ($q.screen.xl || $q.screen.lg),
 )
@@ -625,15 +460,6 @@ const authUri = ref('')
 
 function onToggleLeftDrawer(): void {
   leftDrawerOpen.value = !leftDrawerOpen.value
-}
-
-async function onCopyText(text: string) {
-  await copyToClipboard(text)
-  $q.notify({
-    type: 'positive',
-    group: false,
-    message: $t('copy.success'),
-  })
 }
 
 async function onExportKeychain() {
@@ -766,23 +592,8 @@ async function openOTPDialog() {
   showOTPDialog.value = true
 }
 
-function onWalletError(error: Error) {
-  $q.notify({
-    color: 'negative',
-    message:
-      error.name === 'DatabaseClosedError' ? error.message : $t('wallet.fail'),
-  })
-}
-
-function onSkipWallet() {
-  const dialog = $q.dialog({
-    message: $t('tutorial.welcome.demoHint'),
-    cancel: true,
-    persistent: true,
-  })
-  dialog.onOk(() => {
-    // emit('free')
-  })
+function addGoogleCalendar() {
+  console.log('WIP')
 }
 
 onBeforeMount(() => {

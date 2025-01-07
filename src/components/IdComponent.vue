@@ -137,6 +137,7 @@ const { did, consumer, email } = storeToRefs(profileStore)
 const googleClientId = computed(() => process.env.google_client_id)
 const consumerValid = computed(() => {
   return Boolean(
+    // fixme - поддержать используя getPersonLD
     consumer.value.length > 3 &&
       patterns.testPattern.email(email.value) &&
       did.value,
@@ -144,8 +145,7 @@ const consumerValid = computed(() => {
 })
 
 function handleCredentialResponse(response: { credential: string }) {
-  const value = parseJwt(response.credential) as { name: string; email: string }
-  consumer.value = value.name
+  const value = parseJwt(response.credential)
   email.value = value.email
   emit('finish')
 }
