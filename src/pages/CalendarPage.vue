@@ -123,7 +123,6 @@ import DayCalendar from 'components/DayCalendar.vue'
 import CalendarEventCard from 'components/CalendarEventCard.vue'
 import useCalendarStore from 'stores/calendar'
 import useLangStore from 'stores/lang'
-import usePodStore from 'stores/pod'
 import { formatToCalendarDate, isCurrentDate } from '../helpers/calendarHelper'
 import { ROUTE_NAMES } from '../router/routes'
 import '@schedule-x/theme-shadcn/dist/index.css'
@@ -134,7 +133,6 @@ import { FormatContract } from '../types/models'
 const authStore = useAuthStore()
 const contractStore = useContractStore()
 const { isLoggedIn } = storeToRefs(authStore)
-const podStore = usePodStore()
 
 const CalendarEventsComponent = defineAsyncComponent(
   () => import('components/CalendarEventsComponent.vue'),
@@ -383,6 +381,8 @@ async function editContract(item: FormatContract) {
 
   if (isLoggedIn.value) {
     // todo - поддержать обновление на Pod и в Секретаре
+    // import usePodStore from 'stores/pod'
+    // const podStore = usePodStore()
     // await podStore.updateIntoPod(item)
   }
 }

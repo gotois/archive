@@ -512,17 +512,6 @@ async function logOutFromPod() {
   })
 }
 
-async function onFinishProfile() {
-  profileStore.consumerName(consumer.value)
-  profileStore.consumerEmail(email.value)
-  profileStore.consumerPhone(phone.value)
-  await profileStore.setAvatar(email.value)
-  $q.notify({
-    message: $t('consumer.success'),
-    type: 'positive',
-  })
-}
-
 function otpRule(token: string) {
   if (token.length === TFA_LENGTH) {
     return tfaStore.verify(token) || 'TFA Error'

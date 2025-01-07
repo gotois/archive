@@ -1,70 +1,141 @@
 <template>
-  <QSelect
-    ref="select"
-    v-model.trim="searchText"
-    autocomplete="off"
-    spellcheck="false"
-    color="primary"
-    label-color="primary"
-    input-debounce="50"
-    :options="searchOptions"
-    :label="label"
-    :behavior="$q.platform.is.ios ? 'dialog' : 'menu'"
-    input-class="text-right q-pb-md"
-    use-input
-    hide-dropdown-icon
-    hide-selected
-    stack-label
-    autofocus
-    filled
-    outlined
-    square
-    standout
-    fill-input
-    new-value-mode="add-unique"
-    @update:model-value="onSearchText"
-    @filter="onFilterSelect"
+  <div
+    :class="{
+      'light-dimmed': isDragging,
+    }"
+    class="flex self-end"
+    @dragenter="dragenter"
+    @dragover="dragover"
+    @dragleave="dragleave"
+    @drop="drop"
   >
-    <template #prepend>
-      <QBtn
-        icon="arrow_drop_down"
-        flat
-        square
-        :fab-mini="$q.platform.is.desktop"
-        :fab="!$q.platform.is.desktop"
-      >
-        <QMenu>
-          <QList>
-            <QItem v-close-popup clickable @click="filterType">
-              <QItemSection>Недавно добавленные</QItemSection>
-            </QItem>
-            <QItem v-close-popup clickable @click="filterType">
-              <QItemSection>Скоро заканчивающиеся</QItemSection>
-            </QItem>
-            <QItem v-close-popup clickable @click="filterType">
-              <QItemSection>Недавно закрытые</QItemSection>
-            </QItem>
-          </QList>
-        </QMenu>
-      </QBtn>
-    </template>
-    <template #no-option>
-      <QItem>
-        <QItemSection class="text-grey non-selectable">
-          {{ $t('archive.notfound') }}
-        </QItemSection>
-      </QItem>
-    </template>
-    <template #append>
-      <template v-if="!searching">
-        <QIcon v-if="!hasText" name="search" />
-        <QIcon v-else name="clear" class="cursor-pointer" @click="clearText" />
+    <!-- FIXME нужно объединить это в один умный Input
+    где пользователь будет выбирать уже существующие события из БД
+    и добавлять их к своим запросам
+    запросы будут отпраавляться в метод Chat Секретаря  -->
+
+    <QSelect
+      ref="select"
+      v-model.trim="searchText"
+      :hide-hint="!$q.platform.is.desktop"
+      :hide-bottom-space="!$q.platform.is.desktop"
+      autocomplete="off"
+      spellcheck="false"
+      color="primary"
+      class="no-margin"
+      input-class="text-left q-pb-md"
+      :dense="$q.platform.is.desktop"
+      style="width: 100%"
+      label-color="primary"
+      input-debounce="50"
+      :options="searchOptions"
+      :label="label"
+      :bg-color="$q.dark.isActive ? 'dark' : 'grey-1'"
+      :behavior="$q.platform.is.ios ? 'dialog' : 'menu'"
+      use-input
+      hide-dropdown-icon
+      hide-selected
+      stack-label
+      autofocus
+      filled
+      outlined
+      square
+      standout
+      fill-input
+      new-value-mode="add-unique"
+      @input-value="onInput"
+      @update:model-value="onSearchText"
+      @filter="onFilterSelect"
+    >
+      <template #prepend>
+        <QBtnDropdown
+          :model-value="showed"
+          class="text-weight-light no-margin"
+          content-class="no-shadow no-border no-border-radius"
+          no-caps
+          flat
+          unelevated
+          square
+          dense
+          :transition-duration="0"
+          persistent
+          :disable-dropdown="false"
+          :disable-main-btn="false"
+          size="xm"
+          align="left"
+          :ripple="false"
+          text-color="black-9"
+          :fab-mini="$q.platform.is.desktop"
+          :fab="!$q.platform.is.desktop"
+          @update:model-value="
+            () => {
+              console.log('change model value')
+            }
+          "
+        >
+          <QItem dense>
+            <QItemSection no-wrap>
+              <QFile
+                v-model="files"
+                :label="$t('files.type')"
+                :counter="Boolean(files.length)"
+                :accept="`${PNG_MIME_TYPE}, ${JPG_MIME_TYPE}, ${PDF_MIME_TYPE}`"
+                color="primary"
+                label-color="primary"
+                class="shadow-1 cursor-pointer"
+                unelevated
+                borderless
+                flat
+                round
+                filled
+                :hide-hint="!$q.platform.is.desktop"
+                :hide-bottom-space="!$q.platform.is.desktop"
+                :dense="$q.platform.is.desktop"
+                multiple
+                square
+                :bg-color="$q.dark.isActive ? 'dark' : 'white'"
+                @update:model-value="onFileSelect"
+              >
+                <template #prepend>
+                  <QIcon name="attach_file" color="primary" />
+                </template>
+                <QTooltip>{{ $t('files.hint') }}</QTooltip>
+              </QFile>
+            </QItemSection>
+          </QItem>
+        </QBtnDropdown>
       </template>
-      <template v-else-if="searching">
-        <QSpinner color="primary" />
+      <template #no-option>
+        <QItem>
+          <QItemSection class="text-grey non-selectable">
+            {{ $t('archive.notfound') }}
+          </QItemSection>
+        </QItem>
       </template>
-    </template>
-  </QSelect>
+      <template #append>
+        <template v-if="!searching">
+          <QBtn
+            v-if="hasText"
+            class="cursor-pointer"
+            hide-label
+            glossy
+            push
+            icon="search"
+            vertical-actions-align="right"
+            color="accent"
+            :class="{
+              'bg-dark': !$q.dark.isActive,
+              'bg-white': $q.dark.isActive,
+            }"
+            @click="sendChat"
+          />
+        </template>
+        <template v-else-if="searching">
+          <QSpinner color="primary" />
+        </template>
+      </template>
+    </QSelect>
+  </div>
 </template>
 <script lang="ts" setup>
 import { ref, onMounted, PropType } from 'vue'
@@ -90,16 +161,28 @@ import {
   PNG_MIME_TYPE,
   JPG_MIME_TYPE,
 } from '../helpers/mimeTypes'
+import useChatStore from 'stores/chat'
 
 const $q = useQuasar()
 const $t = useI18n().t
+const chatStore = useChatStore()
+
 const select = ref<InstanceType<typeof QSelect> | null>(null)
 const searchText = ref('')
 const searchOptions = ref([])
 const searching = ref(false)
-const hasText = ref(false)
+const inputText = ref('')
+const showed = ref(false)
+const hasText = computed(() => inputText.value !== '')
+const isDragging = ref(false)
+const files = ref([])
 
 const emit = defineEmits(['search'])
+
+function onInput(value: string) {
+  console.log(value)
+  inputText.value = value
+}
 
 defineProps({
   label: {
@@ -107,6 +190,56 @@ defineProps({
     default: '',
   },
 })
+
+async function sendChat() {
+  await chatStore.send(inputText.value)
+}
+
+function dragenter(e: DragEvent) {
+  e.preventDefault()
+  isDragging.value = true
+}
+
+function dragover(e: Event) {
+  e.preventDefault()
+  isDragging.value = true
+}
+
+function dragleave() {
+  isDragging.value = false
+}
+
+function drop(e: DragEvent) {
+  e.preventDefault()
+  const files: File[] = Array.from(e.dataTransfer.files).filter(
+    (file: File) => {
+      switch (file.type) {
+        case PDF_MIME_TYPE:
+        case PNG_MIME_TYPE:
+        case JPG_MIME_TYPE:
+          return true
+        default:
+          return false
+      }
+    },
+  )
+  onFileSelect(files)
+  isDragging.value = false
+}
+
+function onFileSelect(files: File[]) {
+  const filesUrls = []
+  for (const file of files) {
+    filesUrls.push({
+      contentUrl: URL.createObjectURL(file),
+      encodingFormat: file.type,
+      caption: file.name,
+    })
+  }
+  if (filesUrls.length === 0) {
+    return
+  }
+}
 
 function onSearchText(value: string) {
   if (!value.length) {
@@ -117,35 +250,26 @@ function onSearchText(value: string) {
   clearText()
 }
 
-function filterType() {
-  alert('WIP')
-
-  // Filter like this?
-  // const filtered = contractDates
-  //   .filter(({ start, end }) => {
-  //     return start >= date || date <= end
-  //   })
-  //   .map(({ id }) => id)
-}
-
 function clearText() {
   searchText.value = ''
   select.value.updateInputValue('')
   searchOptions.value = []
-  hasText.value = false
   searching.value = false
 }
+
 function onFilterSelect(
   val: string,
   update: (callback: () => void, callback2: (ref: QSelect) => void) => void,
   abort: () => void,
 ) {
+  if (searching.value) {
+    abort()
+  }
   if (val.length < 3) {
     abort()
     return
   }
   searching.value = true
-  hasText.value = true
 
   abort()
   setTimeout(() => {

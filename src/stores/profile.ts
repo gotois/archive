@@ -8,7 +8,6 @@ import useAuth from 'stores/auth'
 
 interface State {
   did: string
-  consumer: string
   email: string
   phone: string
   avatar: string
