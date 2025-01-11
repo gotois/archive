@@ -7,13 +7,18 @@ export function parseJwt(token: string) {
     return JSON.parse(atob(token.split('.')[1])) as {
       exp: number
       iat: number
-      id: number
       name: string
       email: string
-      login: string
-      // todo - поддержать avatar
-      // todo - поддержать telephone
-      // todo - поддержать email
+      aud?: string
+      azp?: string
+      email_verified?: boolean
+      family_name?: string
+      given_name?: string
+      iss?: string
+      jti?: string
+      nbf?: number
+      picture?: string
+      sub?: string
     }
   } catch {
     return undefined

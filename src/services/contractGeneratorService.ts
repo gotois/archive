@@ -23,13 +23,7 @@ import {
   OwnerContract,
   Credential,
   Presentation,
-  MyContract,
-  CredentialSubject,
-  BaseContext,
 } from '../types/models'
-import { issue, signPresentation, Suite } from '../services/cryptoService'
-import { getMimeType } from '../helpers/dataHelper'
-import { getEmailProperty } from '../helpers/schemaHelper'
 
 export default class Dogovor {
   resourceUrl = ''

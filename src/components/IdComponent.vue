@@ -1,29 +1,5 @@
 <template>
-  <template v-if="useGoogleId">
-    <div
-      id="g_id_onload"
-      :data-client_id="googleClientId"
-      data-context="signin"
-      data-ux_mode="popup"
-      data-callback="handleCredentialResponse"
-      data-auto_prompt="false"
-    >
-    </div>
-    <div
-      class="g_id_signin"
-      data-type="standard"
-      data-shape="rectangular"
-      :data-theme="$q.dark.isActive ? 'filled_black' : 'outline'"
-      data-text="signin_with"
-      data-ux_mode="popup"
-      data-width="400px"
-      data-size="large"
-      data-logo_alignment="left"
-    >
-    </div>
-  </template>
   <QForm
-    v-else
     ref="nameForm"
     class="q-gutter-md"
     autocapitalize="off"
@@ -44,41 +20,73 @@
     />
     <KeypairComponent v-else @on-key="onKeyDID" />
     <QInput
-      v-model.trim="getPersonLD.email"
-      :label="$t('consumer.email')"
+      v-model.trim="email"
       name="email"
       type="email"
       color="secondary"
       :rules="['email']"
       :error-message="$t('consumer.emailRules')"
       autocomplete="off"
+      :clearable="true"
+      :fill-mask="true"
       :dense="$q.platform.is.desktop"
       lazy-rules
-      hide-bottom-space
+      :hide-bottom-space="!email"
+      :filled="Boolean(email)"
+      :label="$t('consumer.email')"
       square
-      filled
       outlined
       no-error-icon
     >
+      <template #before>
+        <template v-if="GOOGLE_OAUTH_CLIENT_ID">
+          <div
+            id="g_id_onload"
+            :data-client_id="GOOGLE_OAUTH_CLIENT_ID"
+            data-use_fedcm_for_prompt="true"
+            data-context="signin"
+            data-ux_mode="popup"
+            data-callback="handleCredentialResponse"
+            data-width="200"
+            data-auto_prompt="false"
+          >
+          </div>
+          <div
+            class="g_id_signin"
+            data-type="standard"
+            data-shape="rectangular"
+            :data-theme="$q.dark.isActive ? 'filled_black' : 'outline'"
+            data-text="signin_with"
+            data-ux_mode="popup"
+            data-width="200"
+            data-size="large"
+            data-logo_alignment="left"
+          >
+          </div>
+        </template>
+      </template>
       <template #prepend>
         <QIcon name="email" />
       </template>
     </QInput>
+    <!-- todo заменить на vue3-q-tel-input -->
     <QInput
-      v-model.trim="getPersonLD.telephone"
-      color="secondary"
-      type="tel"
-      mask="### ### ####"
-      :fill-mask="true"
-      outlined
-      :clearable="true"
-      stack-label
-      :hide-hint="!$q.platform.is.desktop"
-      :hide-bottom-space="!getPersonLD.telephone"
-      :label="$t('consumer.phone')"
-      :error-message="$t('consumer.phoneRules')"
+      v-model.trim="phone"
       name="tel"
-      autocomplete="on"
+      type="tel"
+      color="secondary"
+      :error-message="$t('consumer.phoneRules')"
+      autocomplete="off"
+      :clearable="true"
+      :fill-mask="true"
+      stack-label
+      :dense="$q.platform.is.desktop"
+      :hide-bottom-space="!phone"
+      :filled="Boolean(phone)"
+      :label="$t('consumer.phone')"
+      square
+      outlined
+      no-error-icon
     >
       <template #prepend>
         <QIcon name="phone" />
@@ -114,10 +122,13 @@ import {
 import { storeToRefs } from 'pinia'
 import useProfileStore from 'stores/profile'
 import useLangStore from 'stores/lang'
-import { isTWA } from '../helpers/twaHelper'
 import { parseJwt } from '../helpers/dataHelper'
 import { DIDTable } from '../types/models'
-import { googleIdInit, googleClientId } from '../helpers/googleOAuthHelper'
+import {
+  googleSignInitialize,
+  loadGoogleSignIn,
+  GOOGLE_OAUTH_CLIENT_ID,
+} from '../helpers/googleOAuthHelper'
 
 const KeypairComponent = defineAsyncComponent(
   () => import('components/KeypairComponent.vue'),
@@ -130,8 +141,7 @@ const $t = i18n.t
 const profileStore = useProfileStore()
 const langStore = useLangStore()
 
-const useGoogleId = ref(false)
-const { did, getPersonLD, email } = storeToRefs(profileStore)
+const { did, getPersonLD, email, phone } = storeToRefs(profileStore)
 
 const consumerValid = computed(() => {
   return Boolean(
@@ -141,10 +151,17 @@ const consumerValid = computed(() => {
   )
 })
 
-function handleCredentialResponse(response: { credential: string }) {
-  const value = parseJwt(response.credential)
-  email.value = value.email
-  emit('finish')
+interface GoogleHandlerResponse {
+  clientId: string
+  client_id: string
+  credential: string
+  select_by: string
+}
+
+function handleCredentialResponse(response: GoogleHandlerResponse) {
+  const res = parseJwt(response.credential)
+  profileStore.consumerEmail(res.email)
+  email.value = res.email
 }
 
 function onKeyDID(key: DIDTable) {
@@ -152,11 +169,11 @@ function onKeyDID(key: DIDTable) {
 }
 
 onMounted(async () => {
-  if (navigator.onLine && isTWA) {
+  if (navigator.onLine) {
     $q.loading.show()
     try {
-      useGoogleId.value = true
-      await googleIdInit(langStore.language, handleCredentialResponse)
+      await loadGoogleSignIn(langStore.language)
+      await googleSignInitialize(handleCredentialResponse)
     } catch (error) {
       console.error(error)
     } finally {
