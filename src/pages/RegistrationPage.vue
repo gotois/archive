@@ -124,7 +124,7 @@
             {{ $t('tutorial.welcome.hint') }}
           </p>
           <QStepperNavigation v-if="!isTMA">
-            <SelectRegistration @select="registrationCallback" />
+            <SelectRegistration @authed="stepper.next()" />
           </QStepperNavigation>
         </QStep>
         <QStep
@@ -263,27 +263,6 @@ watch(
     setMeta(value)
   },
 )
-
-async function registrationCallback(cb: () => Promise<boolean>) {
-  try {
-    const hasNext = await cb()
-    if (hasNext) {
-      stepper.value.next()
-      return
-    } else {
-      $q.notify({
-        type: 'negative',
-        message: 'Cannot register',
-      })
-    }
-  } catch (error) {
-    console.error(error)
-    $q.notify({
-      type: 'negative',
-      message: error.message as string,
-    })
-  }
-}
 
 function setMeta(value: number) {
   switch (value as STEP) {

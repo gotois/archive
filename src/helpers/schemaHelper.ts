@@ -6,7 +6,6 @@ import {
   FormatPlace,
   Credential,
   CredentialSubject,
-  BaseContext,
 } from '../types/models'
 import { getHash } from '../helpers/cryptoHelper'
 
@@ -96,7 +95,7 @@ export function formatterContract(contract: ContractTable) {
     'contentUrl': contentUrl,
   }))
   return {
-    '@context': BaseContext.schemaOrg,
+    '@context': 'https://schema.org',
     '@type': contract.type ? contract.type[1] : 'OrganizeAction',
     'sameAs': contract.resource_url,
     'agent': agent,
