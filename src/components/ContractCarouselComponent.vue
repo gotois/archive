@@ -5,8 +5,8 @@
     transition-prev="slide-right"
     transition-next="slide-left"
     control-color="secondary"
-    :navigation="!fullscreen && item.length > 1"
-    :arrows="$q.platform.is.desktop && item.length > 1"
+    :navigation="!fullscreen && props.model.length > 1"
+    :arrows="$q.platform.is.desktop && props.model.length > 1"
     animated
     swipeable
     infinite
@@ -14,7 +14,7 @@
     <template #navigation-icon="navProps">
       <div class="q-pa-md non-selectable">
         <QIcon
-          v-if="[PDF_MIME_TYPE].includes(item[navProps.index].encodingFormat)"
+          v-if="[PDF_MIME_TYPE].includes(props.model[navProps.index].encodingFormat)"
           name="picture_as_pdf"
           size="64px"
           color="info"
@@ -44,7 +44,7 @@
             'border': navProps.active ? '1px solid var(--q-secondary)' : 'none',
             'image-rendering': 'high-quality',
           }"
-          :src="item[navProps.index].contentUrl"
+          :src="props.model[navProps.index].contentUrl"
           placeholder-src="/icons/icon-128x128.png"
           decoding="async"
           fetchpriority="low"
@@ -59,7 +59,7 @@
     <QCarouselSlide
       v-for="(
         { contentUrl, encodingFormat, caption = '' }, objectIndex
-      ) in item"
+      ) in props.model"
       :key="objectIndex"
       class="no-margin no-padding"
       :name="objectIndex + 1"
@@ -105,11 +105,14 @@
                 height: '400px',
               }"
               :class="{
-                grabbing: item.length > 1,
+                grabbing: props.model.length > 1,
               }"
               color="info"
             >
-              <ImageContextMenu v-if="!fullscreen" :image="item[objectIndex]" />
+              <ImageContextMenu
+                v-if="!fullscreen"
+                :image="props.model[objectIndex]"
+              />
             </QIcon>
           </template>
           <template v-else>
@@ -122,7 +125,7 @@
               :loading="fullscreen ? 'eager' : 'lazy'"
               :decoding="fullscreen ? 'sync' : 'async'"
               :class="{
-                grabbing: item.length > 1,
+                grabbing: props.model.length > 1,
               }"
               fetchpriority="high"
               no-spinner
@@ -140,7 +143,10 @@
               <div v-if="caption.length" class="absolute-top-left text-caption">
                 {{ caption }}
               </div>
-              <ImageContextMenu v-if="!fullscreen" :image="item[objectIndex]" />
+              <ImageContextMenu
+                v-if="!fullscreen"
+                :image="props.model[objectIndex]"
+              />
             </QImg>
           </template>
         </SwipeToClose>
@@ -167,7 +173,7 @@
   </QCarousel>
 </template>
 <script lang="ts" setup>
-import { ref, toRef } from 'vue'
+import { ref, PropType } from 'vue'
 import {
   useQuasar,
   QBtn,
@@ -184,21 +190,17 @@ import analyze from 'rgbaster'
 import ImageContextMenu from 'components/ImageContextMenu.vue'
 import SwipeToClose from 'components/SwipeToClose.vue'
 import { PDF_MIME_TYPE } from '../helpers/mimeTypes'
+import { FormatImageType } from '../types/models'
 
 const $q = useQuasar()
 
-interface Props {
+const props = defineProps({
   model: {
-    // todo set type FormatImageType
-    encodingFormat: string
-    contentUrl: string
-    caption?: string
-  }[]
-}
+    type: Array as PropType<FormatImageType[]>,
+    required: true,
+  },
+})
 
-const props = defineProps<Props>()
-
-const item = toRef(props, 'model')
 const currentSlide = ref(1)
 const fullscreen = ref(false)
 const color = ref('white')
@@ -231,7 +233,7 @@ async function prominentBGColors() {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
   color.value = await getColorFromImage(
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
-    item.value.object[currentSlide.value - 1].contentUrl,
+    props.model.value.object[currentSlide.value - 1].contentUrl,
   )
 }
 

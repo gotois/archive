@@ -214,7 +214,6 @@ import { isTMA } from '../helpers/twaHelper'
 import { ROUTE_NAMES, STEP } from '../router/routes'
 import { parse } from '../helpers/markdownHelper'
 import solidAuth from '../services/authService'
-import { keyPair } from '../services/databaseService'
 import Dogovor from '../services/contractGeneratorService'
 import CreateNewDogovor from 'components/CreateNewDogovor.vue'
 
@@ -300,7 +299,6 @@ function setMeta(value: number) {
 function onCreateContract() {
   function end() {
     tutorialStore.tutorialComplete(true)
-    exportKeyPair()
     void router.push({
       name: ROUTE_NAMES.ARCHIVE,
     })
@@ -367,75 +365,6 @@ async function onOnlineAuthorize(oidcIssuer: string) {
     })
   } finally {
     $q.loading.hide()
-  }
-}
-
-function exportKeyPair() {
-  const dialog = $q.dialog({
-    message: $t('components.keypair.export.dialog.message'),
-    cancel: true,
-    persistent: true,
-  })
-  dialog.onDismiss(() => {})
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  dialog.onOk(async () => {
-    const keysJSON = await keyPair.prepareKeyPair()
-    if (keysJSON) {
-      const status = exportFile('keys.json', keysJSON)
-      if (status) {
-        $q.notify({
-          type: 'positive',
-          message: $t('components.keypair.export.dialog.success'),
-        })
-      } else {
-        $q.notify({
-          type: 'warning',
-          message: $t('components.keypair.export.dialog.fail'),
-        })
-      }
-    }
-  })
-}
-
-async function mintPrivacyContract(url: string) {
-  const response = await fetch(url)
-  const contentType = response.headers.get('content-type')
-
-  if (contentType.startsWith('text/')) {
-    const md = await response.text()
-    const html = parse(md) as string
-
-    const { createContractPDF } = await import('../services/pdfGenerator')
-    const file = await createContractPDF(html)
-
-    const dogovor = Dogovor.mintContract({
-      agent: {
-        type: 'Organization',
-        name: getPersonLD.name,
-        email: email.value,
-      },
-      participant: {
-        sameAs: 'http://gotointeractive.com/profile/card#me' as WebId, // todo пока просто заглушка
-        name: pkg.author.name,
-        email: pkg.author.email,
-        url: pkg.author.url,
-      },
-      instrument: {
-        name: $t('pages.privacy.title'),
-        description: `${pkg.productName}: ${pkg.description} v${pkg.version}`,
-      },
-      files: [
-        {
-          contentUrl: URL.createObjectURL(file),
-          encodingFormat: file.type,
-          caption: file.name,
-        },
-      ],
-    })
-
-    return dogovor
-  } else {
-    throw new Error('Unknown content type')
   }
 }
 

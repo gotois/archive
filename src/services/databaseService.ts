@@ -13,13 +13,10 @@ import {
   KeysTable,
   DIDTable,
   ContractData,
-  MyContract,
   WalletType,
   FullTextDocument,
+  Suite,
 } from '../types/models'
-import { getContractFromLD } from '../helpers/schemaHelper'
-import { Suite } from './cryptoService'
-import Dogovor from './contractGeneratorService'
 
 export function reset() {
   return Promise.all([
@@ -52,9 +49,8 @@ class KeyPairDatabase extends Dexie {
     this.keyPair = this.table('keyPair')
   }
 
-  async prepareKeyPair() {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const keys = await this.last()
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+  prepareKeyPair(keys: DIDTable) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
     const exportKeys = keys.export({
       publicKey: true,
@@ -72,15 +68,20 @@ class KeyPairDatabase extends Dexie {
     return Ed25519VerificationKey2020.from(keysTable) as unknown
   }
 
-  generateNewKeyPair(controller: string) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-    return Ed25519VerificationKey2020.generate({
-      controller,
-    }) as Promise<DIDTable>
+  async setNewKeyPair(controller: string) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const keyPair: DIDTable =
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+      await Ed25519VerificationKey2020.generate({
+        controller,
+      })
+    return this.installKey(keyPair)
   }
-  async setKeyPair(keyPair: DIDTable) {
+
+  async installKey(keyPair: DIDTable) {
     await this.keyPair.clear()
-    return this.keyPair.add(keyPair)
+    await this.keyPair.add(keyPair)
+    return keyPair
   }
 
   async getSuite() {

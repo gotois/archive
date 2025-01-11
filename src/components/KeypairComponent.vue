@@ -31,9 +31,15 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { QBtn, QIcon, QBtnGroup, QFile, QTooltip, useQuasar } from 'quasar'
-import useWalletStore from 'stores/wallet'
-import { demoUserWebId } from 'stores/auth'
+import {
+  exportFile,
+  QBtn,
+  QIcon,
+  QBtnGroup,
+  QFile,
+  QTooltip,
+  useQuasar,
+} from 'quasar'
 import { DIDTable } from '../types/models'
 import { keyPair } from '../services/databaseService'
 
@@ -41,7 +47,6 @@ const emit = defineEmits(['onKey'])
 
 const $t = useI18n().t
 const $q = useQuasar()
-const walletStore = useWalletStore()
 
 const keyPairFile = ref<File>(null)
 
@@ -53,7 +58,7 @@ function onLoadKeyPairFile(file: File) {
     async () => {
       try {
         const key = JSON.parse(reader.result as string) as DIDTable
-        await keyPair.setKeyPair({
+        await keyPair.installKey({
           id: key.id,
           controller: key.controller,
           type: key.type,
@@ -74,11 +79,36 @@ function onLoadKeyPairFile(file: File) {
   reader.readAsText(file)
 }
 
+function exportKeyPair(key) {
+  const dialog = $q.dialog({
+    message: $t('components.keypair.export.dialog.message'),
+    cancel: true,
+    persistent: true,
+  })
+  dialog.onDismiss(() => {
+    emit('onKey', key)
+  })
+  dialog.onOk(() => {
+    const keysJSON = keyPair.prepareKeyPair(key)
+    const status = exportFile('keys.json', keysJSON)
+    if (status) {
+      $q.notify({
+        type: 'positive',
+        message: $t('components.keypair.export.dialog.success'),
+      })
+    } else {
+      $q.notify({
+        type: 'warning',
+        message: $t('components.keypair.export.dialog.fail'),
+      })
+    }
+    emit('onKey', key)
+  })
+}
+
 async function onGenerateKeyPair() {
-  const gicId = walletStore?.publicKey?.toString()
-  const resolver = gicId ? `did:gic:${gicId}` : demoUserWebId
-  const key = await keyPair.generateNewKeyPair(resolver)
-  await keyPair.setKeyPair(key)
-  emit('onKey', key)
+  const resolver = 'did:gic:demo' // todo установить резолвер от GIC DAO
+  const key = await keyPair.setNewKeyPair(resolver)
+  exportKeyPair(key)
 }
 </script>

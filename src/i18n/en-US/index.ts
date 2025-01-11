@@ -386,8 +386,8 @@ export default {
     },
     keypair: {
       generate: {
-        label: 'Generate new DID',
-        tooltip: 'Generate a new key',
+        label: 'Generate new key',
+        tooltip: 'Generating a new key',
       },
       import: {
         label: 'Import Key File',

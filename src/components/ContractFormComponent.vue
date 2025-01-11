@@ -3,7 +3,7 @@
     v-if="contract.credentialSubject?.object?.length"
     class="relative-position"
   >
-    <ContractCarouselComponent :model="contract.credentialSubject" />
+    <ContractCarouselComponent :model="contract.credentialSubject.object" />
   </div>
   <QSeparator spaced inset />
   <QForm
