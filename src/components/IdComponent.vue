@@ -30,7 +30,7 @@
     autocomplete="off"
     :autofocus="$q.platform.is.desktop"
     greedy
-    @submit="$emit('finish')"
+    @submit="emit('finish')"
   >
     <QInput
       v-if="did"
@@ -119,6 +119,7 @@ import useLangStore from 'stores/lang'
 import { isTWA } from '../helpers/twaHelper'
 import { parseJwt } from '../helpers/dataHelper'
 import { DIDTable } from '../types/models'
+import { googleIdInit, googleClientId } from '../helpers/googleOAuthHelper'
 
 const KeypairComponent = defineAsyncComponent(
   () => import('components/KeypairComponent.vue'),
@@ -134,7 +135,6 @@ const langStore = useLangStore()
 const useGoogleId = ref(false)
 const { did, getPersonLD, email } = storeToRefs(profileStore)
 
-const googleClientId = computed(() => process.env.google_client_id)
 const consumerValid = computed(() => {
   return Boolean(
     getPersonLD.value.name.length > 3 &&
@@ -153,57 +153,17 @@ function onKeyDID(key: DIDTable) {
   profileStore.consumerDID(key.id)
 }
 
-function loadGoogleId(): Promise<unknown> {
-  return new Promise((resolve, reject) => {
-    const lang = langStore.language.replace(/-.+/, '')
-    const googleid = document.createElement('script')
-    googleid.setAttribute(
-      'src',
-      'https://accounts.google.com/gsi/client?hl=' + lang,
-    )
-    googleid.defer = true
-    document.head.appendChild(googleid)
-    googleid.onerror = () => {
-      reject()
-    }
-    googleid.onload = () => {
-      resolve(window.google)
-    }
-  })
-}
-
-// https://developers.google.com/identity/gsi/web/reference/html-reference
-async function googleIdInit() {
-  const google = await loadGoogleId()
-  window.handleCredentialResponse = handleCredentialResponse
-  useGoogleId.value = true
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-  google.accounts.id.initialize({
-    client_id: googleClientId.value,
-    auto_select: true,
-    cancel_on_tap_outside: true,
-    callback: handleCredentialResponse,
-    ux_mode: 'popup',
-    itp_support: true,
-    context: 'signin',
-  })
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-  google.accounts.id.prompt((notification: unknown) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-      // continue with another identity provider.
-      useGoogleId.value = false
-      return false
-    }
-    return true
-  })
-}
-
 onMounted(async () => {
-  if (navigator.onLine && googleClientId.value && isTWA) {
+  if (navigator.onLine && isTWA) {
     $q.loading.show()
-    await googleIdInit()
-    $q.loading.hide()
+    try {
+      useGoogleId.value = true
+      await googleIdInit(langStore.language, handleCredentialResponse)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      $q.loading.hide()
+    }
   }
 })
 </script>
