@@ -178,7 +178,6 @@ import { defineAsyncComponent, onBeforeMount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import {
-  exportFile,
   QCard,
   QCardSection,
   QExpansionItem,

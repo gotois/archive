@@ -2,20 +2,6 @@ import tweetnacl from 'tweetnacl'
 import { PublicKey } from '@solana/web3.js'
 import { encodeMessage, decode, encode } from '../helpers/cryptoHelper'
 
-export interface Suite {
-  verifier: unknown
-  verificationMethod: string
-  useNativeCanonize: unknown
-  type: string
-  signer: unknown
-  requiredKeyType: string
-  proof: unknown
-  key: unknown
-  contextUrl: string
-  canonizeOptions: unknown
-  LDKeyClass: unknown
-}
-
 export function verifySign(
   message: string,
   signature: string,

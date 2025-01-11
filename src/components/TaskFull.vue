@@ -146,6 +146,7 @@
 import { PropType } from 'vue'
 import { useRouter } from 'vue-router'
 import {
+  uid,
   useQuasar,
   QSkeleton,
   QAvatar,
@@ -179,8 +180,10 @@ import { open } from '../helpers/urlHelper'
 import { openMap } from '../services/geoService'
 import useContractStore from 'stores/contract'
 import { TELEGRAM_MINI_APPS_URL } from '../services/telegram'
-import { FormatImageType, Place } from '../types/models'
+import { FormatImageType, Place, Presentation } from '../types/models'
 import { ROUTE_NAMES } from '../router/routes'
+import { keyPair } from '../services/databaseService'
+import { documentLoader } from '../helpers/customLoaders'
 
 const router = useRouter()
 const contractStore = useContractStore()

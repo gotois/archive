@@ -307,3 +307,17 @@ export interface TelegramUser {
   auth_date: string
   hash: string
 }
+
+export interface Suite {
+  verifier: unknown
+  verificationMethod: string
+  useNativeCanonize: unknown
+  type: string
+  signer: unknown
+  requiredKeyType: string
+  proof: unknown
+  key: unknown
+  contextUrl: string
+  canonizeOptions: unknown
+  LDKeyClass: unknown
+}
