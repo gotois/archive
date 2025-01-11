@@ -40,11 +40,16 @@
       :clearable="false"
       :readonly="true"
       stack-label
+      square
+      hide-bottom-space
+      filled
+      :dense="$q.platform.is.desktop"
       :hide-hint="!$q.platform.is.desktop"
       :label="$t('consumer.type')"
       :rules="[(val) => (val && val.length > 0) || $t('consumer.rules')]"
       name="consumer"
       autocomplete="on"
+      @focus="(e) => e.target.scrollIntoView()"
     >
       <template #prepend>
         <QIcon

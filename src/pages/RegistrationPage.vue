@@ -128,6 +128,22 @@
           </QStepperNavigation>
         </QStep>
         <QStep
+          :name="STEP.FINAL"
+          :title="$t('tutorial.data.title')"
+          done-color="positive"
+          icon="assignment"
+          class="q-pb-md"
+          :done="step > STEP.FINAL"
+        >
+          <p v-show="$q.platform.is.desktop" class="text-h4">
+            {{ $t('tutorial.data.title', { name: getPersonLD.name }) }}
+          </p>
+          <p class="text-body1">{{ $t('tutorial.data.body') }}</p>
+          <QSpace class="q-pa-xs" />
+          <IdComponent @finish="onFinish" />
+        </QStep>
+        <!-- TODO: перенести подключение после регистрации        -->
+        <!--QStep
           :name="STEP.OIDC"
           :title="$t('tutorial.oidc.title')"
           :caption="$t('tutorial.oidc.caption')"
@@ -387,8 +403,6 @@ async function onFinish() {
 
     if (isLoggedIn.value) {
       await podStore.setProfileFOAF()
-      // todo сохранять KeyPair DID на SOLiD
-      // ...
     }
 
     dogovor.value = await mintPrivacyContract(

@@ -44,29 +44,7 @@
     />
     <KeypairComponent v-else @on-key="onKeyDID" />
     <QInput
-      v-model.trim="getPersonLD.name"
-      :label="$t('consumer.type')"
-      :rules="[(val) => val && val.length > 3]"
-      name="consumer"
-      type="text"
-      autocomplete="on"
-      color="secondary"
-      autofocus
-      :error-message="$t('consumer.rules')"
-      :dense="$q.platform.is.desktop"
-      square
-      hide-bottom-space
-      filled
-      outlined
-      no-error-icon
-      @focus="(e) => e.target.scrollIntoView()"
-    >
-      <template #prepend>
-        <QIcon name="face" />
-      </template>
-    </QInput>
-    <QInput
-      v-model.trim="email"
+      v-model.trim="getPersonLD.email"
       :label="$t('consumer.email')"
       name="email"
       type="email"
@@ -84,6 +62,26 @@
     >
       <template #prepend>
         <QIcon name="email" />
+      </template>
+    </QInput>
+    <QInput
+      v-model.trim="getPersonLD.telephone"
+      color="secondary"
+      type="tel"
+      mask="### ### ####"
+      :fill-mask="true"
+      outlined
+      :clearable="true"
+      stack-label
+      :hide-hint="!$q.platform.is.desktop"
+      :hide-bottom-space="!getPersonLD.telephone"
+      :label="$t('consumer.phone')"
+      :error-message="$t('consumer.phoneRules')"
+      name="tel"
+      autocomplete="on"
+    >
+      <template #prepend>
+        <QIcon name="phone" />
       </template>
     </QInput>
     <QStepperNavigation class="no-margin q-pt-md q-pl-md">

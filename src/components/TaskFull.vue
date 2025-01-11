@@ -167,6 +167,7 @@ import {
 } from 'quasar'
 import { useI18n } from 'vue-i18n'
 import { storeToRefs } from 'pinia'
+import * as vc from '@digitalbazaar/vc'
 import useAuthStore from 'stores/auth'
 import useWalletStore from 'stores/wallet'
 import ContractCarouselComponent from 'components/ContractCarouselComponent.vue'

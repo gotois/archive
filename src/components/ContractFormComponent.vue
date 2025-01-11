@@ -742,7 +742,8 @@ async function saveOnline() {
     console.error(error)
     $q.notify({
       type: 'negative',
-      message: $t('components.contractForm.submitDate.fail'),
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      message: error.message,
     })
   } finally {
     loadingForm.value = false

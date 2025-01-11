@@ -18,8 +18,7 @@ export enum ROUTE_NAMES {
 
 export enum STEP {
   WELCOME = 1,
-  OIDC = 2,
-  FINAL = 3,
+  FINAL = 2,
 }
 
 const routes: RouteRecordRaw[] = [
