@@ -190,13 +190,13 @@ import analyze from 'rgbaster'
 import ImageContextMenu from 'components/ImageContextMenu.vue'
 import SwipeToClose from 'components/SwipeToClose.vue'
 import { PDF_MIME_TYPE } from '../helpers/mimeTypes'
-import { FormatImageType } from '../types/models'
+import { ImageType } from '../types/models'
 
 const $q = useQuasar()
 
 const props = defineProps({
   model: {
-    type: Array as PropType<FormatImageType[]>,
+    type: Array as PropType<ImageType[]>,
     required: true,
   },
 })

@@ -140,7 +140,7 @@
           </p>
           <p class="text-body1">{{ $t('tutorial.data.body') }}</p>
           <QSpace class="q-pa-xs" />
-          <IdComponent @finish="onFinish" />
+          <IdComponent @complete="onFinish" />
         </QStep>
         <!-- TODO: перенести подключение после регистрации        -->
         <!--QStep
@@ -219,6 +219,7 @@ import {
 } from '@telegram-apps/sdk'
 import { WebId } from '@inrupt/solid-client'
 import useAuthStore, { demoUserWebId } from 'stores/auth'
+import useCalendarStore from 'stores/calendar'
 import useTutorialStore from 'stores/tutorial'
 import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'

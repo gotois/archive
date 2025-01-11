@@ -159,7 +159,6 @@
         :readonly="Boolean(signing)"
         :label="$t('customer.type')"
         :hint="$t('customer.hint')"
-        :rules="[validUrlString]"
         :error-message="$t('customer.rules')"
         autocomplete="on"
         name="customer"
@@ -246,9 +245,6 @@
         <QIcon name="sticky_note_2" />
       </template>
     </QInput>
-    <template v-if="signing">
-      {{ JSON.stringify(dogovor.presentation.proof, null, 2) }}
-    </template>
     <div class="text-left">
       <QBtn
         ripple
@@ -299,12 +295,11 @@ import MultiContactComponent from 'components/MultiContact.vue'
 import ContractCarouselComponent from 'components/ContractCarouselComponent.vue'
 import { readFilePromise } from '../helpers/fileHelper'
 import { formatDate } from '../helpers/dateHelper'
-import { validUrlString } from '../helpers/urlHelper'
 import { createPDF } from '../helpers/pdfHelper'
 import { getIdentifierMessage } from '../helpers/schemaHelper'
 import { signMessageUsePhantom } from '../services/phantomWalletService'
 import { signMessageUseSecretKey } from '../services/cryptoService'
-import { keys, keyPair } from '../services/databaseService'
+import { keys } from '../services/databaseService'
 import Dogovor from '../services/contractGeneratorService'
 import {
   checkGeolocationPermission,

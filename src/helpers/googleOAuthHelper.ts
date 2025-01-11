@@ -12,7 +12,7 @@ export function loadGoogleSignIn(lang: string): Promise<unknown> {
     googleid.defer = true
     document.head.appendChild(googleid)
     googleid.onerror = () => {
-      reject()
+      reject('Cannot load Google Sign In')
     }
     googleid.onload = () => {
       resolve(true)
@@ -20,7 +20,9 @@ export function loadGoogleSignIn(lang: string): Promise<unknown> {
   })
 }
 
-export async function googleSignInitialize(callback: (data: unknown) => void): Promise<boolean> {
+export async function googleSignInitialize(
+  callback: (data: unknown) => void,
+): Promise<boolean> {
   return new Promise((resolve, reject) => {
     window.handleCredentialResponse = callback
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access

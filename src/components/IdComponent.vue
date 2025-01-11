@@ -6,7 +6,7 @@
     autocomplete="off"
     :autofocus="$q.platform.is.desktop"
     greedy
-    @submit="emit('finish')"
+    @submit="emit('complete')"
   >
     <QInput
       v-if="did"
@@ -108,7 +108,7 @@
   </QForm>
 </template>
 <script lang="ts" setup>
-import { ref, computed, defineAsyncComponent, onMounted } from 'vue'
+import { computed, defineAsyncComponent, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   useQuasar,
@@ -134,7 +134,7 @@ const KeypairComponent = defineAsyncComponent(
   () => import('components/KeypairComponent.vue'),
 )
 
-const emit = defineEmits(['finish'])
+const emit = defineEmits(['complete'])
 const $q = useQuasar()
 const i18n = useI18n()
 const $t = i18n.t
