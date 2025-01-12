@@ -142,44 +142,6 @@
           <QSpace class="q-pa-xs" />
           <IdComponent @complete="onFinish" />
         </QStep>
-        <!-- TODO: перенести подключение после регистрации        -->
-        <!--QStep
-          :name="STEP.OIDC"
-          :title="$t('tutorial.oidc.title')"
-          :caption="$t('tutorial.oidc.caption')"
-          done-color="positive"
-          icon="assignment"
-          class="q-pb-md"
-          :done="step > STEP.OIDC"
-        >
-          <p v-show="$q.platform.is.desktop" class="text-h4">
-            {{ $t('tutorial.oidc.title') }}
-          </p>
-          <div
-            class="text-body1"
-            style="white-space: break-spaces"
-            v-html="parse($t('tutorial.oidc.body'))"
-          >
-          </div>
-          <OIDCIssuerComponent @on-complete="onOnlineAuthorize">
-            <QTooltip>{{ $t('oidc.tutorialHint') }}</QTooltip>
-          </OIDCIssuerComponent>
-        </QStep>
-        <QStep
-          :name="STEP.FINAL"
-          :title="$t('tutorial.data.title')"
-          done-color="positive"
-          icon="assignment"
-          class="q-pb-md"
-          :done="step > STEP.FINAL"
-        >
-          <p v-show="$q.platform.is.desktop" class="text-h4">
-            {{ $t('tutorial.data.title') }}
-          </p>
-          <p class="text-body1">{{ $t('tutorial.data.body') }}</p>
-          <QSpace class="q-pa-xs" />
-          <IdComponent @finish="onFinish" />
-        </QStep>
       </QStepper>
     </QScrollArea>
     <CreateNewDogovor
@@ -191,7 +153,7 @@
   </QPage>
 </template>
 <script lang="ts" setup>
-import { defineAsyncComponent, onBeforeMount, onMounted, ref, watch } from 'vue'
+import { defineAsyncComponent, onBeforeMount, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import {
@@ -206,7 +168,6 @@ import {
   QStep,
   QStepper,
   QStepperNavigation,
-  QTooltip,
   useMeta,
   useQuasar,
 } from 'quasar'
@@ -218,27 +179,19 @@ import {
   popup,
   hapticFeedbackNotificationOccurred,
 } from '@telegram-apps/sdk'
-import { WebId } from '@inrupt/solid-client'
 import useAuthStore, { demoUserWebId } from 'stores/auth'
 import useCalendarStore from 'stores/calendar'
 import useTutorialStore from 'stores/tutorial'
-import useContractStore from 'stores/contract'
 import useProfileStore from 'stores/profile'
 import usePodStore from 'stores/pod'
-import useWalletStore from 'stores/wallet'
 import pkg from '../../package.json'
 import { isTMA } from '../helpers/twaHelper'
 import { ROUTE_NAMES, STEP } from '../router/routes'
 import { parse } from '../helpers/markdownHelper'
-import solidAuth from '../services/authService'
-import Dogovor from '../services/contractGeneratorService'
 import CreateNewDogovor from 'components/CreateNewDogovor.vue'
 
 const SelectRegistration = defineAsyncComponent(
   () => import('components/SelectRegistration.vue'),
-)
-const OIDCIssuerComponent = defineAsyncComponent(
-  () => import('components/OIDCIssuerComponent.vue'),
 )
 const IdComponent = defineAsyncComponent(
   () => import('components/IdComponent.vue'),
@@ -249,9 +202,7 @@ const $q = useQuasar()
 const router = useRouter()
 const podStore = usePodStore()
 const authStore = useAuthStore()
-const contractStore = useContractStore()
 const profileStore = useProfileStore()
-const walletStore = useWalletStore()
 const tutorialStore = useTutorialStore()
 
 const stepParam = 'step'
@@ -289,13 +240,6 @@ function setMeta(value: number) {
       })
       break
     }
-    case STEP.OIDC: {
-      useMeta({
-        'title': $t('pages.tutorial.oidc.title'),
-        'og:title': $t('pages.tutorial.oidc.title'),
-      })
-      break
-    }
     case STEP.FINAL: {
       useMeta({
         'title': $t('pages.tutorial.final.title'),
@@ -313,75 +257,11 @@ function setMeta(value: number) {
   }
 }
 
-// todo перенести где подключение к SOLID POD
-function syncPods() {
-  if (!isLoggedIn.value) {
-    return
-  }
-  const dialog = $q.dialog({
-    message: $t('database.pod.sync'),
-    cancel: true,
-    persistent: true,
-  })
-  dialog
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    .onOk(async () => {
-      const links = await podStore.getContractsLink()
-      for (const link of links) {
-        const message = 'refreshing ' + link
-        const newDogovor = await Dogovor.fromUrl(link)
-        dialog.update({ message: message })
-        await contractStore.insertContract(newDogovor.presentation)
-      }
-      end()
-    })
-    .onDismiss(() => {
-      end()
-    })
-}
-
 function onPageComplete() {
   tutorialStore.tutorialComplete(true)
   void router.push({
     name: ROUTE_NAMES.ARCHIVE,
   })
-}
-
-async function onOnlineAuthorize(oidcIssuer: string) {
-  if (!oidcIssuer) {
-    const dialog = $q.dialog({
-      message: $t('components.oidcIssuer.authorizeDialog.message'),
-      cancel: true,
-      persistent: true,
-    })
-    dialog.onOk(() => {
-      stepper.value.next()
-    })
-    return
-  }
-
-  $q.loading.show()
-  $q.sessionStorage.remove('connect')
-  const redirectUrl =
-    window.location.origin +
-    window.location.pathname +
-    `?${stepParam}=` +
-    String(step.value)
-  try {
-    await solidAuth({
-      redirectUrl: redirectUrl,
-      oidcIssuer: oidcIssuer,
-      restorePreviousSession: false,
-    })
-  } catch (error) {
-    console.error(error)
-    $q.notify({
-      color: 'negative',
-      message: $t('components.oidcIssuer.authorizeDialog.fail'),
-    })
-  } finally {
-    $q.loading.hide()
-  }
 }
 
 async function onFinish() {
@@ -498,26 +378,6 @@ onBeforeMount(() => {
         }
       }
     })
-  }
-})
-
-onMounted(() => {
-  const { query } = router.currentRoute.value
-
-  // Если пользователь отменил вход через WebId, возвращаем его на страницу подтверждения
-  if (isLoggedIn.value && query.error === 'access_denied') {
-    step.value = STEP.FINAL
-  }
-  if (isLoggedIn.value) {
-    step.value = STEP.FINAL
-  }
-  if (
-    step.value === Number(STEP.FINAL) &&
-    walletStore.getMultibase?.length === 0
-  ) {
-    $q.loading.hide()
-  } else if (isLoggedIn.value && query.code && query.state) {
-    step.value = STEP.FINAL
   }
 })
 </script>

@@ -21,6 +21,27 @@ interface Store {
   events: CalendarEventExternal[]
 }
 
+function makeRequest(method: string, params = {}) {
+  const request = {
+    url: process.env.server + '/rpc',
+    body: {
+      jsonrpc: '2.0',
+      id: uid(),
+      method,
+      params,
+    },
+  }
+  if (authStore.jwt) {
+    request.jwt = authStore.jwt
+  } else {
+    request.auth = {
+      user: authStore.login,
+      pass: authStore.password,
+    }
+  }
+  return request
+}
+
 export default defineStore('calendar', {
   state: (): Store => ({
     events: [],
@@ -52,51 +73,19 @@ export default defineStore('calendar', {
       }
     },
     async getOfferta() {
-      const request = {
-        url: process.env.server + '/rpc',
-        body: {
-          jsonrpc: '2.0',
-          id: uid(),
-          method: 'offerta',
-          params: {},
-        },
-      }
-      if (authStore.jwt) {
-        request.jwt = authStore.jwt
-      } else {
-        request.auth = {
-          user: authStore.login,
-          pass: authStore.password,
-        }
-      }
-      return await requestJsonRpc2(request)
+      return await requestJsonRpc2(makeRequest('offerta'))
     },
     async calendar(object: ActivityObjectNote[] | ActivityObjectLink[]) {
       if (!this.available) {
         throw new Error('Server Unavailable')
       }
-      const request = {
-        url: process.env.server + '/rpc',
-        body: {
-          jsonrpc: '2.0',
-          id: uid(),
-          method: 'add-calendar',
-          params: {
-            '@context': 'https://www.w3.org/ns/activitystreams',
-            'type': 'Activity',
-            'object': object,
-          },
-        },
-      }
-      if (authStore.jwt) {
-        request.jwt = authStore.jwt
-      } else {
-        request.auth = {
-          user: authStore.login,
-          pass: authStore.password,
-        }
-      }
-      const { error, result } = await requestJsonRpc2(request)
+      const { error, result } = await requestJsonRpc2(
+        makeRequest('add-calendar', {
+          '@context': 'https://www.w3.org/ns/activitystreams',
+          'type': 'Activity',
+          'object': object,
+        }),
+      )
       if (error) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument
         throw new Error(error.message)

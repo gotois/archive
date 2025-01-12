@@ -157,14 +157,14 @@ import {
   QBtn,
 } from 'quasar'
 import { useI18n } from 'vue-i18n'
-import { miniSearch } from '../services/searchService'
 import CreateNewDogovor from 'components/CreateNewDogovor.vue'
+import useChatStore from 'stores/chat'
 import {
   PDF_MIME_TYPE,
   PNG_MIME_TYPE,
   JPG_MIME_TYPE,
 } from '../helpers/mimeTypes'
-import useChatStore from 'stores/chat'
+import { miniSearch } from '../services/searchService'
 import Dogovor from '../services/contractGeneratorService'
 
 const $q = useQuasar()

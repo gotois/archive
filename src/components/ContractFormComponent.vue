@@ -282,7 +282,6 @@ import {
 } from 'quasar'
 import { WebId } from '@inrupt/solid-client'
 import { createWorker } from 'tesseract.js'
-import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
 import useWalletStore from 'stores/wallet'
 import useCalendarStore from 'stores/calendar'
@@ -330,7 +329,6 @@ const props = defineProps({
 
 const $t = useI18n().t
 const $q = useQuasar()
-const authStore = useAuthStore()
 const contractStore = useContractStore()
 const walletStore = useWalletStore()
 const calendarStore = useCalendarStore()

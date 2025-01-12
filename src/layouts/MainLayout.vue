@@ -200,6 +200,31 @@
           :expand-separator="settingsOpen"
           :label="$t('settings.native.title')"
         >
+          <p class="q-pt-md q-pl-md q-pr-md">SOLID Pod</p>
+
+          {{ $t('tutorial.oidc.caption') }}
+          <p class="text-h4">
+            {{ $t('tutorial.oidc.title') }}
+          </p>
+
+          <div
+            class="text-body1"
+            style="white-space: break-spaces"
+            v-html="parse($t('tutorial.oidc.body'))"
+          >
+          </div>
+          <OIDCIssuerComponent @on-complete="onOnlineAuthorize">
+            <QTooltip>{{ $t('oidc.tutorialHint') }}</QTooltip>
+          </OIDCIssuerComponent>
+          <QBtn v-if="isLoggedIn" label="Sync Pod" @click="syncPods" />
+
+          <QSeparator />
+
+          <p class="q-pt-md q-pl-md q-pr-md">Calendars</p>
+          <QBtn label="Google Calendar" @click="addGoogleCalendar" />
+
+          <QSeparator />
+
           <p class="q-pt-md q-pl-md q-pr-md">
             {{ $t('settings.native.description') }}
           </p>
@@ -393,7 +418,10 @@ import { isTWA, isTMA } from '../helpers/twaHelper'
 import { keyPair } from '../services/databaseService'
 import { createQR } from '../helpers/qrHelper'
 import { open } from '../helpers/urlHelper'
+import { parse } from '../helpers/markdownHelper'
 import { ROUTE_NAMES, STEP } from '../router/routes'
+import solidAuth from '../services/authService'
+import Dogovor from '../services/contractGeneratorService'
 
 const LocaleComponent = defineAsyncComponent(
   () => import('components/LocaleComponent.vue'),
@@ -418,6 +446,9 @@ const QOtp = defineAsyncComponent(
 )
 const AndroidBarComponent = defineAsyncComponent(
   () => import('components/AndroidBarComponent.vue'),
+)
+const OIDCIssuerComponent = defineAsyncComponent(
+  () => import('components/OIDCIssuerComponent.vue'),
 )
 
 const $q = useQuasar()
@@ -581,6 +612,62 @@ async function openOTPDialog() {
 
 function addGoogleCalendar() {
   console.log('WIP')
+}
+
+async function onOnlineAuthorize(oidcIssuer: string) {
+  if (!oidcIssuer) {
+    const dialog = $q.dialog({
+      message: $t('components.oidcIssuer.authorizeDialog.message'),
+      cancel: true,
+      persistent: true,
+    })
+    dialog.onOk(() => {
+      alert('ok')
+    })
+    return
+  }
+
+  $q.loading.show()
+  $q.sessionStorage.remove('connect')
+  const redirectUrl = window.location.origin + window.location.pathname
+  try {
+    await solidAuth({
+      redirectUrl: redirectUrl,
+      oidcIssuer: oidcIssuer,
+      restorePreviousSession: false,
+    })
+  } catch (error) {
+    console.error(error)
+    $q.notify({
+      color: 'negative',
+      message: $t('components.oidcIssuer.authorizeDialog.fail'),
+    })
+  } finally {
+    $q.loading.hide()
+  }
+}
+
+function syncPods() {
+  const dialog = $q.dialog({
+    message: $t('database.pod.sync'),
+    cancel: true,
+    persistent: true,
+  })
+  dialog
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    .onOk(async () => {
+      const links = await podStore.getContractsLink()
+      for (const link of links) {
+        const message = 'refreshing ' + link
+        const newDogovor = await Dogovor.fromUrl(link)
+        dialog.update({ message: message })
+        await contractStore.insertContract(newDogovor.presentation)
+      }
+      end()
+    })
+    .onDismiss(() => {
+      end()
+    })
 }
 
 onBeforeMount(() => {
