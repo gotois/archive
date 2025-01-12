@@ -185,7 +185,8 @@
     <CreateNewDogovor
       v-if="creatingNewContract"
       :dogovor="dogovor"
-      @on-create="onCreateContract"
+      :signing="true"
+      @on-create="onPageComplete"
     />
   </QPage>
 </template>
@@ -267,7 +268,7 @@ const scroll = ref<InstanceType<typeof QScrollArea> | null>(null)
 const stepper = ref<InstanceType<typeof QStepper> | null>(null)
 const step = ref(getCurrentStep() ?? STEP.WELCOME)
 const creatingNewContract = ref(false)
-const dogovor = ref<InstanceType<typeof Dogovor> | null>(null)
+const dogovor = ref<InstanceType<typeof Object> | null>(null)
 
 const { isLoggedIn } = storeToRefs(authStore)
 const { did, getPersonLD, phone, email } = storeToRefs(profileStore)
@@ -312,19 +313,11 @@ function setMeta(value: number) {
   }
 }
 
-function onCreateContract() {
-  function end() {
-    tutorialStore.tutorialComplete(true)
-    void router.push({
-      name: ROUTE_NAMES.ARCHIVE,
-    })
-  }
-
+// todo перенести где подключение к SOLID POD
+function syncPods() {
   if (!isLoggedIn.value) {
-    end()
     return
   }
-
   const dialog = $q.dialog({
     message: $t('database.pod.sync'),
     cancel: true,
@@ -345,6 +338,13 @@ function onCreateContract() {
     .onDismiss(() => {
       end()
     })
+}
+
+function onPageComplete() {
+  tutorialStore.tutorialComplete(true)
+  void router.push({
+    name: ROUTE_NAMES.ARCHIVE,
+  })
 }
 
 async function onOnlineAuthorize(oidcIssuer: string) {
@@ -406,9 +406,9 @@ async function onFinish() {
       await podStore.setProfileFOAF()
     }
 
-    dogovor.value = await mintPrivacyContract(
-      window.location.origin + '/docs/agreement.md',
-    )
+    const calendarStore = useCalendarStore()
+    const contract = await calendarStore.getOfferta()
+    dogovor.value = contract
     creatingNewContract.value = true
   } catch (error) {
     console.error(error)

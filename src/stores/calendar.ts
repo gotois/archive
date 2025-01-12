@@ -1,7 +1,11 @@
 import { uid } from 'quasar'
 import { defineStore } from 'pinia'
 import requestJsonRpc2 from 'request-json-rpc2'
-import { convertIcalToEvent } from '../helpers/calendarHelper'
+import {
+  convertIcalToEvent,
+  convertSchemaPodToEvent,
+} from '../helpers/calendarHelper'
+import useContractStore from 'stores/contract'
 import useAuthStore from 'stores/auth'
 import {
   ActivityObjectNote,
@@ -46,6 +50,26 @@ export default defineStore('calendar', {
         console.warn('GIC Server: ', error.message)
         this.available = false
       }
+    },
+    async getOfferta() {
+      const request = {
+        url: process.env.server + '/rpc',
+        body: {
+          jsonrpc: '2.0',
+          id: uid(),
+          method: 'offerta',
+          params: {},
+        },
+      }
+      if (authStore.jwt) {
+        request.jwt = authStore.jwt
+      } else {
+        request.auth = {
+          user: authStore.login,
+          pass: authStore.password,
+        }
+      }
+      return await requestJsonRpc2(request)
     },
     async calendar(object: ActivityObjectNote[] | ActivityObjectLink[]) {
       if (!this.available) {
@@ -107,6 +131,7 @@ export default defineStore('calendar', {
           pass: authStore.password,
         }
       }
+      /* todo - восстановить RPC
       const { error, result } = await requestJsonRpc2(request)
       if (error) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument
@@ -114,7 +139,19 @@ export default defineStore('calendar', {
       }
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
       const calendar = result.data as string[]
-      this.events = calendar.map((icalEvent) => convertIcalToEvent(icalEvent))
+       */
+      // this.events = calendar.map((icalEvent) => convertIcalToEvent(icalEvent))
+
+      // todo Локально загружаем календарь - нужно придумать что загружать можно как из локалки, так и через Секретаря
+      const contractStore = useContractStore()
+      await contractStore.loadAllContracts({
+        offset: 0,
+        limit: 5,
+      })
+      this.events = contractStore.contracts.map((contract) =>
+        convertSchemaPodToEvent(contract),
+      )
+      console.log('this.events', this.events)
     },
   },
 })

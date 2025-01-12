@@ -11,6 +11,7 @@ import {
   FormatContract,
   Presentation,
   ContractIdentifier,
+  Credential,
 } from '../types/models'
 
 interface Store {
@@ -80,8 +81,60 @@ export default defineStore('contracts', {
       await db.contracts.where('id').equals(index).modify({
         identifier: contract.identifier,
       })
-
       return { contract, index }
+    },
+    async addContract(verifiedCredential: Credential) {
+      const context = verifiedCredential['@context'].map((c) => {
+        if (typeof c === 'string') {
+          return c
+        }
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        return JSON.parse(JSON.stringify(c))
+      })
+      const { contract } = await this.insertContract({
+        context: context,
+        resolver: verifiedCredential.id,
+        agent_email: verifiedCredential.credentialSubject.agent.email,
+        agent_name: verifiedCredential.credentialSubject.agent.name,
+        identifier: verifiedCredential.credentialSubject.identifier.map(
+          (i) => ({
+            name: i.name,
+            propertyID: i.propertyID,
+            value: i.value,
+          }),
+        ),
+        instrument_name: verifiedCredential.credentialSubject.instrument.name,
+        instrument_description:
+          verifiedCredential.credentialSubject.instrument.description,
+        issuanceDate: new Date(verifiedCredential.issuanceDate),
+        issuer: verifiedCredential.issuer,
+        // todo поддержать массив participants
+        participant_email:
+          verifiedCredential.credentialSubject.participant.email,
+        participant_name: verifiedCredential.credentialSubject.participant.name,
+        participant_tel:
+          verifiedCredential.credentialSubject.participant.telephone,
+        participant_url: verifiedCredential.credentialSubject.participant.url,
+        startTime: new Date(verifiedCredential.credentialSubject.startTime),
+        endTime: verifiedCredential.credentialSubject.endTime
+          ? new Date(verifiedCredential.credentialSubject.endTime)
+          : null,
+        type: Array.from(verifiedCredential.type),
+        proof: {
+          ...verifiedCredential.proof,
+        },
+        // todo есть идея сохранять блобы для уменьшения памяти таблицы
+        images: verifiedCredential.credentialSubject.object.map((o) => {
+          return {
+            contentUrl: o.contentUrl,
+            encodingFormat: o.encodingFormat,
+          }
+        }),
+        // location?: string
+      })
+      const count = await db.contracts.count()
+      this.setContractsCount(count)
+      this.contracts.push(contract)
     },
     async addPresentation(presentation: Presentation) {
       // todo - отрефакторить метод
@@ -94,10 +147,7 @@ export default defineStore('contracts', {
           presentation.verifiableCredential[0].credentialSubject.identifier,
         ),
       )
-      const { contract } = await this.insertContract(mycontract)
-      const count = await db.contracts.count()
-      this.setContractsCount(count)
-      this.contracts.push(contract)
+      await this.addContract(mycontract)
     },
     async editContract(contract: FormatContract) {
       const id = contract.identifier.find(({ name }) => name === 'Dexie')

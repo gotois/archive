@@ -468,9 +468,6 @@ export default {
         fail: 'Unknown date type',
       },
       submitDate: {
-        invalidStartDate: 'Invalid application submission date',
-        invalidEndDate: 'Invalid application end date',
-        invalidSelectDate: 'Start date cannot be later than end date',
         success: 'Record {id} added',
         fail: 'Record failed',
         redirect: 'Go',

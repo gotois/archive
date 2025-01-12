@@ -18,7 +18,7 @@
             :class="{
               'col-xs-6': $q.platform.is.desktop,
             }"
-            :dogovor="dogovor"
+            :contract="dogovor"
             :signing="true"
             @on-create="onCreateContract"
           />
@@ -43,7 +43,7 @@ import {
 } from 'quasar'
 import { useRouter } from 'vue-router'
 import { ROUTE_NAMES } from '../router/routes'
-import { ContractTable } from '../types/models'
+import { Credential, ContractTable } from '../types/models'
 import Dogovor from '../services/contractGeneratorService'
 
 const ContractFormComponent = defineAsyncComponent({
@@ -61,7 +61,7 @@ const router = useRouter()
 const contractForm = ref<InstanceType<typeof ContractFormComponent> | null>(
   null,
 )
-const dogovor = ref<Dogovor | null>(null)
+const dogovor = ref<Credential>(null)
 
 const metaData = {
   'title': $t('pages.sign.title'),

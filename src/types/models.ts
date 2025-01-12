@@ -14,12 +14,13 @@ export interface ContractDate {
 
 export interface ContractTable {
   id?: number
+  resolver: string // возможно дублирование с id
   context: credentialContextType
   type: string[]
   issuer: string
   issuanceDate: Date
   identifier: ContractIdentifier[]
-  proof?: Proof
+  proof?: Proof | Proof[]
   location?: string
   agent_name: string
   agent_email: string
@@ -30,7 +31,7 @@ export interface ContractTable {
   instrument_name: string
   instrument_description?: string
   startTime: Date
-  endTime?: Date | null
+  endTime?: Date
   images?: {
     contentUrl: string
     encodingFormat: string
@@ -63,11 +64,11 @@ enum ProofTypes {
 }
 
 interface Proof {
-  type: ProofTypes
   created: string
-  verificationMethod: string
   proofPurpose: string
   proofValue: string
+  type: ProofTypes.Ed25519Signature2020
+  verificationMethod: string
 }
 
 interface BaseCredentialSubject {
@@ -76,11 +77,12 @@ interface BaseCredentialSubject {
 
 export interface Credential {
   '@context': credentialContextType
-  'id': string
-  'type': string[]
-  'issuer': string
-  'issuanceDate': Date
   'credentialSubject': CredentialSubject
+  'id': string
+  'issuanceDate': string
+  'issuer': string
+  'proof'?: Proof | Proof[]
+  'type': string[]
 }
 
 export interface Presentation {

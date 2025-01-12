@@ -19,14 +19,22 @@ import {
   universalAccess,
 } from '@inrupt/solid-client'
 import { RDF, SCHEMA_INRUPT } from '@inrupt/vocab-common-rdf'
-import {
-  OwnerContract,
-  Credential,
-  Presentation,
-} from '../types/models'
+import { Credential, Presentation } from '../types/models'
 
 export default class Dogovor {
   resourceUrl = ''
+
+  set dataset(ds: SolidDataset) {
+    this._dataset = ds
+  }
+
+  get dataset() {
+    if (this._dataset) {
+      return this._dataset as SolidDataset
+    } else {
+      throw new Error('no dataset')
+    }
+  }
 
   get credential() {
     if (this._credential) {
@@ -385,6 +393,12 @@ export default class Dogovor {
     return credentialSubject
   }
 
+  upload() {
+    return saveSolidDatasetAt(this.resourceUrl, this.dataset, {
+      fetch,
+    })
+  }
+
   updateDataset() {
     let ds = null as SolidDataset
     if (this._dataset) {
@@ -408,39 +422,7 @@ export default class Dogovor {
     this.dataset = ds
   }
 
-  set dataset(ds: SolidDataset) {
-    this._dataset = ds
-  }
-
-  get dataset() {
-    if (this._dataset) {
-      return this._dataset as SolidDataset
-    } else {
-      throw new Error('no dataset')
-    }
-  }
-
-  static async fromCredential(
-    url: string,
-    credential: Credential,
-    suite: Suite,
-  ) {
-    const dogovor = new Dogovor()
-    dogovor.resourceUrl = url
-    dogovor._credential = await issue({
-      credential: credential,
-      suite: suite,
-    })
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-    dogovor.presentation = vc.createPresentation({
-      verifiableCredential: [dogovor.credential],
-    }) as Presentation
-    await dogovor.sign(suite)
-
-    return dogovor
-  }
-
-  static async fromUrl(resource: string) {
+  static async fromSolidUrl(resource: string) {
     const ds: SolidDataset = await getSolidDataset(resource, {
       fetch,
     })

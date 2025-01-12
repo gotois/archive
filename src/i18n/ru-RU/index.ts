@@ -471,9 +471,6 @@ export default {
         fail: 'Неизвестный тип даты',
       },
       submitDate: {
-        invalidStartDate: 'Неверная дата подачи заявления',
-        invalidEndDate: 'Неверная дата окончания заявления',
-        invalidSelectDate: 'Начальная дата не может быть старше конечной даты',
         success: 'Запись {id} добавлена',
         fail: 'Запись не удалась',
         redirect: 'Перейти',

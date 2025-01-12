@@ -23,7 +23,7 @@
       <QScrollArea visible style="height: calc(100dvh - 32px)">
         <QCardSection v-if="dogovor" class="fit overflow-auto q-pt-none">
           <ContractFormComponent
-            :dogovor="dogovor"
+            :contract="dogovor"
             :signing="signing"
             @on-create="$emit('on-create')"
           />
@@ -44,7 +44,7 @@ import {
   QBtn,
   QSkeleton,
 } from 'quasar'
-import Dogovor from '../services/contractGeneratorService'
+import { Credential } from '../types/models'
 
 const creatingNewContract = ref(true)
 
@@ -54,7 +54,7 @@ defineProps({
     default: false,
   },
   dogovor: {
-    type: Object as PropType<Dogovor>,
+    type: Object as PropType<Credential>,
     default: () => ({}),
   },
 })

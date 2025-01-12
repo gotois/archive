@@ -211,6 +211,7 @@ class ContractDatabase extends Dexie {
       'location',
       'startTime',
       'endTime',
+      'resolver',
       '*images',
       '*resource_url',
     ]
