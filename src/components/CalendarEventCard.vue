@@ -44,8 +44,10 @@
 </template>
 <script lang="ts" setup>
 import { PropType } from 'vue'
-import { QCard, QCardSection, date } from 'quasar'
+import { QCard, QCardSection, date, useQuasar } from 'quasar'
 import TaskFull from 'components/TaskFull.vue'
+
+const $q = useQuasar()
 
 const emit = defineEmits(['onRemove', 'onEdit'])
 
@@ -56,11 +58,11 @@ defineProps({
   },
   start: {
     type: Date as PropType<Date>,
-    default: null,
+    required: true,
   },
   end: {
     type: Date as PropType<Date>,
-    default: null,
+    required: true,
   },
   location: {
     type: String as PropType<string>,

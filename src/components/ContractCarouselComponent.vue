@@ -14,7 +14,9 @@
     <template #navigation-icon="navProps">
       <div class="q-pa-md non-selectable">
         <QIcon
-          v-if="[PDF_MIME_TYPE].includes(props.model[navProps.index].encodingFormat)"
+          v-if="
+            [PDF_MIME_TYPE].includes(props.model[navProps.index].encodingFormat)
+          "
           name="picture_as_pdf"
           size="64px"
           color="info"

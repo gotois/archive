@@ -102,26 +102,7 @@ export default defineStore('calendar', {
           startTime: startDate,
           endTime: endDate,
         },
-      }
-      const request = {
-        url: process.env.server + '/rpc',
-        body: {
-          jsonrpc: '2.0',
-          id: uid(),
-          method: 'get-calendar',
-          params: activity,
-        },
-      }
-      if (authStore.jwt) {
-        request.jwt = authStore.jwt
-      } else {
-        request.auth = {
-          user: authStore.login,
-          pass: authStore.password,
-        }
-      }
-      /* todo - восстановить RPC
-      const { error, result } = await requestJsonRpc2(request)
+      })
       if (error) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument
         throw new Error(error.message)

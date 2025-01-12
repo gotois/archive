@@ -3,13 +3,12 @@ import { defineStore } from 'pinia'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 import usePodStore from './pod'
 import { db } from '../services/databaseService'
-import { formatterContracts, getContractFromLD } from '../helpers/schemaHelper'
+import { formatterContracts } from '../helpers/schemaHelper'
 import {
   ContractData,
   ContractDate,
   ContractTable,
   FormatContract,
-  Presentation,
   ContractIdentifier,
   Credential,
 } from '../types/models'
@@ -135,19 +134,6 @@ export default defineStore('contracts', {
       const count = await db.contracts.count()
       this.setContractsCount(count)
       this.contracts.push(contract)
-    },
-    async addPresentation(presentation: Presentation) {
-      // todo - отрефакторить метод
-      const mycontract = getContractFromLD(presentation.verifiableCredential[0])
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      mycontract.proof = JSON.parse(JSON.stringify(presentation.proof))
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      mycontract.identifier = JSON.parse(
-        JSON.stringify(
-          presentation.verifiableCredential[0].credentialSubject.identifier,
-        ),
-      )
-      await this.addContract(mycontract)
     },
     async editContract(contract: FormatContract) {
       const id = contract.identifier.find(({ name }) => name === 'Dexie')

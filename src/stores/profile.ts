@@ -1,6 +1,6 @@
 import { LocalStorage } from 'quasar'
 import { defineStore } from 'pinia'
-import { getEmailProperty, getGravatarURL } from '../helpers/schemaHelper'
+import { getGravatarURL } from '../helpers/schemaHelper'
 import { validUrlString } from '../helpers/urlHelper'
 import getLocation from '../services/cloudflare'
 import { parseJwt } from '../helpers/dataHelper'
@@ -62,7 +62,7 @@ export default defineStore('profile', {
       return {
         '@context': 'https://json-ld.org/contexts/person.jsonld',
         '@type': 'Person',
-        'email': getEmailProperty(state.email),
+        'email': state.email,
         'name': obj.name.trim(),
         'image': state.avatar,
         'telephone': state.phone?.length ? state.phone : null,

@@ -24,16 +24,19 @@ import { Credential, Presentation } from '../types/models'
 export default class Dogovor {
   resourceUrl = ''
 
+  constructor(resourceUrl: string) {
+    this.resourceUrl = resourceUrl
+  }
+
   set dataset(ds: SolidDataset) {
     this._dataset = ds
   }
 
   get dataset() {
-    if (this._dataset) {
-      return this._dataset as SolidDataset
-    } else {
-      throw new Error('no dataset')
+    if (!this._dataset) {
+      this._dataset = createSolidDataset()
     }
+    return this._dataset as SolidDataset
   }
 
   get credential() {
@@ -43,14 +46,7 @@ export default class Dogovor {
     throw new Error('No credential data')
   }
 
-  set presentation(presentation: Presentation) {
-    this._presentation = presentation
-  }
-
   get presentation() {
-    if (this._presentation) {
-      return this._presentation as Presentation
-    }
     const ds = this.dataset
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const resource = ds.internal_resourceInfo.sourceIri as string
@@ -178,21 +174,6 @@ export default class Dogovor {
     ]
 
     return outputJSON as Presentation
-  }
-
-  // Если вызвать метод sign два и более раза, то появляется Proof Chains
-  async sign(suite: Suite) {
-    this.presentation = await signPresentation({
-      presentation: this.presentation,
-      suite: suite,
-    })
-    this.updateDataset()
-  }
-
-  upload() {
-    return saveSolidDatasetAt(this.resourceUrl, this.dataset, {
-      fetch,
-    })
   }
 
   // todo при шаринге делать ограничение на добавление только proof и комментариев
@@ -400,12 +381,7 @@ export default class Dogovor {
   }
 
   updateDataset() {
-    let ds = null as SolidDataset
-    if (this._dataset) {
-      ds = this._dataset as SolidDataset
-    } else {
-      ds = createSolidDataset()
-    }
+    let ds = this.dataset
 
     ds = setThing(ds, this.presentationContext.build())
     ds = setThing(ds, this.presentationType.build())
@@ -422,15 +398,12 @@ export default class Dogovor {
     this.dataset = ds
   }
 
-  static async fromSolidUrl(resource: string) {
-    const ds: SolidDataset = await getSolidDataset(resource, {
+  static async fromSolidUrl(resourceUrl: string) {
+    const ds: SolidDataset = await getSolidDataset(resourceUrl, {
       fetch,
     })
-    const dogovor = new Dogovor()
-    dogovor.resourceUrl = resource
+    const dogovor = new Dogovor(resourceUrl)
     dogovor.dataset = ds
-    dogovor._credential = dogovor.presentation
-      .verifiableCredential[0] as Credential
 
     return dogovor
   }

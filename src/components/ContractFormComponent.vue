@@ -505,34 +505,14 @@ async function signContractUseSolana(contract: Credential) {
 
 async function saveContract() {
   loadingForm.value = true
-  await contractStore.addContract(props.contract)
-  emit('onCreate')
-  loadingForm.value = false
-  onResetForm()
-}
-
-async function saveOffline() {
-  loadingForm.value = true
-  const id = uid()
   try {
-    const newContract = await prepareContract()
-    const resolver = demoUserWebId
-    const jsldContract = Dogovor.createContractLD(newContract, id, resolver)
-    const suite = await keyPair.getSuite()
-    const dogovor = await Dogovor.fromCredential(
-      'http://localhost/',
-      jsldContract,
-      suite,
-    )
-    await contractStore.addPresentation(dogovor.presentation)
-    emit('onCreate', dogovor)
+    await contractStore.addContract(props.contract)
+    emit('onCreate')
     onResetForm()
   } catch (error) {
-    console.error(error)
     $q.notify({
       type: 'negative',
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      message: error.message,
+      message: $t('components.contractForm.submitDate.fail'),
     })
   } finally {
     loadingForm.value = false

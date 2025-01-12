@@ -181,15 +181,46 @@ import { open } from '../helpers/urlHelper'
 import { openMap } from '../services/geoService'
 import useContractStore from 'stores/contract'
 import { TELEGRAM_MINI_APPS_URL } from '../services/telegram'
-import { FormatImageType, Place, Presentation } from '../types/models'
+import {
+  FormatImageType,
+  Place,
+  Presentation,
+  Credential,
+} from '../types/models'
 import { ROUTE_NAMES } from '../router/routes'
 import { keyPair } from '../services/databaseService'
 import { documentLoader } from '../helpers/customLoaders'
 
+enum Action {
+  LINK = 'link',
+  SHARE = 'share',
+  CALENDAR = 'calendar',
+  GOOGLE_CALENDAR = 'google-calendar',
+  MAIL = 'mail',
+  TELEPHONE = 'telephone',
+  LAW = 'law',
+  MAP = 'map',
+}
+
+type SheetAction = {
+  label?: string
+  icon?: string
+  color?: string
+  id?: Action
+}
+
 const router = useRouter()
+const $q = useQuasar()
+const i18n = useI18n()
+const $t = i18n.t
 const contractStore = useContractStore()
+const walletStore = useWalletStore()
+const authStore = useAuthStore()
+const langStore = useLangStore()
 
 const { getArchiveNames } = storeToRefs(contractStore)
+const { isLoggedIn } = storeToRefs(authStore)
+const { publicKey } = storeToRefs(walletStore)
 
 const emit = defineEmits(['onRemove', 'onEdit'])
 const props = defineProps({
@@ -398,24 +429,6 @@ function onSheet() {
       }
     }
   })
-}
-
-enum Action {
-  LINK = 'link',
-  SHARE = 'share',
-  CALENDAR = 'calendar',
-  GOOGLE_CALENDAR = 'google-calendar',
-  MAIL = 'mail',
-  TELEPHONE = 'telephone',
-  LAW = 'law',
-  MAP = 'map',
-}
-
-type SheetAction = {
-  label?: string
-  icon?: string
-  color?: string
-  id?: Action
 }
 
 function sendToCourt() {

@@ -407,6 +407,7 @@ import useAuthStore from 'stores/auth'
 import useTFAStore from 'stores/tfa'
 import useContractStore from 'stores/contract'
 import useTutorialStore from 'stores/tutorial'
+import usePodStore from 'stores/pod'
 import useLangStore from 'stores/lang'
 import useNotification from 'stores/notification'
 import useCalendarStore from 'stores/calendar'
@@ -462,6 +463,7 @@ const contractStore = useContractStore()
 const tutorialStore = useTutorialStore()
 const calendarStore = useCalendarStore()
 const notificationStore = useNotification()
+const podStore = usePodStore()
 
 const NOTIFICATION_TIMER = 30000
 
@@ -492,7 +494,8 @@ function onToggleLeftDrawer(): void {
 }
 
 async function onExportKeychain() {
-  const keysJSON = await keyPair.prepareKeyPair()
+  const key = await keyPair.last()
+  const keysJSON = keyPair.prepareKeyPair(key)
   if (keysJSON) {
     exportFile('keys.json', keysJSON)
   }
@@ -659,14 +662,10 @@ function syncPods() {
       const links = await podStore.getContractsLink()
       for (const link of links) {
         const message = 'refreshing ' + link
-        const newDogovor = await Dogovor.fromUrl(link)
+        const newDogovor = await Dogovor.fromSolidUrl(link)
         dialog.update({ message: message })
         await contractStore.insertContract(newDogovor.presentation)
       }
-      end()
-    })
-    .onDismiss(() => {
-      end()
     })
 }
 

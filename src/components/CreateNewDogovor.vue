@@ -25,7 +25,7 @@
           <ContractFormComponent
             :contract="dogovor"
             :signing="signing"
-            @on-create="$emit('on-create')"
+            @on-create="emit('on-create')"
           />
         </QCardSection>
       </QScrollArea>
@@ -58,6 +58,8 @@ defineProps({
     default: () => ({}),
   },
 })
+
+const emit = defineEmits(['on-create'])
 
 const ContractFormComponent = defineAsyncComponent({
   loader: () => import('components/ContractFormComponent.vue'),
