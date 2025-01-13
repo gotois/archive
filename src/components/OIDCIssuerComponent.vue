@@ -25,7 +25,7 @@
       @new-value="onNewValueIssuer"
       @clear="() => (oidcIssuer = '')"
     >
-      <slot></slot>
+      <slot />
     </QSelect>
     <QBtn
       type="button"

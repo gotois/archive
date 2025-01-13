@@ -1,9 +1,15 @@
 import { uid } from 'quasar'
 import requestJsonRpc2 from 'request-json-rpc2'
 import useAuthStore from 'stores/auth'
+import useCalendarStore from 'stores/calendar'
 
 export default async function (method: string, params = {}) {
   const authStore = useAuthStore()
+  const calendarStore = useCalendarStore()
+
+  if (!calendarStore.available) {
+    throw new Error('Server Unavailable')
+  }
   const request = {
     url: process.env.server + '/rpc',
     body: {
@@ -21,5 +27,9 @@ export default async function (method: string, params = {}) {
       pass: authStore.password,
     }
   }
-  return await requestJsonRpc2(request)
+  const { result, error } = await requestJsonRpc2(request)
+  if (result) {
+    return result as unknown
+  }
+  throw error
 }

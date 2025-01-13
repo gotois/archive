@@ -270,16 +270,6 @@ const props = defineProps({
   },
 })
 
-const $q = useQuasar()
-const i18n = useI18n()
-const walletStore = useWalletStore()
-const authStore = useAuthStore()
-const langStore = useLangStore()
-const $t = i18n.t
-
-const { isLoggedIn } = storeToRefs(authStore)
-const { publicKey } = storeToRefs(walletStore)
-
 function itemScheduled(endTime: Date) {
   return endTime !== null && endTime < new Date()
 }

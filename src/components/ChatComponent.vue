@@ -4,13 +4,13 @@
     :class="`row no-wrap items-center q-mx-sm justify-${
       props.sent ? 'end' : 'start'
     }`"
-    :style="{ height: '78px' }"
   >
     <QChatMessage
-      v-if="asyncContent === Object(asyncContent)"
+      v-if="asyncContent"
       :key="props.index"
-      class="q-mx-sm"
       v-bind="asyncContent"
+      :bg-color="sent ? 'primary' : 'secondary'"
+      size="12"
       text-html
     />
     <QSkeleton
@@ -25,47 +25,41 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onBeforeMount, onBeforeUnmount, defineProps } from 'vue'
+import { PropType, ref, onBeforeMount, defineProps } from 'vue'
 import { date, QChatMessage, QSkeleton } from 'quasar'
 import { parse } from '../helpers/markdownHelper'
 
 const props = defineProps({
   index: {
-    type: Number,
+    type: Number as PropType<number>,
+    required: true,
+  },
+  stamp: {
+    type: Date as PropType<Date>,
     required: true,
   },
   sent: {
-    type: Boolean,
+    type: Boolean as PropType<boolean>,
     required: true,
   },
   text: {
-    type: String,
+    type: String as PropType<string>,
     required: true,
   },
 })
 
 const asyncContent = ref(null)
-let timer: string | number = null
 
 function timeAgo(d: Date) {
   return date.formatDate(d, 'YYYY/MM/DD HH:mm')
 }
 
 onBeforeMount(() => {
-  timer = setTimeout(
-    () => {
-      asyncContent.value = {
-        sent: props.sent,
-        name: props.sent ? 'Вы' : 'Бот',
-        stamp: timeAgo(new Date()),
-        text: [parse(props.text)],
-      }
-    },
-    300 + Math.random() * 2000,
-  )
-})
-
-onBeforeUnmount(() => {
-  clearTimeout(timer)
+  asyncContent.value = {
+    sent: props.sent,
+    name: props.sent ? 'Вы' : 'Секретарь',
+    stamp: timeAgo(props.stamp),
+    text: [parse(props.text)],
+  }
 })
 </script>

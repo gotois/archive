@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import requestJsonRpc2 from 'request-json-rpc2'
 import {
   convertIcalToEvent,
   convertSchemaPodToEvent,
@@ -13,8 +12,6 @@ import {
   CalendarEventExternal,
 } from '../types/models'
 import rpc from '../helpers/rpc'
-
-const authStore = useAuthStore()
 
 interface Store {
   available: boolean
@@ -33,6 +30,7 @@ export default defineStore('calendar', {
         this.available = false
         return
       }
+      const authStore = useAuthStore()
       try {
         const response = await fetch(process.env.server + '/ping', {
           method: 'GET',
@@ -54,21 +52,14 @@ export default defineStore('calendar', {
     getOfferta() {
       return rpc('offerta')
     },
-    async calendar(object: ActivityObjectNote[] | ActivityObjectLink[]) {
-      if (!this.available) {
-        throw new Error('Server Unavailable')
-      }
-      const { error, result } = await rpc('add-calendar', {
+    async generate(object: ActivityObjectNote[] | ActivityObjectLink[]) {
+      const result = await rpc('generate-calendar', {
         '@context': 'https://www.w3.org/ns/activitystreams',
         'type': 'Activity',
         'object': object,
       })
-      if (error) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument
-        throw new Error(error.message)
-      }
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
-      return JSON.parse(result.data) as Calendar
+      return result
     },
     async loadCalendar(startDate: Date, endDate?: Date) {
       const activity = {
@@ -80,10 +71,6 @@ export default defineStore('calendar', {
           endTime: endDate,
         },
       })
-      if (error) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument
-        throw new Error(error.message)
-      }
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
       const calendar = result.data as string[]
        */

@@ -1,6 +1,6 @@
 <template>
   <QVirtualScroll
-    style="overflow-x: hidden; height: calc(100dvh - 60px)"
+    style="overflow-x: hidden; height: calc(100dvh - 90px)"
     :items-size="size"
     :items-fn="getItems"
     :virtual-scroll-item-size="78"
@@ -12,28 +12,48 @@
         :index="item.index"
         :sent="item.sent"
         :text="item.text"
+        :stamp="item.stamp"
       />
     </template>
   </QVirtualScroll>
+  <QBtn
+    v-if="size >= 1"
+    class="full-width"
+    label="Try Generate Calendar"
+    @click="tryGenerateCalendar"
+  />
   <InputComponent
     class="full-width absolute-bottom"
     @send="sendData"
-    @search="serverData"
+    @sent="serverData"
+  />
+  <CreateNewDogovor
+    v-if="contract"
+    :contract="contract"
+    @on-create="() => {}"
   />
 </template>
 <script lang="ts" setup>
-import { QVirtualScroll } from 'quasar'
+import { QVirtualScroll, QBtn } from 'quasar'
 import { ref } from 'vue'
+import useCalendarStore from 'stores/calendar'
+import useChatStore from 'stores/chat'
 import ChatComponent from 'components/ChatComponent.vue'
 import InputComponent from 'components/SearchInputComponent.vue'
+import CreateNewDogovor from 'components/CreateNewDogovor.vue'
 
-const size = ref(100000)
+const calendarStore = useCalendarStore()
+const chatStore = useChatStore()
+
+const contract = ref(null)
+const size = ref(1)
 const allItems = Array(size.value)
   .fill(null)
   .map((_, index) => ({
     index,
-    text: 'hello',
-    sent: Math.random() > 0.5,
+    text: 'Привет, я ваш Виртуальный Секретарь. Задай мне пожелание по расписанию',
+    sent: false,
+    stamp: new Date(),
   }))
 
 function getItems(from: number, size: number) {
@@ -49,6 +69,7 @@ function serverData(value: string) {
     index: allItems.length,
     text: value,
     sent: false,
+    stamp: new Date(),
   })
   size.value = allItems.length
 }
@@ -58,7 +79,23 @@ function sendData(value: string) {
     index: allItems.length,
     text: value,
     sent: true,
+    stamp: new Date(),
   })
   size.value = allItems.length
+}
+
+async function tryGenerateCalendar() {
+  const calendar = await calendarStore.generate(
+    chatStore.messages.map((message) => {
+      return {
+        type: 'Note',
+        content: message,
+        mediaType: 'text/plain',
+      }
+    }),
+  )
+  // TODO Открывать форму подписания сгенерированного договора
+  contract.value = calendar
+  console.log('calendar', calendar)
 }
 </script>

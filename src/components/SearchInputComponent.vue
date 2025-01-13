@@ -29,6 +29,7 @@
       label-color="primary"
       input-debounce="50"
       :options="searchOptions"
+      :maxlength="256"
       :label="label"
       :bg-color="$q.dark.isActive ? 'dark' : 'grey-1'"
       :behavior="$q.platform.is.ios ? 'dialog' : 'menu'"
@@ -37,14 +38,11 @@
       hide-selected
       stack-label
       autofocus
-      filled
-      outlined
       square
-      standout
       fill-input
       new-value-mode="add-unique"
       @input-value="onInput"
-      @update:model-value="sent"
+      @update:model-value="sendChat(inputText)"
       @filter="onFilterSelect"
     >
       <template #prepend>
@@ -119,15 +117,16 @@
             class="cursor-pointer"
             hide-label
             glossy
+            square
             push
             icon="send"
             vertical-actions-align="right"
-            color="accent"
+            color="primary"
             :class="{
               'bg-dark': !$q.dark.isActive,
-              'bg-white': $q.dark.isActive,
+              'secondary': $q.dark.isActive,
             }"
-            @click="sendChat"
+            @click="sendChat(inputText)"
           />
         </template>
         <template v-else-if="searching">
@@ -135,11 +134,6 @@
         </template>
       </template>
     </QSelect>
-    <CreateNewDogovor
-      v-if="creatingNewContract"
-      :contract="contract"
-      @on-create="() => {}"
-    />
   </div>
 </template>
 <script lang="ts" setup>
@@ -157,7 +151,6 @@ import {
   QBtn,
 } from 'quasar'
 import { useI18n } from 'vue-i18n'
-import CreateNewDogovor from 'components/CreateNewDogovor.vue'
 import useChatStore from 'stores/chat'
 import {
   PDF_MIME_TYPE,
@@ -185,10 +178,9 @@ const contract = ref<Credential | null>(null)
 
 const creatingNewContract = ref(false)
 
-const emit = defineEmits(['search', 'send'])
+const emit = defineEmits(['sent', 'send'])
 
 function onInput(value: string) {
-  console.log(value)
   inputText.value = value
 }
 
@@ -199,11 +191,23 @@ defineProps({
   },
 })
 
-async function sendChat() {
-  emit('send', inputText.value)
-  const result = await chatStore.send(inputText.value)
-  console.log('Server data', result)
-  sent(result.credentialSubject.value)
+async function sendChat(value: string) {
+  if (!value.length) {
+    return
+  }
+  emit('send', value)
+  clearText()
+  select.value.blur()
+  try {
+    const result = await chatStore.send(value)
+    emit('sent', result.credentialSubject.value)
+  } catch (error) {
+    console.error(error)
+    $q.notify({
+      type: 'negative',
+      message: error.message as string,
+    })
+  }
 }
 
 function dragenter(e: DragEvent) {

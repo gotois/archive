@@ -416,6 +416,7 @@ import { parse } from '../helpers/markdownHelper'
 import { ROUTE_NAMES, STEP } from '../router/routes'
 import solidAuth from '../services/authService'
 import Dogovor from '../services/contractGeneratorService'
+import { formatToCalendarDate } from '../helpers/calendarHelper'
 
 const LocaleComponent = defineAsyncComponent(
   () => import('components/LocaleComponent.vue'),
@@ -440,6 +441,9 @@ const AndroidBarComponent = defineAsyncComponent(
 )
 const OIDCIssuerComponent = defineAsyncComponent(
   () => import('components/OIDCIssuerComponent.vue'),
+)
+const CalendarEventsComponent = defineAsyncComponent(
+  () => import('components/CalendarEventsComponent.vue'),
 )
 
 const $q = useQuasar()
@@ -605,6 +609,21 @@ async function openOTPDialog() {
 
 function addGoogleCalendar() {
   console.log('WIP')
+}
+
+async function onCalendarByDate(strDate: string) {
+  if (!strDate) {
+    return
+  }
+  $q.loading.show()
+  const date = formatToCalendarDate(new Date(strDate))
+  await router.push({
+    name: ROUTE_NAMES.CALENDAR,
+    query: {
+      date: date,
+    },
+  })
+  $q.loading.hide()
 }
 
 async function onOnlineAuthorize(oidcIssuer: string) {

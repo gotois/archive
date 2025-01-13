@@ -55,18 +55,6 @@
                 :color="$q.dark.isActive ? 'light' : 'dark'"
                 @click="loadPrevWeek"
               />
-              <q-btn icon="event" round flat outline color="secondary">
-                <q-popup-proxy
-                  cover
-                  transition-show="scale"
-                  transition-hide="scale"
-                >
-                  <CalendarEventsComponent
-                    class="q-ml-auto q-mr-auto q-mb-md q-mt-md"
-                    @select="onCalendarByDate"
-                  />
-                </q-popup-proxy>
-              </q-btn>
               <QVirtualScroll
                 ref="virtualScroll"
                 v-slot="{ item, index }"
@@ -133,10 +121,6 @@ import { FormatContract } from '../types/models'
 const authStore = useAuthStore()
 const contractStore = useContractStore()
 const { isLoggedIn } = storeToRefs(authStore)
-
-const CalendarEventsComponent = defineAsyncComponent(
-  () => import('components/CalendarEventsComponent.vue'),
-)
 
 function onRefresh(done: () => void) {
   console.log('aaa')
@@ -275,21 +259,6 @@ function selectDay(item: Date) {
   })
   $q.loading.hide()
   */
-}
-
-async function onCalendarByDate(strDate: string) {
-  if (!strDate) {
-    return
-  }
-  $q.loading.show()
-  const date = formatToCalendarDate(new Date(strDate))
-  await router.push({
-    name: ROUTE_NAMES.CALENDAR,
-    query: {
-      date: date,
-    },
-  })
-  $q.loading.hide()
 }
 
 async function removeContract(item: FormatContract) {

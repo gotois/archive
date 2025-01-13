@@ -570,7 +570,7 @@ async function recognizeImage(
     img.src = contentUrl
     const { data } = await worker.recognize(img)
     await worker.terminate()
-    return calendarStore.calendar([
+    return calendarStore.generate([
       {
         type: 'Note',
         content: ocrPrompt + '::' + data.text,
