@@ -12,7 +12,6 @@
         :index="item.index"
         :sent="item.sent"
         :text="item.text"
-        text-html
       />
     </template>
   </QVirtualScroll>
@@ -25,7 +24,7 @@
 <script lang="ts" setup>
 import { QVirtualScroll } from 'quasar'
 import { ref } from 'vue'
-import { ChatComponent } from './ChatComponent.ts'
+import ChatComponent from 'components/ChatComponent.vue'
 import InputComponent from 'components/SearchInputComponent.vue'
 
 const size = ref(100000)
