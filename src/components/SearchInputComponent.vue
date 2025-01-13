@@ -44,7 +44,7 @@
       fill-input
       new-value-mode="add-unique"
       @input-value="onInput"
-      @update:model-value="onSearchText"
+      @update:model-value="sent"
       @filter="onFilterSelect"
     >
       <template #prepend>
@@ -120,7 +120,7 @@
             hide-label
             glossy
             push
-            icon="search"
+            icon="send"
             vertical-actions-align="right"
             color="accent"
             :class="{
@@ -137,7 +137,7 @@
     </QSelect>
     <CreateNewDogovor
       v-if="creatingNewContract"
-      :dogovor="dogovor"
+      :contract="contract"
       @on-create="() => {}"
     />
   </div>
@@ -164,6 +164,7 @@ import {
   PNG_MIME_TYPE,
   JPG_MIME_TYPE,
 } from '../helpers/mimeTypes'
+import { Credential } from '../types/models'
 import { miniSearch } from '../services/searchService'
 import Dogovor from '../services/contractGeneratorService'
 
@@ -180,11 +181,11 @@ const showed = ref(false)
 const hasText = computed(() => inputText.value !== '')
 const isDragging = ref(false)
 const files = ref([])
-const dogovor = ref<Dogovor | null>(null)
+const contract = ref<Credential | null>(null)
 
 const creatingNewContract = ref(false)
 
-const emit = defineEmits(['search'])
+const emit = defineEmits(['search', 'send'])
 
 function onInput(value: string) {
   console.log(value)
@@ -199,7 +200,10 @@ defineProps({
 })
 
 async function sendChat() {
-  await chatStore.send(inputText.value)
+  emit('send', inputText.value)
+  const result = await chatStore.send(inputText.value)
+  console.log('Server data', result)
+  sent(result.credentialSubject.value)
 }
 
 function dragenter(e: DragEvent) {
@@ -248,7 +252,7 @@ function onFileSelect(files: File[]) {
   }
 }
 
-function onSearchText(value: string) {
+function sent(value: string) {
   if (!value.length) {
     return
   }

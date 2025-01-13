@@ -1,4 +1,3 @@
-import { uid } from 'quasar'
 import { defineStore } from 'pinia'
 import requestJsonRpc2 from 'request-json-rpc2'
 import {
@@ -13,33 +12,13 @@ import {
   Calendar,
   CalendarEventExternal,
 } from '../types/models'
+import rpc from '../helpers/rpc'
 
 const authStore = useAuthStore()
 
 interface Store {
   available: boolean
   events: CalendarEventExternal[]
-}
-
-function makeRequest(method: string, params = {}) {
-  const request = {
-    url: process.env.server + '/rpc',
-    body: {
-      jsonrpc: '2.0',
-      id: uid(),
-      method,
-      params,
-    },
-  }
-  if (authStore.jwt) {
-    request.jwt = authStore.jwt
-  } else {
-    request.auth = {
-      user: authStore.login,
-      pass: authStore.password,
-    }
-  }
-  return request
 }
 
 export default defineStore('calendar', {
@@ -72,20 +51,18 @@ export default defineStore('calendar', {
         this.available = false
       }
     },
-    async getOfferta() {
-      return await requestJsonRpc2(makeRequest('offerta'))
+    getOfferta() {
+      return rpc('offerta')
     },
     async calendar(object: ActivityObjectNote[] | ActivityObjectLink[]) {
       if (!this.available) {
         throw new Error('Server Unavailable')
       }
-      const { error, result } = await requestJsonRpc2(
-        makeRequest('add-calendar', {
-          '@context': 'https://www.w3.org/ns/activitystreams',
-          'type': 'Activity',
-          'object': object,
-        }),
-      )
+      const { error, result } = await rpc('add-calendar', {
+        '@context': 'https://www.w3.org/ns/activitystreams',
+        'type': 'Activity',
+        'object': object,
+      })
       if (error) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-argument
         throw new Error(error.message)

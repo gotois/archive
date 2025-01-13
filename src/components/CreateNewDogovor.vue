@@ -21,9 +21,9 @@
         <QBtn v-close-popup flat color="dark" icon="close" />
       </QBar>
       <QScrollArea visible style="height: calc(100dvh - 32px)">
-        <QCardSection v-if="dogovor" class="fit overflow-auto q-pt-none">
+        <QCardSection v-if="contract" class="fit overflow-auto q-pt-none">
           <ContractFormComponent
-            :contract="dogovor"
+            :contract="contract"
             :signing="signing"
             @on-create="emit('on-create')"
           />
@@ -53,7 +53,7 @@ defineProps({
     type: Boolean,
     default: false,
   },
-  dogovor: {
+  contract: {
     type: Object as PropType<Credential>,
     default: () => ({}),
   },

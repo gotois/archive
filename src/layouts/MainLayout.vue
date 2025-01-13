@@ -317,17 +317,11 @@
       v-model="rightDrawerOpen"
       side="right"
       :width="320"
-      class="q-pa-md scroll-y"
+      class="q-pa-md scroll-y full-height"
       show-if-above
       bordered
     >
-      <ChatDialog style="height: calc(100dvh - 100px)" />
-      <QPageSticky position="bottom-left" :offset="[0, 0]" expand>
-        <SearchInputComponent
-          style="width: 320px"
-          @search="(value) => onSearch(value)"
-        />
-      </QPageSticky>
+      <ChatDialog />
     </QDrawer>
     <QPageContainer>
       <RouterView
@@ -397,7 +391,6 @@ import {
   QSpace,
   QCard,
   QCardSection,
-  QPageSticky,
   exportFile,
 } from 'quasar'
 import { useRouter } from 'vue-router'
@@ -435,9 +428,6 @@ const DatabaseComponent = defineAsyncComponent(
 )
 const PodImporter = defineAsyncComponent(
   () => import('components/PodImporter.vue'),
-)
-const SearchInputComponent = defineAsyncComponent(
-  () => import('components/SearchInputComponent.vue'),
 )
 const ArchiveSearchComponent = defineAsyncComponent(
   () => import('components/ArchiveSearchComponent.vue'),

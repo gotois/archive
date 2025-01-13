@@ -98,7 +98,7 @@
           class="absolute overflow-hidden text-left ellipsis"
           style="left: 32px; right: 0"
         >
-          <QIcon :name="itemIsOrganization() ? 'group' : 'face'" />
+          <QIcon :name="itemIsOrganization ? 'group' : 'face'" />
           {{ link }}
           {{ sameAs }}
         </div>
@@ -264,6 +264,10 @@ const props = defineProps({
     type: String as PropType<string>,
     default: '',
   },
+  itemIsOrganization: {
+    type: Boolean as PropType<boolean>,
+    default: false,
+  },
 })
 
 const $q = useQuasar()
@@ -278,6 +282,52 @@ const { publicKey } = storeToRefs(walletStore)
 
 function itemScheduled(endTime: Date) {
   return endTime !== null && endTime < new Date()
+}
+
+// подписываем презентацию на Solid
+async function makePresentation(contract) {
+  const verifiableCredential = {
+    '@context': contract.context,
+    'credentialSubject': {
+      agent: {
+        name: contract.agent_name,
+        email: contract.agent_email,
+      },
+      participant: {
+        name: contract.participant_name,
+        email: contract.participant_email,
+        telephone: contract.participant_tel,
+        url: contract.participant_url,
+      },
+      instrument: {
+        name: contract.instrument_name,
+        description: contract.instrument_description,
+      },
+      startTime: contract.startTime.toISOString(),
+      endTime: contract.endTime.toString(),
+      object: contract.images,
+      // location?: Place
+      // url: contract.
+      // sameAs: contract.,
+    },
+    'id': contract.resolver,
+    'issuanceDate': contract.issuanceDate.toISOString(),
+    'issuer': contract.issuer,
+    'proof': contract.proof,
+    'type': contract.type,
+  } as Credential
+  const suite = await keyPair.getSuite()
+  const presentation = vc.createPresentation({
+    verifiableCredential: [verifiableCredential],
+  }) as Presentation
+  // Если вызвать метод sign два и более раза, то появляется Proof Chains
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return
+  return await vc.signPresentation({
+    presentation,
+    suite,
+    challenge: uid(),
+    documentLoader: documentLoader,
+  })
 }
 
 function prettyDate(startTime: Date, endTime?: Date) {
@@ -375,7 +425,6 @@ function onSheet() {
   if (group3.length) {
     actions = actions.concat(group3)
   }
-  // const icalId = $t('organization.prodid')
 
   $q.bottomSheet({
     title: $t('components.archiveList.sheet.title'),
@@ -383,7 +432,7 @@ function onSheet() {
     class: $q.platform.is.desktop ? 'text-center' : '',
     actions: actions,
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  }).onOk((action: { id: SheetAction }) => {
+  }).onOk(async (action: { id: SheetAction }) => {
     switch (action.id) {
       case Action.SHARE: {
         console.warn('WIP Action.SHARE: поддержать создание календаря')
@@ -407,8 +456,9 @@ function onSheet() {
       }
       case Action.CALENDAR: {
         console.warn('WIP Action.CALENDAR: поддержать создание календаря')
-        // const file = createCal(icalId, item)
-        // return saveIcal(file)
+        // const icalId = $t('organization.prodid')
+        // const icalFile = createCal(icalId, item)
+        // return saveIcal(icalFile)
         break
       }
       case Action.MAIL: {
@@ -453,18 +503,6 @@ async function saveIcal(file: File) {
   }
 }
 
-async function shareFile(title: string, file: File) {
-  try {
-    await fileShare(file, title)
-  } catch (error) {
-    console.error('Sharing failed', error)
-    $q.notify({
-      type: 'negative',
-      message: $t('components.archiveList.sheet.share.fail'),
-    })
-  }
-}
-
 async function shareURL(url: string) {
   try {
     await copyToClipboard(url)
@@ -479,11 +517,6 @@ async function shareURL(url: string) {
       message: $t('components.archiveList.sheet.link.fail'),
     })
   }
-}
-
-function itemIsOrganization() {
-  // todo - нужно прокидывать тип через props
-  return true
 }
 
 function onRemoveArchiveName(name: string) {

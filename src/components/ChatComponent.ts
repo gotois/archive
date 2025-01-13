@@ -9,6 +9,7 @@ function timeAgo(d: Date) {
 const props = {
   index: Number,
   sent: Boolean,
+  text: String,
 }
 
 export const ChatComponent = defineComponent({
@@ -25,7 +26,7 @@ export const ChatComponent = defineComponent({
             sent: props.sent,
             name: props.sent === true ? 'Вы' : 'Бот',
             stamp: timeAgo(new Date()),
-            text: [parse(`Message with id **${props.index}**`)],
+            text: [parse(props.text)],
           }
         },
         300 + Math.random() * 2000,
