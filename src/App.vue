@@ -25,6 +25,7 @@ import usePodStore from 'stores/pod'
 import useAuthStore from 'stores/auth'
 import useProfileStore from 'stores/profile'
 import useWalletStore from 'stores/wallet'
+import useSecretaryStore from 'stores/secretary'
 import { getSolana } from './services/phantomWalletService'
 import { WalletType } from './types/models'
 import { isTWA, isTMA } from './helpers/twaHelper'
@@ -38,6 +39,7 @@ const podStore = usePodStore()
 const authStore = useAuthStore()
 const profileStore = useProfileStore()
 const walletStore = useWalletStore()
+const secretaryStore = useSecretaryStore()
 const events = getDefaultSession().events
 
 const webSite = {
@@ -210,7 +212,7 @@ if (isTMA) {
 onMounted(async () => {
   if (isTMA) {
     try {
-      await authStore.authorizationByTg()
+      await secretaryStore.authorizationByTg()
     } catch (error) {
       console.error(error)
       $q.notify({

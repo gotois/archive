@@ -2,6 +2,13 @@
 
 export const GOOGLE_OAUTH_CLIENT_ID = process.env.google_client_id
 
+export interface GoogleHandlerResponse {
+  clientId: string
+  client_id: string
+  credential: string
+  select_by: string
+}
+
 export function loadGoogleSignIn(lang: string): Promise<unknown> {
   return new Promise((resolve, reject) => {
     const googleid = document.createElement('script')

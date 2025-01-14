@@ -1,9 +1,11 @@
 <template>
   <div
-    v-if="contract.credentialSubject?.object?.length"
+    v-if="contract.credentialSubject?.object?.attachment"
     class="relative-position"
   >
-    <ContractCarouselComponent :model="contract.credentialSubject.object" />
+    <ContractCarouselComponent
+      :model="[contract.credentialSubject.object.attachment]"
+    />
   </div>
   <QSeparator spaced inset />
   <QForm
@@ -207,8 +209,8 @@
     </template>
     <QInput
       v-model.trim="locationName"
-      :label="'Lat and Lng'"
-      :hint="'Latitude and Longitude'"
+      :label="'Location'"
+      :hint="'Your Location'"
       type="text"
       class="no-padding"
       color="secondary"
@@ -315,7 +317,7 @@ interface MultiContact {
   value: string
 }
 
-const emit = defineEmits(['onCreate'])
+const emit = defineEmits(['create'])
 const props = defineProps({
   signing: {
     type: Boolean as PropType<boolean>,
@@ -357,24 +359,24 @@ const loadingForm = ref(false)
 const modelContact = ref<MultiContact[]>([])
 
 if (props.signing) {
-  customers.value.push(props.contract.credentialSubject.participant)
-  if (props.contract.credentialSubject.participant?.email) {
+  customers.value.push(props.contract.credentialSubject.actor)
+  if (props.contract.credentialSubject.actor?.email) {
     modelContact.value.push({
       type: InputType.email,
-      value: props.contract.credentialSubject.participant.email,
+      value: props.contract.credentialSubject.actor.email,
     })
   }
-  if (props.contract.credentialSubject.participant?.url) {
+  if (props.contract.credentialSubject.actor?.url) {
     modelContact.value.push({
       type: InputType.url,
-      value: props.contract.credentialSubject.participant.url,
+      value: props.contract.credentialSubject.actor.url,
     })
   }
-  customer.value = props.contract.credentialSubject.participant.sameAs
-  contractType.value = props.contract.credentialSubject.instrument?.name
+  customer.value = props.contract.credentialSubject.actor.name
+  contractType.value = props.contract.credentialSubject.object?.name
   isCustomerOrg.value =
-    props.contract.credentialSubject?.agent?.type === 'Organization'
-  description.value = props.contract.credentialSubject.instrument.description
+    props.contract.credentialSubject?.agent?.type === 'Organization' // todo вместо Boolean использовать тип String данных
+  description.value = props.contract.credentialSubject.object.summary
   dateNoLimit.value = Boolean(props.contract.credentialSubject.endTime)
   cloneStartDate = date.clone(
     new Date(props.contract.credentialSubject.startTime),

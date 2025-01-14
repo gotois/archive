@@ -134,9 +134,9 @@ interface BaseSchemaType {
 export interface FormatImageType extends BaseSchemaType, ImageType {}
 
 export interface ImageType {
-  contentUrl: string
-  encodingFormat: string
-  caption?: string
+  url: string
+  mediaType: string
+  name?: string
 }
 
 export interface OwnerContract {

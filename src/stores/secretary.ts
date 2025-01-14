@@ -94,17 +94,15 @@ export default defineStore('secretary', {
       LocalStorage.set('jwt', jwt)
       this.jwt = jwt
     },
-    getOfferta() {
-      return rpc('offerta')
+    async getOfferta() {
+      return await rpc('offerta')
     },
     async generate(object: ActivityObjectNote[] | ActivityObjectLink[]) {
-      const result = await rpc('generate-calendar', {
+      return await rpc('generate-calendar', {
         '@context': 'https://www.w3.org/ns/activitystreams',
         'type': 'Activity',
         'object': object,
       })
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
-      return result
     },
   },
   getters: {

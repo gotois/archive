@@ -8,6 +8,7 @@
     no-shake
     transition-show="slide-up"
     transition-hide="slide-down"
+    @hide="emit('hide')"
   >
     <QCard
       style="max-width: 640px"
@@ -25,7 +26,7 @@
           <ContractFormComponent
             :contract="contract"
             :signing="signing"
-            @on-create="emit('on-create')"
+            @create="emit('done')"
           />
         </QCardSection>
       </QScrollArea>
@@ -59,7 +60,7 @@ defineProps({
   },
 })
 
-const emit = defineEmits(['on-create'])
+const emit = defineEmits(['done', 'hide'])
 
 const ContractFormComponent = defineAsyncComponent({
   loader: () => import('components/ContractFormComponent.vue'),

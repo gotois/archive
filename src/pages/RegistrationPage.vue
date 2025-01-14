@@ -148,7 +148,8 @@
       v-if="creatingNewContract"
       :contract="contract"
       :signing="true"
-      @on-create="onPageComplete"
+      @done="onPageComplete"
+      @hide="creatingNewContract = false"
     />
   </QPage>
 </template>
@@ -289,7 +290,7 @@ async function onFinish() {
     }
 
     await secretaryStore.ping()
-    contract.value = await secretaryStore.getOfferta()
+    contract.value = (await secretaryStore.getOfferta()) as VerifiedCredential
     creatingNewContract.value = true
   } catch (error) {
     console.error(error)

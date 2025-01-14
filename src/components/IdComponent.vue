@@ -128,6 +128,7 @@ import {
   googleSignInitialize,
   loadGoogleSignIn,
   GOOGLE_OAUTH_CLIENT_ID,
+  GoogleHandlerResponse,
 } from '../helpers/googleOAuthHelper'
 
 const KeypairComponent = defineAsyncComponent(
@@ -150,13 +151,6 @@ const consumerValid = computed(() => {
       did.value,
   )
 })
-
-interface GoogleHandlerResponse {
-  clientId: string
-  client_id: string
-  credential: string
-  select_by: string
-}
 
 function handleCredentialResponse(response: GoogleHandlerResponse) {
   const res = parseJwt(response.credential)

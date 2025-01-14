@@ -30,7 +30,7 @@
   <CreateNewDogovor
     v-if="contract"
     :contract="contract"
-    @on-create="() => {}"
+    @done="() => {}"
   />
 </template>
 <script lang="ts" setup>

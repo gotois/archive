@@ -57,7 +57,15 @@ async function telegramSign(user: TelegramUser) {
   } catch {
     // ignore
   }
-  await secretaryStore.registration(user)
-  emit('authed')
+  try {
+    await secretaryStore.registration(user)
+    emit('authed')
+  } catch (error) {
+    console.error(error)
+    $q.notify({
+      type: 'negative',
+      message: 'Registration Failed. Please try later.',
+    })
+  }
 }
 </script>

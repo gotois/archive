@@ -14,9 +14,7 @@
     <template #navigation-icon="navProps">
       <div class="q-pa-md non-selectable">
         <QIcon
-          v-if="
-            [PDF_MIME_TYPE].includes(props.model[navProps.index].encodingFormat)
-          "
+          v-if="[PDF_MIME_TYPE].includes(props.model[navProps.index].mediaType)"
           name="picture_as_pdf"
           size="64px"
           color="info"
@@ -46,7 +44,7 @@
             'border': navProps.active ? '1px solid var(--q-secondary)' : 'none',
             'image-rendering': 'high-quality',
           }"
-          :src="props.model[navProps.index].contentUrl"
+          :src="props.model[navProps.index].url"
           placeholder-src="/icons/icon-128x128.png"
           decoding="async"
           fetchpriority="low"
@@ -59,9 +57,7 @@
       </div>
     </template>
     <QCarouselSlide
-      v-for="(
-        { contentUrl, encodingFormat, caption = '' }, objectIndex
-      ) in props.model"
+      v-for="({ url, mediaType, name }, objectIndex) in props.model"
       :key="objectIndex"
       class="no-margin no-padding"
       :name="objectIndex + 1"
@@ -85,12 +81,12 @@
             v-else-if="
               $q.platform.is.desktop &&
               !$q.platform.is.safari &&
-              encodingFormat === PDF_MIME_TYPE
+              mediaType === PDF_MIME_TYPE
             "
           >
             <object
               name="picture_as_pdf"
-              :data="contentUrl"
+              :data="url"
               :type="PDF_MIME_TYPE"
               :style="{
                 width: '100%',
@@ -98,7 +94,7 @@
               }"
             ></object>
           </template>
-          <template v-else-if="encodingFormat === 'image/heic'">
+          <template v-else-if="mediaType === 'image/heic'">
             <QIcon
               name="perm_media"
               size="240px"
@@ -123,7 +119,7 @@
               fit="contain"
               :height="fullscreen ? '100dvh' : '400px'"
               :ratio="1"
-              :src="contentUrl"
+              :src="url"
               :loading="fullscreen ? 'eager' : 'lazy'"
               :decoding="fullscreen ? 'sync' : 'async'"
               :class="{
@@ -134,16 +130,14 @@
               no-native-menu
               no-transition
               :draggable="false"
-              :alt="caption ?? 'Document'"
-              :placeholder-src="caption"
-              @load="
-                encodingFormat !== PDF_MIME_TYPE ? prominentBGColors() : null
-              "
+              alt="Document"
+              placeholder-src="Document"
+              @load="mediaType === PDF_MIME_TYPE ? null : prominentBGColors()"
               @mouseleave="onShowCaption"
               @mouseenter="onHideCaption"
             >
-              <div v-if="caption.length" class="absolute-top-left text-caption">
-                {{ caption }}
+              <div v-if="name" class="absolute-top-left text-caption">
+                {{ name }}
               </div>
               <ImageContextMenu
                 v-if="!fullscreen"
@@ -235,7 +229,7 @@ async function prominentBGColors() {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
   color.value = await getColorFromImage(
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
-    props.model.value.object[currentSlide.value - 1].contentUrl,
+    props.model.value.object[currentSlide.value - 1].url,
   )
 }
 
