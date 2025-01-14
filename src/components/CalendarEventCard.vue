@@ -1,8 +1,8 @@
 <template>
-  <QCard v-ripple flat :dark="!$q.dark.isActive" bordered square style="">
-    <QCardSection>
+  <QCard v-ripple flat :dark="!$q.dark.isActive" bordered square>
+    <QCardSection class="q-pa-xs justify-between items-center" horizontal>
       <div
-        class="flex justify-between items-center"
+        class="flex justify-between"
         :class="{
           'text-black': $q.dark.isActive,
           'text-white': !$q.dark.isActive,
@@ -28,7 +28,7 @@
         style="width: 640px"
         :title="title"
         :description="description"
-        :attaches="[]"
+        :attaches="attaches"
         :start-time="start"
         :end-time="end"
         :same-as="''"
@@ -46,6 +46,7 @@
 import { PropType } from 'vue'
 import { QCard, QCardSection, date, useQuasar } from 'quasar'
 import TaskFull from 'components/TaskFull.vue'
+import { FormatImageType } from '../types/models'
 
 const $q = useQuasar()
 
@@ -70,6 +71,10 @@ defineProps({
   },
   description: {
     type: String as PropType<string>,
+    default: null,
+  },
+  attaches: {
+    type: Array as PropType<FormatImageType[]>,
     default: null,
   },
 })

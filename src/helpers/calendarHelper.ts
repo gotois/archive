@@ -105,8 +105,9 @@ export function convertSchemaPodToEvent(contract: ContractTable) {
     start: date.formatDate(contract.startTime, 'YYYY-MM-DD HH:mm'),
     end: date.formatDate(contract.endTime, 'YYYY-MM-DD HH:mm'),
     title: contract.instrument_name,
-    calendarId: 'pod', // todo использовать разные форматы календаря такие как work, etc
+    calendarId: 'secretary', // todo использовать разные форматы календаря такие как work, etc
     description: contract.instrument_description,
+    attaches: contract.images,
     // location: vevent.getFirstPropertyValue('location') || null,
     // people: ,
   } as CalendarEventExternal

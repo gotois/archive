@@ -11,9 +11,10 @@
 <script lang="ts" setup>
 import { defineAsyncComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useMeta, QScrollArea, QPage } from 'quasar'
+import { useMeta, useQuasar, QScrollArea, QPage } from 'quasar'
 
 const $t = useI18n().t
+const $q = useQuasar()
 
 const PrivacyComponent = defineAsyncComponent(
   () => import('components/PrivacyComponent.vue'),

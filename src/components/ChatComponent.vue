@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType, ref, onBeforeMount, defineProps } from 'vue'
+import { PropType, ref, onBeforeMount } from 'vue'
 import { date, QChatMessage, QSkeleton } from 'quasar'
 import { parse } from '../helpers/markdownHelper'
 

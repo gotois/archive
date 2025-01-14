@@ -56,52 +56,6 @@
         <div v-if="miniState">
           <QSpace class="q-mb-md" style="height: 32px" />
         </div>
-        <div v-else>
-          <QBtn
-            v-if="isDemo"
-            :color="$q.dark.isActive ? 'white' : 'dark'"
-            :text-color="$q.dark.isActive ? 'dark' : 'white'"
-            :dense="$q.platform.is.desktop"
-            square
-            no-caps
-            glossy
-            push
-            unelevated
-            align="left"
-            icon="app_registration"
-            class="full-width q-pl-md q-pr-md q-mb-md block"
-            :label="$t('navigation.register')"
-            @click="register"
-          />
-          <QBtn
-            v-else-if="isLoggedIn"
-            color="negative"
-            :dense="$q.platform.is.desktop"
-            square
-            glossy
-            push
-            unelevated
-            align="left"
-            icon="logout"
-            class="full-width q-pl-md q-pr-md q-mb-md block"
-            :label="$t('navigation.signout')"
-            @click="logOutFromPod"
-          />
-          <QBtn
-            v-else-if="!isLoggedIn"
-            color="primary"
-            :dense="$q.platform.is.desktop"
-            square
-            glossy
-            push
-            unelevated
-            align="left"
-            icon="login"
-            class="full-width q-pl-md q-pr-md q-mb-md block"
-            :label="$t('navigation.signin')"
-            @click="loginToPod"
-          />
-        </div>
         <QExpansionItem
           v-if="jwt"
           v-model="profileOpen"
@@ -201,41 +155,9 @@
           :expand-separator="settingsOpen"
           :label="$t('settings.native.title')"
         >
-          <p class="q-pt-md q-pl-md q-pr-md">SOLID Pod</p>
-
-          {{ $t('tutorial.oidc.caption') }}
-          <p class="text-h4">
-            {{ $t('tutorial.oidc.title') }}
-          </p>
-
-          <div
-            class="text-body1"
-            style="white-space: break-spaces"
-            v-html="parse($t('tutorial.oidc.body'))"
-          >
-          </div>
-          <OIDCIssuerComponent @on-complete="onOnlineAuthorize">
-            <QTooltip>{{ $t('oidc.tutorialHint') }}</QTooltip>
-          </OIDCIssuerComponent>
-          <QBtn v-if="isLoggedIn" label="Sync Pod" @click="syncPods" />
-
-          <QSeparator />
-
-          <p class="q-pt-md q-pl-md q-pr-md">Calendars</p>
-          <QBtn label="Google Calendar" @click="addGoogleCalendar" />
-
-          <QSeparator />
-
           <p class="q-pt-md q-pl-md q-pr-md">
             {{ $t('settings.native.description') }}
           </p>
-          <QItemSection
-            v-if="settingsOpen && isLoggedIn"
-            class="q-pl-md q-pr-md q-pb-md no-margin"
-          >
-            <PodImporter />
-            <QSeparator />
-          </QItemSection>
           <QItemSection
             v-if="settingsOpen"
             class="q-pr-md q-pb-md q-pl-md no-margin"
@@ -282,6 +204,96 @@
               </QBtn>
             </QItemSection>
           </template>
+        </QExpansionItem>
+        <QSeparator />
+        <QExpansionItem
+          v-model="spacesOpen"
+          group="backupgroup"
+          icon="home"
+          expand-icon-class="text-primary"
+          class="column non-selectable"
+          :dense="$q.platform.is.desktop"
+          :expand-separator="spacesOpen"
+          :label="'Personal Spaces'"
+        >
+          <p class="q-pt-md q-pl-md q-pr-md">Personal Spaces</p>
+
+          <div>
+            <QBtn
+              v-if="isDemo"
+              :color="$q.dark.isActive ? 'white' : 'dark'"
+              :text-color="$q.dark.isActive ? 'dark' : 'white'"
+              :dense="$q.platform.is.desktop"
+              square
+              no-caps
+              glossy
+              push
+              unelevated
+              align="left"
+              icon="app_registration"
+              class="full-width q-pl-md q-pr-md q-mb-md block"
+              :label="$t('navigation.register')"
+              @click="register"
+            />
+            <QBtn
+              v-else-if="isLoggedIn"
+              color="negative"
+              :dense="$q.platform.is.desktop"
+              square
+              glossy
+              push
+              unelevated
+              align="left"
+              icon="logout"
+              class="full-width q-pl-md q-pr-md q-mb-md block"
+              :label="$t('navigation.signout')"
+              @click="logOutFromPod"
+            />
+            <QBtn
+              v-else-if="!isLoggedIn"
+              color="primary"
+              :dense="$q.platform.is.desktop"
+              square
+              glossy
+              push
+              unelevated
+              align="left"
+              icon="login"
+              class="full-width q-pl-md q-pr-md q-mb-md block"
+              :label="$t('navigation.signin')"
+              @click="loginToPod"
+            />
+          </div>
+
+          {{ $t('tutorial.oidc.caption') }}
+          <p class="text-h4">
+            {{ $t('tutorial.oidc.title') }}
+          </p>
+
+          <div
+            class="text-body1"
+            style="white-space: break-spaces"
+            v-html="parse($t('tutorial.oidc.body'))"
+          >
+          </div>
+
+          <OIDCIssuerComponent @on-complete="onOnlineAuthorize">
+            <QTooltip>{{ $t('oidc.tutorialHint') }}</QTooltip>
+          </OIDCIssuerComponent>
+          <QBtn v-if="isLoggedIn" label="Sync Pod" @click="syncPods" />
+
+          <QSeparator />
+
+          <p class="q-pt-md q-pl-md q-pr-md">
+            {{ $t('settings.native.description') }}
+          </p>
+          <QItemSection
+            v-if="spacesOpen && isLoggedIn"
+            class="q-pl-md q-pr-md q-pb-md no-margin"
+          >
+            <PodImporter />
+            <QSeparator />
+          </QItemSection>
         </QExpansionItem>
         <QSeparator />
         <QExpansionItem
@@ -465,7 +477,8 @@ const secretaryStore = useSecretaryStore()
 const NOTIFICATION_TIMER = 30000
 
 const { contractsCount } = storeToRefs(contractStore)
-const { isLoggedIn, jwt, isDemo } = storeToRefs(authStore)
+const { isLoggedIn, isDemo } = storeToRefs(authStore)
+const { jwt } = storeToRefs(secretaryStore)
 const { activated } = storeToRefs(tfaStore)
 const bigScreen = computed(
   () => $q.platform.is.desktop && ($q.screen.xl || $q.screen.lg),
@@ -477,6 +490,7 @@ const showOTPDialog = ref(false)
 const leftDrawerOpen = ref(false)
 const rightDrawerOpen = ref(false)
 const settingsOpen = ref(false)
+const spacesOpen = ref(false)
 const languageOpen = ref(false)
 const profileOpen = ref(false)
 const otpOpen = ref(false)

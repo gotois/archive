@@ -71,7 +71,7 @@
         fab-mini
         color="white"
         text-color="accent"
-        icon="send"
+        icon="add"
         class="absolute"
         style="top: 0; left: 18px; transform: translateY(-50%)"
         @click="onSheet()"

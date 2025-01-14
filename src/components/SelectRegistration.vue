@@ -49,7 +49,6 @@ const $q = useQuasar()
 const i18n = useI18n()
 const $t = i18n.t
 const profileStore = useProfileStore()
-const authStore = useAuthStore()
 const secretaryStore = useSecretaryStore()
 
 async function telegramSign(user: TelegramUser) {

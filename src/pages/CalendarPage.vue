@@ -23,6 +23,7 @@
               :start="new Date(calendarEvent.start)"
               :end="new Date(calendarEvent.end)"
               :location="calendarEvent.location"
+              :attaches="calendarEvent.attaches"
               :description="calendarEvent.description"
               @on-edit="onEdit(calendarEvent)"
               @on-remove="onRemove(calendarEvent)"
@@ -35,6 +36,7 @@
               :start="new Date(calendarEvent.start)"
               :end="new Date(calendarEvent.end)"
               :location="calendarEvent.location"
+              :attaches="calendarEvent.attaches"
               :description="calendarEvent.description"
             />
           </template>
