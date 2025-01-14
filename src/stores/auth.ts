@@ -60,6 +60,10 @@ export default defineStore('auth', {
         this.setTryAuthValue()
       }
     },
+    logout() {
+      LocalStorage.removeItem('jwt')
+      this.jwt = null
+    },
     async authorizationByTg() {
       const response = await fetch(process.env.server + '/authorization', {
         method: 'GET',

@@ -146,7 +146,7 @@
     </QScrollArea>
     <CreateNewDogovor
       v-if="creatingNewContract"
-      :dogovor="dogovor"
+      :contract="contract"
       :signing="true"
       @on-create="onPageComplete"
     />
@@ -219,7 +219,7 @@ const scroll = ref<InstanceType<typeof QScrollArea> | null>(null)
 const stepper = ref<InstanceType<typeof QStepper> | null>(null)
 const step = ref(getCurrentStep() ?? STEP.WELCOME)
 const creatingNewContract = ref(false)
-const dogovor = ref<InstanceType<typeof Object> | null>(null)
+const contract = ref<InstanceType<typeof Object> | null>(null)
 
 const { isLoggedIn } = storeToRefs(authStore)
 const { did, getPersonLD, phone, email } = storeToRefs(profileStore)
@@ -287,8 +287,8 @@ async function onFinish() {
     }
 
     const calendarStore = useCalendarStore()
-    const contract = await calendarStore.getOfferta()
-    dogovor.value = contract
+    await calendarStore.ping()
+    contract.value = await calendarStore.getOfferta()
     creatingNewContract.value = true
   } catch (error) {
     console.error(error)

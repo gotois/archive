@@ -24,6 +24,7 @@ export default defineStore('calendar', {
     available: false,
   }),
   actions: {
+    // todo перенести в другой store
     async ping() {
       if (!process.env.server) {
         console.warn('Unknown server url')

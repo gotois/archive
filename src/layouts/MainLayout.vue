@@ -103,6 +103,7 @@
           />
         </div>
         <QExpansionItem
+          v-if="jwt"
           v-model="profileOpen"
           group="backupgroup"
           icon="person"
@@ -462,7 +463,7 @@ const podStore = usePodStore()
 const NOTIFICATION_TIMER = 30000
 
 const { contractsCount } = storeToRefs(contractStore)
-const { isLoggedIn, isDemo } = storeToRefs(authStore)
+const { isLoggedIn, jwt, isDemo } = storeToRefs(authStore)
 const { activated } = storeToRefs(tfaStore)
 const bigScreen = computed(
   () => $q.platform.is.desktop && ($q.screen.xl || $q.screen.lg),
@@ -529,7 +530,7 @@ function loginToPod() {
 async function logOutFromPod() {
   await logout()
   authStore.openIdHandleIncoming()
-  $q.localStorage.remove('oidcIssuer')
+  $q.localStorage.removeItem('oidcIssuer')
   $q.sessionStorage.remove('restorePreviousSession')
   $q.sessionStorage.remove('connect')
   $q.notify({

@@ -69,7 +69,7 @@
         <QIcon name="email" />
       </template>
     </QInput>
-    <!-- todo заменить на vue3-q-tel-input -->
+    <!-- todo заменить на vue3-q-tel-input
     <QInput
       v-model.trim="phone"
       name="tel"
@@ -91,7 +91,7 @@
       <template #prepend>
         <QIcon name="phone" />
       </template>
-    </QInput>
+    </QInput-->
     <QStepperNavigation class="no-margin q-pt-md q-pl-md">
       <QBtn
         color="accent"
@@ -141,7 +141,7 @@ const $t = i18n.t
 const profileStore = useProfileStore()
 const langStore = useLangStore()
 
-const { did, getPersonLD, email, phone } = storeToRefs(profileStore)
+const { did, getPersonLD, email } = storeToRefs(profileStore)
 
 const consumerValid = computed(() => {
   return Boolean(

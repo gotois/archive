@@ -125,7 +125,7 @@ async function onImportDB() {
       overwriteValues: true,
       clearTablesBeforeImport: false,
     })
-    $q.localStorage.remove('contractNames')
+    $q.localStorage.removeItem('contractNames')
     window.location.reload()
   } catch (error) {
     console.error(error)

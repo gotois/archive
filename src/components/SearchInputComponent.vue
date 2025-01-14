@@ -138,6 +138,7 @@
 </template>
 <script lang="ts" setup>
 import { ref, onMounted, PropType, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import {
   useQuasar,
   QSelect,
@@ -152,6 +153,8 @@ import {
 } from 'quasar'
 import { useI18n } from 'vue-i18n'
 import useChatStore from 'stores/chat'
+import useAuthStore from 'stores/auth'
+import useTutorialStore from 'stores/tutorial'
 import {
   PDF_MIME_TYPE,
   PNG_MIME_TYPE,
@@ -159,11 +162,16 @@ import {
 } from '../helpers/mimeTypes'
 import { Credential } from '../types/models'
 import { miniSearch } from '../services/searchService'
-import Dogovor from '../services/contractGeneratorService'
+import { ROUTE_NAMES } from '../router/routes'
+import { readFilePromise } from '../helpers/fileHelper'
+import { createPDF } from '../helpers/pdfHelper'
 
 const $q = useQuasar()
 const $t = useI18n().t
 const chatStore = useChatStore()
+const authStore = useAuthStore()
+const tutorialStore = useTutorialStore()
+const router = useRouter()
 
 const select = ref<InstanceType<typeof QSelect> | null>(null)
 const searchText = ref('')
@@ -203,10 +211,34 @@ async function sendChat(value: string) {
     emit('sent', result.credentialSubject.value)
   } catch (error) {
     console.error(error)
-    $q.notify({
-      type: 'negative',
-      message: error.message as string,
-    })
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    switch (error.message) {
+      case 'Unauthorized': {
+        $q.notify({
+          message: 'JWT expired',
+          type: 'error',
+          actions: [
+            {
+              label: 'Авторизоваться заново',
+              handler() {
+                authStore.logout()
+                tutorialStore.tutorialComplete(false)
+                void router.push({
+                  name: ROUTE_NAMES.TUTORIAL,
+                })
+              },
+            },
+          ],
+        })
+        break
+      }
+      default: {
+        $q.notify({
+          type: 'negative',
+          message: error.message as string,
+        })
+      }
+    }
   }
 }
 

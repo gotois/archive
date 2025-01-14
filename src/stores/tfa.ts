@@ -27,7 +27,7 @@ export default defineStore('tfa', {
       LocalStorage.set('secret', this.secret.base32)
     },
     deactivate2fa() {
-      LocalStorage.remove('secret')
+      LocalStorage.removeItem('secret')
       this.activated = false
       this.secret = null
     },
