@@ -160,7 +160,7 @@ import {
   PNG_MIME_TYPE,
   JPG_MIME_TYPE,
 } from '../helpers/mimeTypes'
-import { Credential } from '../types/models'
+import { VerifiedCredential } from '../types/models'
 import { miniSearch } from '../services/searchService'
 import { ROUTE_NAMES } from '../router/routes'
 import { readFilePromise } from '../helpers/fileHelper'
@@ -182,7 +182,7 @@ const showed = ref(false)
 const hasText = computed(() => inputText.value !== '')
 const isDragging = ref(false)
 const files = ref([])
-const contract = ref<Credential | null>(null)
+const contract = ref<VerifiedCredential | null>(null)
 
 const creatingNewContract = ref(false)
 

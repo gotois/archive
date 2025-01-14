@@ -416,7 +416,7 @@ import { open } from '../helpers/urlHelper'
 import { parse } from '../helpers/markdownHelper'
 import { ROUTE_NAMES, STEP } from '../router/routes'
 import solidAuth from '../services/authService'
-import Dogovor from '../services/contractGeneratorService'
+import ContractPod from '../services/contractGeneratorService'
 import { formatToCalendarDate } from '../helpers/calendarHelper'
 
 const LocaleComponent = defineAsyncComponent(
@@ -672,7 +672,7 @@ function syncPods() {
       const links = await podStore.getContractsLink()
       for (const link of links) {
         const message = 'refreshing ' + link
-        const newDogovor = await Dogovor.fromSolidUrl(link)
+        const newDogovor = await ContractPod.fromSolidUrl(link)
         dialog.update({ message: message })
         await contractStore.insertContract(newDogovor.presentation)
       }

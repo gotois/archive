@@ -15,7 +15,7 @@
 import { useQuasar, QBtn } from 'quasar'
 import usePodStore from 'stores/pod'
 import useContractStore from 'stores/contract'
-import Dogovor from '../services/contractGeneratorService'
+import ContractPod from '../services/contractGeneratorService'
 
 const $q = useQuasar()
 const podStore = usePodStore()
@@ -31,7 +31,7 @@ async function onImportData() {
   try {
     const links = await podStore.getContractsLink()
     for (const link of links) {
-      const newDogovor = await Dogovor.fromUrl(link)
+      const newDogovor = await ContractPod.fromSolidUrl(link)
       dialog.update({
         message:
           newDogovor.presentation.verifiableCredential[0].credentialSubject

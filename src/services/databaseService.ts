@@ -51,11 +51,11 @@ class KeyPairDatabase extends Dexie {
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
   prepareKeyPair(keys: DIDTable) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     const exportKeys = keys.export({
       publicKey: true,
       privateKey: true,
-    })
+    }) as DIDTable
     return JSON.stringify(exportKeys, null, 2)
   }
 
@@ -64,8 +64,10 @@ class KeyPairDatabase extends Dexie {
     if (!keysTable) {
       throw new Error('KeyPair not found')
     }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return
-    return Ed25519VerificationKey2020.from(keysTable) as unknown
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+    return Ed25519VerificationKey2020.from(
+      keysTable,
+    ) as Promise<Ed25519VerificationKey2020>
   }
 
   async setNewKeyPair(controller: string) {
@@ -85,9 +87,11 @@ class KeyPairDatabase extends Dexie {
   }
 
   async getSuite() {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const key = await keyPair.last()
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     return new Ed25519Signature2020({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       key: key,
     }) as Suite
   }

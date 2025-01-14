@@ -75,7 +75,7 @@ interface BaseCredentialSubject {
   id: string
 }
 
-export interface Credential {
+export interface VerifiedCredential {
   '@context': credentialContextType
   'credentialSubject': CredentialSubject
   'id': string
@@ -96,7 +96,7 @@ export enum BaseContext {
   schemaOrg = 'https://schema.org',
 }
 
-export interface ProofCredential extends Credential {
+export interface ProofCredential extends VerifiedCredential {
   proof: Proof
 }
 

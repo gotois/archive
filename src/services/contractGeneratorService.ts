@@ -19,9 +19,9 @@ import {
   universalAccess,
 } from '@inrupt/solid-client'
 import { RDF, SCHEMA_INRUPT } from '@inrupt/vocab-common-rdf'
-import { Credential, Presentation } from '../types/models'
+import { VerifiedCredential, Presentation } from '../types/models'
 
-export default class Dogovor {
+export default class ContractPod {
   resourceUrl = ''
 
   constructor(resourceUrl: string) {
@@ -41,7 +41,7 @@ export default class Dogovor {
 
   get credential() {
     if (this._credential) {
-      return this._credential as Credential
+      return this._credential as VerifiedCredential
     }
     throw new Error('No credential data')
   }
@@ -402,7 +402,7 @@ export default class Dogovor {
     const ds: SolidDataset = await getSolidDataset(resourceUrl, {
       fetch,
     })
-    const dogovor = new Dogovor(resourceUrl)
+    const dogovor = new ContractPod(resourceUrl)
     dogovor.dataset = ds
 
     return dogovor

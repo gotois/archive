@@ -43,8 +43,8 @@ import {
 } from 'quasar'
 import { useRouter } from 'vue-router'
 import { ROUTE_NAMES } from '../router/routes'
-import { Credential, ContractTable } from '../types/models'
-import Dogovor from '../services/contractGeneratorService'
+import { VerifiedCredential, ContractTable } from '../types/models'
+import ContractPod from '../services/contractGeneratorService'
 
 const ContractFormComponent = defineAsyncComponent({
   loader: () => import('components/ContractFormComponent.vue'),
@@ -61,7 +61,7 @@ const router = useRouter()
 const contractForm = ref<InstanceType<typeof ContractFormComponent> | null>(
   null,
 )
-const dogovor = ref<Credential>(null)
+const contract = ref<VerifiedCredential>(null)
 
 const metaData = {
   'title': $t('pages.sign.title'),
@@ -102,7 +102,7 @@ onMounted(async () => {
   $q.loading.show()
   try {
     const link = router.currentRoute.value.query.from as string
-    dogovor.value = await Dogovor.fromUrl(link)
+    contract.value = await ContractPod.fromSolidUrl(link)
   } catch (error: unknown) {
     console.error(error)
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access

@@ -185,7 +185,7 @@ import {
   FormatImageType,
   Place,
   Presentation,
-  Credential,
+  VerifiedCredential,
 } from '../types/models'
 import { ROUTE_NAMES } from '../router/routes'
 import { keyPair } from '../services/databaseService'
@@ -305,7 +305,7 @@ async function makePresentation(contract) {
     'issuer': contract.issuer,
     'proof': contract.proof,
     'type': contract.type,
-  } as Credential
+  } as VerifiedCredential
   const suite = await keyPair.getSuite()
   const presentation = vc.createPresentation({
     verifiableCredential: [verifiableCredential],
