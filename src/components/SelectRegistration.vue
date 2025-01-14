@@ -38,7 +38,7 @@ import { useI18n } from 'vue-i18n'
 import { telegramLoginTemp as TelegramLogin } from 'vue3-telegram-login'
 import { useQuasar, QTooltip, QBtn, QBtnGroup, QBtnDropdown } from 'quasar'
 import useProfileStore from 'stores/profile'
-import useAuthStore from 'stores/auth'
+import useSecretaryStore from 'stores/secretary'
 import { TELEGRAM_BOT_NAME } from '../services/telegram'
 import { TelegramUser } from '../types/models'
 import { isProductionApp } from '../helpers/googlePlayHelper'
@@ -50,6 +50,7 @@ const i18n = useI18n()
 const $t = i18n.t
 const profileStore = useProfileStore()
 const authStore = useAuthStore()
+const secretaryStore = useSecretaryStore()
 
 async function telegramSign(user: TelegramUser) {
   try {
@@ -57,7 +58,7 @@ async function telegramSign(user: TelegramUser) {
   } catch {
     // ignore
   }
-  await authStore.registration(user)
+  await secretaryStore.registration(user)
   emit('authed')
 }
 </script>

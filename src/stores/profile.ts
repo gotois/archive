@@ -1,10 +1,10 @@
 import { LocalStorage } from 'quasar'
 import { defineStore } from 'pinia'
+import useSecretaryStore from 'stores/secretary'
 import { getGravatarURL } from '../helpers/schemaHelper'
 import { validUrlString } from '../helpers/urlHelper'
 import getLocation from '../services/cloudflare'
 import { parseJwt } from '../helpers/dataHelper'
-import useAuth from 'stores/auth'
 
 interface State {
   did: string
@@ -56,8 +56,8 @@ export default defineStore('profile', {
   },
   getters: {
     getPersonLD(state) {
-      const authStore = useAuth()
-      const obj = parseJwt(authStore.jwt)
+      const secretaryStore = useSecretaryStore()
+      const obj = parseJwt(secretaryStore.jwt) // todo перенести в геттер secretaryStore
       // todo - поддержать выдачу WebId
       return {
         '@context': 'https://json-ld.org/contexts/person.jsonld',

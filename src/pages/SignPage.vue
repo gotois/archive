@@ -13,12 +13,12 @@
           class="q-pa-md q-ml-auto q-mr-auto q-mt-md q-mb-md"
         >
           <ContractFormComponent
-            v-if="dogovor"
+            v-if="contract"
             ref="contractForm"
             :class="{
               'col-xs-6': $q.platform.is.desktop,
             }"
-            :contract="dogovor"
+            :contract="contract"
             :signing="true"
             @on-create="onCreateContract"
           />

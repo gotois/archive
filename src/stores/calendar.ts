@@ -4,64 +4,20 @@ import {
   convertSchemaPodToEvent,
 } from '../helpers/calendarHelper'
 import useContractStore from 'stores/contract'
-import useAuthStore from 'stores/auth'
 import {
-  ActivityObjectNote,
-  ActivityObjectLink,
-  Calendar,
   CalendarEventExternal,
 } from '../types/models'
 import rpc from '../helpers/rpc'
 
 interface Store {
-  available: boolean
   events: CalendarEventExternal[]
 }
 
 export default defineStore('calendar', {
   state: (): Store => ({
     events: [],
-    available: false,
   }),
   actions: {
-    // todo перенести в другой store
-    async ping() {
-      if (!process.env.server) {
-        console.warn('Unknown server url')
-        this.available = false
-        return
-      }
-      const authStore = useAuthStore()
-      try {
-        const response = await fetch(process.env.server + '/ping', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'text/plain',
-            'Authorization': authStore.basicAuth,
-          },
-        })
-        if (!response.ok) {
-          throw new Error('Network response was not ok')
-        }
-        this.available = Boolean(await response.text())
-      } catch (error) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        console.warn('GIC Server: ', error.message)
-        this.available = false
-      }
-    },
-    getOfferta() {
-      return rpc('offerta')
-    },
-    async generate(object: ActivityObjectNote[] | ActivityObjectLink[]) {
-      const result = await rpc('generate-calendar', {
-        '@context': 'https://www.w3.org/ns/activitystreams',
-        'type': 'Activity',
-        'object': object,
-      })
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
-      return result
-    },
     async loadCalendar(startDate: Date, endDate?: Date) {
       const activity = {
         '@context': 'https://www.w3.org/ns/activitystreams',

@@ -403,6 +403,7 @@ import useContractStore from 'stores/contract'
 import useTutorialStore from 'stores/tutorial'
 import usePodStore from 'stores/pod'
 import useLangStore from 'stores/lang'
+import useSecretaryStore from 'stores/secretary'
 import useNotification from 'stores/notification'
 import useCalendarStore from 'stores/calendar'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
@@ -459,6 +460,7 @@ const tutorialStore = useTutorialStore()
 const calendarStore = useCalendarStore()
 const notificationStore = useNotification()
 const podStore = usePodStore()
+const secretaryStore = useSecretaryStore()
 
 const NOTIFICATION_TIMER = 30000
 
@@ -693,7 +695,7 @@ onMounted(async () => {
   if ($q.platform.is.desktop && contractsCount.value > 0) {
     await indexAllDocuments()
   }
-  await calendarStore.ping()
+  await secretaryStore.ping()
 })
 </script>
 <style lang="scss">

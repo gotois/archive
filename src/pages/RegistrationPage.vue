@@ -180,9 +180,9 @@ import {
   hapticFeedbackNotificationOccurred,
 } from '@telegram-apps/sdk'
 import useAuthStore, { demoUserWebId } from 'stores/auth'
-import useCalendarStore from 'stores/calendar'
 import useTutorialStore from 'stores/tutorial'
 import useProfileStore from 'stores/profile'
+import useSecretaryStore from 'stores/secretary'
 import usePodStore from 'stores/pod'
 import pkg from '../../package.json'
 import { isTMA } from '../helpers/twaHelper'
@@ -205,6 +205,7 @@ const podStore = usePodStore()
 const authStore = useAuthStore()
 const profileStore = useProfileStore()
 const tutorialStore = useTutorialStore()
+const secretaryStore = useSecretaryStore()
 
 const stepParam = 'step'
 
@@ -287,9 +288,8 @@ async function onFinish() {
       await podStore.setProfileFOAF()
     }
 
-    const calendarStore = useCalendarStore()
-    await calendarStore.ping()
-    contract.value = await calendarStore.getOfferta()
+    await secretaryStore.ping()
+    contract.value = await secretaryStore.getOfferta()
     creatingNewContract.value = true
   } catch (error) {
     console.error(error)
@@ -326,7 +326,7 @@ async function mainClickFn() {
   })
   if (requestContact.isSupported()) {
     const requestedContact = await requestContact()
-    await authStore.registration(requestedContact)
+    await secretaryStore.registration(requestedContact)
     tutorialStore.tutorialComplete(true)
 
     if (hapticFeedbackNotificationOccurred.isAvailable()) {
@@ -336,7 +336,7 @@ async function mainClickFn() {
     sendData(
       JSON.stringify({
         type: 'registration',
-        data: authStore.jwt,
+        data: secretaryStore.jwt,
       }),
     )
   } else {

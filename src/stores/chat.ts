@@ -16,7 +16,7 @@ export default defineStore('chat', {
       const result = await rpc('chat', {
         '@context': ['https://www.w3.org/ns/activitystreams'],
         'type': 'Collection',
-        'totalItems': 1,
+        'totalItems': this.messages.length,
         'items': this.messages.map((message) => {
           return {
             '@context': 'https://www.w3.org/ns/activitystreams',

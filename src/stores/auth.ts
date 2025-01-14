@@ -1,10 +1,7 @@
 import { LocalStorage, SessionStorage } from 'quasar'
 import { defineStore } from 'pinia'
 import { WebId } from '@inrupt/solid-client'
-import { RequestedContact, retrieveLaunchParams } from '@telegram-apps/sdk'
 import { getDefaultSession } from '@inrupt/solid-client-authn-browser'
-import { isTMA } from '../helpers/twaHelper'
-import { TelegramUser } from '../types/models'
 
 interface Store {
   pinIsLoggedIn: boolean
@@ -13,9 +10,6 @@ interface Store {
   openIdIsLoggedIn: boolean
   webId: WebId
   tryAuth: boolean
-  jwt: string
-  login?: string
-  password?: string
 }
 
 export const demoUserWebId = 'did:gic:demo' as WebId
@@ -28,17 +22,8 @@ export default defineStore('auth', {
     openIdExpirationDate: null,
     openIdIsLoggedIn: false,
     webId: getDefaultSession().info.webId ?? demoUserWebId,
-    jwt: LocalStorage.getItem('jwt') ?? null,
-    login: LocalStorage.getItem('login') ?? null,
-    password: LocalStorage.getItem('password') ?? null,
   }),
   actions: {
-    setLoginAndPassword(login: string, password: string) {
-      this.login = login
-      this.password = password
-      LocalStorage.set('login', login)
-      LocalStorage.set('password', password)
-    },
     setTryAuthValue() {
       LocalStorage.set('tryAuth', true)
     },
@@ -60,63 +45,9 @@ export default defineStore('auth', {
         this.setTryAuthValue()
       }
     },
-    logout() {
-      LocalStorage.removeItem('jwt')
-      this.jwt = null
-    },
-    async authorizationByTg() {
-      const response = await fetch(process.env.server + '/authorization', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'plain/text',
-          'Authorization': this.tmaAuth,
-        },
-      })
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
-      }
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const jwt: string = await response.text()
-      if (!jwt) {
-        throw new Error('jwt is empty')
-      }
-      LocalStorage.set('jwt', jwt)
-      this.jwt = jwt
-    },
-    async registration(requestedContact: RequestedContact | TelegramUser) {
-      const response = await fetch(process.env.server + '/authorization', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestedContact),
-      })
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
-      }
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const jwt: string = await response.json()
-      LocalStorage.set('jwt', jwt)
-      this.jwt = jwt
-    },
   },
   getters: {
-    basicAuth(): string {
-      if (!this.login || !this.password) {
-        return
-      }
-      return 'Basic ' + btoa(this.login + ':' + this.password)
-    },
-    tmaAuth() {
-      if (!isTMA) {
-        return
-      }
-      const { initDataRaw } = retrieveLaunchParams()
-      if (!initDataRaw?.length) {
-        throw new Error('Empty telegram init data')
-      }
-      return `tma ${initDataRaw}`
-    },
+    // Переименовать, Demo вводит в заблуждение
     isDemo(state) {
       return state.openIdSessionId.length === 0 && !state.tryAuth
     },

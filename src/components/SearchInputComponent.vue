@@ -129,9 +129,9 @@
             @click="sendChat(inputText)"
           />
         </template>
-        <template v-else-if="searching">
+        <!--template v-else-if="searching">
           <QSpinner color="primary" />
-        </template>
+        </template-->
       </template>
     </QSelect>
   </div>

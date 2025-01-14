@@ -37,7 +37,6 @@ export async function googleSignInitialize(
     })
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
     window.google.accounts.id.prompt((notification: unknown) => {
-      console.log('notification', notification)
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       if (notification.isSkippedMoment()) {
         reject('Continue with another identity provider.')

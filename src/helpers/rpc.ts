@@ -1,13 +1,25 @@
 import { uid } from 'quasar'
 import requestJsonRpc2 from 'request-json-rpc2'
-import useAuthStore from 'stores/auth'
-import useCalendarStore from 'stores/calendar'
+import useSecretaryStore from 'stores/secretary'
+
+interface Request {
+  url: string
+  body: {
+    id: string
+    method: string
+    params: unknown
+  }
+  jwt?: string
+  auth?: {
+    user: string
+    pass: string
+  }
+}
 
 export default async function (method: string, params = {}) {
-  const authStore = useAuthStore()
-  const calendarStore = useCalendarStore()
+  const secretaryStore = useSecretaryStore()
 
-  if (!calendarStore.available) {
+  if (!secretaryStore.available) {
     throw new Error('Server Unavailable')
   }
   const request = {
@@ -18,13 +30,13 @@ export default async function (method: string, params = {}) {
       method,
       params,
     },
-  }
-  if (authStore.jwt) {
-    request.jwt = authStore.jwt
+  } as Request
+  if (secretaryStore.jwt) {
+    request.jwt = secretaryStore.jwt
   } else {
     request.auth = {
-      user: authStore.login,
-      pass: authStore.password,
+      user: secretaryStore.login,
+      pass: secretaryStore.password,
     }
   }
   const { result, error } = await requestJsonRpc2(request)

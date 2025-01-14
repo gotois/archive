@@ -71,10 +71,6 @@ interface Proof {
   verificationMethod: string
 }
 
-interface BaseCredentialSubject {
-  id: string
-}
-
 export interface VerifiedCredential {
   '@context': credentialContextType
   'credentialSubject': CredentialSubject
@@ -92,47 +88,13 @@ export interface Presentation {
   'verifiableCredential': ProofCredential[]
 }
 
-export enum BaseContext {
-  schemaOrg = 'https://schema.org',
-}
-
 export interface ProofCredential extends VerifiedCredential {
   proof: Proof
 }
 
-export type credentialSubjectType = BaseCredentialSubject | CredentialSubject
 export type credentialContextType =
   | [string, ContextCredential<string>]
   | string[]
-
-export interface BaseContract {
-  id?: string
-  agent: FormatContractAgent
-  participant: FormatContractParticipant
-  instrument: FormatContractInstrument
-  identifier: FormatContractIdentifier
-  startTime: Date
-  endTime?: Date
-  object: string[]
-}
-
-export interface CredentialTypes {
-  agent: string
-  endTime: string
-  value: string
-  instrument: string
-  object: string
-  participant: string
-  startTime: string
-  identifier: string
-  contentUrl: string
-  description: string
-  email: string
-  encodingFormat: string
-  name: string
-  propertyID: string
-  url: string
-}
 
 export interface Agent {
   type: 'Organization' | 'Person'
