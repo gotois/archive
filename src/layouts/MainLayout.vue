@@ -49,12 +49,14 @@
       <p
         class="full-width block text-h6 q-pl-md q-pr-md q-pt-md no-border-radius non-selectable no-pointer-events"
       >
-        <QIcon v-if="miniState" size="24px" name="settings" color="primary" />
-        <span v-else>{{ $t('navigation.title') }}</span>
+        <QIcon size="24px" name="settings" color="primary" />
+        <template v-if="!miniState">
+          <span class="q-ml-md">{{ $t('navigation.title') }}</span>
+        </template>
       </p>
       <QList style="max-height: calc(100% - 64px)" class="fit column no-wrap">
-        <div v-if="miniState">
-          <QSpace class="q-mb-md" style="height: 32px" />
+        <div>
+          <QSpace class="q-mb-md" style="height: 8px" />
         </div>
         <QExpansionItem
           v-if="jwt"
@@ -144,11 +146,21 @@
             </template>
           </QItemSection>
         </QExpansionItem>
-
-        <!--        <p class="q-pt-md q-pl-md q-pr-md">Calendars</p>-->
-        <!--          <QBtn label="Google Calendar" @click="addGoogleCalendar" />-->
-        <!--          <QSeparator />-->
-
+        <QSeparator />
+        <QExpansionItem
+          v-model="calendarOpen"
+          group="backupgroup"
+          icon="event_available"
+          expand-icon-class="text-primary"
+          class="column non-selectable"
+          :dense="$q.platform.is.desktop"
+          :expand-separator="calendarOpen"
+          label="Calendars"
+        >
+          <QItemSection class="q-pa-md">
+            <QBtn label="Google Calendar" @click="addGoogleCalendar" />
+          </QItemSection>
+        </QExpansionItem>
         <QSeparator />
         <QExpansionItem
           v-model="settingsOpen"
@@ -519,6 +531,7 @@ const miniState = ref(bigScreen.value)
 const showOTPDialog = ref(false)
 const leftDrawerOpen = ref(false)
 const rightDrawerOpen = ref(false)
+const calendarOpen = ref(false)
 const settingsOpen = ref(false)
 const spacesOpen = ref(false)
 const languageOpen = ref(false)
@@ -655,7 +668,7 @@ async function openOTPDialog() {
 }
 
 function addGoogleCalendar() {
-  console.log('WIP')
+  alert('WIP')
 }
 
 async function onCalendarByDate(strDate: string) {
