@@ -1,9 +1,9 @@
 import { is, date, LocalStorage, SessionStorage } from 'quasar'
 import { defineStore } from 'pinia'
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-import usePodStore from './pod'
+import usePodStore from 'stores/pod'
 import { db } from '../services/databaseService'
 import { formatterContracts } from '../helpers/schemaHelper'
+import { getFileFromUrl } from '../helpers/fileHelper'
 import {
   ContractData,
   ContractDate,
@@ -69,7 +69,7 @@ export default defineStore('contracts', {
       if (index === 0) {
         return Promise.reject('Cannot add this item')
       }
-      this.addContractName(contract.instrument_name)
+      this.addContractName(contract.name)
       // после первичной записи обновляем идентификатор Dexie
       contract.identifier.push({
         name: 'Dexie',
@@ -90,6 +90,10 @@ export default defineStore('contracts', {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return JSON.parse(JSON.stringify(c))
       })
+      const attachment =
+        verifiedCredential.credentialSubject.object.attachment.map((attach) =>
+          getFileFromUrl(attach.url, attach.name),
+        )
       const { contract } = await this.insertContract({
         context: context,
         resolver: verifiedCredential.id,
@@ -122,14 +126,7 @@ export default defineStore('contracts', {
         proof: {
           ...verifiedCredential.proof,
         },
-        // todo есть идея сохранять блобы для уменьшения памяти таблицы
-        images: verifiedCredential.credentialSubject.object.map((o) => {
-          return {
-            contentUrl: o.contentUrl,
-            encodingFormat: o.encodingFormat,
-          }
-        }),
-        // location?: string
+        attachment: await Promise.all(attachment),
       })
       const count = await db.contracts.count()
       this.setContractsCount(count)

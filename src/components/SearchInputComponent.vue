@@ -278,7 +278,7 @@ function onFileSelect(files: File[]) {
   const filesUrls = []
   for (const file of files) {
     filesUrls.push({
-      contentUrl: URL.createObjectURL(file),
+      url: URL.createObjectURL(file),
       encodingFormat: file.type,
       caption: file.name,
     })

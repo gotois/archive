@@ -42,12 +42,11 @@ export async function fileShare(file: File, title?: string) {
   }
 }
 
-export async function getFileFromUrl(image: { contentUrl: string }) {
-  const base64Response = await fetch(image.contentUrl)
+export async function getFileFromUrl(url: string, name?: string) {
+  const base64Response = await fetch(url)
   const blob = await base64Response.blob()
-  const ext = getFileExt(blob.type)
 
-  return new File([blob], `file_${uid()}.${ext}`, {
+  return new File([blob], name ?? `file_${uid()}.${getFileExt(blob.type)}`, {
     type: blob.type,
   })
 }

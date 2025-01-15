@@ -22,20 +22,24 @@ export interface ContractTable {
   identifier: ContractIdentifier[]
   proof?: Proof | Proof[]
   location?: string
-  agent_name: string
-  agent_email: string
-  participant_name: string // todo - вместо этого сейчас participant_sameAs
-  participant_email: string // todo поддержать массив
-  participant_tel: string // todo поддержать массив
-  participant_url: string // todo поддержать массив
-  instrument_name: string
-  instrument_description?: string
+  actor: {
+    email: string
+    name: string
+  }
+  participant: [
+    {
+      type: string
+      name: string
+      email?: string
+      tel?: string
+      url?: string
+    },
+  ]
+  name: string
+  description?: string
   startTime: Date
   endTime?: Date
-  images?: {
-    contentUrl: string
-    encodingFormat: string
-  }[]
+  attachment?: File[]
   resource_url?: string
 }
 
@@ -98,8 +102,7 @@ export type credentialContextType =
 
 export interface Agent {
   type: 'Organization' | 'Person'
-  sameAs: WebId
-  name?: string
+  name: string
   email?: string
   telephone?: string
   url?: string
@@ -166,32 +169,26 @@ interface FormatContractInstrument extends BaseSchemaType, ContractInstrument {}
 export interface FormatPlace extends BaseSchemaType, Place {}
 
 export interface CredentialSubject {
-  agent: Agent
-  participant: Agent
-  instrument: ContractInstrument
-  identifier: ContractIdentifier[]
+  actor: Agent
+  target: Agent
   startTime: Date
   endTime?: Date
-  object: ImageType[]
+  object: {
+    id: string
+    type: string
+    name: string
+    summary: string
+    url?: string
+    location?: string
+    tag?: string[]
+    attachment: {
+      type: string
+      name: string
+      mediaType: string
+      url: string
+    }[]
+  }
   location?: Place
-  url: string
-  sameAs?: string
-}
-
-export interface MyContract {
-  agent_email: string
-  agent_name: string
-  agent_legal: boolean
-  images?: string[]
-  instrument_description?: string
-  instrument_name: string
-  participant_name: string
-  participant_email?: string
-  participant_tel?: string
-  participant_url?: string
-  location?: Place
-  startTime: Date
-  endTime?: Date
 }
 
 export type ContractData = {

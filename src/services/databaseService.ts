@@ -196,28 +196,20 @@ class ContractDatabase extends Dexie {
     const contracts = [
       '++id',
       'context',
-      'type',
+      '*type',
       'issuer',
-      '&issuanceDate',
-      '*identifier',
-      '*proof',
-      // todo объединить name и email в один объект agent
-      'agent_name',
-      'agent_email',
-      // todo объединить name, email, tel, url в один participant
-      'participant_name',
-      'participant_email',
-      'participant_tel',
-      'participant_url',
-      // todo объединить name, description в один instrument
-      'instrument_name',
-      'instrument_description',
+      'issuanceDate',
+      // '*identifier',
+      '&proof',
+      'actor',
+      'participant',
+      'name',
+      'description',
       'location',
       'startTime',
       'endTime',
       'resolver',
-      '*images',
-      '*resource_url',
+      '*attachment',
     ]
 
     this.version(2)

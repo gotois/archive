@@ -26,7 +26,7 @@
         square
         flat
         label="Demo"
-        @click="emit('select', demoSign)"
+        @click="telegramSign()"
       >
         <QTooltip>Demo Sign</QTooltip>
       </QBtn>
@@ -51,7 +51,7 @@ const $t = i18n.t
 const profileStore = useProfileStore()
 const secretaryStore = useSecretaryStore()
 
-async function telegramSign(user: TelegramUser) {
+async function telegramSign(user: TelegramUser = process.env.demo_user) {
   try {
     await profileStore.setNetworkUser()
   } catch {

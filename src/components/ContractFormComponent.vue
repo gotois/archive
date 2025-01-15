@@ -1,10 +1,10 @@
 <template>
   <div
-    v-if="contract.credentialSubject?.object?.attachment"
+    v-if="contract.credentialSubject?.object?.attachment?.length"
     class="relative-position"
   >
     <ContractCarouselComponent
-      :model="[contract.credentialSubject.object.attachment]"
+      :model="contract.credentialSubject.object.attachment"
     />
   </div>
   <QSeparator spaced inset />
@@ -509,9 +509,10 @@ async function saveContract() {
   loadingForm.value = true
   try {
     await contractStore.addContract(props.contract)
-    emit('onCreate')
+    emit('create')
     onResetForm()
   } catch (error) {
+    console.error(error)
     $q.notify({
       type: 'negative',
       message: $t('components.contractForm.submitDate.fail'),
@@ -563,10 +564,10 @@ async function saveOnline() {
 }
 
 async function recognizeImage(
-  { contentUrl, encodingFormat }: ImageType,
+  { contentUrl, mediaType }: ImageType,
   langs: string,
 ) {
-  if (encodingFormat.startsWith('image')) {
+  if (mediaType.startsWith('image')) {
     const worker = await createWorker(langs)
     const img = new Image()
     img.src = contentUrl

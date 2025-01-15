@@ -75,13 +75,13 @@ const $q = useQuasar()
 const canWrite = ref(Reflect.has(navigator.clipboard, 'write'))
 
 async function openFile(image: { contentUrl: string }) {
-  const file = await getFileFromUrl(image)
+  const file = await getFileFromUrl(image.contentUrl)
   const url = URL.createObjectURL(file)
   open(url)
 }
 
 async function onFileShare(image: { contentUrl: string }) {
-  const file = await getFileFromUrl(image)
+  const file = await getFileFromUrl(image.contentUrl)
   try {
     await fileShare(file)
   } catch (error) {
