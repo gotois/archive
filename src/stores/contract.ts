@@ -90,10 +90,6 @@ export default defineStore('contracts', {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return JSON.parse(JSON.stringify(c))
       })
-      const attachment =
-        verifiedCredential.credentialSubject.object.attachment.map((attach) =>
-          getFileFromUrl(attach.url, attach.name),
-        )
       const { contract } = await this.insertContract({
         context: context,
         resolver: verifiedCredential.id,
@@ -126,7 +122,14 @@ export default defineStore('contracts', {
         proof: {
           ...verifiedCredential.proof,
         },
-        attachment: await Promise.all(attachment),
+        attachment: verifiedCredential.credentialSubject.object.attachment.map(
+          (attach) => ({
+            type: attach.type,
+            name: attach.name,
+            mediaType: attach.mediaType,
+            url: attach.url,
+          }),
+        ),
       })
       const count = await db.contracts.count()
       this.setContractsCount(count)

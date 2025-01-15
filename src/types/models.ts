@@ -39,7 +39,12 @@ export interface ContractTable {
   description?: string
   startTime: Date
   endTime?: Date
-  attachment?: File[]
+  attachment?: {
+    type: string
+    name: string
+    mediaType: string
+    url: string
+  }[]
   resource_url?: string
 }
 

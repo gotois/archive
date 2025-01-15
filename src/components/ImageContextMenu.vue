@@ -5,7 +5,7 @@
         v-close-popup
         :dense="$q.platform.is.desktop"
         clickable
-        @click="openFile(image)"
+        @click="openFile(image.url)"
       >
         <QItemSection>
           {{ $t('components.imageContextMenu.open') }}
@@ -17,7 +17,7 @@
         v-close-popup
         :dense="$q.platform.is.desktop"
         clickable
-        @click="onFileShare(image)"
+        @click="onFileShare(image.url)"
       >
         <QItemSection>
           {{ $t('components.imageContextMenu.share') }}
@@ -29,7 +29,7 @@
         v-close-popup
         :dense="$q.platform.is.desktop"
         clickable
-        @click="onCopy(image.contentUrl)"
+        @click="onCopy(image.url)"
       >
         <QItemSection>
           {{ $t('components.imageContextMenu.copy') }}
@@ -57,13 +57,11 @@ import {
   convertBlobToPng,
 } from '../helpers/fileHelper'
 import { PNG_MIME_TYPE } from '../helpers/mimeTypes'
+import { ImageType } from '../types/models'
 
 defineProps({
   image: {
-    type: Object as PropType<{
-      contentUrl: string
-      encodingFormat: string
-    }>,
+    type: Object as PropType<ImageType>,
     require: true,
     default: () => ({}),
   },
@@ -74,15 +72,14 @@ const $q = useQuasar()
 
 const canWrite = ref(Reflect.has(navigator.clipboard, 'write'))
 
-async function openFile(image: { contentUrl: string }) {
-  const file = await getFileFromUrl(image.contentUrl)
-  const url = URL.createObjectURL(file)
-  open(url)
+async function openFile(url: string) {
+  const file = await getFileFromUrl(url)
+  open(URL.createObjectURL(file))
 }
 
-async function onFileShare(image: { contentUrl: string }) {
-  const file = await getFileFromUrl(image.contentUrl)
+async function onFileShare(url: string) {
   try {
+    const file = await getFileFromUrl(url)
     await fileShare(file)
   } catch (error) {
     console.error(error)
