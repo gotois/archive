@@ -28,9 +28,10 @@
     @sent="serverData"
   />
   <CreateNewDogovor
-    v-if="contract"
+    v-if="creatingNewContract"
     :contract="contract"
-    @done="() => {}"
+    @done="contractComplete"
+    @hide="creatingNewContract = false"
   />
 </template>
 <script lang="ts" setup>
@@ -38,13 +39,16 @@ import { QVirtualScroll, QBtn } from 'quasar'
 import { ref } from 'vue'
 import useCalendarStore from 'stores/calendar'
 import useChatStore from 'stores/chat'
+import useSecretaryStore from 'stores/secretary'
 import ChatComponent from 'components/ChatComponent.vue'
 import InputComponent from 'components/SearchInputComponent.vue'
 import CreateNewDogovor from 'components/CreateNewDogovor.vue'
 
 const calendarStore = useCalendarStore()
+const secretaryStore = useSecretaryStore()
 const chatStore = useChatStore()
 
+const creatingNewContract = ref(false)
 const contract = ref(null)
 const size = ref(1)
 const allItems = Array(size.value)
@@ -85,7 +89,7 @@ function sendData(value: string) {
 }
 
 async function tryGenerateCalendar() {
-  const calendar = await calendarStore.generate(
+  contract.value = await secretaryStore.generate(
     chatStore.messages.map((message) => {
       return {
         type: 'Note',
@@ -94,8 +98,11 @@ async function tryGenerateCalendar() {
       }
     }),
   )
-  // TODO Открывать форму подписания сгенерированного договора
-  contract.value = calendar
-  console.log('calendar', calendar)
+  creatingNewContract.value = true
+}
+
+function contractComplete() {
+  creatingNewContract.value = false
+  chatStore.messages = []
 }
 </script>

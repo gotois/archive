@@ -144,6 +144,11 @@
             </template>
           </QItemSection>
         </QExpansionItem>
+
+        <!--        <p class="q-pt-md q-pl-md q-pr-md">Calendars</p>-->
+        <!--          <QBtn label="Google Calendar" @click="addGoogleCalendar" />-->
+        <!--          <QSeparator />-->
+
         <QSeparator />
         <QExpansionItem
           v-model="settingsOpen"
@@ -366,8 +371,32 @@
         :dense="$q.platform.is.desktop"
         :align="$q.platform.is.desktop ? 'center' : 'justify'"
       >
-        <QRouteTab icon="schedule" :to="{ name: ROUTE_NAMES.ARCHIVE }" />
-        <QRouteTab icon="event" :to="{ name: ROUTE_NAMES.CALENDAR }" />
+        <QRouteTab
+          icon="schedule"
+          :to="{ name: ROUTE_NAMES.ARCHIVE }"
+          @click="navCancel"
+        >
+          <QPopupProxy transition-show="scale" transition-hide="scale">
+            <CalendarEventsComponent
+              default-view="Calendar"
+              class="q-ml-auto q-mr-auto q-mb-md q-mt-md"
+              @select="onCalendarByDate"
+            />
+          </QPopupProxy>
+        </QRouteTab>
+        <QRouteTab
+          icon="event"
+          :to="{ name: ROUTE_NAMES.CALENDAR }"
+          @click="navCancel"
+        >
+          <QPopupProxy transition-show="scale" transition-hide="scale">
+            <CalendarEventsComponent
+              class="q-ml-auto q-mr-auto q-mb-md q-mt-md"
+              default-view="Months"
+              @select="onCalendarByDate"
+            />
+          </QPopupProxy>
+        </QRouteTab>
       </QTabs>
     </QFooter>
   </QLayout>
@@ -389,6 +418,7 @@ import {
   QRouteTab,
   QBtn,
   QPageContainer,
+  QPopupProxy,
   QTooltip,
   QChip,
   QImg,
@@ -711,6 +741,10 @@ onMounted(async () => {
   }
   await secretaryStore.ping()
 })
+
+function navCancel(e: Event) {
+  e.preventDefault()
+}
 </script>
 <style lang="scss">
 :root {

@@ -32,6 +32,7 @@
           <template #timeGridEvent="{ calendarEvent }">
             <CalendarEventCard
               class="fit"
+              horizontal
               :title="calendarEvent.title"
               :start="new Date(calendarEvent.start)"
               :end="new Date(calendarEvent.end)"

@@ -148,7 +148,7 @@
       v-if="creatingNewContract"
       :contract="contract"
       :signing="true"
-      @done="onPageComplete"
+      @done="pageComplete"
       @hide="creatingNewContract = false"
     />
   </QPage>
@@ -260,7 +260,7 @@ function setMeta(value: number) {
   }
 }
 
-function onPageComplete() {
+function pageComplete() {
   tutorialStore.tutorialComplete(true)
   void router.push({
     name: ROUTE_NAMES.ARCHIVE,

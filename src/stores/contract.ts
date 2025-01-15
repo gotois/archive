@@ -93,27 +93,30 @@ export default defineStore('contracts', {
       const { contract } = await this.insertContract({
         context: context,
         resolver: verifiedCredential.id,
-        agent_email: verifiedCredential.credentialSubject.agent.email,
-        agent_name: verifiedCredential.credentialSubject.agent.name,
-        identifier: verifiedCredential.credentialSubject.identifier.map(
-          (i) => ({
-            name: i.name,
-            propertyID: i.propertyID,
-            value: i.value,
-          }),
-        ),
-        instrument_name: verifiedCredential.credentialSubject.instrument.name,
-        instrument_description:
-          verifiedCredential.credentialSubject.instrument.description,
+        actor: {
+          email: verifiedCredential.credentialSubject.actor.email,
+          name: verifiedCredential.credentialSubject.actor.name,
+        },
+        // identifier: verifiedCredential.credentialSubject.identifier.map(
+        //   (i) => ({
+        //     name: i.name,
+        //     propertyID: i.propertyID,
+        //     value: i.value,
+        //   }),
+        // ),
+        name: verifiedCredential.credentialSubject.object.name,
+        description: verifiedCredential.credentialSubject.object.summary,
         issuanceDate: new Date(verifiedCredential.issuanceDate),
         issuer: verifiedCredential.issuer,
-        // todo поддержать массив participants
-        participant_email:
-          verifiedCredential.credentialSubject.participant.email,
-        participant_name: verifiedCredential.credentialSubject.participant.name,
-        participant_tel:
-          verifiedCredential.credentialSubject.participant.telephone,
-        participant_url: verifiedCredential.credentialSubject.participant.url,
+        participant: [
+          {
+            type: verifiedCredential.credentialSubject.target.type,
+            name: verifiedCredential.credentialSubject.target.name,
+            email: verifiedCredential.credentialSubject.target.email,
+            tel: verifiedCredential.credentialSubject.target.telephone,
+            url: verifiedCredential.credentialSubject.target.url,
+          },
+        ],
         startTime: new Date(verifiedCredential.credentialSubject.startTime),
         endTime: verifiedCredential.credentialSubject.endTime
           ? new Date(verifiedCredential.credentialSubject.endTime)
@@ -122,14 +125,15 @@ export default defineStore('contracts', {
         proof: {
           ...verifiedCredential.proof,
         },
-        attachment: verifiedCredential.credentialSubject.object.attachment.map(
-          (attach) => ({
-            type: attach.type,
-            name: attach.name,
-            mediaType: attach.mediaType,
-            url: attach.url,
-          }),
-        ),
+        attachment:
+          verifiedCredential.credentialSubject.object.attachment?.map(
+            (attach) => ({
+              type: attach.type,
+              name: attach.name,
+              mediaType: attach.mediaType,
+              url: attach.url,
+            }),
+          ) ?? [],
       })
       const count = await db.contracts.count()
       this.setContractsCount(count)

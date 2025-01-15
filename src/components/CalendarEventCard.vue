@@ -1,6 +1,9 @@
 <template>
   <QCard v-ripple flat :dark="!$q.dark.isActive" bordered square>
-    <QCardSection class="q-pa-xs justify-between items-center" horizontal>
+    <QCardSection
+      class="q-pa-xs justify-between items-center"
+      :horizontal="props.horizontal"
+    >
       <div
         class="flex justify-between"
         :class="{
@@ -52,7 +55,11 @@ const $q = useQuasar()
 
 const emit = defineEmits(['onRemove', 'onEdit'])
 
-defineProps({
+const props = defineProps({
+  horizontal: {
+    type: Boolean as PropType<boolean>,
+    default: false,
+  },
   title: {
     type: String as PropType<string>,
     required: true,

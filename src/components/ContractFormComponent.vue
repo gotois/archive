@@ -358,8 +358,7 @@ const contractForm = ref<QForm>()
 const loadingForm = ref(false)
 const modelContact = ref<MultiContact[]>([])
 
-if (props.signing) {
-  customers.value.push(props.contract.credentialSubject.actor)
+customers.value.push(props.contract.credentialSubject.actor)
   if (props.contract.credentialSubject.actor?.email) {
     modelContact.value.push({
       type: InputType.email,
@@ -375,13 +374,12 @@ if (props.signing) {
   customer.value = props.contract.credentialSubject.actor.name
   contractType.value = props.contract.credentialSubject.object?.name
   isCustomerOrg.value =
-    props.contract.credentialSubject?.agent?.type === 'Organization' // todo вместо Boolean использовать тип String данных
+    props.contract.credentialSubject?.actor?.type === 'Organization' // todo вместо Boolean использовать тип String данных
   description.value = props.contract.credentialSubject.object.summary
   dateNoLimit.value = Boolean(props.contract.credentialSubject.endTime)
   cloneStartDate = date.clone(
     new Date(props.contract.credentialSubject.startTime),
   )
-}
 
 const afterYearDate = new Date(
   date

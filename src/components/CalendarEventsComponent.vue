@@ -4,7 +4,7 @@
     :events="events"
     :options="options"
     class="no-box-shadow"
-    default-view="Calendar"
+    :default-view="props.defaultView"
     :first-day-of-week="langStore.isRussian ? 1 : null"
     :locale="calendarLocale"
     event-color="secondary"
@@ -17,7 +17,7 @@
   </QDate>
 </template>
 <script lang="ts" setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { QDate, date } from 'quasar'
 import useContractStore from 'stores/contract'
@@ -30,6 +30,12 @@ const contractStore = useContractStore()
 const $t = i18n.t
 
 const emit = defineEmits(['select'])
+const props = defineProps({
+  defaultView: {
+    type: String as PropType<string>,
+    default: 'Calendar',
+  },
+})
 
 const events = ref([])
 const options = ref([])
