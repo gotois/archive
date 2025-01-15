@@ -4,7 +4,7 @@ import {
   FormatContract,
   FormatContractParticipant,
   FormatPlace,
-  VerifiedCredential,
+  VerifiableCredential,
   CredentialSubject,
 } from '../types/models'
 import { getHash } from '../helpers/cryptoHelper'
@@ -15,7 +15,7 @@ export function formatterContracts(
   return contracts.map((contract: ContractTable) => formatterContract(contract))
 }
 
-export function getContractFromLD(jsldContract: VerifiedCredential) {
+export function getContractFromLD(jsldContract: VerifiableCredential) {
   return JSON.parse(
     JSON.stringify({
       context: jsldContract['@context'],

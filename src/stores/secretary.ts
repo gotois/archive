@@ -6,6 +6,7 @@ import {
   TelegramUser,
   ActivityObjectNote,
   ActivityObjectLink,
+  VerifiableCredential,
 } from '../types/models'
 import { isTMA } from '../helpers/twaHelper'
 
@@ -102,6 +103,13 @@ export default defineStore('secretary', {
         '@context': 'https://www.w3.org/ns/activitystreams',
         'type': 'Activity',
         'object': object,
+      })
+    },
+    async notify(contract: VerifiableCredential) {
+      return await rpc('add-calendar', {
+        '@context': 'https://www.w3.org/ns/activitystreams',
+        'type': 'Activity',
+        'object': contract,
       })
     },
   },

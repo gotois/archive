@@ -43,7 +43,7 @@ import {
 } from 'quasar'
 import { useRouter } from 'vue-router'
 import { ROUTE_NAMES } from '../router/routes'
-import { VerifiedCredential, ContractTable } from '../types/models'
+import { VerifiableCredential, ContractTable } from '../types/models'
 import ContractPod from '../services/contractGeneratorService'
 
 const ContractFormComponent = defineAsyncComponent({
@@ -61,7 +61,7 @@ const router = useRouter()
 const contractForm = ref<InstanceType<typeof ContractFormComponent> | null>(
   null,
 )
-const contract = ref<VerifiedCredential>(null)
+const contract = ref<VerifiableCredential>(null)
 
 const metaData = {
   'title': $t('pages.sign.title'),

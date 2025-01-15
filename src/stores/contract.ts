@@ -10,7 +10,7 @@ import {
   ContractTable,
   FormatContract,
   ContractIdentifier,
-  VerifiedCredential,
+  VerifiableCredential,
 } from '../types/models'
 
 interface Store {
@@ -82,7 +82,7 @@ export default defineStore('contracts', {
       })
       return { contract, index }
     },
-    async addContract(verifiedCredential: VerifiedCredential) {
+    async addContract(verifiedCredential: VerifiableCredential) {
       const context = verifiedCredential['@context'].map((c) => {
         if (typeof c === 'string') {
           return c

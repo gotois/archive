@@ -80,7 +80,7 @@ interface Proof {
   verificationMethod: string
 }
 
-export interface VerifiedCredential {
+export interface VerifiableCredential {
   '@context': credentialContextType
   'credentialSubject': CredentialSubject
   'id': string
@@ -97,7 +97,7 @@ export interface Presentation {
   'verifiableCredential': ProofCredential[]
 }
 
-export interface ProofCredential extends VerifiedCredential {
+export interface ProofCredential extends VerifiableCredential {
   proof: Proof
 }
 

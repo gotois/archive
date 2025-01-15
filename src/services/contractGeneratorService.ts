@@ -19,7 +19,7 @@ import {
   universalAccess,
 } from '@inrupt/solid-client'
 import { RDF, SCHEMA_INRUPT } from '@inrupt/vocab-common-rdf'
-import { VerifiedCredential, Presentation } from '../types/models'
+import { VerifiableCredential, Presentation } from '../types/models'
 
 export default class ContractPod {
   resourceUrl = ''
@@ -41,7 +41,7 @@ export default class ContractPod {
 
   get credential() {
     if (this._credential) {
-      return this._credential as VerifiedCredential
+      return this._credential as VerifiableCredential
     }
     throw new Error('No credential data')
   }

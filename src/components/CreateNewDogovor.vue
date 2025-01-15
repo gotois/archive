@@ -45,7 +45,7 @@ import {
   QBtn,
   QSkeleton,
 } from 'quasar'
-import { VerifiedCredential } from '../types/models'
+import { VerifiableCredential } from '../types/models'
 
 const creatingNewContract = ref(true)
 
@@ -55,7 +55,7 @@ defineProps({
     default: false,
   },
   contract: {
-    type: Object as PropType<VerifiedCredential>,
+    type: Object as PropType<VerifiableCredential>,
     default: () => ({}),
   },
 })

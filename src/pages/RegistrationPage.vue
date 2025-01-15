@@ -189,7 +189,7 @@ import pkg from '../../package.json'
 import { isTMA } from '../helpers/twaHelper'
 import { ROUTE_NAMES, STEP } from '../router/routes'
 import { parse } from '../helpers/markdownHelper'
-import { VerifiedCredential } from '../types/models'
+import { VerifiableCredential } from '../types/models'
 import CreateNewDogovor from 'components/CreateNewDogovor.vue'
 
 const SelectRegistration = defineAsyncComponent(
@@ -222,7 +222,7 @@ const scroll = ref<InstanceType<typeof QScrollArea> | null>(null)
 const stepper = ref<InstanceType<typeof QStepper> | null>(null)
 const step = ref(getCurrentStep() ?? STEP.WELCOME)
 const creatingNewContract = ref(false)
-const contract = ref<VerifiedCredential>(null)
+const contract = ref<VerifiableCredential>(null)
 
 const { isLoggedIn } = storeToRefs(authStore)
 const { did, getPersonLD, phone, email } = storeToRefs(profileStore)
@@ -290,7 +290,7 @@ async function onFinish() {
     }
 
     await secretaryStore.ping()
-    contract.value = (await secretaryStore.getOfferta()) as VerifiedCredential
+    contract.value = (await secretaryStore.getOfferta()) as VerifiableCredential
     creatingNewContract.value = true
   } catch (error) {
     console.error(error)

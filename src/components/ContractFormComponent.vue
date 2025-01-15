@@ -300,7 +300,7 @@ import {
   getCurrentPosition,
 } from '../services/geoService'
 import { ocrPrompt } from '../services/aiService'
-import { VerifiedCredential, WalletType, ImageType } from '../types/models'
+import { VerifiableCredential, WalletType, ImageType } from '../types/models'
 
 enum InputType {
   email = 'email',
@@ -324,7 +324,7 @@ const props = defineProps({
     default: false,
   },
   contract: {
-    type: Object as PropType<VerifiedCredential>,
+    type: Object as PropType<VerifiableCredential>,
     default: () => ({}),
   },
 })
@@ -336,7 +336,7 @@ const walletStore = useWalletStore()
 const calendarStore = useCalendarStore()
 
 let cloneStartDate = null
-const contract = ref<VerifiedCredential>(props.contract)
+const contract = ref<VerifiableCredential>(props.contract)
 const contractType = ref<string | null>(null)
 const customers = ref([])
 const customer = ref<WebId>(null)
@@ -479,7 +479,7 @@ function onFocusInput({ target }: { target: HTMLElement }) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function signContractUseSolana(contract: VerifiedCredential) {
+async function signContractUseSolana(contract: VerifiableCredential) {
   const message = getIdentifierMessage(contract.credentialSubject)
   switch (walletStore.type) {
     case WalletType.Phantom: {

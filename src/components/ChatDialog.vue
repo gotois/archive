@@ -43,13 +43,14 @@ import useSecretaryStore from 'stores/secretary'
 import ChatComponent from 'components/ChatComponent.vue'
 import InputComponent from 'components/SearchInputComponent.vue'
 import CreateNewDogovor from 'components/CreateNewDogovor.vue'
+import { VerifiableCredential } from '../types/models'
 
 const calendarStore = useCalendarStore()
 const secretaryStore = useSecretaryStore()
 const chatStore = useChatStore()
 
 const creatingNewContract = ref(false)
-const contract = ref(null)
+const contract = ref<VerifiableCredential | null>(null)
 const size = ref(1)
 const allItems = Array(size.value)
   .fill(null)
@@ -101,7 +102,10 @@ async function tryGenerateCalendar() {
   creatingNewContract.value = true
 }
 
-function contractComplete() {
+async function contractComplete() {
+  if (contract.value) {
+    await secretaryStore.notify(contract.value as VerifiableCredential)
+  }
   creatingNewContract.value = false
   chatStore.messages = []
 }
