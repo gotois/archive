@@ -45,11 +45,7 @@ function resizeImageA4(img: HTMLImageElement) {
   }
 }
 
-export async function createPDF(object: FormatContract) {
-  const title = object.instrument.name
-  const description = object.instrument.description
-  const author = object.agent.name
-  const formatImages = object.object
+export async function createPDFs({ title, description, author, documents }) {
   const orientation = 'portrait'
 
   const doc = new jsPDF({
@@ -67,7 +63,7 @@ export async function createPDF(object: FormatContract) {
   const files: File[] = []
   let docLength = 0
 
-  for (const { url, mediaType } of formatImages) {
+  for (const { url, mediaType } of documents) {
     if (mediaType === PDF_MIME_TYPE) {
       const file = await getFileFromUrl(url)
       files.push(file)

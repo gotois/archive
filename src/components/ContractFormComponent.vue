@@ -266,7 +266,7 @@
   </QForm>
 </template>
 <script lang="ts" setup>
-import { PropType, ref, onMounted } from 'vue'
+import { PropType, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   useQuasar,
@@ -284,7 +284,6 @@ import {
 } from 'quasar'
 import { storeToRefs } from 'pinia'
 import { WebId } from '@inrupt/solid-client'
-import { createWorker } from 'tesseract.js'
 import useContractStore from 'stores/contract'
 import useWalletStore from 'stores/wallet'
 import useGeoStore from 'stores/geo'
@@ -296,8 +295,7 @@ import { getIdentifierMessage } from '../helpers/schemaHelper'
 import { signMessageUsePhantom } from '../services/phantomWalletService'
 import { signMessageUseSecretKey } from '../services/cryptoService'
 import { keys } from '../services/databaseService'
-import { ocrPrompt } from '../services/aiService'
-import { VerifiableCredential, WalletType, ImageType } from '../types/models'
+import { VerifiableCredential, WalletType } from '../types/models'
 
 enum InputType {
   email = 'email',
@@ -580,32 +578,6 @@ async function recognizeImage(
 
 defineExpose({
   resetForm: onResetForm,
-})
-
-onMounted(async () => {
-  $q.loading.show()
-  try {
-    if (navigator.onLine) {
-      const ld = await recognizeImage(
-        contract.value.credentialSubject.object[0],
-        'eng+rus',
-      )
-      contractType.value = ld.summary
-      description.value = ld.description
-      // duration.value = {
-      //   from: formatDate(ld.startDate),
-      //   to: formatDate(ld.endDate),
-      // }
-    }
-  } catch (error) {
-    console.error(error)
-    $q.notify({
-      type: 'negative',
-      message: error.message as string,
-    })
-  } finally {
-    $q.loading.hide()
-  }
 })
 </script>
 <style lang="scss">

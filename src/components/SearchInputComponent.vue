@@ -161,6 +161,8 @@ import {
 import { miniSearch } from '../services/searchService'
 import { ROUTE_NAMES } from '../router/routes'
 import { readFilePromise } from '../helpers/fileHelper'
+import { createPDFs } from '../helpers/pdfHelper'
+import { createWorker } from 'tesseract.js'
 
 const $q = useQuasar()
 const $t = useI18n().t
@@ -280,18 +282,40 @@ async function fileSelect(files: File[]) {
   if (files.length === 0) {
     return
   }
-  const images = []
+  const documents = []
+  let description = ''
+
+  // Step 1: пробуем взять текст из File с помощью Teseract
   for (const file of files) {
     const base64 = await readFilePromise(file)
     images.push({
       type: 'Image',
       url: base64,
       mediaType: file.type,
-      name: file.name,
     })
   }
 
-  emit('attach', images)
+  // Step 2: пробуем превратить все в PDF
+  const pdfs = await createPDFs({
+    title: 'My pdf',
+    description: description,
+    author: 'Test author',
+    documents: documents,
+  })
+
+  // Step 3: превращаем в ActivityStreams
+  const attach = []
+  for (const file of files) {
+    const base64 = await readFilePromise(file)
+    attach.push({
+      type: 'Document',
+      url: base64,
+      name: file.name,
+      mediaType: file.type,
+    })
+  }
+
+  emit('attach', attach)
   showed.value = false
 }
 
