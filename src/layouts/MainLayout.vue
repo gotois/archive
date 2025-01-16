@@ -76,6 +76,21 @@
         </QExpansionItem>
         <QSeparator />
         <QExpansionItem
+          v-model="walletOpen"
+          group="backupgroup"
+          icon="wallet"
+          expand-icon-class="text-primary"
+          class="column non-selectable"
+          :dense="$q.platform.is.desktop"
+          :expand-separator="walletOpen"
+          :label="'Wallet'"
+        >
+          <QItemSection class="q-pa-md">
+            <WalletProfile />
+          </QItemSection>
+        </QExpansionItem>
+        <QSeparator />
+        <QExpansionItem
           v-model="otpOpen"
           group="backupgroup"
           icon="vpn_key"
@@ -501,6 +516,9 @@ const OIDCIssuerComponent = defineAsyncComponent(
 const CalendarEventsComponent = defineAsyncComponent(
   () => import('components/CalendarEventsComponent.vue'),
 )
+const WalletProfile = defineAsyncComponent(
+  () => import('components/WalletProfile.vue'),
+)
 
 const $q = useQuasar()
 const router = useRouter()
@@ -535,6 +553,7 @@ const calendarOpen = ref(false)
 const settingsOpen = ref(false)
 const spacesOpen = ref(false)
 const languageOpen = ref(false)
+const walletOpen = ref(false)
 const profileOpen = ref(false)
 const otpOpen = ref(false)
 const confirm = ref(false)

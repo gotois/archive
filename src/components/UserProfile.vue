@@ -104,45 +104,6 @@
         <QIcon name="phone" />
       </template>
     </QInput>
-    <QField
-      v-if="getWalletLD.id"
-      label="DID"
-      color="secondary"
-      class="q-pt-md q-pb-md full-width"
-      outlined
-      readonly
-      stack-label
-      hide-bottom-space
-    >
-      <template #prepend>
-        <QIcon name="wallet" />
-      </template>
-      <template #control>
-        <div
-          class="self-center no-outline no-margin no-padding non-selectable ellipsis absolute"
-          style="left: 0; right: 0"
-        >
-          {{ getWalletLD.id }}
-        </div>
-      </template>
-      <template #append>
-        <QIcon
-          name="content_copy"
-          class="cursor-pointer"
-          @click="onCopyText(getWalletLD.id)"
-        />
-      </template>
-    </QField>
-    <PhantomWalletLogin
-      v-if="!isDemo"
-      :label="$t('tutorial.wallet.title')"
-      color="white"
-      text-color="black"
-      icon="wallet"
-      content-class="full-width q-mb-md"
-      @skip="onSkipWallet"
-      @error="onWalletError"
-    />
     <QBtn
       v-if="!isDemo"
       :label="$t('consumer.save')"
@@ -161,7 +122,6 @@
   </QForm>
 </template>
 <script lang="ts" setup>
-import { defineAsyncComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   useQuasar,
@@ -173,23 +133,16 @@ import {
   copyToClipboard,
 } from 'quasar'
 import { storeToRefs } from 'pinia'
-import useWalletStore from 'stores/wallet'
 import useAuthStore from 'stores/auth'
 import useProfileStore from 'stores/profile'
 
 const $q = useQuasar()
 const authStore = useAuthStore()
 const profileStore = useProfileStore()
-const walletStore = useWalletStore()
 const i18n = useI18n()
 const $t = i18n.t
 
-const PhantomWalletLogin = defineAsyncComponent(
-  () => import('components/PhantomWalletLogin.vue'),
-)
-
 const { email, phone, getPersonLD } = storeToRefs(profileStore)
-const { getWalletLD } = storeToRefs(walletStore)
 const { isLoggedIn, isDemo, webId } = storeToRefs(authStore)
 
 async function onFinishProfile() {
@@ -208,25 +161,6 @@ async function onCopyText(text: string) {
     type: 'positive',
     group: false,
     message: $t('copy.success'),
-  })
-}
-
-function onWalletError(error: Error) {
-  $q.notify({
-    color: 'negative',
-    message:
-      error.name === 'DatabaseClosedError' ? error.message : $t('wallet.fail'),
-  })
-}
-
-function onSkipWallet() {
-  const dialog = $q.dialog({
-    message: $t('tutorial.welcome.demoHint'),
-    cancel: true,
-    persistent: true,
-  })
-  dialog.onOk(() => {
-    // emit('free')
   })
 }
 </script>

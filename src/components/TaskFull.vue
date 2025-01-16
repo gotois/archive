@@ -283,12 +283,14 @@ async function makePresentation(contract) {
         name: contract.agent_name,
         email: contract.agent_email,
       },
-      participant: [{
-        name: contract.participant_name,
-        email: contract.participant_email,
-        telephone: contract.participant_tel,
-        url: contract.participant_url,
-      }],
+      participant: [
+        {
+          name: contract.participant_name,
+          email: contract.participant_email,
+          telephone: contract.participant_tel,
+          url: contract.participant_url,
+        },
+      ],
       instrument: {
         name: contract.instrument_name,
         description: contract.instrument_description,

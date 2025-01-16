@@ -359,27 +359,27 @@ const loadingForm = ref(false)
 const modelContact = ref<MultiContact[]>([])
 
 customers.value.push(props.contract.credentialSubject.actor)
-  if (props.contract.credentialSubject.actor?.email) {
-    modelContact.value.push({
-      type: InputType.email,
-      value: props.contract.credentialSubject.actor.email,
-    })
-  }
-  if (props.contract.credentialSubject.actor?.url) {
-    modelContact.value.push({
-      type: InputType.url,
-      value: props.contract.credentialSubject.actor.url,
-    })
-  }
-  customer.value = props.contract.credentialSubject.actor.name
-  contractType.value = props.contract.credentialSubject.object?.name
-  isCustomerOrg.value =
-    props.contract.credentialSubject?.actor?.type === 'Organization' // todo вместо Boolean использовать тип String данных
-  description.value = props.contract.credentialSubject.object.summary
-  dateNoLimit.value = Boolean(props.contract.credentialSubject.endTime)
-  cloneStartDate = date.clone(
-    new Date(props.contract.credentialSubject.startTime),
-  )
+if (props.contract.credentialSubject.actor?.email) {
+  modelContact.value.push({
+    type: InputType.email,
+    value: props.contract.credentialSubject.actor.email,
+  })
+}
+if (props.contract.credentialSubject.actor?.url) {
+  modelContact.value.push({
+    type: InputType.url,
+    value: props.contract.credentialSubject.actor.url,
+  })
+}
+customer.value = props.contract.credentialSubject.actor.name
+contractType.value = props.contract.credentialSubject.object?.name
+isCustomerOrg.value =
+  props.contract.credentialSubject?.actor?.type === 'Organization' // todo вместо Boolean использовать тип String данных
+description.value = props.contract.credentialSubject.object.summary
+dateNoLimit.value = Boolean(props.contract.credentialSubject.endTime)
+cloneStartDate = date.clone(
+  new Date(props.contract.credentialSubject.startTime),
+)
 
 const afterYearDate = new Date(
   date

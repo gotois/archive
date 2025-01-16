@@ -4,9 +4,7 @@ import {
   convertSchemaPodToEvent,
 } from '../helpers/calendarHelper'
 import useContractStore from 'stores/contract'
-import {
-  CalendarEventExternal,
-} from '../types/models'
+import { CalendarEventExternal } from '../types/models'
 import rpc from '../helpers/rpc'
 
 interface Store {
