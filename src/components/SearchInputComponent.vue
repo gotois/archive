@@ -154,6 +154,7 @@ import {
 import { useI18n } from 'vue-i18n'
 import useChatStore from 'stores/chat'
 import useAuthStore from 'stores/auth'
+import useGeoStore from 'stores/geo'
 import useTutorialStore from 'stores/tutorial'
 import {
   PDF_MIME_TYPE,
@@ -170,6 +171,7 @@ const $q = useQuasar()
 const $t = useI18n().t
 const chatStore = useChatStore()
 const authStore = useAuthStore()
+const geoStore = useGeoStore()
 const tutorialStore = useTutorialStore()
 const router = useRouter()
 
@@ -207,8 +209,15 @@ async function sendChat(value: string) {
   clearText()
   select.value.blur()
   try {
-    const result = await chatStore.send(value)
-    emit('sent', result.credentialSubject.value)
+    const { credentialSubject } = await chatStore.send([
+      {
+        type: 'Note',
+        content: value,
+        mediaType: 'text/plain',
+      },
+      geoStore.point,
+    ])
+    emit('sent', credentialSubject.object.contentMap.ru)
   } catch (error) {
     console.error(error)
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access

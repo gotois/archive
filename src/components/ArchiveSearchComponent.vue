@@ -14,7 +14,7 @@
         <InputComponent
           :autofocus="$q.platform.is.desktop"
           :label="$t('searchDialog.searchText')"
-          @search="(value) => $emit('onSearch', value)"
+          @search="(value) => emit('search', value)"
         />
       </QCardSection>
       <QCardActions align="right" class="text-primary">
@@ -43,7 +43,7 @@ import {
 import InputComponent from 'components/SearchInputComponent.vue'
 import { indexAllDocuments } from '../services/searchService'
 
-defineEmits(['onSearch'])
+const emit = defineEmits(['search'])
 
 const $t = useI18n().t
 const $q = useQuasar()

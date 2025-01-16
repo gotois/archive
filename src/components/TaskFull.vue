@@ -10,13 +10,13 @@
             'ellipsis': $q.platform.is.desktop,
           }"
         >
-<!--          TODO теперь функция верификации должна проводиться на сервере -->
-<!--          <template v-if="isVerified(item, publicKey)">
+          <!-- Todo поддержать проверку на верификацию криптоключом Solana -->
+          <template v-if="false /*isVerified(item, publicKey)*/">
             <QIcon name="verified" />
           </template>
           <template v-else>
             <QIcon name="error" color="warning" />
-          </template>-->
+          </template>
           {{ title }}
           <QTooltip>{{ title }}</QTooltip>
         </p>
@@ -141,7 +141,6 @@ import {
   uid,
   useQuasar,
   QSkeleton,
-  QAvatar,
   QChip,
   QBtn,
   QIcon,
@@ -172,7 +171,6 @@ import { mailUrl } from '../helpers/mailHelper'
 import { open } from '../helpers/urlHelper'
 import { openMap } from '../services/geoService'
 import useContractStore from 'stores/contract'
-import { TELEGRAM_MINI_APPS_URL } from '../services/telegram'
 import {
   FormatImageType,
   Place,
@@ -206,11 +204,10 @@ const $q = useQuasar()
 const i18n = useI18n()
 const $t = i18n.t
 const contractStore = useContractStore()
-const walletStore = useWalletStore()
 const authStore = useAuthStore()
 const langStore = useLangStore()
+const walletStore = useWalletStore()
 
-const { getArchiveNames } = storeToRefs(contractStore)
 const { isLoggedIn } = storeToRefs(authStore)
 const { publicKey } = storeToRefs(walletStore)
 
@@ -470,8 +467,7 @@ function onSheet() {
 }
 
 function sendToCourt() {
-  console.warn('This functionality is under development.')
-  open(TELEGRAM_MINI_APPS_URL)
+  alert('This functionality is under development.')
 }
 
 async function saveIcal(file: File) {

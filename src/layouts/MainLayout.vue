@@ -383,7 +383,7 @@
       <ArchiveSearchComponent
         v-if="showSearch"
         v-model="showSearch"
-        @on-search="onSearch"
+        @search="onSearch"
       />
     </QPageContainer>
     <QFooter
@@ -474,7 +474,7 @@ import usePodStore from 'stores/pod'
 import useLangStore from 'stores/lang'
 import useSecretaryStore from 'stores/secretary'
 import useNotification from 'stores/notification'
-import useCalendarStore from 'stores/calendar'
+import useGeoStore from 'stores/geo'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
 import UserProfile from 'components/UserProfile.vue'
 import ChatDialog from 'components/ChatDialog.vue'
@@ -529,7 +529,7 @@ const tfaStore = useTFAStore()
 const langStore = useLangStore()
 const contractStore = useContractStore()
 const tutorialStore = useTutorialStore()
-const calendarStore = useCalendarStore()
+const geoStore = useGeoStore()
 const notificationStore = useNotification()
 const podStore = usePodStore()
 const secretaryStore = useSecretaryStore()
@@ -771,7 +771,16 @@ onMounted(async () => {
   if ($q.platform.is.desktop && contractsCount.value > 0) {
     await indexAllDocuments()
   }
-  await secretaryStore.ping()
+  try {
+    await secretaryStore.ping()
+  } catch (error) {
+    console.warn('ping', error)
+  }
+  try {
+    await geoStore.start()
+  } catch (error) {
+    console.warn('geo', error)
+  }
 })
 
 function navCancel(e: Event) {

@@ -266,7 +266,7 @@
   </QForm>
 </template>
 <script lang="ts" setup>
-import { PropType, ref, watch, onMounted } from 'vue'
+import { PropType, ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   useQuasar,
@@ -282,11 +282,12 @@ import {
   QTooltip,
   QToggle,
 } from 'quasar'
+import { storeToRefs } from 'pinia'
 import { WebId } from '@inrupt/solid-client'
 import { createWorker } from 'tesseract.js'
 import useContractStore from 'stores/contract'
 import useWalletStore from 'stores/wallet'
-import useCalendarStore from 'stores/calendar'
+import useGeoStore from 'stores/geo'
 import MultiContactComponent from 'components/MultiContact.vue'
 import DateComponent from 'components/DateComponent.vue'
 import ContractCarouselComponent from 'components/ContractCarouselComponent.vue'
@@ -295,10 +296,6 @@ import { getIdentifierMessage } from '../helpers/schemaHelper'
 import { signMessageUsePhantom } from '../services/phantomWalletService'
 import { signMessageUseSecretKey } from '../services/cryptoService'
 import { keys } from '../services/databaseService'
-import {
-  checkGeolocationPermission,
-  getCurrentPosition,
-} from '../services/geoService'
 import { ocrPrompt } from '../services/aiService'
 import { VerifiableCredential, WalletType, ImageType } from '../types/models'
 
@@ -333,8 +330,9 @@ const $t = useI18n().t
 const $q = useQuasar()
 const contractStore = useContractStore()
 const walletStore = useWalletStore()
-const calendarStore = useCalendarStore()
+const geoStore = useGeoStore()
 
+const { locationName } = storeToRefs(geoStore)
 let cloneStartDate = null
 const contract = ref<VerifiableCredential>(props.contract)
 const contractType = ref<string | null>(null)
@@ -343,16 +341,6 @@ const customer = ref<WebId>(null)
 const isCustomerOrg = ref<boolean | null>(null)
 const description = ref<string | null>(null)
 const dateNoLimit = ref<boolean | null>(null)
-const locationName = ref('')
-const geo = ref<GeolocationCoordinates | null>(null)
-
-watch(
-  () => geo.value,
-  () => {
-    // todo давать более читаемое название локации
-    locationName.value = geo.value.latitude + ':' + geo.value.longitude
-  },
-)
 const contractOptions = ref(contractStore.getArchiveKeys)
 const contractForm = ref<QForm>()
 const loadingForm = ref(false)
@@ -596,19 +584,6 @@ defineExpose({
 
 onMounted(async () => {
   $q.loading.show()
-  try {
-    const geoLocationPermissionStatus = await checkGeolocationPermission()
-    if (geoLocationPermissionStatus.state !== 'denied') {
-      const { coords } = await getCurrentPosition()
-      geo.value = coords
-    }
-    geoLocationPermissionStatus.onchange = async () => {
-      const { coords } = await getCurrentPosition()
-      geo.value = coords
-    }
-  } catch (error) {
-    console.error(error)
-  }
   try {
     if (navigator.onLine) {
       const ld = await recognizeImage(

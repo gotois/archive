@@ -1,5 +1,6 @@
 <template>
   <QVirtualScroll
+    ref="virtualListRef"
     style="overflow-x: hidden; height: calc(100dvh - 90px)"
     :items-size="size"
     :items-fn="getItems"
@@ -35,20 +36,23 @@
   />
 </template>
 <script lang="ts" setup>
+import { ref, nextTick } from 'vue'
 import { QVirtualScroll, QBtn } from 'quasar'
-import { ref } from 'vue'
-import useCalendarStore from 'stores/calendar'
+import { storeToRefs } from 'pinia'
 import useChatStore from 'stores/chat'
+import useGeoStore from 'stores/geo'
 import useSecretaryStore from 'stores/secretary'
 import ChatComponent from 'components/ChatComponent.vue'
 import InputComponent from 'components/SearchInputComponent.vue'
 import CreateNewDogovor from 'components/CreateNewDogovor.vue'
 import { VerifiableCredential } from '../types/models'
 
-const calendarStore = useCalendarStore()
+const geoStore = useGeoStore()
 const secretaryStore = useSecretaryStore()
 const chatStore = useChatStore()
 
+const { locationName } = storeToRefs(geoStore)
+const virtualListRef = ref<InstanceType<typeof QVirtualScroll> | null>(null)
 const creatingNewContract = ref(false)
 const contract = ref<VerifiableCredential | null>(null)
 const size = ref(1)
@@ -79,7 +83,7 @@ function serverData(value: string) {
   size.value = allItems.length
 }
 
-function sendData(value: string) {
+async function sendData(value: string) {
   allItems.push({
     index: allItems.length,
     text: value,
@@ -87,6 +91,9 @@ function sendData(value: string) {
     stamp: new Date(),
   })
   size.value = allItems.length
+  await nextTick(() => {
+    virtualListRef.value.scrollTo(size.value, 'start-force')
+  })
 }
 
 async function tryGenerateCalendar() {

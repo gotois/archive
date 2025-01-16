@@ -1,8 +1,12 @@
 import { defineStore } from 'pinia'
 import rpc from '../helpers/rpc'
 
+interface Message {
+  type: string
+}
+
 interface Store {
-  messages: string[]
+  messages: Message[]
 }
 
 export default defineStore('chat', {
@@ -10,31 +14,15 @@ export default defineStore('chat', {
     messages: [],
   }),
   actions: {
-    async send(message: string) {
-      console.log('message', message)
-      this.messages.push(message)
-      const result = await rpc('chat', {
-        '@context': ['https://www.w3.org/ns/activitystreams'],
+    async send(item: Message[]) {
+      console.log('message', item)
+      this.messages.push(item)
+      return await rpc('chat', {
+        '@context': 'https://www.w3.org/ns/activitystreams',
         'type': 'Collection',
         'totalItems': this.messages.length,
-        'items': this.messages.map((message) => {
-          return {
-            '@context': 'https://www.w3.org/ns/activitystreams',
-            'type': 'Activity',
-            'object': {
-              type: 'Note',
-              content: message,
-              mediaType: 'text/plain',
-            },
-            // instrument: instrument(message),
-            // actor: group(message.channel_post.chat),
-            // origin: origin(message),
-            // startTime: time(message.channel_post.date),
-            // endTime: time(now),
-          }
-        }),
+        'items': this.messages,
       })
-      return result
     },
   },
 })
