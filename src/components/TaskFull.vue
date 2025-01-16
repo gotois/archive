@@ -390,14 +390,12 @@ function onSheet() {
         id: Action.TELEPHONE,
       })
     }
-    // if (isVerified(item, publicKey.value)) {
-    //   group3.push({
-    //     label: $t('components.archiveList.sheet.law.label'),
-    //     icon: 'gavel',
-    //     color: 'secondary',
-    //     id: Action.LAW,
-    //   })
-    // }
+    group3.push({
+      label: $t('components.archiveList.sheet.law.label'),
+      icon: 'gavel',
+      color: 'secondary',
+      id: Action.LAW,
+    })
   }
   if (props.location && Object.keys(props.location).length > 0) {
     group3.push({

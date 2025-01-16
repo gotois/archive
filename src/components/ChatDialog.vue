@@ -25,6 +25,7 @@
   />
   <InputComponent
     class="full-width absolute-bottom"
+    @attach="attachFile"
     @send="sendData"
     @sent="serverData"
   />
@@ -38,20 +39,16 @@
 <script lang="ts" setup>
 import { ref, nextTick } from 'vue'
 import { QVirtualScroll, QBtn } from 'quasar'
-import { storeToRefs } from 'pinia'
 import useChatStore from 'stores/chat'
-import useGeoStore from 'stores/geo'
 import useSecretaryStore from 'stores/secretary'
 import ChatComponent from 'components/ChatComponent.vue'
 import InputComponent from 'components/SearchInputComponent.vue'
 import CreateNewDogovor from 'components/CreateNewDogovor.vue'
 import { VerifiableCredential } from '../types/models'
 
-const geoStore = useGeoStore()
 const secretaryStore = useSecretaryStore()
 const chatStore = useChatStore()
 
-const { locationName } = storeToRefs(geoStore)
 const virtualListRef = ref<InstanceType<typeof QVirtualScroll> | null>(null)
 const creatingNewContract = ref(false)
 const contract = ref<VerifiableCredential | null>(null)
@@ -115,5 +112,9 @@ async function contractComplete() {
   }
   creatingNewContract.value = false
   chatStore.messages = []
+}
+
+function attachFile(images) {
+  console.log('attach file', images)
 }
 </script>

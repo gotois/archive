@@ -47,7 +47,7 @@
     >
       <template #prepend>
         <QBtnDropdown
-          :model-value="showed"
+          v-model="showed"
           class="text-weight-light no-margin"
           content-class="no-shadow no-border no-border-radius"
           no-caps
@@ -65,6 +65,7 @@
           text-color="black-9"
           :fab-mini="$q.platform.is.desktop"
           :fab="!$q.platform.is.desktop"
+          @before-hide="showed = false"
           @update:model-value="
             () => {
               console.log('change model value')
@@ -86,13 +87,13 @@
                 flat
                 round
                 filled
+                multiple
+                square
                 :hide-hint="!$q.platform.is.desktop"
                 :hide-bottom-space="!$q.platform.is.desktop"
                 :dense="$q.platform.is.desktop"
-                multiple
-                square
                 :bg-color="$q.dark.isActive ? 'dark' : 'white'"
-                @update:model-value="onFileSelect"
+                @update:model-value="fileSelect"
               >
                 <template #prepend>
                   <QIcon name="attach_file" color="primary" />
@@ -129,9 +130,6 @@
             @click="sendChat(inputText)"
           />
         </template>
-        <!--template v-else-if="searching">
-          <QSpinner color="primary" />
-        </template-->
       </template>
     </QSelect>
   </div>
@@ -144,7 +142,6 @@ import {
   QSelect,
   QItem,
   QItemSection,
-  QSpinner,
   QIcon,
   QFile,
   QTooltip,
@@ -153,7 +150,7 @@ import {
 } from 'quasar'
 import { useI18n } from 'vue-i18n'
 import useChatStore from 'stores/chat'
-import useAuthStore from 'stores/auth'
+import useSecretaryStore from 'stores/secretary'
 import useGeoStore from 'stores/geo'
 import useTutorialStore from 'stores/tutorial'
 import {
@@ -161,16 +158,14 @@ import {
   PNG_MIME_TYPE,
   JPG_MIME_TYPE,
 } from '../helpers/mimeTypes'
-import { VerifiableCredential } from '../types/models'
 import { miniSearch } from '../services/searchService'
 import { ROUTE_NAMES } from '../router/routes'
 import { readFilePromise } from '../helpers/fileHelper'
-import { createPDF } from '../helpers/pdfHelper'
 
 const $q = useQuasar()
 const $t = useI18n().t
 const chatStore = useChatStore()
-const authStore = useAuthStore()
+const secretaryStore = useSecretaryStore()
 const geoStore = useGeoStore()
 const tutorialStore = useTutorialStore()
 const router = useRouter()
@@ -184,15 +179,8 @@ const showed = ref(false)
 const hasText = computed(() => inputText.value !== '')
 const isDragging = ref(false)
 const files = ref([])
-const contract = ref<VerifiableCredential>(null)
 
-const creatingNewContract = ref(false)
-
-const emit = defineEmits(['sent', 'send'])
-
-function onInput(value: string) {
-  inputText.value = value
-}
+const emit = defineEmits(['sent', 'send', 'attach'])
 
 defineProps({
   label: {
@@ -200,6 +188,10 @@ defineProps({
     default: '',
   },
 })
+
+function onInput(value: string) {
+  inputText.value = value
+}
 
 async function sendChat(value: string) {
   if (!value.length) {
@@ -217,6 +209,7 @@ async function sendChat(value: string) {
       },
       geoStore.point,
     ])
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     emit('sent', credentialSubject.object.contentMap.ru)
   } catch (error) {
     console.error(error)
@@ -230,7 +223,7 @@ async function sendChat(value: string) {
             {
               label: 'Авторизоваться заново',
               handler() {
-                authStore.logout()
+                secretaryStore.logout()
                 tutorialStore.tutorialComplete(false)
                 void router.push({
                   name: ROUTE_NAMES.TUTORIAL,
@@ -265,7 +258,7 @@ function dragleave() {
   isDragging.value = false
 }
 
-function drop(e: DragEvent) {
+async function drop(e: DragEvent) {
   e.preventDefault()
   const files: File[] = Array.from(e.dataTransfer.files).filter(
     (file: File) => {
@@ -279,31 +272,27 @@ function drop(e: DragEvent) {
       }
     },
   )
-  onFileSelect(files)
+  await fileSelect(files)
   isDragging.value = false
 }
 
-function onFileSelect(files: File[]) {
-  const filesUrls = []
+async function fileSelect(files: File[]) {
+  if (files.length === 0) {
+    return
+  }
+  const images = []
   for (const file of files) {
-    filesUrls.push({
-      url: URL.createObjectURL(file),
-      encodingFormat: file.type,
-      caption: file.name,
+    const base64 = await readFilePromise(file)
+    images.push({
+      type: 'Image',
+      url: base64,
+      mediaType: file.type,
+      name: file.name,
     })
   }
-  if (filesUrls.length === 0) {
-    return
-  }
-}
 
-function sent(value: string) {
-  if (!value.length) {
-    return
-  }
-  emit('search', value)
-  select.value.blur()
-  clearText()
+  emit('attach', images)
+  showed.value = false
 }
 
 function clearText() {
