@@ -18,7 +18,7 @@
       readonly
       hide-bottom-space
     />
-    <KeypairComponent v-else @on-key="onKeyDID" />
+    <KeypairComponent v-else @on-key="uploadKey" />
     <QInput
       v-model.trim="email"
       name="email"
@@ -31,8 +31,8 @@
       :fill-mask="true"
       :dense="$q.platform.is.desktop"
       lazy-rules
-      :hide-bottom-space="!email"
-      :filled="Boolean(email)"
+      hide-bottom-space
+      :filled="!Boolean(email)"
       :label="$t('consumer.email')"
       square
       outlined
@@ -158,7 +158,7 @@ function handleCredentialResponse(response: GoogleHandlerResponse) {
   email.value = res.email
 }
 
-function onKeyDID(key: DIDTable) {
+function uploadKey(key: DIDTable) {
   profileStore.consumerDID(key.id)
 }
 

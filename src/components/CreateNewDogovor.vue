@@ -59,6 +59,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  maximized: {
+    type: Boolean,
+    default: false,
+  },
   contract: {
     type: Object as PropType<VerifiableCredential>,
     default: () => ({}),
