@@ -260,9 +260,9 @@ class ContractDatabase extends Dexie {
     await this.contracts.each((contract) => {
       documents.push({
         id: contract.id,
-        instrument_name: contract.instrument_name,
+        instrument_name: contract.name,
         endTime: contract.endTime,
-        instrument_description: contract.instrument_description,
+        instrument_description: contract.description,
       })
     })
     return documents

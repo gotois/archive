@@ -93,12 +93,13 @@
           {{ prettyDate(startTime, endTime) }}
         </span>
       </div>
-      <div class="row items-center">
+      <div v-if="link || sameAs" class="row items-center">
         <div
           class="absolute overflow-hidden text-left ellipsis"
           style="left: 32px; right: 0"
         >
-          <QIcon :name="itemIsOrganization ? 'group' : 'face'" />
+          <!-- todo считать что это группа лиц, если множество исполнителей -->
+          <QIcon :name="1 === 1 ? 'group' : 'face'" />
           {{ link }}
           {{ sameAs }}
         </div>
@@ -138,7 +139,6 @@
 import { PropType } from 'vue'
 import { useRouter } from 'vue-router'
 import {
-  uid,
   useQuasar,
   QSkeleton,
   QChip,
@@ -158,9 +158,9 @@ import {
 } from 'quasar'
 import { useI18n } from 'vue-i18n'
 import { storeToRefs } from 'pinia'
-import * as vc from '@digitalbazaar/vc'
+// import * as vc from '@digitalbazaar/vc'
 import useAuthStore from 'stores/auth'
-import useWalletStore from 'stores/wallet'
+// import useWalletStore from 'stores/wallet'
 import ContractCarouselComponent from 'components/ContractCarouselComponent.vue'
 import useLangStore from 'stores/lang'
 import { parse } from '../helpers/markdownHelper'
@@ -169,17 +169,18 @@ import { readFilesPromise, fileShare, canShare } from '../helpers/fileHelper'
 import { createCal, googleCalendarUrl } from '../helpers/calendarHelper'
 import { mailUrl } from '../helpers/mailHelper'
 import { open } from '../helpers/urlHelper'
+// import { isVerified } from '../helpers/contractHelper'
 import { openMap } from '../services/geoService'
 import useContractStore from 'stores/contract'
 import {
   FormatImageType,
   Place,
-  Presentation,
-  VerifiableCredential,
+  // Presentation,
+  // VerifiableCredential,
 } from '../types/models'
 import { ROUTE_NAMES } from '../router/routes'
-import { keyPair } from '../services/databaseService'
-import { documentLoader } from '../helpers/customLoaders'
+// import { keyPair } from '../services/databaseService'
+// import { documentLoader } from '../helpers/customLoaders'
 
 enum Action {
   LINK = 'link',
@@ -206,10 +207,10 @@ const $t = i18n.t
 const contractStore = useContractStore()
 const authStore = useAuthStore()
 const langStore = useLangStore()
-const walletStore = useWalletStore()
+// const walletStore = useWalletStore()
 
 const { isLoggedIn } = storeToRefs(authStore)
-const { publicKey } = storeToRefs(walletStore)
+// const { publicKey } = storeToRefs(walletStore)
 
 const emit = defineEmits(['onRemove', 'onEdit'])
 const props = defineProps({
@@ -257,17 +258,13 @@ const props = defineProps({
     type: String as PropType<string>,
     default: '',
   },
-  itemIsOrganization: {
-    type: Boolean as PropType<boolean>,
-    default: false,
-  },
 })
 
 function itemScheduled(endTime: Date) {
   return endTime !== null && endTime < new Date()
 }
 
-// подписываем презентацию на Solid
+/* fixme подписывать презентацию на Solid
 async function makePresentation(contract) {
   const verifiableCredential = {
     '@context': contract.context,
@@ -314,6 +311,7 @@ async function makePresentation(contract) {
     documentLoader: documentLoader,
   })
 }
+*/
 
 function prettyDate(startTime: Date, endTime?: Date) {
   const formatterDate = new Intl.DateTimeFormat(langStore.language, {

@@ -19,7 +19,7 @@ import {
 import { FOAF, SCHEMA_INRUPT } from '@inrupt/vocab-common-rdf'
 import useAuthStore from 'stores/auth'
 import useProfileStore from 'stores/profile'
-import { CredentialSubject, FormatContract } from '../types/models'
+import { /*CredentialSubject,*/ FormatContract } from '../types/models'
 import pkg from '../../package.json'
 
 const { name } = pkg
@@ -198,13 +198,17 @@ export default defineStore('pod', {
 
       return this.saveDataset(resourceUrl, dataset)
     },
+    /* fixme поддержать
     getContractId(credentialSubject: CredentialSubject) {
       return credentialSubject.identifier.find((v) => v.name === 'Contract')
         .value as string
     },
+     */
+    /* fixme поддержать
     upload(resourceUrl: string, solidDatasetContract: SolidDataset) {
       return this.saveDataset(resourceUrl, solidDatasetContract)
     },
+     */
     async getContractsLink() {
       const getResourceBaseUrl = this.getResourceBaseUrl
       if (typeof getResourceBaseUrl !== 'string') {

@@ -1,5 +1,3 @@
-import { WebId } from '@inrupt/solid-client'
-
 export enum WalletType {
   Phantom = 'Phantom Wallet',
   Secret = 'Unknown Wallet', // Solana base58

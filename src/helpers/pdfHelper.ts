@@ -1,7 +1,7 @@
 import { ImageFormat, jsPDF } from 'jspdf'
-import { FormatContract } from '../types/models'
 import { PDF_MIME_TYPE } from './mimeTypes'
 import { getFileFromUrl } from './fileHelper'
+import { Attachment } from '../types/models'
 import pkg from '../../package.json'
 
 const { productName } = pkg
@@ -45,7 +45,17 @@ function resizeImageA4(img: HTMLImageElement) {
   }
 }
 
-export async function createPDFs({ title, description, author, documents }) {
+export async function createPDFs({
+  title,
+  description,
+  author,
+  documents,
+}: {
+  title: string
+  description: string
+  author: string
+  documents: Attachment[]
+}) {
   const orientation = 'portrait'
 
   const doc = new jsPDF({

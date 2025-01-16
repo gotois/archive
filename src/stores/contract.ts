@@ -1,6 +1,6 @@
 import { is, date, LocalStorage, SessionStorage } from 'quasar'
 import { defineStore } from 'pinia'
-import usePodStore from 'stores/pod'
+// import usePodStore from 'stores/pod'
 import { db } from '../services/databaseService'
 import { formatterContracts } from '../helpers/schemaHelper'
 import { getFileFromUrl } from '../helpers/fileHelper'
@@ -125,6 +125,7 @@ export default defineStore('contracts', {
         proof: {
           ...verifiedCredential.proof,
         },
+        tag: Array.from(verifiedCredential.credentialSubject.object.tag),
         attachment:
           verifiedCredential.credentialSubject.object.attachment?.map(
             (attach) => ({
@@ -139,7 +140,9 @@ export default defineStore('contracts', {
       this.setContractsCount(count)
       this.contracts.push(contract)
     },
-    async editContract(contract: FormatContract) {
+    /*async*/ editContract(contract: FormatContract) {
+      console.log('WIP editContract', contract)
+      /* fixme поддержать работу по редактированию контракта
       const id = contract.identifier.find(({ name }) => name === 'Dexie')
         .value as number
       const count = await db.contracts.where('id').equals(id).modify({
@@ -150,14 +153,18 @@ export default defineStore('contracts', {
       }
       const i = this.contracts.map((item) => item.id).indexOf(id)
       this.contracts[i].instrument_description = contract.instrument.description
+       */
+      return Promise.reject('Not implemented')
     },
-    async removeContract({
+    /*async*/ removeContract({
       contract,
       usePod = false,
     }: {
       contract: FormatContract
       usePod: boolean
     }) {
+      console.log('WIP removeContract', contract, usePod)
+      /* fixme поддержать работу по удалению контракта
       // Step 1: JS
       const id = contract.identifier.find(({ name }) => name === 'Dexie')
         ?.value as number
@@ -183,6 +190,8 @@ export default defineStore('contracts', {
         return Promise.reject('Not exist sameAs')
       }
       return usePodStore().removeFromPod(contract.sameAs)
+       */
+      return Promise.reject('Not implemented')
     },
     async filterFromContracts(query: string) {
       if (!query) {

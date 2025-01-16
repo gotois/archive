@@ -4,7 +4,7 @@ import {
   FormatContract,
   FormatContractParticipant,
   FormatPlace,
-  VerifiableCredential,
+  // VerifiableCredential,
   CredentialSubject,
 } from '../types/models'
 import { getHash } from '../helpers/cryptoHelper'
@@ -15,6 +15,7 @@ export function formatterContracts(
   return contracts.map((contract: ContractTable) => formatterContract(contract))
 }
 
+/* fixme парсить контракт схему с выгруженного solid
 export function getContractFromLD(jsldContract: VerifiableCredential) {
   return JSON.parse(
     JSON.stringify({
@@ -42,6 +43,7 @@ export function getContractFromLD(jsldContract: VerifiableCredential) {
     }),
   ) as ContractTable
 }
+*/
 
 export function getEmailProperty(email: string) {
   return email.startsWith('mailto:') ? email : 'mailto:' + email

@@ -8,20 +8,22 @@
     :class="{
       'full-width': !$q.platform.is.desktop,
     }"
-    @click="onImportData"
+    @click="importData"
   />
 </template>
 <script lang="ts" setup>
 import { useQuasar, QBtn } from 'quasar'
+import { useI18n } from 'vue-i18n'
 import usePodStore from 'stores/pod'
-import useContractStore from 'stores/contract'
 import ContractPod from '../services/contractGeneratorService'
 
 const $q = useQuasar()
-const podStore = usePodStore()
-const contractStore = useContractStore()
+const i18n = useI18n()
+const $t = i18n.t
 
-async function onImportData() {
+const podStore = usePodStore()
+
+async function importData() {
   const dialog = $q.dialog({
     message: '...',
     progress: true,
@@ -31,19 +33,22 @@ async function onImportData() {
   try {
     const links = await podStore.getContractsLink()
     for (const link of links) {
-      const newDogovor = await ContractPod.fromSolidUrl(link)
+      const contract = await ContractPod.fromSolidUrl(link)
+      console.log(contract)
+      /* todo поддержать функционал синхронизации контракта через solid
       dialog.update({
         message:
-          newDogovor.presentation.verifiableCredential[0].credentialSubject
+          contract.presentation.verifiableCredential[0].credentialSubject
             .instrument.name,
       })
       const alreadySaved = await contractStore.existContract(
-        newDogovor.presentation.verifiableCredential[0].credentialSubject
+        contract.presentation.verifiableCredential[0].credentialSubject
           .identifier,
       )
       if (!alreadySaved) {
-        await contractStore.insertContract(newDogovor.presentation)
+        await contractStore.insertContract(contract.presentation)
       }
+       */
     }
     $q.notify({
       type: 'positive',

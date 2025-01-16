@@ -79,7 +79,7 @@ function onLoadKeyPairFile(file: File) {
   reader.readAsText(file)
 }
 
-function exportKeyPair(key) {
+function exportKeyPair(key: DIDTable) {
   const dialog = $q.dialog({
     message: $t('components.keypair.export.dialog.message'),
     cancel: true,

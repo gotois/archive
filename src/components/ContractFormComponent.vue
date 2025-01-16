@@ -208,9 +208,10 @@
       />
     </template>
     <QInput
+      v-show="locationName"
       v-model.trim="locationName"
       :label="'Location'"
-      :hint="'Your Location'"
+      :hint="'Location'"
       type="text"
       class="no-padding"
       color="secondary"
@@ -255,7 +256,7 @@
         :class="{
           'full-width': !$q.platform.is.desktop,
         }"
-        :label="signing ? $t('contractForm.sign') : $t('contractForm.submit')"
+        :label="$t('contractForm.submit')"
         icon-right="save"
         type="submit"
         color="accent"
@@ -285,17 +286,16 @@ import {
 import { storeToRefs } from 'pinia'
 import { WebId } from '@inrupt/solid-client'
 import useContractStore from 'stores/contract'
-import useWalletStore from 'stores/wallet'
 import useGeoStore from 'stores/geo'
 import MultiContactComponent from 'components/MultiContact.vue'
 import DateComponent from 'components/DateComponent.vue'
 import ContractCarouselComponent from 'components/ContractCarouselComponent.vue'
 import { formatDate } from '../helpers/dateHelper'
-import { getIdentifierMessage } from '../helpers/schemaHelper'
-import { signMessageUsePhantom } from '../services/phantomWalletService'
-import { signMessageUseSecretKey } from '../services/cryptoService'
-import { keys } from '../services/databaseService'
-import { VerifiableCredential, WalletType } from '../types/models'
+// import { getIdentifierMessage } from '../helpers/schemaHelper'
+// import { signMessageUsePhantom } from '../services/phantomWalletService'
+// import { signMessageUseSecretKey } from '../services/cryptoService'
+// import { keys } from '../services/databaseService'
+import { VerifiableCredential } from '../types/models'
 
 enum InputType {
   email = 'email',
@@ -327,7 +327,6 @@ const props = defineProps({
 const $t = useI18n().t
 const $q = useQuasar()
 const contractStore = useContractStore()
-const walletStore = useWalletStore()
 const geoStore = useGeoStore()
 
 const { locationName } = storeToRefs(geoStore)
@@ -464,7 +463,7 @@ function onFocusInput({ target }: { target: HTMLElement }) {
   target.scrollIntoView()
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+/* fixme поддержать возможность подписывать контракты используя Solana
 async function signContractUseSolana(contract: VerifiableCredential) {
   const message = getIdentifierMessage(contract.credentialSubject)
   switch (walletStore.type) {
@@ -488,6 +487,7 @@ async function signContractUseSolana(contract: VerifiableCredential) {
   }
   return contract
 }
+ */
 
 async function saveContract() {
   loadingForm.value = true

@@ -27,6 +27,7 @@
       </div>
     </QCardSection>
     <q-popup-proxy>
+    <QPopupProxy>
       <TaskFull
         style="width: 640px"
         :title="title"
@@ -40,21 +41,21 @@
         :link="''"
         :email="''"
         :telephone="''"
-        @on-remove="emit('onRemove')"
-        @on-edit="emit('onEdit')"
+        @on-remove="emit('remove')"
+        @on-edit="emit('edit')"
       />
-    </q-popup-proxy>
+    </QPopupProxy>
   </QCard>
 </template>
 <script lang="ts" setup>
 import { PropType } from 'vue'
-import { QCard, QCardSection, date, useQuasar } from 'quasar'
+import { QCard, QCardSection, QPopupProxy, date, useQuasar } from 'quasar'
 import TaskFull from 'components/TaskFull.vue'
 import { FormatImageType } from '../types/models'
 
 const $q = useQuasar()
 
-const emit = defineEmits(['onRemove', 'onEdit'])
+const emit = defineEmits(['remove', 'edit'])
 
 const props = defineProps({
   horizontal: {

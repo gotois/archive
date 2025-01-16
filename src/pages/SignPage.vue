@@ -20,7 +20,7 @@
             }"
             :contract="contract"
             :signing="true"
-            @on-create="onCreateContract"
+            @create="createContract"
           />
         </QCard>
         <QSpace class="q-pb-xs" />
@@ -68,10 +68,10 @@ const metaData = {
   'og:title': $t('pages.sign.title'),
 }
 
-function onCreateContract(newContract: ContractTable) {
+function createContract(newContract: ContractTable) {
   $q.notify({
     message: $t('components.contractForm.submitDate.success', {
-      id: newContract.instrument_name.toLocaleLowerCase(),
+      id: newContract.name.toLocaleLowerCase(),
     }),
     type: 'positive',
     actions: [
@@ -83,7 +83,7 @@ function onCreateContract(newContract: ContractTable) {
           return router.push({
             name: ROUTE_NAMES.FILTER,
             query: {
-              name: newContract.instrument_name,
+              name: newContract.name,
               page: 1,
             },
           })

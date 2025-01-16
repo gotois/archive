@@ -488,6 +488,7 @@ import { ROUTE_NAMES, STEP } from '../router/routes'
 import solidAuth from '../services/authService'
 import ContractPod from '../services/contractGeneratorService'
 import { formatToCalendarDate } from '../helpers/calendarHelper'
+import { DIDTable } from '../types/models'
 
 const LocaleComponent = defineAsyncComponent(
   () => import('components/LocaleComponent.vue'),
@@ -567,7 +568,7 @@ function onToggleLeftDrawer(): void {
 }
 
 async function onExportKeychain() {
-  const key = await keyPair.last()
+  const key = (await keyPair.last()) as DIDTable
   const keysJSON = keyPair.prepareKeyPair(key)
   if (keysJSON) {
     exportFile('keys.json', keysJSON)

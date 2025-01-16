@@ -200,8 +200,7 @@ export default {
     hint: 'Use PDF, PNG, or JPG format.',
   },
   contractForm: {
-    submit: 'Add',
-    sign: 'Sign',
+    submit: 'Submit',
     date: 'Open calendar',
   },
   tutorial: {
@@ -253,7 +252,7 @@ export default {
       title: '{name}, confirm your account data',
       body: 'To use the application, use your name and email address. Add your cryptographic key DID',
       hint: 'To establish your contract identity, you need to know your decentralized identifier.',
-      ok: 'Start',
+      submit: 'Start',
     },
   },
   pricing: {

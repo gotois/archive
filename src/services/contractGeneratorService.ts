@@ -6,19 +6,19 @@ import {
   SolidDataset,
   buildThing,
   createSolidDataset,
-  getStringNoLocale,
-  getStringNoLocaleAll,
-  getThing,
-  getDate,
-  getUrl,
-  getUrlAll,
+  // getStringNoLocale,
+  // getStringNoLocaleAll,
+  // getThing,
+  // getDate,
+  // getUrl,
+  // getUrlAll,
   setThing,
   createThing,
   getSolidDataset,
   saveSolidDatasetAt,
   universalAccess,
 } from '@inrupt/solid-client'
-import { RDF, SCHEMA_INRUPT } from '@inrupt/vocab-common-rdf'
+import { RDF /*, SCHEMA_INRUPT*/ } from '@inrupt/vocab-common-rdf'
 import { VerifiableCredential, Presentation } from '../types/models'
 
 export default class ContractPod {
@@ -47,6 +47,7 @@ export default class ContractPod {
   }
 
   get presentation() {
+    /* fixme поддержать работу с датасетом solid
     const ds = this.dataset
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const resource = ds.internal_resourceInfo.sourceIri as string
@@ -174,6 +175,8 @@ export default class ContractPod {
     ]
 
     return outputJSON as Presentation
+     */
+    return null as Presentation
   }
 
   // todo при шаринге делать ограничение на добавление только proof и комментариев
@@ -299,6 +302,7 @@ export default class ContractPod {
         url: this.resourceUrl + '#vcCredentialSubject',
       }),
     )
+    /* fixme поддержать работу с датасетом solid
     // agent
     credentialSubject.addStringNoLocale(
       'https://schema.org/agent#name',
@@ -370,7 +374,7 @@ export default class ContractPod {
       SCHEMA_INRUPT.image,
       JSON.stringify(this.credential.credentialSubject.object),
     )
-
+    */
     return credentialSubject
   }
 

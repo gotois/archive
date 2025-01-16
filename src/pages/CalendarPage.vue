@@ -26,8 +26,8 @@
               :attaches="calendarEvent.attaches"
               :description="calendarEvent.description"
               :tag="calendarEvent.tag"
-              @on-edit="onEdit(calendarEvent)"
-              @on-remove="onRemove(calendarEvent)"
+              @edit="onEdit(calendarEvent)"
+              @remove="onRemove(calendarEvent)"
             />
           </template>
           <template #timeGridEvent="{ calendarEvent }">
@@ -93,7 +93,7 @@
   </QPage>
 </template>
 <script lang="ts" setup>
-import { ref, defineAsyncComponent, onBeforeMount } from 'vue'
+import { ref, onBeforeMount } from 'vue'
 import {
   useQuasar,
   useMeta,

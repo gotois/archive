@@ -97,12 +97,12 @@
         color="accent"
         type="submit"
         :disable="!consumerValid"
-        :label="$t('tutorial.data.ok')"
+        :label="$t('tutorial.data.submit')"
         :class="{
           'full-width': !$q.platform.is.desktop,
         }"
         :loading="$q.loading.isActive"
-        icon="login"
+        icon-right="login"
       />
     </QStepperNavigation>
   </QForm>

@@ -332,7 +332,7 @@ async function fileSelect(files: File[]) {
 
   // Step 3: превращаем в ActivityStreams
   const attach = []
-  for (const file of files) {
+  for (const file of pdfs) {
     const base64 = await readFilePromise(file)
     attach.push({
       type: 'Document',
