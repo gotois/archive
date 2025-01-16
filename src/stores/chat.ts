@@ -3,6 +3,8 @@ import rpc from '../helpers/rpc'
 
 interface Message {
   type: string
+  mediaType: string
+  content: string
 }
 
 interface Store {
@@ -14,9 +16,11 @@ export default defineStore('chat', {
     messages: [],
   }),
   actions: {
-    async send(item: Message[]) {
+    add(item: Message) {
       console.log('message', item)
       this.messages.push(item)
+    },
+    async dialog() {
       return await rpc('chat', {
         '@context': 'https://www.w3.org/ns/activitystreams',
         'type': 'Collection',

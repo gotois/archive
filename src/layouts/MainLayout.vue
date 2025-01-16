@@ -768,7 +768,7 @@ onBeforeMount(() => {
 })
 
 onMounted(async () => {
-  if ($q.platform.is.desktop && contractsCount.value > 0) {
+  if ($q.platform.is.desktop) {
     await indexAllDocuments()
   }
   try {

@@ -203,14 +203,15 @@ async function sendChat(value: string) {
   clearText()
   select.value.blur()
   try {
-    const { credentialSubject } = await chatStore.send([
-      {
-        type: 'Note',
-        content: value,
-        mediaType: 'text/plain',
-      },
-      geoStore.point,
-    ])
+    chatStore.add({
+      type: 'Note',
+      content: value,
+      mediaType: 'text/plain',
+    })
+    if (geoStore.point) {
+      chatStore.add(geoStore.point)
+    }
+    const { credentialSubject } = await chatStore.dialog()
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     emit('sent', credentialSubject.object.contentMap.ru)
   } catch (error) {
@@ -278,6 +279,25 @@ async function drop(e: DragEvent) {
   isDragging.value = false
 }
 
+async function recognizeImage(
+  { url, mediaType }: { url: string; mediaType: string },
+  langs: string,
+) {
+  if (mediaType.startsWith('image')) {
+    const worker = await createWorker(langs)
+    const img = new Image()
+    img.src = url
+    const { data } = await worker.recognize(img)
+    await worker.terminate()
+    return data.text
+  } else if (mediaType === 'application/pdf') {
+    // todo getting Text from PDF
+    // ...
+  } else {
+    throw new Error('Unknown format')
+  }
+}
+
 async function fileSelect(files: File[]) {
   if (files.length === 0) {
     return
@@ -288,8 +308,15 @@ async function fileSelect(files: File[]) {
   // Step 1: пробуем взять текст из File с помощью Teseract
   for (const file of files) {
     const base64 = await readFilePromise(file)
-    images.push({
-      type: 'Image',
+    const langs = 'eng+rus' // todo - использовать в соответствии с настройками языка пользователя
+    description += await recognizeImage(
+      {
+        url: base64,
+        mediaType: file.type,
+      },
+      langs,
+    )
+    documents.push({
       url: base64,
       mediaType: file.type,
     })

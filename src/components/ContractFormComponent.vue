@@ -506,75 +506,19 @@ async function saveContract() {
   }
 }
 
-async function saveOnline() {
-  loadingForm.value = true
-  const id = uid()
-  const url = String(podStore.getResourceBaseUrl) + id + '.ttl'
-  console.warn(url)
-  try {
-    const newContract = await prepareContract()
-    const gicId = walletStore?.publicKey?.toString()
-    const resolver = gicId ? `did:gic:${gicId}` : demoUserWebId
-    let jsldContract = Dogovor.createContractLD(newContract, id, resolver)
-
-    // todo - поддержать подписание Solana
-    // jsldContract = await signContractUseSolana(jsldContract)
-    // console.log('signed contract', jsldContract)
-
-    const suite = await keyPair.getSuite()
-    const dogovor = await Dogovor.fromCredential(url, jsldContract, suite)
-    await dogovor.upload()
-
-    if (customers.value.length > 0) {
-      const webId = customer.value
-      await dogovor.shareLink(url, webId)
-    }
-
-    const newDogovor = await Dogovor.fromUrl(url)
-    await contractStore.addPresentation(newDogovor.presentation)
-
-    emit('onCreate', newDogovor)
-    onResetForm()
-  } catch (error) {
-    console.error(error)
-    $q.notify({
-      type: 'negative',
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      message: error.message,
-    })
-  } finally {
-    loadingForm.value = false
-  }
-}
-
-async function recognizeImage(
-  { contentUrl, mediaType }: ImageType,
-  langs: string,
-) {
-  if (mediaType.startsWith('image')) {
-    const worker = await createWorker(langs)
-    const img = new Image()
-    img.src = contentUrl
-    const { data } = await worker.recognize(img)
-    await worker.terminate()
-    return calendarStore.generate([
-      {
-        type: 'Note',
-        content: ocrPrompt + '::' + data.text,
-        mediaType: 'text/plain',
-      },
-    ])
-  } else if (encodingFormat === 'application/pdf') {
-    return calendarStore.calendar([
-      {
-        type: 'Link',
-        href: contentUrl,
-      },
-    ])
-  } else {
-    throw new Error('Unknown format')
-  }
-}
+// todo поддержать подписание договора
+// async function sign() {
+//   // isLoggedIn.value
+//   loadingForm.value = true
+//   try {
+//     // todo сначала создается презентация, затем выгружается на SOLID
+//     await props.contract.upload()
+//   } catch (error) {
+//     console.error(error)
+//   } finally {
+//     loadingForm.value = false
+//   }
+// }
 
 defineExpose({
   resetForm: onResetForm,

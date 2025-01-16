@@ -2,16 +2,16 @@
   <QDialog
     v-model="creatingNewContract"
     :allow-focus-outside="false"
-    position="top"
+    :position="props.maximized ? 'top' : 'standard'"
     persistent
-    maximized
+    :maximized="props.maximized"
     no-shake
     transition-show="slide-up"
     transition-hide="slide-down"
     @hide="emit('hide')"
   >
     <QCard
-      style="max-width: 640px"
+      style="max-width: 640px; min-width: 480px"
       :class="{
         'bg-white text-white': !$q.dark.isActive,
         'bg-dark text-white': $q.dark.isActive,
@@ -21,7 +21,10 @@
         <QSpace />
         <QBtn v-close-popup flat color="dark" icon="close" />
       </QBar>
-      <QScrollArea visible style="height: calc(100dvh - 32px)">
+      <QScrollArea
+        visible
+        :style="{ height: props.maximized ? 'calc(100dvh - 32px)' : '520px' }"
+      >
         <QCardSection v-if="contract" class="fit overflow-auto q-pt-none">
           <ContractFormComponent
             :contract="contract"
@@ -36,6 +39,7 @@
 <script lang="ts" setup>
 import { ref, h, defineAsyncComponent, PropType } from 'vue'
 import {
+  useQuasar,
   QCard,
   QCardSection,
   QDialog,
@@ -47,9 +51,10 @@ import {
 } from 'quasar'
 import { VerifiableCredential } from '../types/models'
 
+const $q = useQuasar()
 const creatingNewContract = ref(true)
 
-defineProps({
+const props = defineProps({
   signing: {
     type: Boolean,
     default: false,

@@ -148,6 +148,7 @@
       v-if="creatingNewContract"
       :contract="contract"
       :signing="true"
+      maximized
       @done="pageComplete"
       @hide="creatingNewContract = false"
     />

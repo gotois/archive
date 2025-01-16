@@ -41,17 +41,20 @@ import { ref, nextTick } from 'vue'
 import { QVirtualScroll, QBtn } from 'quasar'
 import useChatStore from 'stores/chat'
 import useSecretaryStore from 'stores/secretary'
+import useGeoStore from 'stores/geo'
 import ChatComponent from 'components/ChatComponent.vue'
 import InputComponent from 'components/SearchInputComponent.vue'
 import CreateNewDogovor from 'components/CreateNewDogovor.vue'
-import { VerifiableCredential } from '../types/models'
+import { Attachment, VerifiableCredential } from '../types/models'
 
 const secretaryStore = useSecretaryStore()
 const chatStore = useChatStore()
+const geoStore = useGeoStore()
 
 const virtualListRef = ref<InstanceType<typeof QVirtualScroll> | null>(null)
 const creatingNewContract = ref(false)
 const contract = ref<VerifiableCredential | null>(null)
+const attachment = ref<Attachment[]>([])
 const size = ref(1)
 const allItems = Array(size.value)
   .fill(null)
@@ -94,15 +97,14 @@ async function sendData(value: string) {
 }
 
 async function tryGenerateCalendar() {
-  contract.value = await secretaryStore.generate(
-    chatStore.messages.map((message) => {
-      return {
-        type: 'Note',
-        content: message,
-        mediaType: 'text/plain',
-      }
-    }),
-  )
+  const data = chatStore.messages
+  if (attachment.value.length) {
+    data.push(Array.from(attachment.value))
+  }
+  if (geoStore.point) {
+    data.push(geoStore.point)
+  }
+  contract.value = await secretaryStore.generate(data)
   creatingNewContract.value = true
 }
 
@@ -114,7 +116,7 @@ async function contractComplete() {
   chatStore.messages = []
 }
 
-function attachFile(images) {
-  console.log('attach file', images)
+function attachFile(images: Attachment[]) {
+  attachment.value = images
 }
 </script>

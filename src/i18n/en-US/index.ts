@@ -196,7 +196,7 @@ export default {
     infinity: 'Unlimited',
   },
   files: {
-    type: 'Create document',
+    type: 'Attach document',
     hint: 'Use PDF, PNG, or JPG format.',
   },
   contractForm: {

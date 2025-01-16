@@ -198,7 +198,7 @@ export default {
     infinity: 'Бессрочный',
   },
   files: {
-    type: 'Приложенные документы',
+    type: 'Приложенный документ',
     hint: 'Добавьте документы в стандарте PDF, PNG или JPG.',
   },
   contractForm: {

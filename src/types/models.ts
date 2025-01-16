@@ -12,6 +12,10 @@ export interface ContractDate {
   end?: string
 }
 
+export interface Attachment extends ImageType {
+  type: string
+}
+
 export interface ContractTable {
   id?: number
   resolver: string // возможно дублирование с id
@@ -40,12 +44,7 @@ export interface ContractTable {
   description?: string
   startTime: Date
   endTime?: Date
-  attachment?: {
-    type: string
-    name: string
-    mediaType: string
-    url: string
-  }[]
+  attachment?: Attachment[]
   resource_url?: string
 }
 
@@ -187,12 +186,7 @@ export interface CredentialSubject {
     url?: string
     location?: string
     tag?: string[]
-    attachment: {
-      type: string
-      name: string
-      mediaType: string
-      url: string
-    }[]
+    attachment: Attachment[]
   }
   location?: Place
 }
