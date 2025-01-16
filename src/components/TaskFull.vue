@@ -139,6 +139,7 @@
 import { PropType } from 'vue'
 import { useRouter } from 'vue-router'
 import {
+  uid,
   useQuasar,
   QSkeleton,
   QChip,
@@ -436,11 +437,25 @@ function onSheet() {
         return open(url)
       }
       case Action.CALENDAR: {
-        console.warn('WIP Action.CALENDAR: поддержать создание календаря')
-        // const icalId = $t('organization.prodid')
-        // const icalFile = createCal(icalId, item)
-        // return saveIcal(icalFile)
-        break
+        const icalFile = createCal($t('organization.prodid'), {
+          event: {
+            uid: uid(),
+            url: props.link ? new URL(props.link) : null,
+            summary: props.title,
+            description: props.description,
+            location: props.location,
+            stamp: new Date(),
+            start: props.startTime,
+            end: props.endTime,
+            categories: props.tag,
+            attach: props.attaches.map((attach) => attach.url),
+            // todo поддержать эти поля
+            // geo
+            // organizer
+            // attendee
+          },
+        })
+        return saveIcal(icalFile)
       }
       case Action.MAIL: {
         return open(mailUrl(props.email, props.title, props.sameAs))

@@ -26,6 +26,7 @@
               :attaches="calendarEvent.attaches"
               :description="calendarEvent.description"
               :tag="calendarEvent.tag"
+              :email="calendarEvent.email"
               @edit="onEdit(calendarEvent)"
               @remove="onRemove(calendarEvent)"
             />
@@ -41,6 +42,7 @@
               :attaches="calendarEvent.attaches"
               :description="calendarEvent.description"
               :tag="calendarEvent.tag"
+              :email="calendarEvent.email"
             />
           </template>
           <template #headerContent>

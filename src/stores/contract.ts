@@ -3,7 +3,6 @@ import { defineStore } from 'pinia'
 // import usePodStore from 'stores/pod'
 import { db } from '../services/databaseService'
 import { formatterContracts } from '../helpers/schemaHelper'
-import { getFileFromUrl } from '../helpers/fileHelper'
 import {
   ContractData,
   ContractDate,

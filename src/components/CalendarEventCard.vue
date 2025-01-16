@@ -26,7 +26,6 @@
         {{ description }}
       </div>
     </QCardSection>
-    <q-popup-proxy>
     <QPopupProxy>
       <TaskFull
         style="width: 640px"
@@ -39,7 +38,7 @@
         :same-as="''"
         :location="null"
         :link="''"
-        :email="''"
+        :email="email"
         :telephone="''"
         @on-remove="emit('remove')"
         @on-edit="emit('edit')"
@@ -85,6 +84,10 @@ const props = defineProps({
   attaches: {
     type: Array as PropType<FormatImageType[]>,
     default: null,
+  },
+  email: {
+    type: String as PropType<string>,
+    default: '',
   },
   tag: {
     type: Array as PropType<string[]>,
