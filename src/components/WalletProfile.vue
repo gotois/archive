@@ -41,7 +41,7 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
 import { storeToRefs } from 'pinia'
-import { useQuasar, QIcon, copyToClipboard } from 'quasar'
+import { useQuasar, QField, QIcon, copyToClipboard } from 'quasar'
 import useWalletStore from 'stores/wallet'
 import PhantomWalletLogin from 'components/PhantomWalletLogin.vue'
 

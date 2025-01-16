@@ -105,7 +105,7 @@
       </div>
       <div style="overflow-x: hidden" class="scroll-y">
         <QChip
-          v-for="([name, value], objectKey) in getArchiveNames"
+          v-for="(name, objectKey) in tag"
           :key="objectKey"
           :dense="$q.platform.is.desktop"
           square
@@ -115,25 +115,17 @@
           :ripple="false"
           :disable="router.currentRoute.value.query.name === name"
           :selected="router.currentRoute.value.query.name === name"
-          :color="value.recommendation ? 'orange' : ''"
-          :clickable="value.count > 0"
-          :removable="value.recommendation"
-          @remove="onRemoveArchiveName(name as string)"
-          @click="onSelectArchiveName(name, value)"
+          :color="$q.dark.isActive ? 'white' : 'dark'"
+          clickable
+          removable
+          @remove="onRemoveArchiveName(name)"
+          @click="onSelectArchiveName(name)"
         >
-          <QAvatar
-            v-if="value.count > 1"
-            :color="$q.dark.isActive ? 'white' : 'dark'"
-            :text-color="$q.dark.isActive ? 'dark' : 'white'"
-            square
-          >
-            {{ value.count }}
-          </QAvatar>
           <div class="ellipsis">{{ name }}</div>
           <QTooltip>{{ name }}</QTooltip>
         </QChip>
         <QSkeleton
-          v-show="getArchiveNames.length === 0"
+          v-show="tag.length === 0"
           type="QChip"
           animation="blink"
           width="100%"
@@ -226,6 +218,10 @@ const emit = defineEmits(['onRemove', 'onEdit'])
 const props = defineProps({
   attaches: {
     type: Array as PropType<FormatImageType[]>,
+    default: () => [],
+  },
+  tag: {
+    type: Array as PropType<string[]>,
     default: () => [],
   },
   startTime: {
@@ -515,13 +511,7 @@ function onRemoveArchiveName(name: string) {
   contractStore.removeContractName(name)
 }
 
-async function onSelectArchiveName(
-  name: string,
-  value: { count: number; recommendation: boolean },
-) {
-  if (value.count === 0) {
-    return
-  }
+async function onSelectArchiveName(name: string) {
   await router.push({
     name: ROUTE_NAMES.FILTER,
     query: {

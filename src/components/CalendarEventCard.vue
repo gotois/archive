@@ -34,6 +34,7 @@
         :attaches="attaches"
         :start-time="start"
         :end-time="end"
+        :tag="tag"
         :same-as="''"
         :location="null"
         :link="''"
@@ -83,6 +84,10 @@ const props = defineProps({
   attaches: {
     type: Array as PropType<FormatImageType[]>,
     default: null,
+  },
+  tag: {
+    type: Array as PropType<string[]>,
+    default: () => [],
   },
 })
 </script>

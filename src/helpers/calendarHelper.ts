@@ -108,6 +108,7 @@ export function convertSchemaPodToEvent(contract: ContractTable) {
     calendarId: 'secretary', // todo использовать разные форматы календаря такие как work, etc
     description: contract.description,
     attaches: contract.attachment,
+    tag: contract.tag,
     // location: vevent.getFirstPropertyValue('location') || null,
     // people: ,
   } as CalendarEventExternal

@@ -22,6 +22,7 @@ export interface ContractTable {
   identifier: ContractIdentifier[]
   proof?: Proof | Proof[]
   location?: string
+  tag: string[]
   actor: {
     email: string
     name: string

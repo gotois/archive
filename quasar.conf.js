@@ -47,6 +47,8 @@ module.exports = configure((ctx) => {
         telegram_bot_name: process.env.TELEGRAM_BOT_NAME,
         google_client_id: process.env.GOOGLE_CLIENT_ID,
         server: process.env.SERVER_HOST,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        demo_user: !ctx.prod && JSON.parse(process.env.TELEGRAM_TEST_USER),
       },
       target: {
         browser: 'esnext',
