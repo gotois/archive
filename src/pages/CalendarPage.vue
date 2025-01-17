@@ -43,6 +43,8 @@
               :description="calendarEvent.description"
               :tag="calendarEvent.tag"
               :email="calendarEvent.email"
+              @edit="onEdit(calendarEvent)"
+              @remove="onRemove(calendarEvent)"
             />
           </template>
           <template #headerContent>
@@ -268,29 +270,9 @@ function selectDay(item: Date) {
   */
 }
 
-async function removeContract(item: FormatContract) {
-  try {
-    await contractStore.removeContract({
-      contract: item,
-      usePod: isLoggedIn.value,
-    })
-    scrollAreaRef.value.setScrollPosition('vertical', 0, 150)
-    $q.notify({
-      type: 'positive',
-      message: $t('contract.removeDialog.success', {
-        name: item.instrument.name,
-      }),
-    })
-  } catch (error) {
-    console.error(error)
-    $q.notify({
-      type: 'negative',
-      message: $t('contract.removeDialog.fail'),
-    })
-  }
-}
-
 function onRemove(item: FormatContract) {
+  alert('WIP')
+
   $q.notify({
     message:
       !isLoggedIn.value && item.sameAs
@@ -312,7 +294,25 @@ function onRemove(item: FormatContract) {
         color: 'white',
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         async handler() {
-          await removeContract(item)
+          try {
+            await contractStore.removeContract({
+              contract: item,
+              usePod: isLoggedIn.value,
+            })
+            scrollAreaRef.value.setScrollPosition('vertical', 0, 150)
+            $q.notify({
+              type: 'positive',
+              message: $t('contract.removeDialog.success', {
+                name: item.instrument.name,
+              }),
+            })
+          } catch (error) {
+            console.error(error)
+            $q.notify({
+              type: 'negative',
+              message: $t('contract.removeDialog.fail'),
+            })
+          }
         },
       },
       {
@@ -336,8 +336,17 @@ function onEdit(item: FormatContract) {
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   dialog.onOk(async (/*value: string*/) => {
     try {
+      // item: FormatContract
       // item.instrument.description = value
-      await editContract(item)
+      await contractStore.editContract(item)
+
+      if (isLoggedIn.value) {
+        // todo - поддержать обновление на Pod и в Секретаре
+        // import usePodStore from 'stores/pod'
+        // const podStore = usePodStore()
+        // await podStore.updateIntoPod(item)
+      }
+
       $q.notify({
         type: 'positive',
         message: $t('contract.editDialog.success'),
@@ -350,17 +359,6 @@ function onEdit(item: FormatContract) {
       })
     }
   })
-}
-
-async function editContract(item: FormatContract) {
-  await contractStore.editContract(item)
-
-  if (isLoggedIn.value) {
-    // todo - поддержать обновление на Pod и в Секретаре
-    // import usePodStore from 'stores/pod'
-    // const podStore = usePodStore()
-    // await podStore.updateIntoPod(item)
-  }
 }
 
 /* пример обработки роутероа

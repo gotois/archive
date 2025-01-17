@@ -40,8 +40,8 @@
         :link="''"
         :email="email"
         :telephone="''"
-        @on-remove="emit('remove')"
-        @on-edit="emit('edit')"
+        @remove="emit('remove')"
+        @edit="emit('edit')"
       />
     </QPopupProxy>
   </QCard>

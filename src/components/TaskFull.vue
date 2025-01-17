@@ -37,7 +37,7 @@
       >
         <QMenu transition-show="jump-down" transition-duration="200">
           <QList bordered separator padding :dense="$q.platform.is.desktop">
-            <QItem v-close-popup clickable @click="emit('onEdit')">
+            <QItem v-close-popup clickable @click="emit('edit')">
               <QItemSection side>
                 <QItemLabel v-if="isLoggedIn && sameAs" overline caption>
                   {{ $t('archiveList.pod') }}
@@ -47,7 +47,7 @@
                 </QItemLabel>
               </QItemSection>
             </QItem>
-            <QItem v-close-popup clickable @click="emit('onRemove')">
+            <QItem v-close-popup clickable @click="emit('remove')">
               <QItemSection side>
                 <QItemLabel v-if="isLoggedIn && sameAs" overline caption>
                   {{ $t('archiveList.pod') }}
@@ -214,6 +214,7 @@ const { isLoggedIn } = storeToRefs(authStore)
 // const { publicKey } = storeToRefs(walletStore)
 
 const emit = defineEmits(['onRemove', 'onEdit'])
+const emit = defineEmits(['remove', 'edit'])
 const props = defineProps({
   attaches: {
     type: Array as PropType<FormatImageType[]>,

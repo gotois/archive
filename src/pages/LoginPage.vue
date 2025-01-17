@@ -124,8 +124,35 @@ async function onOnlineAuthorize(oidcIssuer: string) {
       type: 'negative',
       message: $t('components.oidcIssuer.fail'),
     })
+    const dialog = $q.dialog({
+      message: $t('components.oidcIssuer.authorizeDialog.message'),
+      cancel: true,
+      persistent: true,
+    })
+    dialog.onOk(() => {
+      alert('ok')
+    })
     return
   }
+  $q.loading.show()
+  $q.sessionStorage.remove('connect')
+  const redirectUrl = window.location.origin + window.location.pathname
+  try {
+    await solidAuth({
+      redirectUrl: redirectUrl,
+      oidcIssuer: oidcIssuer,
+      restorePreviousSession: false,
+    })
+  } catch (error) {
+    console.error(error)
+    $q.notify({
+      color: 'negative',
+      message: $t('components.oidcIssuer.authorizeDialog.fail'),
+    })
+  } finally {
+    $q.loading.hide()
+  }
+
   podStore.setOIDCIssuer(oidcIssuer)
 }
 
