@@ -66,9 +66,6 @@ export default {
     filterEmpty: 'Ничего не выбрано.',
     notfound: 'Нет результатов',
   },
-  header: {
-    demo: 'Демо',
-  },
   navigation: {
     about: 'О приложении',
     score: 'Пройти опрос',

@@ -271,6 +271,11 @@ function pageComplete() {
 async function onFinish() {
   $q.loading.show()
 
+  // запрашивание уведомления
+  if ('Notification' in window && Notification.permission === 'default') {
+    await Notification.requestPermission()
+  }
+
   if (!authStore.webId) {
     authStore.webId = demoUserWebId
   }

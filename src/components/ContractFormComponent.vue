@@ -359,7 +359,7 @@ if (props.contract.credentialSubject.actor?.url) {
 customer.value = props.contract.credentialSubject.actor.name
 contractType.value = props.contract.credentialSubject.object?.name
 isCustomerOrg.value =
-  props.contract.credentialSubject?.actor?.type === 'Organization' // todo вместо Boolean использовать тип String данных
+  props.contract.credentialSubject?.actor?.type === 'Organization'
 description.value = props.contract.credentialSubject.object.summary
 dateNoLimit.value = Boolean(props.contract.credentialSubject.endTime)
 cloneStartDate = date.clone(

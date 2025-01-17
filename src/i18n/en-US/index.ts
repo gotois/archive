@@ -65,9 +65,6 @@ export default {
     filterEmpty: 'Nothing is selected.',
     notfound: 'No results',
   },
-  header: {
-    demo: 'Demo',
-  },
   navigation: {
     about: 'About',
     score: 'NPS',

@@ -40,19 +40,30 @@
         :link="''"
         :email="email"
         :telephone="''"
-        @remove="emit('remove')"
-        @edit="emit('edit')"
+        @remove="onRemove"
+        @edit="onEdit"
       />
     </QPopupProxy>
   </QCard>
 </template>
 <script lang="ts" setup>
 import { PropType } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { storeToRefs } from 'pinia'
 import { QCard, QCardSection, QPopupProxy, date, useQuasar } from 'quasar'
 import TaskFull from 'components/TaskFull.vue'
-import { FormatImageType } from '../types/models'
+import useContractStore from 'stores/contract'
+import useAuthStore from 'stores/auth'
+import { FormatContract, FormatImageType } from '../types/models'
 
 const $q = useQuasar()
+const i18n = useI18n()
+const contractStore = useContractStore()
+const authStore = useAuthStore()
+
+const { isLoggedIn } = storeToRefs(authStore)
+
+const $t = i18n.t
 
 const emit = defineEmits(['remove', 'edit'])
 
@@ -94,4 +105,85 @@ const props = defineProps({
     default: () => [],
   },
 })
+
+function onRemove(item) {
+  alert('WIP')
+
+  $q.notify({
+    message:
+      !isLoggedIn.value && item.sameAs
+        ? $t('contract.removeDialog.message')
+        : $t('contract.removeDialog.isLoginMessage'),
+    type: 'negative',
+    position: 'center',
+    group: false,
+    multiLine: true,
+    textColor: 'white',
+    timeout: 7500,
+    attrs: {
+      role: 'alertdialog',
+    },
+    actions: [
+      {
+        icon: 'check_circle',
+        label: $t('contract.removeDialog.ok'),
+        color: 'white',
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        async handler() {
+          try {
+            await contractStore.removeContract({
+              contract: item,
+              usePod: isLoggedIn.value,
+            })
+            emit('remove')
+          } catch (error) {
+            console.error(error)
+            $q.notify({
+              type: 'negative',
+              message: $t('contract.removeDialog.fail'),
+            })
+          }
+        },
+      },
+      {
+        icon: 'cancel',
+        label: $t('contract.removeDialog.cancel'),
+        color: 'white',
+      },
+    ],
+  })
+}
+
+function onEdit(item) {
+  const dialog = $q.dialog({
+    message: $t('contract.editDialog.message'),
+    prompt: {
+      model: '',
+      type: 'text',
+    },
+    cancel: true,
+  })
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  dialog.onOk(async (/*value: string*/) => {
+    try {
+      // item: FormatContract
+      // item.instrument.description = value
+      await contractStore.editContract(item)
+
+      if (isLoggedIn.value) {
+        // todo - поддержать обновление на Pod и в Секретаре
+        // import usePodStore from 'stores/pod'
+        // const podStore = usePodStore()
+        // await podStore.updateIntoPod(item)
+      }
+      emit('edit')
+    } catch (error) {
+      console.error(error)
+      $q.notify({
+        color: 'negative',
+        message: $t('contract.editDialog.fail'),
+      })
+    }
+  })
+}
 </script>

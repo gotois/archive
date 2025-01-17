@@ -9,6 +9,7 @@
       <QIcon
         v-show="!$q.platform.is.android"
         class="orientation-landscape"
+        size="1rem"
         style="vertical-align: text-top"
         name="img:/icons/safari-pinned-tab.svg"
       />
@@ -32,14 +33,10 @@ const $t = i18n.t
 
 const [domain, repo] = pkg.repository.split(':')
 
-const headerBadge = ref($t('productName') + ' ' + $t('header.demo'))
+const headerBadge = ref($t('productName'))
 
 async function onOpenRepo(e: Event) {
   e.preventDefault()
-  // todo - уведомления нужно запрашивать в самом начале
-  if ('Notification' in window && Notification.permission === 'default') {
-    await Notification.requestPermission()
-  }
   switch (router.currentRoute.value.name) {
     case ROUTE_NAMES.FILTER:
     case ROUTE_NAMES.SEARCH:

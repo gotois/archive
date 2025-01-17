@@ -213,7 +213,6 @@ const langStore = useLangStore()
 const { isLoggedIn } = storeToRefs(authStore)
 // const { publicKey } = storeToRefs(walletStore)
 
-const emit = defineEmits(['onRemove', 'onEdit'])
 const emit = defineEmits(['remove', 'edit'])
 const props = defineProps({
   attaches: {

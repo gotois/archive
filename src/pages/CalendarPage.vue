@@ -27,8 +27,8 @@
               :description="calendarEvent.description"
               :tag="calendarEvent.tag"
               :email="calendarEvent.email"
-              @edit="onEdit(calendarEvent)"
-              @remove="onRemove(calendarEvent)"
+              @edit="onEdit"
+              @remove="onRemove"
             />
           </template>
           <template #timeGridEvent="{ calendarEvent }">
@@ -43,8 +43,8 @@
               :description="calendarEvent.description"
               :tag="calendarEvent.tag"
               :email="calendarEvent.email"
-              @edit="onEdit(calendarEvent)"
-              @remove="onRemove(calendarEvent)"
+              @edite="onEdit"
+              @remove="onRemove"
             />
           </template>
           <template #headerContent>
@@ -107,7 +107,6 @@ import {
   QBtn,
   QPullToRefresh,
 } from 'quasar'
-import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { ScheduleXCalendar } from '@schedule-x/vue'
@@ -123,13 +122,6 @@ import useLangStore from 'stores/lang'
 import { formatToCalendarDate, isCurrentDate } from '../helpers/calendarHelper'
 import { ROUTE_NAMES } from '../router/routes'
 import '@schedule-x/theme-shadcn/dist/index.css'
-import useAuthStore from 'stores/auth'
-import useContractStore from 'stores/contract'
-import { FormatContract } from '../types/models'
-
-const authStore = useAuthStore()
-const contractStore = useContractStore()
-const { isLoggedIn } = storeToRefs(authStore)
 
 function onRefresh(done: () => void) {
   console.log('aaa')
@@ -270,94 +262,20 @@ function selectDay(item: Date) {
   */
 }
 
-function onRemove(item: FormatContract) {
-  alert('WIP')
-
+function onRemove() {
+  scrollAreaRef.value.setScrollPosition('vertical', 0, 150)
   $q.notify({
-    message:
-      !isLoggedIn.value && item.sameAs
-        ? $t('contract.removeDialog.message')
-        : $t('contract.removeDialog.isLoginMessage'),
-    type: 'negative',
-    position: 'center',
-    group: false,
-    multiLine: true,
-    textColor: 'white',
-    timeout: 7500,
-    attrs: {
-      role: 'alertdialog',
-    },
-    actions: [
-      {
-        icon: 'check_circle',
-        label: $t('contract.removeDialog.ok'),
-        color: 'white',
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        async handler() {
-          try {
-            await contractStore.removeContract({
-              contract: item,
-              usePod: isLoggedIn.value,
-            })
-            scrollAreaRef.value.setScrollPosition('vertical', 0, 150)
-            $q.notify({
-              type: 'positive',
-              message: $t('contract.removeDialog.success', {
-                name: item.instrument.name,
-              }),
-            })
-          } catch (error) {
-            console.error(error)
-            $q.notify({
-              type: 'negative',
-              message: $t('contract.removeDialog.fail'),
-            })
-          }
-        },
-      },
-      {
-        icon: 'cancel',
-        label: $t('contract.removeDialog.cancel'),
-        color: 'white',
-      },
-    ],
+    type: 'positive',
+    message: $t('contract.removeDialog.success', {
+      name: 'item.instrument.name',
+    }),
   })
 }
 
-function onEdit(item: FormatContract) {
-  const dialog = $q.dialog({
-    message: $t('contract.editDialog.message'),
-    prompt: {
-      model: '',
-      type: 'text',
-    },
-    cancel: true,
-  })
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  dialog.onOk(async (/*value: string*/) => {
-    try {
-      // item: FormatContract
-      // item.instrument.description = value
-      await contractStore.editContract(item)
-
-      if (isLoggedIn.value) {
-        // todo - поддержать обновление на Pod и в Секретаре
-        // import usePodStore from 'stores/pod'
-        // const podStore = usePodStore()
-        // await podStore.updateIntoPod(item)
-      }
-
-      $q.notify({
-        type: 'positive',
-        message: $t('contract.editDialog.success'),
-      })
-    } catch (error) {
-      console.error(error)
-      $q.notify({
-        color: 'negative',
-        message: $t('contract.editDialog.fail'),
-      })
-    }
+function onEdit() {
+  $q.notify({
+    type: 'positive',
+    message: $t('contract.editDialog.success'),
   })
 }
 
