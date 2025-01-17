@@ -46,6 +46,7 @@ module.exports = configure((ctx) => {
       env: {
         telegram_bot_name: process.env.TELEGRAM_BOT_NAME,
         google_client_id: process.env.GOOGLE_CLIENT_ID,
+        google_redirect_uri: process.env.GOOGLE_REDIRECT_URI,
         server: process.env.SERVER_HOST,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         demo_user: !ctx.prod && JSON.parse(process.env.TELEGRAM_TEST_USER),

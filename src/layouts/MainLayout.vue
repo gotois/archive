@@ -173,7 +173,13 @@
           label="Calendars"
         >
           <QItemSection class="q-pa-md">
-            <QBtn label="Google Calendar" @click="addGoogleCalendar" />
+            <QBtn
+              label="Google Calendar"
+              color="white"
+              text-color="black"
+              content-class="full-width q-mb-md"
+              @click="importCalendar"
+            />
           </QItemSection>
         </QExpansionItem>
         <QSeparator />
@@ -687,8 +693,11 @@ async function openOTPDialog() {
   showOTPDialog.value = true
 }
 
-function addGoogleCalendar() {
-  alert('WIP')
+async function importCalendar() {
+  await router.push({
+    name: ROUTE_NAMES.CALENDAR_IMPORT,
+    query: {},
+  })
 }
 
 async function onCalendarByDate(strDate: string) {

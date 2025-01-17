@@ -14,6 +14,7 @@ export enum ROUTE_NAMES {
   LOGIN = 'login',
   CALENDAR = 'calendar',
   ABOUT = 'about',
+  CALENDAR_IMPORT = 'calendar-import',
 }
 
 export enum STEP {
@@ -122,6 +123,17 @@ const routes: RouteRecordRaw[] = [
         path: '',
         name: ROUTE_NAMES.CALENDAR,
         component: () => import('pages/CalendarPage.vue'),
+      },
+    ],
+  },
+  {
+    path: '/' + ROUTE_NAMES.CALENDAR_IMPORT,
+    component: () => import('layouts/EmptyLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: ROUTE_NAMES.CALENDAR_IMPORT,
+        component: () => import('pages/CalendarImportPage.vue'),
       },
     ],
   },
