@@ -20,13 +20,14 @@
             <CalendarEventCard
               class="fit"
               :title="calendarEvent.title"
+              :description="calendarEvent.description"
               :start="new Date(calendarEvent.start)"
               :end="new Date(calendarEvent.end)"
               :location="calendarEvent.location"
               :attaches="calendarEvent.attaches"
-              :description="calendarEvent.description"
               :tag="calendarEvent.tag"
-              :email="calendarEvent.email"
+              :organizer="calendarEvent.organizer"
+              :participant="calendarEvent.participant"
               @edit="onEdit"
               @remove="onRemove"
             />
@@ -36,13 +37,14 @@
               class="fit"
               horizontal
               :title="calendarEvent.title"
+              :description="calendarEvent.description"
               :start="new Date(calendarEvent.start)"
               :end="new Date(calendarEvent.end)"
               :location="calendarEvent.location"
               :attaches="calendarEvent.attaches"
-              :description="calendarEvent.description"
               :tag="calendarEvent.tag"
-              :email="calendarEvent.email"
+              :organizer="calendarEvent.organizer"
+              :participant="calendarEvent.participant"
               @edite="onEdit"
               @remove="onRemove"
             />

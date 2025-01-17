@@ -92,9 +92,11 @@ export default defineStore('contracts', {
       const { contract } = await this.insertContract({
         context: context,
         resolver: verifiedCredential.id,
-        actor: {
+        organizer: {
+          type: verifiedCredential.credentialSubject.actor.type,
           email: verifiedCredential.credentialSubject.actor.email,
           name: verifiedCredential.credentialSubject.actor.name,
+          url: verifiedCredential.credentialSubject.actor.url,
         },
         // identifier: verifiedCredential.credentialSubject.identifier.map(
         //   (i) => ({
@@ -112,7 +114,7 @@ export default defineStore('contracts', {
             type: verifiedCredential.credentialSubject.target.type,
             name: verifiedCredential.credentialSubject.target.name,
             email: verifiedCredential.credentialSubject.target.email,
-            tel: verifiedCredential.credentialSubject.target.telephone,
+            telephone: verifiedCredential.credentialSubject.target.telephone,
             url: verifiedCredential.credentialSubject.target.url,
           },
         ],

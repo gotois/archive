@@ -74,7 +74,7 @@
         icon="add"
         class="absolute"
         style="top: 0; left: 18px; transform: translateY(-50%)"
-        @click="onSheet()"
+        @click="onSheet"
       >
         <QTooltip>
           {{ $t('archiveList.shareFile') }}
@@ -93,18 +93,36 @@
           {{ prettyDate(startTime, endTime) }}
         </span>
       </div>
-      <div v-if="link || sameAs" class="row items-center">
+      <div class="row items-center">
         <div
-          class="absolute overflow-hidden text-left ellipsis"
+          class="flex overflow-hidden text-left ellipsis"
           style="left: 32px; right: 0"
         >
-          <!-- todo считать что это группа лиц, если множество исполнителей -->
-          <QIcon :name="1 === 1 ? 'group' : 'face'" />
-          {{ link }}
-          {{ sameAs }}
+          <QIcon :name="organizer.type === 'Organization' ? 'group' : 'face'" />
+          <div>
+            {{ organizer.name }}
+            {{ organizer.email }}
+          </div>
         </div>
       </div>
-      <div style="overflow-x: hidden" class="scroll-y">
+      <div v-if="participant.length" class="row items-center">
+        <div
+          class="flex overflow-hidden text-left ellipsis"
+          style="left: 32px; right: 0"
+        >
+          <QIcon :name="participant.length > 1 ? 'group' : 'face'" />
+          <span
+            v-for="({ url, name, email }, index) in participant"
+            :key="index"
+          >
+            {{ name }} {{ url }} {{ email }}
+          </span>
+        </div>
+      </div>
+      <div>
+        {{ link }}
+      </div>
+      <div style="overflow-x: hidden" class="scroll-y q-mt-md q-mb-md">
         <QChip
           v-for="(name, objectKey) in tag"
           :key="objectKey"
@@ -114,8 +132,6 @@
           class="row"
           style="max-width: calc(100% - 8px)"
           :ripple="false"
-          :disable="router.currentRoute.value.query.name === name"
-          :selected="router.currentRoute.value.query.name === name"
           :color="$q.dark.isActive ? 'white' : 'dark'"
           clickable
           removable
@@ -166,7 +182,12 @@ import ContractCarouselComponent from 'components/ContractCarouselComponent.vue'
 import useLangStore from 'stores/lang'
 import { parse } from '../helpers/markdownHelper'
 import { isDateNotOk } from '../helpers/dateHelper'
-import { readFilesPromise, fileShare, canShare } from '../helpers/fileHelper'
+import {
+  readFilesPromise,
+  getFileFromUrl,
+  filesShare,
+  canShare,
+} from '../helpers/fileHelper'
 import { createCal, googleCalendarUrl } from '../helpers/calendarHelper'
 import { mailUrl } from '../helpers/mailHelper'
 import { open } from '../helpers/urlHelper'
@@ -176,6 +197,7 @@ import useContractStore from 'stores/contract'
 import {
   FormatImageType,
   Place,
+  Agent,
   // Presentation,
   // VerifiableCredential,
 } from '../types/models'
@@ -247,13 +269,13 @@ const props = defineProps({
     type: Object as PropType<Place>,
     default: null,
   },
-  email: {
-    type: String as PropType<string>,
-    default: '',
+  organizer: {
+    type: Object as PropType<Agent>,
+    default: () => {},
   },
-  telephone: {
-    type: String as PropType<string>,
-    default: '',
+  participant: {
+    type: Array as PropType<Agent[]>,
+    default: () => [],
   },
   link: {
     type: String as PropType<string>,
@@ -332,7 +354,7 @@ function prettyDate(startTime: Date, endTime?: Date) {
 function onSheet() {
   let actions: SheetAction[] = []
   const group1 = [] // Share local
-  if (canShare) {
+  if (canShare && props.attaches.length) {
     group1.push({
       label: $t('components.archiveList.sheet.share.label'),
       icon: $q.platform.is.android ? 'share' : 'ios_share',
@@ -369,11 +391,10 @@ function onSheet() {
   }
   if (group2.length) {
     actions = actions.concat(group2)
-    actions.push({})
   }
   const group3 = [] // Message Group
-  if (props.email || props.telephone) {
-    if (props.email) {
+  if (props.organizer.email || props.organizer.telephone) {
+    if (props.organizer.email) {
       group3.push({
         label: $t('components.archiveList.sheet.mail.label'),
         icon: 'contact_mail',
@@ -381,7 +402,7 @@ function onSheet() {
         id: Action.MAIL,
       })
     }
-    if (props.telephone) {
+    if (props.organizer.telephone) {
       group3.push({
         label: $t('components.archiveList.sheet.telephone.label'),
         icon: 'call',
@@ -405,6 +426,7 @@ function onSheet() {
     })
   }
   if (group3.length) {
+    actions.unshift({})
     actions = actions.concat(group3)
   }
 
@@ -417,9 +439,20 @@ function onSheet() {
   }).onOk(async (action: { id: SheetAction }) => {
     switch (action.id) {
       case Action.SHARE: {
-        console.warn('WIP Action.SHARE: поддержать создание календаря')
-        // const icalFile = createCal(icalId, item)
-        // return shareFile(props.title, icalFile)
+        try {
+          const files = [] as File[]
+          for (const attach of props.attaches) {
+            const file = await getFileFromUrl(attach.url)
+            files.push(file)
+          }
+          await filesShare(files)
+        } catch (error) {
+          console.error(error)
+          $q.notify({
+            type: 'negative',
+            message: $t('components.imageContextMenu.fail'),
+          })
+        }
         break
       }
       case Action.LINK: {
@@ -449,19 +482,18 @@ function onSheet() {
             end: props.endTime,
             categories: props.tag,
             attach: props.attaches.map((attach) => attach.url),
-            // todo поддержать эти поля
-            // geo
-            // organizer
-            // attendee
+            organizer: props.organizer,
+            attendee: props.participant,
+            // todo поддержать поле geo
           },
         })
         return saveIcal(icalFile)
       }
       case Action.MAIL: {
-        return open(mailUrl(props.email, props.title, props.sameAs))
+        return open(mailUrl(props.organizer.email, props.title, props.sameAs))
       }
       case Action.TELEPHONE: {
-        return open(props.telephone)
+        return open(props.organizer.telephone)
       }
       case Action.LAW: {
         return sendToCourt()

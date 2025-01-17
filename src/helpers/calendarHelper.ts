@@ -56,8 +56,10 @@ export function convertSchemaPodToEvent(contract: ContractTable) {
     description: contract.description,
     attaches: contract.attachment,
     tag: contract.tag,
-    // location: vevent.getFirstPropertyValue('location') || null,
-    // people: ,
+    organizer: contract.organizer,
+    participant: contract.participant,
+    location: contract.location,
+    link: contract.link,
   } as CalendarEventExternal
 }
 

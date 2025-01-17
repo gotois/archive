@@ -38,8 +38,8 @@
         :same-as="''"
         :location="null"
         :link="''"
-        :email="email"
-        :telephone="''"
+        :organizer="organizer"
+        :participant="participant"
         @remove="onRemove"
         @edit="onEdit"
       />
@@ -54,7 +54,7 @@ import { QCard, QCardSection, QPopupProxy, date, useQuasar } from 'quasar'
 import TaskFull from 'components/TaskFull.vue'
 import useContractStore from 'stores/contract'
 import useAuthStore from 'stores/auth'
-import { FormatContract, FormatImageType } from '../types/models'
+import { Agent, FormatImageType } from '../types/models'
 
 const $q = useQuasar()
 const i18n = useI18n()
@@ -96,9 +96,9 @@ const props = defineProps({
     type: Array as PropType<FormatImageType[]>,
     default: null,
   },
-  email: {
-    type: String as PropType<string>,
-    default: '',
+  organizer: {
+    type: Object as PropType<Agent>,
+    default: () => {},
   },
   tag: {
     type: Array as PropType<string[]>,

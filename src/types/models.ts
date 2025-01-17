@@ -25,19 +25,9 @@ export interface ContractTable {
   proof?: Proof | Proof[]
   location?: string
   tag: string[]
-  actor: {
-    email: string
-    name: string
-  }
-  participant: [
-    {
-      type: string
-      name: string
-      email?: string
-      tel?: string
-      url?: string
-    },
-  ]
+  organizer: Agent
+  participant: Agent[]
+  link?: string
   name: string
   description?: string
   startTime: Date
@@ -207,7 +197,8 @@ export interface Calendar {
   start: string // like Date
   end: string | null // like Date
   location: string | null
-  organizer: string | null // has name, email, telephone, url
+  organizer: Agent
+  participants: Agent[]
   summary: string
 }
 
@@ -216,8 +207,10 @@ export interface CalendarEventExternal {
   start: string
   end: string
   title?: string
-  people?: string[]
+  actor?: Agent
+  participant?: Agent[]
   location?: string
+  link?: string
   description?: string
   calendarId?: string
   _customContent?: {
