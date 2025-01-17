@@ -2,14 +2,14 @@ import { is, date, LocalStorage, SessionStorage } from 'quasar'
 import { defineStore } from 'pinia'
 // import usePodStore from 'stores/pod'
 import { db } from '../services/databaseService'
-import { formatterContracts } from '../helpers/schemaHelper'
+import { formatterContract } from '../helpers/schemaHelper'
 import {
   ContractData,
-  ContractDate,
   ContractTable,
   FormatContract,
   ContractIdentifier,
   VerifiableCredential,
+  CalendarEventExternal,
 } from '../types/models'
 
 interface Store {
@@ -98,11 +98,13 @@ export default defineStore('contracts', {
           name: verifiedCredential.credentialSubject.actor.name,
           url: verifiedCredential.credentialSubject.actor.url,
         },
-        // identifier: verifiedCredential.credentialSubject.identifier.map(
-        //   (i) => ({
-        //     name: i.name,
-        //     propertyID: i.propertyID,
-        //     value: i.value,
+        // todo поддержать GEO Location
+        // location: verifiedCredential.credentialSubject.location.map(
+        //   (place) => ({
+        //     name: place.name,
+        //     geo: {
+        //       latitude: place.geo.latitude,
+        //       longitude: place.geo.longitude,
         //   }),
         // ),
         name: verifiedCredential.credentialSubject.object.name,
@@ -157,24 +159,14 @@ export default defineStore('contracts', {
        */
       return Promise.reject('Not implemented')
     },
-    /*async*/ removeContract({
-      contract,
-      usePod = false,
-    }: {
-      contract: FormatContract
-      usePod: boolean
-    }) {
-      console.log('WIP removeContract', contract, usePod)
-      /* fixme поддержать работу по удалению контракта
+    async removeContract(id: number, usePod = false) {
       // Step 1: JS
-      const id = contract.identifier.find(({ name }) => name === 'Dexie')
-        ?.value as number
       if (!id) {
         throw new Error('Unknown Dexie ID')
       }
       const i = this.contracts.map((item) => item.id).indexOf(id)
       this.contracts.splice(i, 1)
-      this.removeContractName(contract.instrument.name)
+      // this.removeContractName(contract.instrument.name) // todo поддержать удаление по имени из БД полнотекстового поиска
 
       // Step 2: IndexedDB
       const removedCount = await db.remove(id)
@@ -187,11 +179,11 @@ export default defineStore('contracts', {
         return
       }
       // Step 3: Solid Pod
-      if (!contract.sameAs) {
-        return Promise.reject('Not exist sameAs')
-      }
-      return usePodStore().removeFromPod(contract.sameAs)
-       */
+      // todo поддержать удаление из Solid Pod
+      // if (!contract.sameAs) {
+      //   return Promise.reject('Not exist sameAs')
+      // }
+      // return usePodStore().removeFromPod(contract.sameAs)
       return Promise.reject('Not implemented')
     },
     async filterFromContracts(query: string) {
@@ -259,10 +251,19 @@ export default defineStore('contracts', {
       return contracts.map((contract) => {
         return {
           id: contract.id,
-          start: date.formatDate(contract.startTime, 'YYYY/MM/DD'),
-          end: date.formatDate(contract.endTime, 'YYYY/MM/DD'),
+          start: date.formatDate(contract.startTime, 'YYYY-MM-DD HH:mm'),
+          end: date.formatDate(contract.endTime, 'YYYY-MM-DD HH:mm'),
+          title: contract.name,
+          calendarId: 'secretary',
+          description: contract.description,
+          attaches: contract.attachment,
+          tag: contract.tag,
+          organizer: contract.organizer,
+          participant: contract.participant,
+          location: contract.location,
+          link: contract.link,
         }
-      }) as ContractDate[]
+      }) as CalendarEventExternal[]
     },
     async loadAllContracts({
       offset = 0,
@@ -287,7 +288,9 @@ export default defineStore('contracts', {
   },
   getters: {
     formatContracts(state): FormatContract[] {
-      return formatterContracts(state.contracts)
+      return state.contracts.map((contract: ContractTable) =>
+        formatterContract(contract),
+      )
     },
     getArchiveKeys(state) {
       return Array.from(state.contractNames.keys()).sort((a, b) => {

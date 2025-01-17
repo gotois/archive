@@ -152,7 +152,6 @@ import { useI18n } from 'vue-i18n'
 import useChatStore from 'stores/chat'
 import useSecretaryStore from 'stores/secretary'
 import useGeoStore from 'stores/geo'
-import useTutorialStore from 'stores/tutorial'
 import {
   PDF_MIME_TYPE,
   PNG_MIME_TYPE,
@@ -169,7 +168,6 @@ const $t = useI18n().t
 const chatStore = useChatStore()
 const secretaryStore = useSecretaryStore()
 const geoStore = useGeoStore()
-const tutorialStore = useTutorialStore()
 const router = useRouter()
 
 const select = ref<InstanceType<typeof QSelect> | null>(null)

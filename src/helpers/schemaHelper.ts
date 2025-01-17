@@ -5,15 +5,8 @@ import {
   FormatContractParticipant,
   FormatPlace,
   // VerifiableCredential,
-  CredentialSubject,
 } from '../types/models'
 import { getHash } from '../helpers/cryptoHelper'
-
-export function formatterContracts(
-  contracts: ContractTable[],
-): FormatContract[] {
-  return contracts.map((contract: ContractTable) => formatterContract(contract))
-}
 
 /* fixme парсить контракт схему с выгруженного solid
 export function getContractFromLD(jsldContract: VerifiableCredential) {
@@ -63,9 +56,9 @@ export async function getGravatarURL(email: string) {
 }
 
 // todo - нужно использовать в качестве идентификатора сообщения более точное состояние (мб proof?)
-export function getIdentifierMessage(item: CredentialSubject) {
-  return item.instrument.name + '-' + new Date(item.startTime).toJSON()
-}
+// export function getIdentifierMessage(item: CredentialSubject) {
+//   return item.instrument.name + '-' + new Date(item.startTime).toJSON()
+// }
 
 export function formatterContract(contract: ContractTable) {
   const agent: FormatContractAgent = {
@@ -103,7 +96,6 @@ export function formatterContract(contract: ContractTable) {
     'agent': agent,
     'participant': participant,
     'instrument': instrument,
-    'identifier': identifier,
     'location': contract.location
       ? (JSON.parse(contract.location) as FormatPlace)
       : null,

@@ -1,8 +1,4 @@
 import { defineStore } from 'pinia'
-import {
-  // convertIcalToEvent,
-  convertSchemaPodToEvent,
-} from '../helpers/calendarHelper'
 import useContractStore from 'stores/contract'
 import { CalendarEventExternal } from '../types/models'
 // import rpc from '../helpers/rpc'
@@ -38,14 +34,10 @@ export default defineStore('calendar', {
         startDate,
         endDate,
       )
-      await contractStore.loadAllContracts({
-        offset: 0,
-        limit: 5,
+      this.events = await contractStore.getCalendarContracts({
+        from: startDate,
+        to: endDate,
       })
-      this.events = contractStore.contracts.map((contract) =>
-        convertSchemaPodToEvent(contract),
-      )
-      console.log('this.events', this.events)
     },
   },
 })

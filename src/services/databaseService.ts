@@ -212,20 +212,17 @@ class ContractDatabase extends Dexie {
       '*attachment',
     ]
 
-    this.version(2)
-      .stores({
-        contracts: contracts.join(','),
-      })
+    this.version(3).stores({ contracts: contracts.join(',') })
+    /* todo поддержать upgrade на версию 3
       .upgrade(async (trans) => {
         return trans
           .table('contracts')
           .toCollection()
           .modify((contract) => {
             // fixme - add follow next parameters: 'id', 'resolver'
-            const ld = Dogovor.createContractLD(contract as MyContract)
+            const ld = ContractPod.createContractLD(contract as MyContract)
             const ct = getContractFromLD(ld)
             Object.keys(ct).forEach((key) => {
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
               contract[key] = ct[key] as unknown
             })
           })
@@ -233,6 +230,7 @@ class ContractDatabase extends Dexie {
             console.error(error)
           })
       })
+     */
     this.contracts = this.table('contracts')
   }
 
@@ -244,10 +242,10 @@ class ContractDatabase extends Dexie {
     await this.contracts
       .each((value) => {
         let count = 1
-        if (map.get(value.instrument_name)) {
-          count += map.get(value.instrument_name).count
+        if (map.get(value.name)) {
+          count += map.get(value.name).count
         }
-        map.set(value.instrument_name, { count, recommendation: false })
+        map.set(value.name, { count, recommendation: false })
       })
       .catch((error) => {
         console.error(error)

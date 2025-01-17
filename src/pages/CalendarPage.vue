@@ -19,6 +19,7 @@
           <template #dateGridEvent="{ calendarEvent }">
             <CalendarEventCard
               class="fit"
+              :event-id="calendarEvent.id"
               :title="calendarEvent.title"
               :description="calendarEvent.description"
               :start="new Date(calendarEvent.start)"
@@ -28,7 +29,7 @@
               :tag="calendarEvent.tag"
               :organizer="calendarEvent.organizer"
               :participant="calendarEvent.participant"
-              @edit="onEdit"
+              :link="calendarEvent.link"
               @remove="onRemove"
             />
           </template>
@@ -36,6 +37,7 @@
             <CalendarEventCard
               class="fit"
               horizontal
+              :event-id="calendarEvent.id"
               :title="calendarEvent.title"
               :description="calendarEvent.description"
               :start="new Date(calendarEvent.start)"
@@ -45,7 +47,7 @@
               :tag="calendarEvent.tag"
               :organizer="calendarEvent.organizer"
               :participant="calendarEvent.participant"
-              @edite="onEdit"
+              :link="calendarEvent.link"
               @remove="onRemove"
             />
           </template>
@@ -271,13 +273,6 @@ function onRemove() {
     message: $t('contract.removeDialog.success', {
       name: 'item.instrument.name',
     }),
-  })
-}
-
-function onEdit() {
-  $q.notify({
-    type: 'positive',
-    message: $t('contract.editDialog.success'),
   })
 }
 

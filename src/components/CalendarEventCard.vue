@@ -21,7 +21,9 @@
         -
         {{ date.formatDate(end, 'HH:mm') }}
       </div>
-      <div v-if="location" class="ellipsis-2-lines"> 📍 {{ location }} </div>
+      <div v-if="location?.name" class="ellipsis-2-lines">
+        📍 {{ location.name }}
+      </div>
       <div v-if="description" class="ellipsis-2-lines">
         {{ description }}
       </div>
@@ -36,12 +38,11 @@
         :end-time="end"
         :tag="tag"
         :same-as="''"
-        :location="null"
-        :link="''"
+        :location="location"
+        :link="link"
         :organizer="organizer"
         :participant="participant"
         @remove="onRemove"
-        @edit="onEdit"
       />
     </QPopupProxy>
   </QCard>
@@ -54,7 +55,7 @@ import { QCard, QCardSection, QPopupProxy, date, useQuasar } from 'quasar'
 import TaskFull from 'components/TaskFull.vue'
 import useContractStore from 'stores/contract'
 import useAuthStore from 'stores/auth'
-import { Agent, FormatImageType } from '../types/models'
+import { Agent, FormatImageType, Place } from '../types/models'
 
 const $q = useQuasar()
 const i18n = useI18n()
@@ -65,12 +66,16 @@ const { isLoggedIn } = storeToRefs(authStore)
 
 const $t = i18n.t
 
-const emit = defineEmits(['remove', 'edit'])
+const emit = defineEmits(['remove'])
 
 const props = defineProps({
   horizontal: {
     type: Boolean as PropType<boolean>,
     default: false,
+  },
+  eventId: {
+    type: Number as PropType<number>,
+    required: true,
   },
   title: {
     type: String as PropType<string>,
@@ -85,8 +90,8 @@ const props = defineProps({
     required: true,
   },
   location: {
-    type: String as PropType<string>,
-    default: null,
+    type: Object as PropType<Place>,
+    default: () => {},
   },
   description: {
     type: String as PropType<string>,
@@ -100,20 +105,25 @@ const props = defineProps({
     type: Object as PropType<Agent>,
     default: () => {},
   },
+  participant: {
+    type: Array as PropType<Agent[]>,
+    default: () => [],
+  },
   tag: {
     type: Array as PropType<string[]>,
     default: () => [],
   },
+  link: {
+    type: String as PropType<string>,
+    default: null,
+  },
 })
 
-function onRemove(item) {
-  alert('WIP')
-
+function onRemove() {
   $q.notify({
-    message:
-      !isLoggedIn.value && item.sameAs
-        ? $t('contract.removeDialog.message')
-        : $t('contract.removeDialog.isLoginMessage'),
+    message: !isLoggedIn.value
+      ? $t('contract.removeDialog.message')
+      : $t('contract.removeDialog.isLoginMessage'),
     type: 'negative',
     position: 'center',
     group: false,
@@ -131,10 +141,7 @@ function onRemove(item) {
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         async handler() {
           try {
-            await contractStore.removeContract({
-              contract: item,
-              usePod: isLoggedIn.value,
-            })
+            await contractStore.removeContract(props.eventId, isLoggedIn.value)
             emit('remove')
           } catch (error) {
             console.error(error)
@@ -151,39 +158,6 @@ function onRemove(item) {
         color: 'white',
       },
     ],
-  })
-}
-
-function onEdit(item) {
-  const dialog = $q.dialog({
-    message: $t('contract.editDialog.message'),
-    prompt: {
-      model: '',
-      type: 'text',
-    },
-    cancel: true,
-  })
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  dialog.onOk(async (/*value: string*/) => {
-    try {
-      // item: FormatContract
-      // item.instrument.description = value
-      await contractStore.editContract(item)
-
-      if (isLoggedIn.value) {
-        // todo - поддержать обновление на Pod и в Секретаре
-        // import usePodStore from 'stores/pod'
-        // const podStore = usePodStore()
-        // await podStore.updateIntoPod(item)
-      }
-      emit('edit')
-    } catch (error) {
-      console.error(error)
-      $q.notify({
-        color: 'negative',
-        message: $t('contract.editDialog.fail'),
-      })
-    }
   })
 }
 </script>

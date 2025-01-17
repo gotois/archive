@@ -1,16 +1,14 @@
 import ICAL from 'ical.js'
 import { date } from 'quasar'
 import { event as createEvent, default as icalendar } from 'ical-browser'
-import {
-  CalendarEventExternal,
-  ContractTable,
-} from '../types/models'
+import { CalendarEventExternal } from '../types/models'
 import { formatIcal } from './dateHelper'
 
-export function createCal(id: string, obj) {
+export function createCal(id: string, obj: unknown) {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/ban-ts-comment
   // @ts-expect-error
   const str = icalendar(id, {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
     event: createEvent(obj.event),
   }) as string
   return new File([new TextEncoder().encode(str)], 'calendar.ics', {
@@ -23,7 +21,7 @@ export function googleCalendarUrl(
   details: string,
   startTime: Date,
   endTime: Date,
-  sameAs: string,
+  location: string,
 ) {
   const link = new URL('https://calendar.google.com/calendar/render')
   link.searchParams.append('action', 'TEMPLATE')
@@ -40,8 +38,8 @@ export function googleCalendarUrl(
       formatIcal(startTime) + '/' + formatIcal(startTime),
     )
   }
-  if (sameAs) {
-    link.searchParams.append('location', sameAs)
+  if (location) {
+    link.searchParams.append('location', location)
   }
   return link
 }

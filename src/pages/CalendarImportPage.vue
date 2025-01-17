@@ -37,7 +37,10 @@ async function getOauthToken(code: string) {
       grant_type: 'authorization_code',
     }),
   })
-  return await response.json()
+  return (await response.json()) as {
+    expires_in: number
+    refresh_token: string
+  }
 }
 
 // TODO делать запрос к секретарю через JRPC-2 чтобы получать события от секретаря

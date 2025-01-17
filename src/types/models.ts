@@ -21,7 +21,6 @@ export interface ContractTable {
   type: string[]
   issuer: string
   issuanceDate: Date
-  identifier: ContractIdentifier[]
   proof?: Proof | Proof[]
   location?: string
   tag: string[]
@@ -148,7 +147,6 @@ export interface FormatContract extends BaseSchemaType {
   'agent': FormatContractAgent
   'participant': FormatContractParticipant
   'instrument': FormatContractInstrument
-  'identifier': FormatContractIdentifier[]
   'startTime': Date
   'endTime'?: Date
   'location'?: FormatPlace
