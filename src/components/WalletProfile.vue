@@ -32,7 +32,6 @@
     :label="$t('tutorial.wallet.title')"
     color="white"
     text-color="black"
-    icon="wallet"
     content-class="full-width q-mb-md"
     @skip="onSkipWallet"
     @error="onWalletError"
