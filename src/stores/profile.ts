@@ -4,7 +4,6 @@ import useSecretaryStore from 'stores/secretary'
 import { getGravatarURL } from '../helpers/schemaHelper'
 import { validUrlString } from '../helpers/urlHelper'
 import getLocation from '../services/cloudflare'
-import { parseJwt } from '../helpers/dataHelper'
 
 interface State {
   did: string
@@ -57,13 +56,12 @@ export default defineStore('profile', {
   getters: {
     getPersonLD(state) {
       const secretaryStore = useSecretaryStore()
-      const obj = parseJwt(secretaryStore.jwt) // todo перенести в геттер secretaryStore
       // todo - поддержать выдачу WebId
       return {
         '@context': 'https://json-ld.org/contexts/person.jsonld',
         '@type': 'Person',
-        'email': state.email,
-        'name': obj.name.trim(),
+        'email': secretaryStore.payload.email,
+        'name': secretaryStore.payload.name,
         'image': state.avatar,
         'telephone': state.phone?.length ? state.phone : null,
         'homepage': null, // todo поддержать значение личного сайта

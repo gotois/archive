@@ -254,27 +254,9 @@
           :expand-separator="spacesOpen"
           :label="'Personal Spaces'"
         >
-          <p class="q-pt-md q-pl-md q-pr-md">Personal Spaces</p>
-
-          <div>
+          <div class="q-pt-md q-pl-md q-pr-md">
             <QBtn
-              v-if="isDemo"
-              :color="$q.dark.isActive ? 'white' : 'dark'"
-              :text-color="$q.dark.isActive ? 'dark' : 'white'"
-              :dense="$q.platform.is.desktop"
-              square
-              no-caps
-              glossy
-              push
-              unelevated
-              align="left"
-              icon="app_registration"
-              class="full-width q-pl-md q-pr-md q-mb-md block"
-              :label="$t('navigation.register')"
-              @click="register"
-            />
-            <QBtn
-              v-else-if="isLoggedIn"
+              v-if="isLoggedIn"
               color="negative"
               :dense="$q.platform.is.desktop"
               square
@@ -288,7 +270,7 @@
               @click="logOutFromPod"
             />
             <QBtn
-              v-else-if="!isLoggedIn"
+              v-else
               color="primary"
               :dense="$q.platform.is.desktop"
               square
@@ -303,35 +285,21 @@
             />
           </div>
 
-          {{ $t('tutorial.oidc.caption') }}
-          <p class="text-h4">
-            {{ $t('tutorial.oidc.title') }}
-          </p>
-
-          <div
-            class="text-body1"
-            style="white-space: break-spaces"
-            v-html="parse($t('tutorial.oidc.body'))"
-          >
-          </div>
-
-          <OIDCIssuerComponent @on-complete="onOnlineAuthorize">
-            <QTooltip>{{ $t('oidc.tutorialHint') }}</QTooltip>
-          </OIDCIssuerComponent>
-          <QBtn v-if="isLoggedIn" label="Sync Pod" @click="syncPods" />
-
-          <QSeparator />
-
-          <p class="q-pt-md q-pl-md q-pr-md">
-            {{ $t('settings.native.description') }}
-          </p>
-          <QItemSection
-            v-if="spacesOpen && isLoggedIn"
-            class="q-pl-md q-pr-md q-pb-md no-margin"
-          >
-            <PodImporter />
+          <template v-if="isLoggedIn">
             <QSeparator />
-          </QItemSection>
+            <QBtn v-if="isLoggedIn" label="Sync Pod" @click="syncPods" />
+
+            <QSeparator />
+
+            <p class="q-pt-md q-pl-md q-pr-md">
+              {{ $t('settings.native.description') }}
+            </p>
+
+            <QItemSection class="q-pl-md q-pr-md q-pb-md no-margin">
+              <PodImporter />
+              <QSeparator />
+            </QItemSection>
+          </template>
         </QExpansionItem>
         <QSeparator />
         <QExpansionItem
@@ -475,9 +443,7 @@ import { logout } from '@inrupt/solid-client-authn-browser'
 import useAuthStore from 'stores/auth'
 import useTFAStore from 'stores/tfa'
 import useContractStore from 'stores/contract'
-import useTutorialStore from 'stores/tutorial'
 import usePodStore from 'stores/pod'
-import useLangStore from 'stores/lang'
 import useSecretaryStore from 'stores/secretary'
 import useNotification from 'stores/notification'
 import useGeoStore from 'stores/geo'
@@ -489,9 +455,7 @@ import { isTWA, isTMA } from '../helpers/twaHelper'
 import { keyPair } from '../services/databaseService'
 import { createQR } from '../helpers/qrHelper'
 import { open } from '../helpers/urlHelper'
-import { parse } from '../helpers/markdownHelper'
-import { ROUTE_NAMES, STEP } from '../router/routes'
-import solidAuth from '../services/authService'
+import { ROUTE_NAMES } from '../router/routes'
 import ContractPod from '../services/contractGeneratorService'
 import { formatToCalendarDate } from '../helpers/calendarHelper'
 import { DIDTable } from '../types/models'
@@ -517,9 +481,6 @@ const QOtp = defineAsyncComponent(
 const AndroidBarComponent = defineAsyncComponent(
   () => import('components/AndroidBarComponent.vue'),
 )
-const OIDCIssuerComponent = defineAsyncComponent(
-  () => import('components/OIDCIssuerComponent.vue'),
-)
 const CalendarEventsComponent = defineAsyncComponent(
   () => import('components/CalendarEventsComponent.vue'),
 )
@@ -533,9 +494,7 @@ const i18n = useI18n()
 const $t = i18n.t
 const authStore = useAuthStore()
 const tfaStore = useTFAStore()
-const langStore = useLangStore()
 const contractStore = useContractStore()
-const tutorialStore = useTutorialStore()
 const geoStore = useGeoStore()
 const notificationStore = useNotification()
 const podStore = usePodStore()
@@ -544,7 +503,7 @@ const secretaryStore = useSecretaryStore()
 const NOTIFICATION_TIMER = 30000
 
 const { contractsCount } = storeToRefs(contractStore)
-const { isLoggedIn, isDemo } = storeToRefs(authStore)
+const { isLoggedIn } = storeToRefs(authStore)
 const { jwt } = storeToRefs(secretaryStore)
 const { activated } = storeToRefs(tfaStore)
 const bigScreen = computed(
@@ -591,17 +550,6 @@ async function onSearch(searchText: string) {
     },
   })
   showSearch.value = false
-}
-
-function register() {
-  tutorialStore.tutorialComplete(false)
-  return router.push({
-    name: ROUTE_NAMES.TUTORIAL,
-    query: {
-      step: STEP.WELCOME,
-      lang: langStore.language,
-    },
-  })
 }
 
 function loginToPod() {
@@ -713,39 +661,6 @@ async function onCalendarByDate(strDate: string) {
     },
   })
   $q.loading.hide()
-}
-
-async function onOnlineAuthorize(oidcIssuer: string) {
-  if (!oidcIssuer) {
-    const dialog = $q.dialog({
-      message: $t('components.oidcIssuer.authorizeDialog.message'),
-      cancel: true,
-      persistent: true,
-    })
-    dialog.onOk(() => {
-      alert('ok')
-    })
-    return
-  }
-
-  $q.loading.show()
-  $q.sessionStorage.remove('connect')
-  const redirectUrl = window.location.origin + window.location.pathname
-  try {
-    await solidAuth({
-      redirectUrl: redirectUrl,
-      oidcIssuer: oidcIssuer,
-      restorePreviousSession: false,
-    })
-  } catch (error) {
-    console.error(error)
-    $q.notify({
-      color: 'negative',
-      message: $t('components.oidcIssuer.authorizeDialog.fail'),
-    })
-  } finally {
-    $q.loading.hide()
-  }
 }
 
 function syncPods() {

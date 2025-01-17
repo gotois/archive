@@ -227,7 +227,6 @@ async function sendChat(value: string) {
               label: 'Авторизоваться заново',
               handler() {
                 secretaryStore.logout()
-                tutorialStore.tutorialComplete(false)
                 void router.push({
                   name: ROUTE_NAMES.TUTORIAL,
                 })

@@ -81,7 +81,7 @@
           'full-width': !$q.platform.is.desktop,
         }"
         :loading="$q.loading.isActive"
-        icon-right="login"
+        icon-right="app_registration"
       />
     </QStepperNavigation>
   </QForm>

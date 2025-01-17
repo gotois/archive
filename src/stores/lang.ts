@@ -19,7 +19,6 @@ export default defineStore('lang', {
   },
   getters: {
     language(): string {
-      console.log('11')
       if (this.lang) {
         return this.lang
       }

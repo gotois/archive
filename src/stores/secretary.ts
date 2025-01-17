@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { LocalStorage } from 'quasar'
 import { RequestedContact, retrieveLaunchParams } from '@telegram-apps/sdk'
+import useTutorialStore from 'stores/tutorial'
 import rpc from '../helpers/rpc'
 import {
   TelegramUser,
@@ -9,6 +10,7 @@ import {
   VerifiableCredential,
 } from '../types/models'
 import { isTMA } from '../helpers/twaHelper'
+import { parseJwt } from '../helpers/dataHelper'
 
 interface Store {
   available: boolean
@@ -57,7 +59,9 @@ export default defineStore('secretary', {
       LocalStorage.set('password', password)
     },
     logout() {
+      const tutorialStore = useTutorialStore()
       LocalStorage.removeItem('jwt')
+      tutorialStore.tutorialComplete(false)
       this.jwt = null
     },
     async authorizationByTg() {
@@ -129,6 +133,9 @@ export default defineStore('secretary', {
         throw new Error('Empty telegram init data')
       }
       return `tma ${initDataRaw}`
+    },
+    payload(store) {
+      return parseJwt(store.jwt)
     },
   },
 })

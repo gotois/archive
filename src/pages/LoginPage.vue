@@ -10,6 +10,19 @@
         'full-width': $q.platform.is.mobile,
       }"
     >
+      <p class="text-h4">
+        {{ $t('tutorial.oidc.title') }}
+      </p>
+      <p class="text-caption">
+        {{ $t('tutorial.oidc.caption') }}
+      </p>
+      <div
+        class="text-body1"
+        style="white-space: break-spaces"
+        v-html="parse($t('tutorial.oidc.body'))"
+      >
+      </div>
+
       <template v-if="getOidcIssuer">
         <QChip
           class="full-width q-pl-none"
@@ -39,6 +52,7 @@
         >
           <QTooltip>
             {{ $t('components.oidcIssuer.input') }}
+            {{ $t('oidc.tutorialHint') }}
           </QTooltip>
         </OIDCIssuerComponent>
       </template>
@@ -53,6 +67,7 @@ import { storeToRefs } from 'pinia'
 import usePodStore from 'stores/pod'
 import OIDCIssuerComponent from 'components/OIDCIssuerComponent.vue'
 import solidAuth from '../services/authService'
+import { parse } from '../helpers/markdownHelper'
 
 const $t = useI18n().t
 const $q = useQuasar()
@@ -103,7 +118,7 @@ async function tryLogin(
   }
 }
 
-function onOnlineAuthorize(oidcIssuer: string) {
+async function onOnlineAuthorize(oidcIssuer: string) {
   if (!oidcIssuer) {
     $q.notify({
       type: 'negative',
