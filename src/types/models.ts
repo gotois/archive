@@ -101,7 +101,7 @@ export interface Agent {
 }
 
 export interface GeoCoordinates {
-  '@type': 'GeoCoordinates'
+  '@type'?: 'GeoCoordinates'
   'latitude': number
   'longitude': number
 }
