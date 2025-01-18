@@ -65,7 +65,7 @@ defineProps({
 const loginOptions = ref([
   'login.inrupt.com',
   'login.inrupt.net',
-  'login.gotointeractive.com', // todo - WIP GIC DAO OIDC
+  // 'login.gotointeractive.com', // todo поддержать в будущем GIC DAO OIDC
 ])
 const oidcIssuer = ref('')
 const prefix = ref('https://')

@@ -31,6 +31,7 @@
     <QPopupProxy>
       <TaskFull
         style="width: 640px"
+        :event-id="eventId"
         :title="title"
         :description="description"
         :attaches="attaches"

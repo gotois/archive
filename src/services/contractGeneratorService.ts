@@ -1,22 +1,22 @@
+// todo перенести это в pod.ts
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { fetch } from '@inrupt/solid-client-authn-browser'
 import {
-  WebId,
   SolidDataset,
   buildThing,
-  createSolidDataset,
+  // createSolidDataset,
   // getStringNoLocale,
   // getStringNoLocaleAll,
   // getThing,
   // getDate,
   // getUrl,
   // getUrlAll,
-  setThing,
+  // setThing,
   createThing,
   getSolidDataset,
-  saveSolidDatasetAt,
-  universalAccess,
+  // saveSolidDatasetAt,
+  // saveFileInContainer,
 } from '@inrupt/solid-client'
 import { RDF /*, SCHEMA_INRUPT*/ } from '@inrupt/vocab-common-rdf'
 import { VerifiableCredential, Presentation } from '../types/models'
@@ -26,17 +26,6 @@ export default class ContractPod {
 
   constructor(resourceUrl: string) {
     this.resourceUrl = resourceUrl
-  }
-
-  set dataset(ds: SolidDataset) {
-    this._dataset = ds
-  }
-
-  get dataset() {
-    if (!this._dataset) {
-      this._dataset = createSolidDataset()
-    }
-    return this._dataset as SolidDataset
   }
 
   get credential() {
@@ -179,18 +168,6 @@ export default class ContractPod {
     return null as Presentation
   }
 
-  // todo при шаринге делать ограничение на добавление только proof и комментариев
-  shareLink(url: string, webId: WebId) {
-    return universalAccess.setAgentAccess(
-      url,
-      webId,
-      { read: true, append: true, write: true },
-      {
-        fetch,
-      },
-    )
-  }
-
   get presentationContext() {
     return buildThing(
       createThing({ url: this.resourceUrl + '#presentationContext' }),
@@ -223,7 +200,6 @@ export default class ContractPod {
           identifier: 'https://schema.org/identifier',
           startTime: 'https://schema.org/startTime',
           endTime: 'https://schema.org/endTime',
-          propertyID: 'https://schema.org/propertyID',
           value: 'https://schema.org/value',
           object: 'https://schema.org/ImageObject',
           encodingFormat: 'https://schema.org/encodingFormat',
@@ -378,29 +354,23 @@ export default class ContractPod {
     return credentialSubject
   }
 
-  upload() {
-    return saveSolidDatasetAt(this.resourceUrl, this.dataset, {
-      fetch,
-    })
-  }
-
-  updateDataset() {
-    let ds = this.dataset
-
-    ds = setThing(ds, this.presentationContext.build())
-    ds = setThing(ds, this.presentationType.build())
-    ds = setThing(ds, this.presentationProof.build())
-
-    ds = setThing(ds, this.vcContext.build())
-    ds = setThing(ds, this.vcId.build())
-    ds = setThing(ds, this.vcType.build())
-    ds = setThing(ds, this.vcIssuer.build())
-    ds = setThing(ds, this.vcIssuanceDate.build())
-    ds = setThing(ds, this.vcCredentialSubject.build())
-    ds = setThing(ds, this.vcProof.build())
-
-    this.dataset = ds
-  }
+  // updateDataset() {
+  //   let ds = this.dataset
+  //
+  //   ds = setThing(ds, this.presentationContext.build())
+  //   ds = setThing(ds, this.presentationType.build())
+  //   ds = setThing(ds, this.presentationProof.build())
+  //
+  //   ds = setThing(ds, this.vcContext.build())
+  //   ds = setThing(ds, this.vcId.build())
+  //   ds = setThing(ds, this.vcType.build())
+  //   ds = setThing(ds, this.vcIssuer.build())
+  //   ds = setThing(ds, this.vcIssuanceDate.build())
+  //   ds = setThing(ds, this.vcCredentialSubject.build())
+  //   ds = setThing(ds, this.vcProof.build())
+  //
+  //   this.dataset = ds
+  // }
 
   static async fromSolidUrl(resourceUrl: string) {
     const ds: SolidDataset = await getSolidDataset(resourceUrl, {

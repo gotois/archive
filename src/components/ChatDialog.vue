@@ -18,7 +18,7 @@
     </template>
   </QVirtualScroll>
   <QBtn
-    v-if="size >= 1"
+    v-if="size >= 2"
     class="full-width"
     label="Try Generate Calendar"
     @click="tryGenerateCalendar"

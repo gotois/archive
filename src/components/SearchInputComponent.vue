@@ -149,6 +149,7 @@ import {
   QBtn,
 } from 'quasar'
 import { useI18n } from 'vue-i18n'
+import { createWorker } from 'tesseract.js'
 import useChatStore from 'stores/chat'
 import useSecretaryStore from 'stores/secretary'
 import useGeoStore from 'stores/geo'
@@ -161,7 +162,6 @@ import { miniSearch } from '../services/searchService'
 import { ROUTE_NAMES } from '../router/routes'
 import { readFilePromise } from '../helpers/fileHelper'
 import { createPDFs } from '../helpers/pdfHelper'
-import { createWorker } from 'tesseract.js'
 
 const $q = useQuasar()
 const $t = useI18n().t

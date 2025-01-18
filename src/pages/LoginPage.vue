@@ -143,6 +143,8 @@ async function onOnlineAuthorize(oidcIssuer: string) {
       oidcIssuer: oidcIssuer,
       restorePreviousSession: false,
     })
+    await podStore.initPod()
+    await podStore.setProfileFOAF()
   } catch (error) {
     console.error(error)
     $q.notify({

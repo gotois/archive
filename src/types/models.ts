@@ -155,7 +155,6 @@ export interface FormatContract extends BaseSchemaType {
 }
 export interface FormatContractAgent extends BaseSchemaType, Agent {}
 export interface FormatContractParticipant extends BaseSchemaType, Agent {}
-interface FormatContractIdentifier extends BaseSchemaType, ContractIdentifier {}
 interface FormatContractInstrument extends BaseSchemaType, ContractInstrument {}
 export interface FormatPlace extends BaseSchemaType, Place {}
 

@@ -5,6 +5,13 @@
       props.sent ? 'end' : 'start'
     }`"
   >
+    <!-- todo поддержать в случае если сервер думает -->
+    <!--QChatMessage
+      :bg-color="sent ? 'primary' : 'secondary'"
+      size="12"
+    />
+      <q-spinner-dots size="2rem" />
+    </QChatMessage-->
     <QChatMessage
       v-if="asyncContent"
       :key="props.index"

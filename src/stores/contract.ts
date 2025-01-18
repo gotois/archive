@@ -2,12 +2,10 @@ import { is, date, LocalStorage, SessionStorage } from 'quasar'
 import { defineStore } from 'pinia'
 // import usePodStore from 'stores/pod'
 import { db } from '../services/databaseService'
-import { formatterContract } from '../helpers/schemaHelper'
 import {
   ContractData,
   ContractTable,
   FormatContract,
-  ContractIdentifier,
   VerifiableCredential,
   CalendarEventExternal,
 } from '../types/models'
@@ -55,12 +53,13 @@ export default defineStore('contracts', {
       LocalStorage.set('contractNames', this.getArchiveNames)
     },
     // This contract already in IndexedDB
-    async existContract(identifier: ContractIdentifier[]) {
-      const dexieId = identifier.find((i) => i.name === 'Dexie')
-      const contract = await db.contracts.get({
-        id: Number(dexieId.value),
+    async existContract(contract: unknown) {
+      alert('WIP existContract')
+      const dbContract = await db.contracts.get({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        id: contract?.id,
       })
-      return is.deepEqual(contract.identifier, identifier)
+      return is.deepEqual(contract, dbContract)
     },
     // Save to IndexedDb
     async insertContract(contract: ContractTable) {
@@ -70,15 +69,15 @@ export default defineStore('contracts', {
       }
       this.addContractName(contract.name)
       // после первичной записи обновляем идентификатор Dexie
-      contract.identifier.push({
-        name: 'Dexie',
-        propertyID: db.verno, // используемая версия движка
-        value: index,
-      })
+      // contract.identifier.push({
+      //   name: 'Dexie',
+      //   propertyID: db.verno, // используемая версия движка
+      //   value: index,
+      // })
       // обновляем запись в БД
-      await db.contracts.where('id').equals(index).modify({
-        identifier: contract.identifier,
-      })
+      // await db.contracts.where('id').equals(index).modify({
+      //   identifier: contract.identifier,
+      // })
       return { contract, index }
     },
     async addContract(verifiedCredential: VerifiableCredential) {
@@ -196,8 +195,8 @@ export default defineStore('contracts', {
         .reverse()
         .sortBy('startTime')
     },
-    async filteredByIds({ ids }: { ids: number[] }) {
-      this.contracts = await db.contracts.bulkGet(ids)
+    async filteredByIds(ids: number[]) {
+      return await db.contracts.bulkGet(ids)
     },
     async searchFromContracts({
       query,
@@ -287,11 +286,59 @@ export default defineStore('contracts', {
     },
   },
   getters: {
+    /* fixme поддержать
     formatContracts(state): FormatContract[] {
-      return state.contracts.map((contract: ContractTable) =>
-        formatterContract(contract),
-      )
+      function getEmailProperty(email: string) {
+        return email.startsWith('mailto:') ? email : 'mailto:' + email
+      }
+      return state.contracts.map((contract: ContractTable) => {
+        // const agent: FormatContractAgent = {
+        //   '@type': 'Person',
+        //   'name': contract.agent_name,
+        // }
+        // if (contract.agent_email) {
+        //   agent.email = getEmailProperty(contract.agent_email)
+        // }
+        // const participant: FormatContractParticipant = {
+        //   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+        //   '@type': contract.context ? contract?.context[1]?.participant : 'Person',
+        //   'sameAs': contract.participant_name,
+        //   'url': contract.participant_url,
+        //   'telephone': contract.participant_tel,
+        // }
+        // if (contract.participant_email) {
+        //   participant.email = getEmailProperty(contract.participant_email)
+        // }
+        // const instrument = {
+        //   '@type': 'Thing',
+        //   'name': contract.instrument_name,
+        //   'description': contract.instrument_description,
+        // }
+        // const identifier = contract.identifier
+        // const object = contract?.images?.map(({ encodingFormat, contentUrl }) => ({
+        //   '@type': 'ImageObject',
+        //   'encodingFormat': encodingFormat,
+        //   'contentUrl': contentUrl,
+        // }))
+        return {
+          '@context': 'https://www.w3.org/ns/activitystreams',
+          // '@type': contract.type ? contract.type[1] : 'OrganizeAction',
+          // 'sameAs': contract.resource_url,
+          // 'agent': agent,
+          // 'participant': participant,
+          // 'instrument': instrument,
+          // 'location': contract.location
+          //   ? (JSON.parse(contract.location) as FormatPlace)
+          //   : null,
+          // 'startTime': new Date(contract.startTime),
+          // 'endTime': contract.endTime ? new Date(contract.endTime) : null,
+          // 'object': object ?? [],
+          // 'proof': contract.proof ? contract.proof : null,
+          'url': 'https://google.com/contract', // todo поддержать url
+        } // as FormatContract
+      })
     },
+     */
     getArchiveKeys(state) {
       return Array.from(state.contractNames.keys()).sort((a, b) => {
         if (a.toLowerCase() < b.toLowerCase()) {

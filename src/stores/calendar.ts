@@ -29,11 +29,6 @@ export default defineStore('calendar', {
       // this.events = calendar.map((icalEvent) => convertIcalToEvent(icalEvent))
       */
       const contractStore = useContractStore()
-      console.log(
-        'загружать не все контракты, а только те что находятся в диапазоне startDate и endDate',
-        startDate,
-        endDate,
-      )
       this.events = await contractStore.getCalendarContracts({
         from: startDate,
         to: endDate,

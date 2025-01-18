@@ -185,7 +185,6 @@ import useAuthStore, { demoUserWebId } from 'stores/auth'
 import useTutorialStore from 'stores/tutorial'
 import useProfileStore from 'stores/profile'
 import useSecretaryStore from 'stores/secretary'
-import usePodStore from 'stores/pod'
 import pkg from '../../package.json'
 import { isTMA } from '../helpers/twaHelper'
 import { ROUTE_NAMES, STEP } from '../router/routes'
@@ -203,7 +202,6 @@ const IdComponent = defineAsyncComponent(
 const $t = useI18n().t
 const $q = useQuasar()
 const router = useRouter()
-const podStore = usePodStore()
 const authStore = useAuthStore()
 const profileStore = useProfileStore()
 const tutorialStore = useTutorialStore()
@@ -225,7 +223,6 @@ const step = ref(getCurrentStep() ?? STEP.WELCOME)
 const creatingNewContract = ref(false)
 const contract = ref<VerifiableCredential>(null)
 
-const { isLoggedIn } = storeToRefs(authStore)
 const { did, getPersonLD, phone, email } = storeToRefs(profileStore)
 
 watch(
@@ -284,17 +281,9 @@ async function onFinish() {
     if (!did.value) {
       throw new Error('DID empty')
     }
-    if (isLoggedIn.value) {
-      await podStore.initPod()
-    }
     profileStore.consumerEmail(email.value)
     profileStore.consumerPhone(phone.value)
     await profileStore.setAvatar(email.value)
-
-    if (isLoggedIn.value) {
-      await podStore.setProfileFOAF()
-    }
-
     await secretaryStore.ping()
     contract.value = (await secretaryStore.getOfferta()) as VerifiableCredential
     creatingNewContract.value = true

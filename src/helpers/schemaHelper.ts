@@ -1,11 +1,11 @@
-import {
-  FormatContractAgent,
-  ContractTable,
-  FormatContract,
-  FormatContractParticipant,
-  FormatPlace,
-  // VerifiableCredential,
-} from '../types/models'
+// import {
+//   FormatContractAgent,
+//   ContractTable,
+//   FormatContract,
+//   FormatContractParticipant,
+//   FormatPlace,
+//   // VerifiableCredential,
+// } from '../types/models'
 import { getHash } from '../helpers/cryptoHelper'
 
 /* fixme парсить контракт схему с выгруженного solid
@@ -38,10 +38,6 @@ export function getContractFromLD(jsldContract: VerifiableCredential) {
 }
 */
 
-export function getEmailProperty(email: string) {
-  return email.startsWith('mailto:') ? email : 'mailto:' + email
-}
-
 export async function getGravatarURL(email: string) {
   const hashHex = await getHash(email)
   const link = `https://www.gravatar.com/avatar/${hashHex}`
@@ -59,50 +55,3 @@ export async function getGravatarURL(email: string) {
 // export function getIdentifierMessage(item: CredentialSubject) {
 //   return item.instrument.name + '-' + new Date(item.startTime).toJSON()
 // }
-
-export function formatterContract(contract: ContractTable) {
-  const agent: FormatContractAgent = {
-    '@type': 'Person',
-    'name': contract.agent_name,
-  }
-  if (contract.agent_email) {
-    agent.email = getEmailProperty(contract.agent_email)
-  }
-  const participant: FormatContractParticipant = {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
-    '@type': contract.context ? contract?.context[1]?.participant : 'Person',
-    'sameAs': contract.participant_name,
-    'url': contract.participant_url,
-    'telephone': contract.participant_tel,
-  }
-  if (contract.participant_email) {
-    participant.email = getEmailProperty(contract.participant_email)
-  }
-  const instrument = {
-    '@type': 'Thing',
-    'name': contract.instrument_name,
-    'description': contract.instrument_description,
-  }
-  const identifier = contract.identifier
-  const object = contract?.images?.map(({ encodingFormat, contentUrl }) => ({
-    '@type': 'ImageObject',
-    'encodingFormat': encodingFormat,
-    'contentUrl': contentUrl,
-  }))
-  return {
-    '@context': 'https://schema.org',
-    '@type': contract.type ? contract.type[1] : 'OrganizeAction',
-    'sameAs': contract.resource_url,
-    'agent': agent,
-    'participant': participant,
-    'instrument': instrument,
-    'location': contract.location
-      ? (JSON.parse(contract.location) as FormatPlace)
-      : null,
-    'startTime': new Date(contract.startTime),
-    'endTime': contract.endTime ? new Date(contract.endTime) : null,
-    'object': object ?? [],
-    'proof': contract.proof ? contract.proof : null,
-    // 'url': contract.url, // todo поддержать url
-  } as FormatContract
-}

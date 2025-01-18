@@ -422,7 +422,7 @@ export default {
       sheet: {
         title: 'Select an action',
         link: {
-          label: 'Share to Sign',
+          label: 'Share SOLID Link',
           success: 'Link copied to clipboard',
           fail: 'Copy failed',
         },

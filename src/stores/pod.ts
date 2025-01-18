@@ -16,10 +16,9 @@ import {
   setThing,
   createThing,
 } from '@inrupt/solid-client'
-import { FOAF, SCHEMA_INRUPT } from '@inrupt/vocab-common-rdf'
+import { RDF, FOAF, SCHEMA_INRUPT } from '@inrupt/vocab-common-rdf'
 import useAuthStore from 'stores/auth'
 import useProfileStore from 'stores/profile'
-import { /*CredentialSubject,*/ FormatContract } from '../types/models'
 import pkg from '../../package.json'
 
 const { name } = pkg
@@ -27,12 +26,14 @@ const { name } = pkg
 interface State {
   resourceRootUrl: string
   oidcIssuer: string
+  dataset: SolidDataset
 }
 
 export default defineStore('pod', {
   state: (): State => ({
     resourceRootUrl: '',
     oidcIssuer: LocalStorage.getItem('oidcIssuer') ?? '',
+    dataset: createSolidDataset(),
   }),
   actions: {
     removeOIDCIssuer() {
@@ -185,18 +186,39 @@ export default defineStore('pod', {
 
       return this.saveDataset(resourceProfileUrl, updProfileDataset)
     },
-    async updateIntoPod(item: FormatContract) {
-      const resourceUrl = item.sameAs
-      let dataset = await this.getDataset(resourceUrl)
-      const instrument = getThing(dataset, resourceUrl + '#instrument')
+    async uploadIcal(resourceUrl: string, ical: string) {
+      let ds: SolidDataset = null
+      try {
+        ds = await getSolidDataset(resourceUrl, {
+          fetch,
+        })
+      } catch (error) {
+        ds = this.dataset
+        console.error(error)
+      }
+
+      const icalThing = buildThing(
+        createThing({
+          url: resourceUrl + '#ical',
+        }),
+      ).addStringNoLocale(RDF.type, ical)
+      ds = setThing(ds, icalThing.build())
+
+      console.log('ds', ds)
+      return this.saveDataset(resourceUrl, ds)
+    },
+    async updateIntoPod(resourceUrl: string) {
+      alert('WIP')
+      let ds = await this.getDataset(resourceUrl)
+      const instrument = getThing(ds, resourceUrl + '#instrument')
 
       const modify = buildThing(instrument).addStringNoLocale(
         SCHEMA_INRUPT.description,
-        item.instrument.description,
+        'my description',
       )
-      dataset = setThing(dataset, modify.build())
+      ds = setThing(ds, modify.build())
 
-      return this.saveDataset(resourceUrl, dataset)
+      return this.saveDataset(resourceUrl, ds)
     },
     /* fixme поддержать
     getContractId(credentialSubject: CredentialSubject) {

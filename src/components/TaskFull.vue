@@ -175,11 +175,17 @@ import {
 } from 'quasar'
 import { useI18n } from 'vue-i18n'
 import { storeToRefs } from 'pinia'
-// import * as vc from '@digitalbazaar/vc'
+import * as vc from '@digitalbazaar/vc'
 import useAuthStore from 'stores/auth'
+import usePodStore from 'stores/pod'
+import { WebId, universalAccess } from '@inrupt/solid-client'
 // import useWalletStore from 'stores/wallet'
 import ContractCarouselComponent from 'components/ContractCarouselComponent.vue'
+import useContractStore from 'stores/contract'
 import useLangStore from 'stores/lang'
+import { openMap } from '../services/geoService'
+import { keyPair } from '../services/databaseService'
+// import ContractPod from '../services/contractGeneratorService'
 import { parse } from '../helpers/markdownHelper'
 import { isDateNotOk } from '../helpers/dateHelper'
 import {
@@ -192,18 +198,15 @@ import { createCal, googleCalendarUrl } from '../helpers/calendarHelper'
 import { mailUrl } from '../helpers/mailHelper'
 import { open } from '../helpers/urlHelper'
 // import { isVerified } from '../helpers/contractHelper'
-import { openMap } from '../services/geoService'
-import useContractStore from 'stores/contract'
+import { documentLoader } from '../helpers/customLoaders'
 import {
   FormatImageType,
   Place,
   Agent,
-  // Presentation,
-  // VerifiableCredential,
+  Presentation,
+  VerifiableCredential,
 } from '../types/models'
 import { ROUTE_NAMES } from '../router/routes'
-// import { keyPair } from '../services/databaseService'
-// import { documentLoader } from '../helpers/customLoaders'
 
 enum Action {
   LINK = 'link',
@@ -230,6 +233,7 @@ const $t = i18n.t
 const contractStore = useContractStore()
 const authStore = useAuthStore()
 const langStore = useLangStore()
+const podStore = usePodStore()
 // const walletStore = useWalletStore()
 
 const { isLoggedIn } = storeToRefs(authStore)
@@ -237,6 +241,10 @@ const { isLoggedIn } = storeToRefs(authStore)
 
 const emit = defineEmits(['remove', 'edit'])
 const props = defineProps({
+  eventId: {
+    type: Number as PropType<number>,
+    required: true,
+  },
   attaches: {
     type: Array as PropType<FormatImageType[]>,
     default: () => [],
@@ -287,54 +295,22 @@ function itemScheduled(endTime: Date) {
   return endTime !== null && endTime < new Date()
 }
 
-/* fixme подписывать презентацию на Solid
-async function makePresentation(contract) {
-  const verifiableCredential = {
-    '@context': contract.context,
-    'credentialSubject': {
-      agent: {
-        name: contract.agent_name,
-        email: contract.agent_email,
-      },
-      participant: [
-        {
-          name: contract.participant_name,
-          email: contract.participant_email,
-          telephone: contract.participant_tel,
-          url: contract.participant_url,
-        },
-      ],
-      instrument: {
-        name: contract.instrument_name,
-        description: contract.instrument_description,
-      },
-      startTime: contract.startTime.toISOString(),
-      endTime: contract.endTime.toString(),
-      object: contract.images,
-      // location?: Place
-      // url: contract.
-      // sameAs: contract.,
-    },
-    'id': contract.resolver,
-    'issuanceDate': contract.issuanceDate.toISOString(),
-    'issuer': contract.issuer,
-    'proof': contract.proof,
-    'type': contract.type,
-  } as VerifiableCredential
-  const suite = await keyPair.getSuite()
+async function signPresentation(verifiableCredential: VerifiableCredential) {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
   const presentation = vc.createPresentation({
     verifiableCredential: [verifiableCredential],
+    // todo настроить id и holder
   }) as Presentation
+  const suite = await keyPair.getSuite()
   // Если вызвать метод sign два и более раза, то появляется Proof Chains
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-return,@typescript-eslint/no-unsafe-member-access
   return await vc.signPresentation({
     presentation,
     suite,
     challenge: uid(),
-    documentLoader: documentLoader,
+    documentLoader: documentLoader, // todo переделать под domain
   })
 }
-*/
 
 function prettyDate(startTime: Date, endTime?: Date) {
   const formatterDate = new Intl.DateTimeFormat(langStore.language, {
@@ -373,7 +349,8 @@ function onSheet() {
     actions.push({})
   }
   const group2 = [] // Publish Group
-  if (props.sameAs) {
+  // todo отображать если был указан WebId внешнего клиента
+  if (isLoggedIn.value) {
     group2.push({
       label: $t('components.archiveList.sheet.link.label'),
       icon: 'link',
@@ -456,7 +433,55 @@ function onSheet() {
         break
       }
       case Action.LINK: {
-        const shareLink = window.location.origin + '/sign?from=' + props.sameAs
+        console.warn('WIP Action.SHARE: поддержать создание шаринг линка ')
+
+        // Принцип работы:
+        // Пользователь создает презентацию где выбирает только нужные поля для шаринга
+        // Затем пользователь загружает свою презентацию на свой pod
+        // После этого пользователь делится ссылкой на свою презентацию с другим пользователем
+        const [contract] = await contractStore.filteredByIds([props.eventId])
+        /* eslint-disable */
+        const presentation = await signPresentation({
+          '@context': ['https://www.w3.org/2018/credentials/v1'],
+          'id':
+            'https://archive.gotointeractive.com/task/' +
+            contract.id +
+            '/user/123',
+          'type': ['VerifiableCredential'],
+          'issuer': contract.issuer,
+          'issuanceDate': contract.issuanceDate.toISOString(),
+          'credentialSubject': {
+            '@context': 'https://www.w3.org/ns/activitystreams',
+            'name': contract.name,
+            'description': contract.description,
+          },
+          'proof': contract.proof,
+        })
+        /* eslint-enable */
+        console.log('presentation', presentation)
+        // await podStore.initPod() // раскоментировать если до этого не логинился
+        await podStore.uploadIcal(
+          podStore.resourceRootUrl + 'events',
+          'myical example file',
+        )
+
+        // todo - поддержать подписание презентации через Solana (для Phantom Wallet)
+        // jsldContract = await signContractUseSolana(jsldContract)
+        // console.log('signed contract', jsldContract)
+        // endtodo
+
+        let shareLink = 'todo link' // fixme link
+        const webId: WebId = '123123' // fixme webId из customers которому нужно дать доступ
+
+        // todo при шаринге делать ограничение на добавление только proof и комментариев
+        await universalAccess.setAgentAccess(
+          shareLink,
+          webId,
+          { read: true, append: true, write: true },
+          {
+            fetch,
+          },
+        )
         return shareURL(shareLink)
       }
       case Action.GOOGLE_CALENDAR: {
@@ -547,10 +572,12 @@ async function shareURL(url: string) {
 }
 
 function onRemoveArchiveName(name: string) {
+  alert('WIP')
   contractStore.removeContractName(name)
 }
 
 async function onSelectArchiveName(name: string) {
+  alert('WIP')
   await router.push({
     name: ROUTE_NAMES.FILTER,
     query: {
