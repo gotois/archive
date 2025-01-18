@@ -61,7 +61,7 @@
         </QMenu>
       </QBtn>
     </div>
-    <template v-if="attaches.length">
+    <template v-if="attaches?.length">
       <QSeparator />
       <ContractCarouselComponent :model="attaches" />
     </template>
@@ -330,7 +330,7 @@ function prettyDate(startTime: Date, endTime?: Date) {
 function onSheet() {
   let actions: SheetAction[] = []
   const group1 = [] // Share local
-  if (canShare && props.attaches.length) {
+  if (canShare && props.attaches?.length) {
     group1.push({
       label: $t('components.archiveList.sheet.share.label'),
       icon: $q.platform.is.android ? 'share' : 'ios_share',

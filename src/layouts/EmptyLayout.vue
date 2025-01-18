@@ -10,13 +10,13 @@
       <QToolbar>
         <QBtn
           v-if="$route.name !== ROUTE_NAMES.TUTORIAL"
-          to="/"
           color="primary"
           icon="arrow_back"
           class="absolute"
           round
           flat
           unelevated
+          @click="clickBack"
         >
           <QTooltip>{{ $t('navigation.back') }}</QTooltip>
         </QBtn>
@@ -31,6 +31,7 @@
 <script lang="ts" setup>
 import { defineAsyncComponent } from 'vue'
 import {
+  SessionStorage,
   QLayout,
   QHeader,
   QToolbar,
@@ -38,14 +39,23 @@ import {
   QBtn,
   QTooltip,
 } from 'quasar'
-import { RouterView } from 'vue-router'
+import { useRouter, RouterView } from 'vue-router'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
 import { isTWA, isTMA } from '../helpers/twaHelper'
 import { ROUTE_NAMES } from '../router/routes'
 
+const router = useRouter()
+
 const AndroidBarComponent = defineAsyncComponent(
   () => import('components/AndroidBarComponent.vue'),
 )
+
+async function clickBack() {
+  SessionStorage.removeItem('restorePreviousSession')
+  await router.push({
+    name: ROUTE_NAMES.ROOT,
+  })
+}
 </script>
 <style lang="scss">
 :root {
