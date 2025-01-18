@@ -183,9 +183,10 @@ export type ContractData = {
 
 export interface FullTextDocument {
   id: number
-  instrument_name: string
+  name: string
   endTime: Date
-  instrument_description: string
+  // todo добавить startTime
+  description: string
 }
 
 export interface Calendar {

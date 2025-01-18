@@ -14,6 +14,7 @@ interface Store {
   contractNames: Map<string, ContractData>
   contracts: ContractTable[]
   contractsCount: number
+  events: CalendarEventExternal[]
 }
 
 let contractNames: Map<string, ContractData> = null
@@ -34,6 +35,7 @@ export default defineStore('contracts', {
     contracts: [],
     contractNames: contractNames,
     contractsCount: SessionStorage.getItem('contractsCount') ?? 0,
+    events: [],
   }),
   actions: {
     setContractsCount(count: number) {
@@ -190,13 +192,33 @@ export default defineStore('contracts', {
         return
       }
       this.contracts = await db.contracts
-        .where('instrument_name')
+        .where('name')
         .equals(query)
         .reverse()
         .sortBy('startTime')
     },
     async filteredByIds(ids: number[]) {
       return await db.contracts.bulkGet(ids)
+    },
+    async loadCalendar(startDate: Date, endDate?: Date) {
+      /* todo - восстановить RPC
+      const result = await rpc('get-calendar', {
+        '@context': 'https://www.w3.org/ns/activitystreams',
+        'type': 'Offer',
+        'object': {
+          type: 'Activity',
+          startTime: startDate,
+          endTime: endDate,
+        },
+      })
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
+      const calendar = result.data as string[]
+      // this.events = calendar.map((icalEvent) => convertIcalToEvent(icalEvent))
+      */
+      this.events = await this.getCalendarContracts({
+        from: startDate,
+        to: endDate,
+      })
     },
     async searchFromContracts({
       query,
@@ -215,7 +237,7 @@ export default defineStore('contracts', {
       }
       const MiniSearch = await import('minisearch')
       const miniSearch = new MiniSearch.default({
-        fields: ['instrument_name'],
+        fields: ['name'],
       })
       const documents = await db.getFulltextDocument()
       miniSearch.addAll(documents)

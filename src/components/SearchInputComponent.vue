@@ -376,14 +376,14 @@ function onFilterSelect(
             fuzzy: (term) => (term.length > 3 ? 0.2 : null),
             processTerm: (term) => term.toLowerCase(),
             boost: {
-              instrument_name: 2,
+              name: 2,
             },
             prefix: true,
             filter: (searchResult) => {
-              if (suggestionElement.has(searchResult.instrument_name)) {
+              if (suggestionElement.has(searchResult.name)) {
                 return false
               }
-              suggestionElement.add(searchResult.instrument_name)
+              suggestionElement.add(searchResult.name)
               return true
             },
           })

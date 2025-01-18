@@ -132,7 +132,7 @@
               :draggable="false"
               alt="Document"
               placeholder-src="Document"
-              @load="mediaType === PDF_MIME_TYPE ? null : prominentBGColors()"
+              @load="prominentBGColors()"
               @mouseleave="onShowCaption"
               @mouseenter="onHideCaption"
             >
@@ -226,11 +226,8 @@ function onShowCaption({ target }: { target: HTMLElement }) {
 }
 
 async function prominentBGColors() {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
-  color.value = await getColorFromImage(
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
-    props.model.value.object[currentSlide.value - 1].url,
-  )
+  const { url } = props.model[currentSlide.value - 1]
+  color.value = await getColorFromImage(url)
 }
 
 function onShowFullImage() {

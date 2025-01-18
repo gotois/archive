@@ -4,8 +4,8 @@ import useNotification from 'stores/notification'
 import { db } from './databaseService'
 
 export const miniSearch: MiniSearch = new MiniSearch({
-  fields: ['instrument_name', 'instrument_description'],
-  storeFields: ['instrument_name', 'instrument_description'],
+  fields: ['name', 'description'],
+  storeFields: ['name', 'instrument_description'],
 })
 
 export async function indexAllDocuments() {
@@ -17,7 +17,7 @@ export async function indexAllDocuments() {
       const diff = date.getDateDiff(doc.endTime, now, 'days')
       if (diff === 1) {
         notificationStore.add({
-          title: 'Tomorrow end: ' + doc.instrument_name,
+          title: 'Tomorrow end: ' + doc.name,
         })
       }
     })

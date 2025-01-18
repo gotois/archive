@@ -63,6 +63,7 @@ export async function createPDFs({
     unit: 'px',
     format: 'a4',
     hotfixes: ['px_scaling'],
+    compressPdf: false,
   })
   doc.setProperties({
     title: title,

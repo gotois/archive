@@ -121,7 +121,7 @@ import { createEventsServicePlugin } from '@schedule-x/events-service'
 import { createScrollControllerPlugin } from '@schedule-x/scroll-controller'
 import DayCalendar from 'components/DayCalendar.vue'
 import CalendarEventCard from 'components/CalendarEventCard.vue'
-import useCalendarStore from 'stores/calendar'
+import useContractStore from 'stores/contract'
 import useLangStore from 'stores/lang'
 import { formatToCalendarDate, isCurrentDate } from '../helpers/calendarHelper'
 import { ROUTE_NAMES } from '../router/routes'
@@ -140,7 +140,7 @@ const $q = useQuasar()
 const router = useRouter()
 const i18n = useI18n()
 const langStore = useLangStore()
-const calendarStore = useCalendarStore()
+const contractStore = useContractStore()
 const calendarControls = createCalendarControlsPlugin()
 const eventsServicePlugin = createEventsServicePlugin()
 const scrollController = createScrollControllerPlugin({
@@ -168,7 +168,7 @@ const calendarApp = createCalendar({
   firstDayOfWeek: 1,
   isDark: $q.dark.isActive,
   views: [createViewDay()],
-  events: calendarStore.events,
+  events: contractStore.events,
   plugins: [
     createCurrentTimePlugin({
       fullWeekWidth: false,
@@ -219,8 +219,8 @@ async function loadWeek(now: Date) {
     dates.push(new Date(d))
   }
   try {
-    await calendarStore.loadCalendar(dates.at(0), dates.at(-1))
-    eventsServicePlugin.set(calendarStore.events)
+    await contractStore.loadCalendar(dates.at(0), dates.at(-1))
+    eventsServicePlugin.set(contractStore.events)
   } catch (error) {
     console.error(error)
   }
