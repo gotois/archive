@@ -442,13 +442,22 @@ const z = {
 
 export function documentLoader(url: string) {
   switch (url) {
+    case 'https://www.w3.org/ns/credentials/v2':
+      // todo для v2 проставлять другой тип
+      return x
     case 'https://www.w3.org/2018/credentials/v1':
       return x
     case 'https://w3id.org/security/suites/ed25519-2020/v1':
       return y
     case 'https://www.w3.org/ns/activitystreams':
       return z
-    default:
+    case 'did:gic:demo': {
+      console.warn('WIP testing')
+      return x
+    }
+    default: {
+      alert('Unknown url: ' + url)
       throw new Error('Unknown type url: ' + url)
+    }
   }
 }

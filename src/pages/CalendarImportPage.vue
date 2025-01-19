@@ -1,62 +1,67 @@
 <template>
   <div>
-    <div>
-      <a :href="googleOAuthLink">Open Google Calendar</a>
-    </div>
-    <QBtn label="Google calendar Sync" @click="syncGoogleCalendar" />
+    <QCard
+      flat
+      square
+      :style="{
+        paddingLeft: $q.platform.is.desktop ? 'calc(50vw / 2)' : null,
+        paddingRight: $q.platform.is.desktop ? 'calc(50vw / 2)' : null,
+      }"
+    >
+      <QCardSection>
+        <div class="text-h6">GOOGLE CALENDAR</div>
+      </QCardSection>
+      <QCardSection>
+        <QBtn
+          v-if="!googleCode"
+          :href="googleOAuthLink"
+          label="Open Google Calendar"
+        />
+        <template v-else>
+          <QBtn label="Sync" @click="syncGoogleCalendar" />
+          <QBtn label="Reset" @click="googleCode = null" />
+        </template>
+      </QCardSection>
+    </QCard>
   </div>
 </template>
 <script lang="ts" setup>
-import { LocalStorage, QBtn } from 'quasar'
+import { onMounted, ref } from 'vue'
+import { QBtn, QCard, QCardSection } from 'quasar'
+import rpc from '../helpers/rpc'
+import useSecretaryStore from 'stores/secretary'
 
-const GOOGLE_OAUTH_CLIENT_ID = process.env.google_client_id
-const GOOGLE_REDIRECT_URI = process.env.google_redirect_uri
+const secretaryStore = useSecretaryStore()
+
+const googleCode = ref<string>(null)
 
 const googleOAuthLink =
   'https://accounts.google.com/o/oauth2/v2/auth?client_id=' +
-  GOOGLE_OAUTH_CLIENT_ID +
+  process.env.google_client_id +
   '&redirect_uri=' +
-  encodeURIComponent(GOOGLE_REDIRECT_URI) +
+  encodeURIComponent(process.env.google_redirect_uri) +
   '&response_type=code&scope=' +
   encodeURIComponent('https://www.googleapis.com/auth/calendar') +
   '&access_type=offline&prompt=consent'
 
-// todo перенсти это на сервер Секретаря
-async function getOauthToken(code: string) {
-  const clientSecret = '4pKDv4cysrJjh_lrVp6rJhqT'
-  const response = await fetch('https://oauth2.googleapis.com/token', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: new URLSearchParams({
-      code: code,
-      client_id: GOOGLE_OAUTH_CLIENT_ID,
-      client_secret: clientSecret,
-      redirect_uri: GOOGLE_REDIRECT_URI,
-      grant_type: 'authorization_code',
-    }),
+async function syncGoogleCalendar() {
+  await secretaryStore.ping()
+  const events = await rpc('get-calendar-google', {
+    code: googleCode.value,
+    username: 'YOUR_EMAIL@gmail.com', // fixme поддержать пользователя из запроса
   })
-  return (await response.json()) as {
-    expires_in: number
-    refresh_token: string
-  }
+  // TODO после записи нужно сбрасывать queryString чтобы код не сохранялся
+  // ...
+  // TODO WIP настроить чтобы данные из caldav записывались в локальное хранилище
+  console.log('WIP...', events)
 }
 
-// TODO делать запрос к секретарю через JRPC-2 чтобы получать события от секретаря
-async function syncGoogleCalendar() {
+onMounted(() => {
   const searchParams = new URLSearchParams(window.location.search)
   const code = searchParams.get('code')
   console.log('OAuth code', code)
   if (code?.length) {
-    const data = (await getOauthToken(code)) as {
-      expires_in: number
-      refresh_token: string
-    }
-    console.log('OAuth data:', data)
-    if (data.refresh_token) {
-      LocalStorage.setItem('refresh_token', data.refresh_token)
-    }
+    googleCode.value = code
   }
-}
+})
 </script>

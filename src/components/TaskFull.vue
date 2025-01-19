@@ -312,6 +312,19 @@ async function signPresentation(verifiableCredential: VerifiableCredential) {
   })
 }
 
+async function verifyPresentation(presentation: Presentation) {
+  const suite = await keyPair.getSuite()
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
+  const verify = await vc.verify({
+    presentation,
+    documentLoader,
+    suite,
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    challenge: presentation.proof.challenge,
+  })
+  console.log('v', verify)
+}
+
 function prettyDate(startTime: Date, endTime?: Date) {
   const formatterDate = new Intl.DateTimeFormat(langStore.language, {
     year: 'numeric',
@@ -451,7 +464,7 @@ function onSheet() {
           'issuer': contract.issuer,
           'issuanceDate': contract.issuanceDate.toISOString(),
           'credentialSubject': {
-            '@context': 'https://www.w3.org/ns/activitystreams',
+            '@context': ['https://www.w3.org/ns/activitystreams'],
             'name': contract.name,
             'description': contract.description,
           },
@@ -459,6 +472,13 @@ function onSheet() {
         })
         /* eslint-enable */
         console.log('presentation', presentation)
+        // todo настроить правильную верификацию
+        try {
+          await verifyPresentation(presentation)
+        } catch (e) {
+          console.warn('Verification failed', e)
+        }
+
         // await podStore.initPod() // раскоментировать если до этого не логинился
         await podStore.uploadIcal(
           podStore.resourceRootUrl + 'events',
