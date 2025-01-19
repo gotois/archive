@@ -58,16 +58,13 @@
   </QForm>
 </template>
 <script lang="ts" setup>
-import { ref, computed, defineAsyncComponent } from 'vue'
+import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useQuasar, QBtn, QForm, QInput, QStepperNavigation } from 'quasar'
 import { storeToRefs } from 'pinia'
 import useProfileStore from 'stores/profile'
+import KeypairComponent from 'components/KeypairComponent.vue'
 import { DIDTable } from '../types/models'
-
-const KeypairComponent = defineAsyncComponent(
-  () => import('components/KeypairComponent.vue'),
-)
 
 const emit = defineEmits(['complete'])
 const $q = useQuasar()
@@ -79,7 +76,7 @@ const { getPersonLD } = storeToRefs(profileStore)
 const keypair = ref<DIDTable>(null)
 
 const consumerValid = computed(() => {
-  return Boolean(getPersonLD.value.name?.length > 3 && keypair.value?.id)
+  return Boolean(getPersonLD.value.name?.length > 0 && keypair.value?.id)
 })
 
 function uploadKey(key: DIDTable) {
