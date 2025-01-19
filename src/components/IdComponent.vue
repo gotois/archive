@@ -9,16 +9,16 @@
     @submit="emit('complete')"
   >
     <QInput
-      v-if="did"
+      v-if="webId"
       :hint="$t('tutorial.data.hint')"
-      :hide-hint="Boolean(did)"
-      :model-value="did"
+      :hide-hint="Boolean(webId)"
+      :model-value="webId"
       color="secondary"
       :dense="$q.platform.is.desktop"
       readonly
       hide-bottom-space
     />
-    <KeypairComponent v-else @on-key="uploadKey" />
+    <KeypairComponent v-else @key="uploadKey" />
     <QInput
       v-model.trim="email"
       name="email"
@@ -114,13 +114,13 @@ const i18n = useI18n()
 const $t = i18n.t
 const profileStore = useProfileStore()
 
-const { did, getPersonLD, email } = storeToRefs(profileStore)
+const { webId, getPersonLD, email } = storeToRefs(profileStore)
 
 const consumerValid = computed(() => {
   return Boolean(
     getPersonLD.value.name.length > 3 &&
       patterns.testPattern.email(email.value) &&
-      did.value,
+      webId.value,
   )
 })
 
@@ -130,6 +130,6 @@ function handleCredentialResponse(res: { email: string }) {
 }
 
 function uploadKey(key: DIDTable) {
-  profileStore.consumerDID(key.id)
+  console.log(key)
 }
 </script>

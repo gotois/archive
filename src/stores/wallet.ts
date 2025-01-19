@@ -37,7 +37,7 @@ export default defineStore('wallet', {
           await keys.add({
             type: this.type,
             privateKey: null,
-            publicKey: this.getMultibase,
+            publicKey: this.getMultibase as string,
             clusterApiUrl: null,
           })
           break
@@ -58,7 +58,7 @@ export default defineStore('wallet', {
           await keys.add({
             type: this.type,
             privateKey: keypair.secretKey,
-            publicKey: this.getMultibase,
+            publicKey: this.getMultibase as string,
             clusterApiUrl: clusterApiUrl,
           })
           break
@@ -77,7 +77,7 @@ export default defineStore('wallet', {
     getMultibase(state): string {
       if (state.type === WalletType.Phantom) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return
-        return this.getPublicKey?.toBase58() ?? ''
+        return (this.getPublicKey?.toBase58() as string) ?? ''
       }
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
@@ -89,9 +89,9 @@ export default defineStore('wallet', {
 
       return {
         '@context': ['https://w3id.org/wallet/v1'],
-        'id': profileStore.did,
+        'id': profileStore.webId as string,
         'type': 'SolanaAddress',
-        'multibase': String(state.getMultibase),
+        'multibase': state.getMultibase as string,
         'name': String(state.type),
         'correlation': [authStore.webId, profileStore.email],
       }

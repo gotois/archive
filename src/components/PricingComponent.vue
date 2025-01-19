@@ -1,11 +1,5 @@
 <template>
-  <div
-    class="items-start justify-center self-start items-stretch"
-    :class="{
-      'row q-pa-md q-gutter-md': $q.platform.is.desktop,
-      'row q-gutter-xs': $q.platform.is.ipad,
-    }"
-  >
+  <div class="items-start justify-center self-start items-stretch">
     <QCard
       square
       :flat="$q.platform.is.mobile"
@@ -220,10 +214,6 @@ const premiumFunctional = ref([
         children: [
           { label: $t('pricing.premium.functions.values.2') },
           { label: $t('pricing.premium.functions.values.3') },
-          { label: $t('pricing.premium.functions.values.4') },
-          { label: $t('pricing.premium.functions.values.5') },
-          { label: $t('pricing.premium.functions.values.6') },
-          { label: $t('pricing.premium.functions.values.7') },
         ],
       },
     ],

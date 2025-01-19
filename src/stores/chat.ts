@@ -17,7 +17,6 @@ export default defineStore('chat', {
   }),
   actions: {
     add(item: Message) {
-      console.log('message', item)
       this.messages.push(item)
     },
     async dialog() {

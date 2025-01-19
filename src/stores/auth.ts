@@ -12,8 +12,6 @@ interface Store {
   tryAuth: boolean
 }
 
-export const demoUserWebId = 'did:gic:demo' as WebId
-
 export default defineStore('auth', {
   state: (): Store => ({
     tryAuth: LocalStorage.getItem('tryAuth') ?? false,
@@ -21,7 +19,7 @@ export default defineStore('auth', {
     openIdSessionId: '',
     openIdExpirationDate: null,
     openIdIsLoggedIn: false,
-    webId: getDefaultSession().info.webId ?? demoUserWebId,
+    webId: getDefaultSession().info.webId,
   }),
   actions: {
     setTryAuthValue() {
@@ -47,11 +45,6 @@ export default defineStore('auth', {
     },
   },
   getters: {
-    // Переименовать, Demo вводит в заблуждение
-    isDemo(state) {
-      return state.openIdSessionId.length === 0 && !state.tryAuth
-    },
-    // todo - нужно разделение описания, так как сейчас можно быть залогиненым как через Solid, так и через Telegram
     isLoggedIn(state) {
       return state.openIdIsLoggedIn
     },

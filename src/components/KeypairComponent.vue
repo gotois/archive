@@ -43,7 +43,7 @@ import {
 import { DIDTable } from '../types/models'
 import { keyPair } from '../services/databaseService'
 
-const emit = defineEmits(['onKey'])
+const emit = defineEmits(['key'])
 
 const $t = useI18n().t
 const $q = useQuasar()
@@ -65,7 +65,7 @@ function onLoadKeyPairFile(file: File) {
           publicKeyMultibase: key.publicKeyMultibase,
           privateKeyMultibase: key.privateKeyMultibase,
         })
-        emit('onKey', key)
+        emit('key', key)
       } catch (error) {
         console.error(error)
         $q.notify({
@@ -86,7 +86,7 @@ function exportKeyPair(key: DIDTable) {
     persistent: true,
   })
   dialog.onDismiss(() => {
-    emit('onKey', key)
+    emit('key', key)
   })
   dialog.onOk(() => {
     const keysJSON = keyPair.prepareKeyPair(key)
@@ -102,7 +102,7 @@ function exportKeyPair(key: DIDTable) {
         message: $t('components.keypair.export.dialog.fail'),
       })
     }
-    emit('onKey', key)
+    emit('key', key)
   })
 }
 

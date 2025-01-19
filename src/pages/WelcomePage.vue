@@ -52,7 +52,7 @@
           glossy
           push
           fab
-          @click="onRegister"
+          @click="registerPage"
         >
           <QIcon
             v-if="$q.platform.is.desktop"
@@ -197,9 +197,15 @@
 
     <QSpace class="q-mt-xl" />
 
-    <QCard class="q-pa-md" flat>
+    <QCard flat>
       <!--  AND location !== RU-->
-      <PricingComponent class="fit" />
+      <PricingComponent
+        class="fit"
+        :class="{
+          'row q-pa-md q-gutter-md': $q.platform.is.desktop,
+          'q-gutter-xs': !$q.platform.is.desktop,
+        }"
+      />
     </QCard>
 
     <QTimeline class="q-mt-md q-mb-md q-pl-md q-pr-md">
@@ -211,10 +217,9 @@
       >
         Как это работает
       </h2>
-      <div class="text-subtitle1 text-center">
-        Система электронного документооборота GIC автоматизирует все стадии
-        производства
-      </div>
+      <h3 class="text-subtitle1 text-center">
+        Автоматизация стадий организации, планирования и управления временем
+      </h3>
       <div
         :style="{
           marginLeft: $q.platform.is.desktop ? 'calc(50vw / 2)' : null,
@@ -222,27 +227,27 @@
         }"
       >
         <QTimelineEntry
-          title="Подключение криптокошелька"
+          title="Авторизация Telegram"
           subtitle="Шаг 1"
           color="accent"
           icon="key"
           class="text-left"
         >
-          <div>Авторизуйтесь под своим аккаунтом Solana.</div>
+          <div>Авторизуйте свой аккаунт через Telegram.</div>
         </QTimelineEntry>
         <QTimelineEntry
-          title="Подключение Pod"
+          title="Установка Web Id"
           subtitle="Шаг 2"
           color="accent"
           icon="memory"
           class="text-left"
         >
           <div>
-            Выберите свой Solid сервер где планируете хранить документы.
+            Выберите свой Solid Pod сервер где вы будете хранить свои документы.
           </div>
         </QTimelineEntry>
         <QTimelineEntry
-          title="Загрузите электронную подпись"
+          title="Электронная подпись Ed25519"
           subtitle="Шаг 3"
           color="accent"
           icon="done_outline"
@@ -253,16 +258,15 @@
           </div>
         </QTimelineEntry>
         <QTimelineEntry
-          title="Загрузите документ"
+          title="Сформируйте обязательство"
           subtitle="Шаг 4"
           color="positive"
           icon="done_all"
           class="text-left"
         >
           <div>
-            Загрузите файл документа и создайте маршрут его на подписания.
+            Общайтесь с Секретарем и формируйте файлы договора и создавайте маршруты его подписания с агентами.
           </div>
-          <div>Контрагент сможет его подписать по ссылке.</div>
         </QTimelineEntry>
       </div>
     </QTimeline>
@@ -284,22 +288,32 @@
     >
       <QExpansionItem
         expand-separator
-        label="Какие подписи вы поддерживаете?"
-        caption="НЭП, Solana"
+        label="Как вы обеспечиваете безопасность данных?"
+        caption="Данные не хранятся на сервере"
       >
         <QCard>
           <QCardSection class="text-left">
-            Для Российского законодательства используйте НЭП. Она подтверждает
-            кто подписал документ, а также, что его не меняли после подписания.
-            Ч. 2 ст. 6 Федерального закона №63-ФЗ «Об электронной подписи» П. 1
-            ст. 160 Гражданского кодекса РФ.
+            Виртуальный секретарь использует современные методы шифрования при передаче данных.
+            Данные не хранятся на сервере Виртуального секретаря, а хранятся на вашем устройстве или вашем Solid Pod сервере.
           </QCardSection>
         </QCard>
       </QExpansionItem>
       <QExpansionItem
         expand-separator
-        label="Какие документы можно подписывать в Мои договоры?"
-        caption="Можно подписать 99% документов"
+        label="В каком формате хранятся обязательства?"
+        caption="Verifiable Credentials Activity Streams Presentation"
+      >
+        <QCard>
+          <QCardSection class="text-left">
+            Все обязательствао подписываются вашим ключом Verifiable Credentials и хранятся в формате JSON-LD.
+            Вы можете в любой момент их экспортировать в формат iCalendar.
+          </QCardSection>
+        </QCard>
+      </QExpansionItem>
+      <QExpansionItem
+        expand-separator
+        label="Интеграции с другими сервисами?"
+        caption="Google Calendar"
       >
         <QCard>
           <QCardSection class="text-left">
@@ -308,18 +322,6 @@
             и приложения к ним, письма, платежные поручения, счета и технические
             задания, доверенности, и любые другие документы, для которых по
             закону достаточно усиленной неквалифицированной подписи и т.д.
-          </QCardSection>
-        </QCard>
-      </QExpansionItem>
-      <QExpansionItem
-        expand-separator
-        label="Примет ли налоговая документы, подписанные в Мои договоры?"
-        caption="Зависит от электронной подписи"
-      >
-        <QCard>
-          <QCardSection class="text-left">
-            Документы подписанные вашим НЭП имеют юридическую силу, их примут в
-            суде. Такая подпись приравнивается к собственноручной.
           </QCardSection>
         </QCard>
       </QExpansionItem>
@@ -333,20 +335,20 @@
       }"
       dark
     >
-      <QSeparator spaced dark />
       <QItemLabel header class="text-center">
         ООО "Виртуальный секретарь"
       </QItemLabel>
       <QItemLabel caption class="text-center text-uppercase">
         ИНН 2632123201
       </QItemLabel>
-      <QItem v-ripple clickable dense @click="onSupport">
+      <QSeparator spaced dark />
+      <QItem v-ripple clickable dense @click="supportPage">
         <QCardSection>
           <QItemLabel lines="1" class="text-left">Поддержка</QItemLabel>
           <QItemLabel caption>Обратиться в центр поддержки</QItemLabel>
         </QCardSection>
       </QItem>
-      <QItem v-ripple clickable dense @click="onPrivacy">
+      <QItem v-ripple clickable dense @click="privacyPage">
         <QCardSection>
           <QItemLabel lines="1" class="text-left"
             >Политика обработки персональных данных
@@ -396,7 +398,7 @@ const metaData = {
   'og:title': $t('pages.welcome.title'),
 }
 
-function onRegister() {
+function registerPage() {
   return router.push({
     name: ROUTE_NAMES.TUTORIAL,
     query: {
@@ -406,12 +408,12 @@ function onRegister() {
   })
 }
 
-function onSupport() {
+function supportPage() {
   const [{ email }] = pkg.contributors
   open(`mailto:${email}?subject=SUPPORT`)
 }
 
-function onPrivacy() {
+function privacyPage() {
   return router.push({
     name: ROUTE_NAMES.PRIVACY,
   })

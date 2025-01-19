@@ -1,12 +1,12 @@
 import { LocalStorage } from 'quasar'
 import { defineStore } from 'pinia'
 import useSecretaryStore from 'stores/secretary'
+import useAuthStore from 'stores/auth'
 import { getGravatarURL } from '../helpers/schemaHelper'
 import { validUrlString } from '../helpers/urlHelper'
 import getLocation from '../services/cloudflare'
 
 interface State {
-  did: string
   email: string
   phone: string
   avatar: string
@@ -16,7 +16,6 @@ interface State {
 export default defineStore('profile', {
   state: (): State => ({
     // todo выбирать все не из LocalStorage, а из JWT payload
-    did: LocalStorage.getItem('did') ?? '',
     email: LocalStorage.getItem('email') ?? '',
     phone: LocalStorage.getItem('phone') ?? '',
     avatar: LocalStorage.getItem('avatar') ?? '',
@@ -26,11 +25,6 @@ export default defineStore('profile', {
     async setNetworkUser() {
       const { loc } = await getLocation()
       this.loc = loc
-    },
-    consumerDID(value: string) {
-      const did = value.trim()
-      LocalStorage.set('did', did)
-      this.did = did
     },
     consumerEmail(value: string) {
       const email = value.trim()
@@ -56,10 +50,11 @@ export default defineStore('profile', {
   getters: {
     getPersonLD(state) {
       const secretaryStore = useSecretaryStore()
-      // todo - поддержать выдачу WebId
+      const authStore = useAuthStore()
       return {
         '@context': 'https://json-ld.org/contexts/person.jsonld',
         '@type': 'Person',
+        'id': authStore.webId,
         'email': secretaryStore.payload.email,
         'name': secretaryStore.payload.name,
         'image': state.avatar,

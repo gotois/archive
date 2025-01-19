@@ -67,8 +67,8 @@
       color="secondary"
       type="email"
       outlined
-      :clearable="!isDemo"
-      :readonly="isDemo"
+      clearable
+      :readonly="false"
       stack-label
       :hide-hint="!$q.platform.is.desktop"
       :hide-bottom-space="!getPersonLD.email"
@@ -88,10 +88,10 @@
       color="secondary"
       type="tel"
       mask="### ### ####"
-      :fill-mask="!isDemo"
+      :fill-mask="!false"
       outlined
-      :clearable="!isDemo"
-      :readonly="isDemo"
+      :clearable="true"
+      :readonly="false"
       stack-label
       :hide-hint="!$q.platform.is.desktop"
       :hide-bottom-space="!getPersonLD.telephone"
@@ -105,7 +105,6 @@
       </template>
     </QInput>
     <QBtn
-      v-if="!isDemo"
       :label="$t('consumer.save')"
       icon="save"
       class="full-width"
@@ -143,7 +142,7 @@ const i18n = useI18n()
 const $t = i18n.t
 
 const { email, phone, getPersonLD } = storeToRefs(profileStore)
-const { isLoggedIn, isDemo, webId } = storeToRefs(authStore)
+const { isLoggedIn, webId } = storeToRefs(authStore)
 
 async function onFinishProfile() {
   profileStore.consumerEmail(email.value)

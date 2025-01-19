@@ -71,8 +71,8 @@ export default {
     version: 'v.{version}',
     title: 'Settings',
     register: 'Registration',
-    signout: 'Exit from SOLiD',
-    signin: 'Login with WebID',
+    signout: 'Exit from Solid',
+    signin: 'Login with Solid',
     support: {
       free: {
         label: 'Leave a review',
@@ -287,12 +287,8 @@ export default {
         title: 'Extended functions',
         values: {
           '1': 'Everything included in Free, plus...',
-          '2': 'Crypto sign',
-          '3': '10gb space to SOLiD server',
-          '4': 'MINT NFT',
-          '5': 'Verification',
-          '6': 'PDF analyze',
-          '7': 'GIC Court',
+          '2': 'GenAI: text, pdf',
+          '3': 'Verification',
         },
       },
     },
@@ -306,6 +302,8 @@ export default {
           '1': 'Everything included in Premium, plus...',
           '2': 'Voice help 24/7',
           '3': 'Privileged training events',
+          '4': 'GIC Court',
+          '5': '10gb space SOLiD server',
         },
       },
       functions: {

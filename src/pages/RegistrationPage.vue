@@ -181,7 +181,6 @@ import {
   popup,
   hapticFeedbackNotificationOccurred,
 } from '@telegram-apps/sdk'
-import useAuthStore, { demoUserWebId } from 'stores/auth'
 import useTutorialStore from 'stores/tutorial'
 import useProfileStore from 'stores/profile'
 import useSecretaryStore from 'stores/secretary'
@@ -202,7 +201,6 @@ const IdComponent = defineAsyncComponent(
 const $t = useI18n().t
 const $q = useQuasar()
 const router = useRouter()
-const authStore = useAuthStore()
 const profileStore = useProfileStore()
 const tutorialStore = useTutorialStore()
 const secretaryStore = useSecretaryStore()
@@ -223,7 +221,7 @@ const step = ref(getCurrentStep() ?? STEP.WELCOME)
 const creatingNewContract = ref(false)
 const contract = ref<VerifiableCredential>(null)
 
-const { did, getPersonLD, phone, email } = storeToRefs(profileStore)
+const { getPersonLD, phone, email } = storeToRefs(profileStore)
 
 watch(
   () => step.value,
@@ -273,14 +271,7 @@ async function onFinish() {
     await Notification.requestPermission()
   }
 
-  if (!authStore.webId) {
-    authStore.webId = demoUserWebId
-  }
-
   try {
-    if (!did.value) {
-      throw new Error('DID empty')
-    }
     profileStore.consumerEmail(email.value)
     profileStore.consumerPhone(phone.value)
     await profileStore.setAvatar(email.value)
