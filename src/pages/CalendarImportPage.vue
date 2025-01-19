@@ -12,11 +12,7 @@
         <div class="text-h6">GOOGLE CALENDAR</div>
       </QCardSection>
       <QCardSection>
-        <GoogleOAuth
-          v-if="GOOGLE_OAUTH_CLIENT_ID"
-          @callback="handleCredentialResponse"
-        />
-        <template v-if="googleEmail">
+        <template v-if="consumerValid">
           <QBtn
             v-if="!googleCode"
             :href="googleOAuthLink"
@@ -27,13 +23,42 @@
             <QBtn label="Reset" @click="googleCode = null" />
           </template>
         </template>
+        <QInput
+          v-model.trim="googleEmail"
+          name="email"
+          type="email"
+          color="secondary"
+          :rules="['email']"
+          :error-message="$t('consumer.emailRules')"
+          autocomplete="off"
+          :clearable="true"
+          :fill-mask="true"
+          :dense="$q.platform.is.desktop"
+          lazy-rules
+          hide-bottom-space
+          :filled="!Boolean(googleEmail)"
+          :label="$t('consumer.email')"
+          square
+          outlined
+          no-error-icon
+        >
+          <template #before>
+            <GoogleOAuth
+              v-if="GOOGLE_OAUTH_CLIENT_ID"
+              @callback="handleCredentialResponse"
+            />
+          </template>
+          <template #prepend>
+            <QIcon name="email" />
+          </template>
+        </QInput>
       </QCardSection>
     </QCard>
   </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue'
-import { QBtn, QCard, QCardSection } from 'quasar'
+import { onMounted, ref, computed } from 'vue'
+import { QBtn, QCard, QCardSection, QIcon, QInput, patterns } from 'quasar'
 import rpc from '../helpers/rpc'
 import useSecretaryStore from 'stores/secretary'
 import GoogleOAuth from 'components/GoogleOAuth.vue'
@@ -43,6 +68,9 @@ const secretaryStore = useSecretaryStore()
 
 const googleCode = ref<string>(null)
 const googleEmail = ref<string>(null)
+const consumerValid = computed(() => {
+  return Boolean(patterns.testPattern.email(googleEmail.value))
+})
 
 const googleOAuthLink =
   'https://accounts.google.com/o/oauth2/v2/auth?client_id=' +

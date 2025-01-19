@@ -19,35 +19,6 @@
       hide-bottom-space
     />
     <KeypairComponent v-else @key="uploadKey" />
-    <QInput
-      v-model.trim="email"
-      name="email"
-      type="email"
-      color="secondary"
-      :rules="['email']"
-      :error-message="$t('consumer.emailRules')"
-      autocomplete="off"
-      :clearable="true"
-      :fill-mask="true"
-      :dense="$q.platform.is.desktop"
-      lazy-rules
-      hide-bottom-space
-      :filled="!Boolean(email)"
-      :label="$t('consumer.email')"
-      square
-      outlined
-      no-error-icon
-    >
-      <template #before>
-        <GoogleOAuth
-          v-if="GOOGLE_OAUTH_CLIENT_ID"
-          @callback="handleCredentialResponse"
-        />
-      </template>
-      <template #prepend>
-        <QIcon name="email" />
-      </template>
-    </QInput>
     <!-- todo заменить на vue3-q-tel-input
     <QInput
       v-model.trim="phone"
@@ -89,20 +60,10 @@
 <script lang="ts" setup>
 import { ref, computed, defineAsyncComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
-import {
-  useQuasar,
-  QBtn,
-  QForm,
-  QIcon,
-  QInput,
-  QStepperNavigation,
-  patterns,
-} from 'quasar'
+import { useQuasar, QBtn, QForm, QInput, QStepperNavigation } from 'quasar'
 import { storeToRefs } from 'pinia'
 import useProfileStore from 'stores/profile'
-import GoogleOAuth from 'components/GoogleOAuth.vue'
 import { DIDTable } from '../types/models'
-import { GOOGLE_OAUTH_CLIENT_ID } from '../helpers/googleOAuthHelper'
 
 const KeypairComponent = defineAsyncComponent(
   () => import('components/KeypairComponent.vue'),
@@ -114,21 +75,12 @@ const i18n = useI18n()
 const $t = i18n.t
 const profileStore = useProfileStore()
 
-const { getPersonLD, email } = storeToRefs(profileStore)
+const { getPersonLD } = storeToRefs(profileStore)
 const keypair = ref<DIDTable>(null)
 
 const consumerValid = computed(() => {
-  return Boolean(
-    getPersonLD.value.name.length > 3 &&
-      patterns.testPattern.email(email.value) &&
-      keypair.value.id,
-  )
+  return Boolean(getPersonLD.value.name?.length > 3 && keypair.value?.id)
 })
-
-function handleCredentialResponse(res: { email: string }) {
-  profileStore.consumerEmail(res.email)
-  email.value = res.email
-}
 
 function uploadKey(key: DIDTable) {
   keypair.value = key

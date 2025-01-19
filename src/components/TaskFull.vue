@@ -470,7 +470,7 @@ function onSheet() {
         // После этого пользователь делится ссылкой на свою презентацию с другим пользователем
         const [contract] = await contractStore.filteredByIds([props.eventId])
         /* eslint-disable */
-        const presentation = await signPresentation({
+        const presentation: Presentation = await signPresentation({
           '@context': ['https://www.w3.org/2018/credentials/v1'],
           'id':
             'https://archive.gotointeractive.com/task/' +
