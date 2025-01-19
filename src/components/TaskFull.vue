@@ -210,6 +210,7 @@ import { ROUTE_NAMES } from '../router/routes'
 
 enum Action {
   LINK = 'link',
+  PUBLISH = 'publish',
   SHARE = 'share',
   CALENDAR = 'calendar',
   GOOGLE_CALENDAR = 'google-calendar',
@@ -365,6 +366,12 @@ function onSheet() {
   // todo отображать если был указан WebId внешнего клиента
   if (isLoggedIn.value) {
     group2.push({
+      label: 'Publish to Pod',
+      icon: 'publish',
+      color: 'primary',
+      id: Action.PUBLISH,
+    })
+    group2.push({
       label: $t('components.archiveList.sheet.link.label'),
       icon: 'link',
       color: 'primary',
@@ -445,6 +452,15 @@ function onSheet() {
         }
         break
       }
+      case Action.PUBLISH: {
+        console.log('WIP')
+        // await podStore.initPod() // раскоментировать если до этого не логинился
+        await podStore.uploadIcal(
+          podStore.resourceRootUrl + 'events',
+          'myical example file',
+        )
+        break
+      }
       case Action.LINK: {
         console.warn('WIP Action.SHARE: поддержать создание шаринг линка ')
 
@@ -479,21 +495,17 @@ function onSheet() {
           console.warn('Verification failed', e)
         }
 
-        // await podStore.initPod() // раскоментировать если до этого не логинился
-        await podStore.uploadIcal(
-          podStore.resourceRootUrl + 'events',
-          'myical example file',
-        )
-
         // todo - поддержать подписание презентации через Solana (для Phantom Wallet)
         // jsldContract = await signContractUseSolana(jsldContract)
         // console.log('signed contract', jsldContract)
         // endtodo
 
-        let shareLink = 'todo link' // fixme link
+        // todo должно открываться меню с выбором Web_id другого лица и которому дается доступ на чтение или запись твоего календаря
+        // ...
         const webId: WebId = '123123' // fixme webId из customers которому нужно дать доступ
 
         // todo при шаринге делать ограничение на добавление только proof и комментариев
+        let shareLink = 'todo link' // fixme solid dataset url
         await universalAccess.setAgentAccess(
           shareLink,
           webId,

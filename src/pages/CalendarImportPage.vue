@@ -12,14 +12,20 @@
         <div class="text-h6">GOOGLE CALENDAR</div>
       </QCardSection>
       <QCardSection>
-        <QBtn
-          v-if="!googleCode"
-          :href="googleOAuthLink"
-          label="Open Google Calendar"
+        <GoogleOAuth
+          v-if="GOOGLE_OAUTH_CLIENT_ID"
+          @callback="handleCredentialResponse"
         />
-        <template v-else>
-          <QBtn label="Sync" @click="syncGoogleCalendar" />
-          <QBtn label="Reset" @click="googleCode = null" />
+        <template v-if="googleEmail">
+          <QBtn
+            v-if="!googleCode"
+            :href="googleOAuthLink"
+            label="Open Google Calendar"
+          />
+          <template v-else>
+            <QBtn label="Sync" @click="syncGoogleCalendar" />
+            <QBtn label="Reset" @click="googleCode = null" />
+          </template>
         </template>
       </QCardSection>
     </QCard>
@@ -30,10 +36,13 @@ import { onMounted, ref } from 'vue'
 import { QBtn, QCard, QCardSection } from 'quasar'
 import rpc from '../helpers/rpc'
 import useSecretaryStore from 'stores/secretary'
+import GoogleOAuth from 'components/GoogleOAuth.vue'
+import { GOOGLE_OAUTH_CLIENT_ID } from '../helpers/googleOAuthHelper'
 
 const secretaryStore = useSecretaryStore()
 
 const googleCode = ref<string>(null)
+const googleEmail = ref<string>(null)
 
 const googleOAuthLink =
   'https://accounts.google.com/o/oauth2/v2/auth?client_id=' +
@@ -48,12 +57,16 @@ async function syncGoogleCalendar() {
   await secretaryStore.ping()
   const events = await rpc('get-calendar-google', {
     code: googleCode.value,
-    username: 'YOUR_EMAIL@gmail.com', // fixme поддержать пользователя из запроса
+    username: googleEmail.value,
   })
   // TODO после записи нужно сбрасывать queryString чтобы код не сохранялся
   // ...
   // TODO WIP настроить чтобы данные из caldav записывались в локальное хранилище
   console.log('WIP...', events)
+}
+
+function handleCredentialResponse(res: { email: string }) {
+  googleEmail.value = res.email
 }
 
 onMounted(() => {
