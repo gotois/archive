@@ -9,10 +9,10 @@
     @submit="emit('complete')"
   >
     <QInput
-      v-if="webId"
+      v-if="keypair"
       :hint="$t('tutorial.data.hint')"
-      :hide-hint="Boolean(webId)"
-      :model-value="webId"
+      hide-hint
+      :model-value="keypair.id"
       color="secondary"
       :dense="$q.platform.is.desktop"
       readonly
@@ -87,7 +87,7 @@
   </QForm>
 </template>
 <script lang="ts" setup>
-import { computed, defineAsyncComponent } from 'vue'
+import { ref, computed, defineAsyncComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   useQuasar,
@@ -114,13 +114,14 @@ const i18n = useI18n()
 const $t = i18n.t
 const profileStore = useProfileStore()
 
-const { webId, getPersonLD, email } = storeToRefs(profileStore)
+const { getPersonLD, email } = storeToRefs(profileStore)
+const keypair = ref<DIDTable>(null)
 
 const consumerValid = computed(() => {
   return Boolean(
     getPersonLD.value.name.length > 3 &&
       patterns.testPattern.email(email.value) &&
-      webId.value,
+      keypair.value.id,
   )
 })
 
@@ -130,6 +131,6 @@ function handleCredentialResponse(res: { email: string }) {
 }
 
 function uploadKey(key: DIDTable) {
-  console.log(key)
+  keypair.value = key
 }
 </script>

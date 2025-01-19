@@ -74,7 +74,7 @@ export default defineStore('wallet', {
     getPublicKey(state) {
       return state.publicKey
     },
-    getMultibase(state): string {
+    getMultibase(state) {
       if (state.type === WalletType.Phantom) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return
         return (this.getPublicKey?.toBase58() as string) ?? ''
