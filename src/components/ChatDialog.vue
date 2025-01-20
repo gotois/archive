@@ -37,8 +37,8 @@
   />
 </template>
 <script lang="ts" setup>
-import { ref, nextTick } from 'vue'
-import { QVirtualScroll, QBtn } from 'quasar'
+import { ref, nextTick, watch } from 'vue'
+import { QVirtualScroll, QBtn, useQuasar } from 'quasar'
 import useChatStore from 'stores/chat'
 import useSecretaryStore from 'stores/secretary'
 import useGeoStore from 'stores/geo'
@@ -50,6 +50,7 @@ import { Attachment, VerifiableCredential } from '../types/models'
 const secretaryStore = useSecretaryStore()
 const chatStore = useChatStore()
 const geoStore = useGeoStore()
+const $q = useQuasar()
 
 const virtualListRef = ref<InstanceType<typeof QVirtualScroll> | null>(null)
 const creatingNewContract = ref(false)
@@ -64,6 +65,15 @@ const allItems = Array(size.value)
     sent: false,
     stamp: new Date(),
   }))
+
+watch(
+  () => size.value,
+  async (sizeValue) => {
+    await nextTick(() => {
+      virtualListRef.value.scrollTo(sizeValue, 'start-force')
+    })
+  },
+)
 
 function getItems(from: number, size: number) {
   const items = []
@@ -83,7 +93,7 @@ function serverData(value: string) {
   size.value = allItems.length
 }
 
-async function sendData(value: string) {
+function sendData(value: string) {
   allItems.push({
     index: allItems.length,
     text: value,
@@ -91,9 +101,6 @@ async function sendData(value: string) {
     stamp: new Date(),
   })
   size.value = allItems.length
-  await nextTick(() => {
-    virtualListRef.value.scrollTo(size.value, 'start-force')
-  })
 }
 
 async function tryGenerateCalendar() {
@@ -104,8 +111,16 @@ async function tryGenerateCalendar() {
   if (geoStore.point) {
     data.push(geoStore.point)
   }
-  contract.value = await secretaryStore.generate(data)
-  creatingNewContract.value = true
+  try {
+    contract.value = await secretaryStore.generate(data)
+    creatingNewContract.value = true
+  } catch (error) {
+    console.error(error)
+    $q.notify({
+      type: 'negative',
+      message: 'Generation Failed',
+    })
+  }
 }
 
 async function contractComplete() {
