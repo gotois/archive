@@ -692,20 +692,16 @@ onBeforeMount(() => {
   }
 })
 
-onMounted(async () => {
-  if ($q.platform.is.desktop) {
-    await indexAllDocuments()
-  }
-  try {
-    await secretaryStore.ping()
-  } catch (error) {
+onMounted(() => {
+  Promise.all([indexAllDocuments()]).catch((error) => {
+    console.error('indexing error', error)
+  })
+  Promise.all([secretaryStore.ping()]).catch((error) => {
     console.warn('ping', error)
-  }
-  try {
-    await geoStore.start()
-  } catch (error) {
+  })
+  Promise.all([geoStore.start()]).catch((error) => {
     console.warn('geo', error)
-  }
+  })
 })
 
 function navCancel(e: Event) {

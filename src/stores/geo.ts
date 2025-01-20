@@ -35,11 +35,17 @@ export default defineStore('geo', {
     point(state) {
       if (state.coordinates) {
         return {
-          type: 'Point',
-          coordinates: [
-            state.coordinates.latitude,
-            state.coordinates.longitude,
-          ],
+          content: {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [
+                state.coordinates.latitude,
+                state.coordinates.longitude,
+              ],
+            },
+          },
+          mediaType: 'application/vnd.geo+json',
         }
       }
     },

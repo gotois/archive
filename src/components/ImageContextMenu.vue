@@ -5,7 +5,7 @@
         v-close-popup
         :dense="$q.platform.is.desktop"
         clickable
-        @click="openFile(image.url)"
+        @click="openFile()"
       >
         <QItemSection>
           {{ $t('components.imageContextMenu.open') }}
@@ -17,7 +17,7 @@
         v-close-popup
         :dense="$q.platform.is.desktop"
         clickable
-        @click="onFileShare(image.url)"
+        @click="onFileShare()"
       >
         <QItemSection>
           {{ $t('components.imageContextMenu.share') }}
@@ -29,7 +29,7 @@
         v-close-popup
         :dense="$q.platform.is.desktop"
         clickable
-        @click="onCopy(image.url)"
+        @click="onCopy()"
       >
         <QItemSection>
           {{ $t('components.imageContextMenu.copy') }}
@@ -39,7 +39,7 @@
   </QMenu>
 </template>
 <script lang="ts" setup>
-import { PropType, ref } from 'vue'
+import { onBeforeMount, onBeforeUnmount, PropType, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   useQuasar,
@@ -59,7 +59,7 @@ import {
 import { PNG_MIME_TYPE } from '../helpers/mimeTypes'
 import { ImageType } from '../types/models'
 
-defineProps({
+const props = defineProps({
   image: {
     type: Object as PropType<ImageType>,
     require: true,
@@ -71,16 +71,12 @@ const $t = useI18n().t
 const $q = useQuasar()
 
 const canWrite = ref(Reflect.has(navigator.clipboard, 'write'))
+const fileURL = ref<string>(null)
+const file = ref<File>(null)
 
-async function openFile(url: string) {
-  const file = await getFileFromUrl(url)
-  open(URL.createObjectURL(file))
-}
-
-async function onFileShare(url: string) {
+function openFile() {
   try {
-    const file = await getFileFromUrl(url)
-    await fileShare(file)
+    open(fileURL.value)
   } catch (error) {
     console.error(error)
     $q.notify({
@@ -90,19 +86,31 @@ async function onFileShare(url: string) {
   }
 }
 
-async function onCopy(contentUrl: string) {
-  const base64Response = await fetch(contentUrl)
-  const blob = await base64Response.blob()
-  const pngBlob = await convertBlobToPng(blob)
-  const clipboardItem = new ClipboardItem(
-    {
-      [PNG_MIME_TYPE]: pngBlob,
-    },
-    {
-      presentationStyle: 'attachment',
-    },
-  )
+async function onFileShare() {
   try {
+    await fileShare(file.value)
+  } catch (error) {
+    console.error(error)
+    $q.notify({
+      type: 'negative',
+      message: $t('components.imageContextMenu.fail'),
+    })
+  }
+}
+
+async function onCopy() {
+  try {
+    const base64Response = await fetch(fileURL.value)
+    const blob = await base64Response.blob()
+    const pngBlob = await convertBlobToPng(blob)
+    const clipboardItem = new ClipboardItem(
+      {
+        [PNG_MIME_TYPE]: pngBlob,
+      },
+      {
+        presentationStyle: 'attachment',
+      },
+    )
     await navigator.clipboard.write([clipboardItem])
     $q.notify({
       type: 'positive',
@@ -116,4 +124,15 @@ async function onCopy(contentUrl: string) {
     })
   }
 }
+
+onBeforeMount(async () => {
+  file.value = await getFileFromUrl(props.image.url)
+  fileURL.value = URL.createObjectURL(file.value)
+})
+
+onBeforeUnmount(() => {
+  if (fileURL.value) {
+    URL.revokeObjectURL(fileURL.value)
+  }
+})
 </script>

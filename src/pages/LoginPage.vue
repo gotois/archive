@@ -72,7 +72,6 @@ import { parse } from '../helpers/markdownHelper'
 const $t = useI18n().t
 const $q = useQuasar()
 const router = useRouter()
-
 const podStore = usePodStore()
 
 const { getOidcIssuer } = storeToRefs(podStore)

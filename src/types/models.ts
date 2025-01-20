@@ -92,8 +92,11 @@ export type credentialContextType =
   | [string, ContextCredential<string>]
   | string[]
 
+type Organization = 'Organization'
+type Person = 'Person'
+
 export interface Agent {
-  type: 'Organization' | 'Person'
+  type: Organization | Person
   name: string
   email?: string
   telephone?: string
@@ -111,12 +114,6 @@ export interface Place {
   name?: string
 }
 
-export interface ContractIdentifier {
-  value: string | number
-  name: string | WalletType
-  propertyID?: number
-}
-
 interface ContractInstrument {
   name: string
   description: string
@@ -132,13 +129,6 @@ export interface ImageType {
   url: string
   mediaType: string
   name?: string
-}
-
-export interface OwnerContract {
-  agent?: Agent
-  participant?: Agent
-  instrument?: ContractInstrument
-  files: ImageType[]
 }
 
 export interface FormatContract extends BaseSchemaType {
