@@ -129,7 +129,7 @@ export default defineStore('contracts', {
         proof: {
           ...verifiedCredential.proof,
         },
-        tag: Array.from(verifiedCredential.credentialSubject.object.tag),
+        tag: Array.from(verifiedCredential.credentialSubject.object?.tag ?? []),
         attachment:
           verifiedCredential.credentialSubject.object.attachment?.map(
             (attach) => ({
