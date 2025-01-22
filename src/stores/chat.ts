@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import rpc from '../helpers/rpc'
 
-interface Message {
+type Message = {
   type: string
   mediaType: string
   content: string

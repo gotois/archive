@@ -2,7 +2,7 @@
 
 export const GOOGLE_OAUTH_CLIENT_ID = process.env.google_client_id
 
-export interface GoogleHandlerResponse {
+export type GoogleHandlerResponse = {
   clientId: string
   client_id: string
   credential: string

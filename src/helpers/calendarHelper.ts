@@ -1,13 +1,14 @@
 import { date } from 'quasar'
 import { event as createEvent, default as icalendar } from 'ical-browser'
+import { Event } from 'ical-browser/dist/types/types'
 import { formatIcal } from './dateHelper'
 
 export function createCal(id: string, obj: unknown) {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/ban-ts-comment
   // @ts-expect-error
   const str = icalendar(id, {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
-    event: createEvent(obj.event),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment
+    event: createEvent(obj.event as Event),
   }) as string
   return new File([new TextEncoder().encode(str)], 'calendar.ics', {
     type: 'text/calendar',

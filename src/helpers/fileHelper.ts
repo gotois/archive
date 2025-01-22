@@ -2,7 +2,9 @@ import { uid } from 'quasar'
 import { getFileExt } from './dataHelper'
 import { PNG_MIME_TYPE } from './mimeTypes'
 
-export function readFilePromise(file: File | Blob) {
+type FileLike = File | Blob
+
+export function readFilePromise(file: FileLike) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onerror = (error) => {
@@ -14,7 +16,8 @@ export function readFilePromise(file: File | Blob) {
     reader.readAsDataURL(file)
   })
 }
-export function readFilesPromise(files: File[] | Blob[]) {
+
+export function readFilesPromise(files: FileLike[]) {
   const promises = []
   for (const file of files) {
     const promise = readFilePromise(file)
@@ -68,7 +71,7 @@ export async function getFileFromUrl(url: string, name?: string) {
   })
 }
 
-export async function convertBlobToPng(blob: Blob) {
+export async function convertBlobToPng(blob: FileLike) {
   const imageBitmap = await createImageBitmap(blob)
   const canvas = document.createElement('canvas')
   canvas.width = imageBitmap.width

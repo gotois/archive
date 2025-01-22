@@ -1,3 +1,5 @@
+import { MimeType } from './mimeTypes'
+
 export interface JWTPayload {
   exp: number
   iat: number
@@ -15,7 +17,7 @@ export interface JWTPayload {
   sub?: string
 }
 
-export function getFileExt(mimeType: string) {
+export function getFileExt(mimeType: MimeType) {
   return mimeType.split('/')[1]
 }
 

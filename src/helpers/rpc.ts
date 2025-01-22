@@ -1,24 +1,32 @@
 import { uid } from 'quasar'
-import requestJsonRpc2 from 'request-json-rpc2'
+import requestJsonRpc2, {
+  JSONRPCResponseError,
+  JSONRPCResponseOk,
+} from 'request-json-rpc2'
 import useSecretaryStore from 'stores/secretary'
 
-interface Request {
+type RequestParams<T> = T extends object ? T : string[]
+type AuthParams = {
+  user: string
+  pass: string
+}
+
+type Request<T> = {
   url: string
   body: {
     id: string
     method: string
-    params: unknown
+    params: RequestParams<T>
   }
   jwt?: string
-  auth?: {
-    user: string
-    pass: string
-  }
+  auth?: AuthParams
 }
 
-export default async function (method: string, params = {}) {
+export default async function <T>(
+  method: string,
+  params: RequestParams<T> = {} as RequestParams<T>,
+) {
   const secretaryStore = useSecretaryStore()
-
   if (!secretaryStore.available) {
     throw new Error('Server Unavailable')
   }
@@ -30,7 +38,7 @@ export default async function (method: string, params = {}) {
       method,
       params,
     },
-  } as Request
+  } as Request<T>
   if (secretaryStore.jwt) {
     request.jwt = secretaryStore.jwt
   } else {
@@ -39,9 +47,12 @@ export default async function (method: string, params = {}) {
       pass: secretaryStore.password,
     }
   }
-  const { result, error } = await requestJsonRpc2(request)
+  const { result, error } = (await requestJsonRpc2(request)) as unknown as {
+    error: JSONRPCResponseError
+    result: JSONRPCResponseOk
+  }
   if (result) {
-    return result as unknown
+    return result
   }
   throw error
 }
