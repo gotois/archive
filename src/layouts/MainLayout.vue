@@ -512,30 +512,6 @@ async function otpPage() {
     name: ROUTE_NAMES.OTP,
     query: {},
   })
-  dialog.onOk(() => {
-    try {
-      tfaStore.activate2fa()
-      authStore.setTryAuthValue()
-      $q.notify({
-        type: 'positive',
-        message: $t('components.otp.saveDialog.success'),
-      })
-    } catch (error) {
-      console.error(error)
-      $q.notify({
-        type: 'negative',
-        message: $t('components.otp.saveDialog.fail'),
-      })
-    }
-  })
-  showOTPDialog.value = false
-}
-
-async function openOTPDialog() {
-  const authURI = tfaStore.generate()
-  authUri.value = authURI
-  authUriQR.value = await createQR(authURI)
-  showOTPDialog.value = true
 }
 
 async function importCalendar() {
