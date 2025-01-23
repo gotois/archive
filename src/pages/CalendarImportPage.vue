@@ -95,6 +95,74 @@ async function syncGoogleCalendar() {
   alert('WIP...')
   // TODO WIP настроить чтобы данные из caldav записывались в локальное хранилище
   console.log('WIP...', events)
+  /* eslint-disable */
+  // fixme
+  const calendarEvents = events.credentialSubject.object.map((event: unknown) => {
+    console.log('event', event)
+    return event
+    // return {
+    //   id: event.id,
+    //   start: date.formatDate(event.startTime, 'YYYY-MM-DD HH:mm'),
+    //   end: event.endTime ? date.formatDate(event.endTime, 'YYYY-MM-DD HH:mm') : null,
+    //   title: event.name,
+    //   calendarId: 'google',
+    //   description: event.description,
+    //   // attaches // todo поддержать
+    //   // tag: contract.tag, // todo поддержать
+    //   organizer: {
+    //     type: event.actor.type,
+    //     email: event.actor.email,
+    //   },
+    //   // participant: event.target, // todo поддержать
+    //   location: event.location,
+    //   link: event.url,
+    // }
+  })
+  console.log('calendarEvents', calendarEvents)
+  for (const calendarEvent of calendarEvents) {
+    await contractStore.insertContract({
+      context: context,
+      resolver: verifiedCredential.id,
+      organizer: {
+          type: calendarEvent.actor.type,
+          email: calendarEvent.actor.email,
+          name: verifiedCredential.credentialSubject.actor.name,
+          url: verifiedCredential.credentialSubject.actor.url,
+        },
+        name: verifiedCredential.credentialSubject.object.name,
+        description: verifiedCredential.credentialSubject.object.summary,
+        issuanceDate: new Date(verifiedCredential.issuanceDate),
+        issuer: verifiedCredential.issuer,
+        participant: [
+          {
+            type: verifiedCredential.credentialSubject.target.type,
+            name: verifiedCredential.credentialSubject.target.name,
+            email: verifiedCredential.credentialSubject.target.email,
+            telephone: verifiedCredential.credentialSubject.target.telephone,
+            url: verifiedCredential.credentialSubject.target.url,
+          },
+        ],
+        startTime: new Date(verifiedCredential.credentialSubject.startTime),
+        endTime: verifiedCredential.credentialSubject.endTime
+          ? new Date(verifiedCredential.credentialSubject.endTime)
+          : null,
+        type: Array.from(verifiedCredential.type),
+        proof: {
+          ...verifiedCredential.proof,
+        },
+        tag: Array.from(verifiedCredential.credentialSubject.object?.tag ?? []),
+        attachment:
+          verifiedCredential.credentialSubject.object.attachment?.map(
+            (attach) => ({
+              type: attach.type,
+              name: attach.name,
+              mediaType: attach.mediaType,
+              url: attach.url,
+            }),
+          ) ?? [],
+    })
+  }
+  /* eslint-enable */
 }
 
 function handleCredentialResponse(res: { email: string }) {

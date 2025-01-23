@@ -13,7 +13,6 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import { onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RouterView } from 'vue-router'
 import { useMeta, useQuasar } from 'quasar'
@@ -25,7 +24,6 @@ import usePodStore from 'stores/pod'
 import useAuthStore from 'stores/auth'
 import useProfileStore from 'stores/profile'
 import useWalletStore from 'stores/wallet'
-import useSecretaryStore from 'stores/secretary'
 import { getSolana } from './services/phantomWalletService'
 import { WalletType } from './types/models'
 import { isTWA, isTMA } from './helpers/twaHelper'
@@ -39,7 +37,6 @@ const podStore = usePodStore()
 const authStore = useAuthStore()
 const profileStore = useProfileStore()
 const walletStore = useWalletStore()
-const secretaryStore = useSecretaryStore()
 const events = getDefaultSession().events
 
 const webSite = {
@@ -208,20 +205,6 @@ if (isTMA) {
     })
   }
 }
-
-onMounted(async () => {
-  if (isTMA) {
-    try {
-      await secretaryStore.authorizationByTg()
-    } catch (error) {
-      console.error(error)
-      $q.notify({
-        type: 'negative',
-        message: error.message as string,
-      })
-    }
-  }
-})
 
 useMeta(metaData)
 </script>

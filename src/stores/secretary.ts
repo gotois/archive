@@ -37,7 +37,7 @@ export default defineStore('secretary', {
           method: 'GET',
           headers: {
             'Content-Type': 'text/plain',
-            'Authorization': this.basicAuth,
+            'Authorization': this.auth,
           },
         })
         if (!response.ok) {
@@ -63,25 +63,6 @@ export default defineStore('secretary', {
       LocalStorage.removeItem('jwt')
       tutorialStore.tutorialComplete(false)
       this.jwt = null
-    },
-    async authorizationByTg() {
-      const response = await fetch(process.env.server + '/authorization', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'plain/text',
-          'Authorization': this.tmaAuth,
-        },
-      })
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
-      }
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const jwt: string = await response.text()
-      if (!jwt) {
-        throw new Error('jwt is empty')
-      }
-      LocalStorage.set('jwt', jwt)
-      this.jwt = jwt
     },
     async registration(requestedContact: RequestedContact | TelegramUser) {
       const response = await fetch(process.env.server + '/authorization', {
@@ -118,16 +99,24 @@ export default defineStore('secretary', {
     },
   },
   getters: {
+    auth(): string {
+      if (!isTMA) {
+        return this.tmaAuth
+      } else if (this.jwt) {
+        return this.bearerAuth
+      }
+      return this.basicAuth
+    },
     basicAuth(): string {
       if (!this.login || !this.password) {
         return
       }
       return 'Basic ' + btoa(this.login + ':' + this.password)
     },
+    bearerAuth(): string {
+      return 'Bearer ' + this.jwt
+    },
     tmaAuth() {
-      if (!isTMA) {
-        return
-      }
       const { initDataRaw } = retrieveLaunchParams()
       if (!initDataRaw?.length) {
         throw new Error('Empty telegram init data')
