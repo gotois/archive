@@ -101,64 +101,13 @@
           :label="$t('settings.native.otp')"
         >
           <QItemSection class="q-pa-md">
-            <template v-if="activated">
-              <QBtn
-                round
-                :dense="$q.platform.is.desktop"
-                square
-                color="negative"
-                icon="remove"
-                :label="$t('settings.otp.removeCode')"
-                @click="onOTPChange('')"
-              />
-            </template>
-            <template v-else>
-              <QBtn
-                round
-                :dense="$q.platform.is.desktop"
-                square
-                ripple
-                stretch
-                icon="key"
-                color="secondary"
-                :label="$t('settings.otp.addCode')"
-                @click="openOTPDialog"
-              />
-              <QDialog v-model="showOTPDialog" position="bottom" square>
-                <QCard flat class="q-pa-md">
-                  <QCardSection>
-                    <p>{{ $t('settings.otp.description') }}</p>
-                    <QImg
-                      :src="authUriQR"
-                      alt="QR"
-                      fit="none"
-                      height="250px"
-                      class="cursor-pointer"
-                      decoding="async"
-                      fetchpriority="high"
-                      @click="open(authUri)"
-                    />
-                    <QSpace class="q-pa-xs" />
-                    <QOtp
-                      v-if="showOTPDialog"
-                      ref="otp"
-                      :outlined="!$q.screen.xs"
-                      :dense="$q.platform.is.desktop"
-                      :num="TFA_LENGTH"
-                      :rules="[otpRule]"
-                      square
-                      :autofocus="$q.platform.is.desktop"
-                      :input-styles="{ width: '32px' }"
-                      field-classes="q-ml-xs q-mr-xs"
-                      style="width: fit-content"
-                      class="q-ml-auto q-mr-auto"
-                      @change="onOTPChange"
-                      @complete="onOTPHandleComplete"
-                    />
-                  </QCardSection>
-                </QCard>
-              </QDialog>
-            </template>
+            <QBtn
+              label="2FA"
+              color="white"
+              text-color="black"
+              content-class="full-width q-mb-md"
+              @click="otpPage"
+            />
           </QItemSection>
         </QExpansionItem>
         <QSeparator />
@@ -422,7 +371,6 @@ import {
   QPopupProxy,
   QTooltip,
   QChip,
-  QImg,
   QSeparator,
   QItemSection,
   QExpansionItem,
@@ -433,15 +381,12 @@ import {
   QHeader,
   QLayout,
   QSpace,
-  QCard,
-  QCardSection,
   exportFile,
 } from 'quasar'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { logout } from '@inrupt/solid-client-authn-browser'
 import useAuthStore from 'stores/auth'
-import useTFAStore from 'stores/tfa'
 import useContractStore from 'stores/contract'
 import usePodStore from 'stores/pod'
 import useSecretaryStore from 'stores/secretary'
@@ -453,7 +398,6 @@ import ChatDialog from 'components/ChatDialog.vue'
 import { indexAllDocuments } from '../services/searchService'
 import { isTWA, isTMA } from '../helpers/twaHelper'
 import { keyPair } from '../services/databaseService'
-import { createQR } from '../helpers/qrHelper'
 import { open } from '../helpers/urlHelper'
 import { ROUTE_NAMES } from '../router/routes'
 import ContractPod from '../services/contractGeneratorService'
@@ -475,9 +419,6 @@ const PodImporter = defineAsyncComponent(
 const ArchiveSearchComponent = defineAsyncComponent(
   () => import('components/ArchiveSearchComponent.vue'),
 )
-const QOtp = defineAsyncComponent(
-  () => import('quasar-app-extension-q-otp/src/component/QOtp.vue'),
-)
 const AndroidBarComponent = defineAsyncComponent(
   () => import('components/AndroidBarComponent.vue'),
 )
@@ -493,7 +434,6 @@ const router = useRouter()
 const i18n = useI18n()
 const $t = i18n.t
 const authStore = useAuthStore()
-const tfaStore = useTFAStore()
 const contractStore = useContractStore()
 const geoStore = useGeoStore()
 const notificationStore = useNotification()
@@ -505,14 +445,12 @@ const NOTIFICATION_TIMER = 30000
 const { contractsCount } = storeToRefs(contractStore)
 const { isLoggedIn } = storeToRefs(authStore)
 const { jwt } = storeToRefs(secretaryStore)
-const { activated } = storeToRefs(tfaStore)
+
 const bigScreen = computed(
   () => $q.platform.is.desktop && ($q.screen.xl || $q.screen.lg),
 )
 
-const TFA_LENGTH = 6
 const miniState = ref(bigScreen.value)
-const showOTPDialog = ref(false)
 const leftDrawerOpen = ref(false)
 const rightDrawerOpen = ref(false)
 const calendarOpen = ref(false)
@@ -524,9 +462,6 @@ const profileOpen = ref(false)
 const otpOpen = ref(false)
 const confirm = ref(false)
 const showSearch = ref(false)
-const otp = ref<InstanceType<typeof QOtp> | null>(null)
-const authUriQR = ref('')
-const authUri = ref('')
 
 function onToggleLeftDrawer(): void {
   leftDrawerOpen.value = !leftDrawerOpen.value
@@ -572,48 +507,10 @@ async function logOutFromPod() {
   })
 }
 
-function otpRule(token: string) {
-  if (token.length === TFA_LENGTH) {
-    return tfaStore.verify(token) || 'TFA Error'
-  }
-  return true
-}
-function onOTPChange(value: string) {
-  if (!activated.value || value.length) {
-    return
-  }
-  const dialog = $q.dialog({
-    message: $t('components.otp.pinDialog.message'),
-    cancel: true,
-    persistent: true,
-  })
-  dialog.onOk(() => {
-    try {
-      tfaStore.deactivate2fa()
-      authStore.removeAuthValue()
-      $q.notify({
-        type: 'positive',
-        message: $t('components.otp.pinDialog.success'),
-      })
-    } catch (error) {
-      console.error(error)
-      $q.notify({
-        type: 'negative',
-        message: $t('components.otp.pinDialog.fail'),
-      })
-    }
-  })
-  showOTPDialog.value = false
-}
-
-function onOTPHandleComplete(token: string) {
-  if (!tfaStore.verify(token)) {
-    return
-  }
-  const dialog = $q.dialog({
-    message: $t('components.otp.saveDialog.message'),
-    cancel: true,
-    persistent: true,
+async function otpPage() {
+  await router.push({
+    name: ROUTE_NAMES.OTP,
+    query: {},
   })
   dialog.onOk(() => {
     try {

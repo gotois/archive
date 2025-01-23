@@ -15,6 +15,7 @@ export enum ROUTE_NAMES {
   CALENDAR = 'calendar',
   ABOUT = 'about',
   CALENDAR_IMPORT = 'calendar-import',
+  OTP = 'otp',
 }
 
 export enum STEP {
@@ -68,6 +69,17 @@ const routes: RouteRecordRaw[] = [
         path: '',
         name: ROUTE_NAMES.AUTH,
         component: () => import('pages/AuthPage.vue'),
+      },
+    ],
+  },
+  {
+    path: '/' + ROUTE_NAMES.OTP,
+    component: () => import('layouts/EmptyLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: ROUTE_NAMES.OTP,
+        component: () => import('pages/2faPage.vue'),
       },
     ],
   },
