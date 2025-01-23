@@ -41,11 +41,13 @@ export default async function <T>(
   } as Request<T>
   if (secretaryStore.jwt) {
     request.jwt = secretaryStore.jwt
-  } else {
+  } else if (secretaryStore.login && secretaryStore.password) {
     request.auth = {
       user: secretaryStore.login,
       pass: secretaryStore.password,
     }
+  } else {
+    throw new Error('Auth Unavailable')
   }
   const { result, error } = (await requestJsonRpc2(request)) as unknown as {
     error: JSONRPCResponseError

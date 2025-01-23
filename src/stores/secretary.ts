@@ -28,7 +28,7 @@ export default defineStore('secretary', {
   actions: {
     async ping() {
       if (!process.env.server) {
-        console.warn('Unknown server url')
+        console.warn('Unknown Server host')
         this.available = false
         return
       }
@@ -37,7 +37,7 @@ export default defineStore('secretary', {
           method: 'GET',
           headers: {
             'Content-Type': 'text/plain',
-            'Authorization': this.auth,
+            'Authorization': this.auth as string,
           },
         })
         if (!response.ok) {
@@ -99,24 +99,27 @@ export default defineStore('secretary', {
     },
   },
   getters: {
-    auth(): string {
-      if (!isTMA) {
+    auth(): string | Error {
+      if (isTMA) {
         return this.tmaAuth
       } else if (this.jwt) {
         return this.bearerAuth
       }
       return this.basicAuth
     },
-    basicAuth(): string {
-      if (!this.login || !this.password) {
-        return
+    basicAuth(store): string | Error {
+      if (!store.login || !store.password) {
+        throw new Error('Empty login or password')
       }
-      return 'Basic ' + btoa(this.login + ':' + this.password)
+      return 'Basic ' + btoa(store.login + ':' + store.password)
     },
-    bearerAuth(): string {
-      return 'Bearer ' + this.jwt
+    bearerAuth(store): string | Error {
+      if (!this.jwt) {
+        throw new Error('Empty jwt')
+      }
+      return 'Bearer ' + store.jwt
     },
-    tmaAuth() {
+    tmaAuth(): string | Error {
       const { initDataRaw } = retrieveLaunchParams()
       if (!initDataRaw?.length) {
         throw new Error('Empty telegram init data')
