@@ -3,9 +3,9 @@
 # Секретарь WebApp
 > Ваша персональная криптобезопасная база обязательств.
 
-[![Android TWA](https://img.shields.io/badge/Android-Install-green?logo=android&style=for-the-badge&link=https://play.google.com/store/apps/details?id=ru.baskovsky.archive.twa)](https://play.google.com/store/apps/details?id=ru.baskovsky.archive.twa)
-[![TMA](https://img.shields.io/badge/Telegram-gray?logo=telegram&style=for-the-badge&link=https://t.me/gotois_bot/App)](https://t.me/gotois_bot/App)
-[![PWA](https://img.shields.io/website/https/archive.gotointeractive.com.svg?link=https://archive.gotointeractive.com)](https://archive.gotointeractive.com/)
+[![Android TWA](https://img.shields.io/badge/Android_TWA-Install-green?logo=android&style=for-the-badge&link=https://play.google.com/store/apps/details?id=ru.baskovsky.archive.twa)](https://play.google.com/store/apps/details?id=ru.baskovsky.archive.twa)
+[![TMA](https://img.shields.io/badge/Telegram_Mini_Apps-gray?logo=telegram&style=for-the-badge&link=https://t.me/gotois_bot/App)](https://t.me/gotois_bot/App)
+[![PWA](https://img.shields.io/website/https/archive.gotointeractive.com.svg?style=for-the-badge&link=https://archive.gotointeractive.com)](https://archive.gotointeractive.com/)
 
 ## Описание продукта
 

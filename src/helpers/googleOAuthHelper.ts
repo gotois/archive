@@ -1,6 +1,7 @@
 // https://developers.google.com/identity/gsi/web/reference/html-reference
 
 export const GOOGLE_OAUTH_CLIENT_ID = process.env.google_client_id
+export const GOOGLE_REDIRECT_URI = process.env.google_redirect_uri
 
 export type GoogleHandlerResponse = {
   clientId: string
@@ -8,6 +9,18 @@ export type GoogleHandlerResponse = {
   credential: string
   select_by: string
 }
+
+export const GOOGLE_OAUTH_LINK =
+  'https://accounts.google.com/o/oauth2/v2/auth?client_id=' +
+  GOOGLE_OAUTH_CLIENT_ID +
+  '&redirect_uri=' +
+  encodeURIComponent(GOOGLE_REDIRECT_URI) +
+  '&response_type=code&scope=' +
+  encodeURIComponent('https://www.googleapis.com/auth/calendar') +
+  '&access_type=' +
+  'offline' +
+  '&prompt=' +
+  'consent'
 
 export function loadGoogleSignIn(lang: string): Promise<unknown> {
   return new Promise((resolve, reject) => {

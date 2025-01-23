@@ -11,27 +11,30 @@
       <QCardSection>
         <div class="text-h6">GOOGLE CALENDAR</div>
       </QCardSection>
-      <QCardSection>
-        <template v-if="consumerValid">
-          <QBtn
-            v-if="!googleCode"
-            :href="googleOAuthLink"
-            label="Open Google Calendar"
-          />
-          <template v-else>
+      <QCardSection horizontal>
+        <template v-if="true">
+          <template v-if="googleCode && consumerValid">
             <QBtn label="Sync" @click="syncGoogleCalendar" />
             <QBtn label="Reset" @click="googleCode = null" />
           </template>
+          <QBtn
+            v-else
+            dense
+            :href="GOOGLE_OAUTH_LINK"
+            label="Open Google Calendar"
+          />
         </template>
         <QInput
           v-model.trim="googleEmail"
+          readonly
+          class="block"
           name="email"
           type="email"
           color="secondary"
           :rules="['email']"
           :error-message="$t('consumer.emailRules')"
           autocomplete="off"
-          :clearable="true"
+          :clearable="false"
           :fill-mask="true"
           :dense="$q.platform.is.desktop"
           lazy-rules
@@ -59,11 +62,16 @@
 <script lang="ts" setup>
 import { onMounted, ref, computed } from 'vue'
 import { QBtn, QCard, QCardSection, QIcon, QInput, patterns } from 'quasar'
-import rpc from '../helpers/rpc'
 import useSecretaryStore from 'stores/secretary'
+import useContractStore from 'stores/contract'
 import GoogleOAuth from 'components/GoogleOAuth.vue'
-import { GOOGLE_OAUTH_CLIENT_ID } from '../helpers/googleOAuthHelper'
+import rpc from '../helpers/rpc'
+import {
+  GOOGLE_OAUTH_CLIENT_ID,
+  GOOGLE_OAUTH_LINK,
+} from '../helpers/googleOAuthHelper'
 
+const contractStore = useContractStore()
 const secretaryStore = useSecretaryStore()
 
 const googleCode = ref<string>(null)
@@ -72,16 +80,11 @@ const consumerValid = computed(() => {
   return Boolean(patterns.testPattern.email(googleEmail.value))
 })
 
-const googleOAuthLink =
-  'https://accounts.google.com/o/oauth2/v2/auth?client_id=' +
-  process.env.google_client_id +
-  '&redirect_uri=' +
-  encodeURIComponent(process.env.google_redirect_uri) +
-  '&response_type=code&scope=' +
-  encodeURIComponent('https://www.googleapis.com/auth/calendar') +
-  '&access_type=offline&prompt=consent'
-
 async function syncGoogleCalendar() {
+  if (!consumerValid.value) {
+    console.warn('Invalid email')
+    return
+  }
   await secretaryStore.ping()
   const events = await rpc('get-calendar-google', {
     code: googleCode.value,
@@ -89,6 +92,7 @@ async function syncGoogleCalendar() {
   })
   // TODO после записи нужно сбрасывать queryString чтобы код не сохранялся
   // ...
+  alert('WIP...')
   // TODO WIP настроить чтобы данные из caldav записывались в локальное хранилище
   console.log('WIP...', events)
 }
@@ -100,8 +104,8 @@ function handleCredentialResponse(res: { email: string }) {
 onMounted(() => {
   const searchParams = new URLSearchParams(window.location.search)
   const code = searchParams.get('code')
-  console.log('OAuth code', code)
   if (code?.length) {
+    console.log('OAuth code', code)
     googleCode.value = code
   }
 })
