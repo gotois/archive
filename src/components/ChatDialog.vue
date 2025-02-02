@@ -41,7 +41,6 @@ import { ref, nextTick, watch } from 'vue'
 import { QVirtualScroll, QBtn, useQuasar } from 'quasar'
 import useChatStore from 'stores/chat'
 import useSecretaryStore from 'stores/secretary'
-import useGeoStore from 'stores/geo'
 import ChatComponent from 'components/ChatComponent.vue'
 import InputComponent from 'components/SearchInputComponent.vue'
 import CreateNewDogovor from 'components/CreateNewDogovor.vue'
@@ -49,7 +48,6 @@ import { Attachment, VerifiableCredential } from '../types/models'
 
 const secretaryStore = useSecretaryStore()
 const chatStore = useChatStore()
-const geoStore = useGeoStore()
 const $q = useQuasar()
 
 const virtualListRef = ref<InstanceType<typeof QVirtualScroll> | null>(null)
@@ -107,9 +105,6 @@ async function tryGenerateCalendar() {
   const data = chatStore.messages
   if (attachment.value.length) {
     data.push(Array.from(attachment.value))
-  }
-  if (geoStore.point) {
-    data.push(geoStore.point)
   }
   try {
     contract.value = await secretaryStore.generate(data)

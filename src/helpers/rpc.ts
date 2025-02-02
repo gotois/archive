@@ -4,6 +4,7 @@ import requestJsonRpc2, {
   JSONRPCResponseOk,
 } from 'request-json-rpc2'
 import useSecretaryStore from 'stores/secretary'
+import useGeoStore from 'stores/geo'
 
 type RequestParams<T> = T extends object ? T : string[]
 type AuthParams = {
@@ -30,6 +31,11 @@ export default async function <T>(
   if (!secretaryStore.available) {
     throw new Error('Server Unavailable')
   }
+  const geoStore = useGeoStore()
+  const headers = {} as Record<string, string>
+  if (geoStore.geolocation) {
+    headers.geolocation = geoStore.geolocation
+  }
   const request = {
     url: process.env.server + '/rpc',
     body: {
@@ -38,6 +44,7 @@ export default async function <T>(
       method,
       params,
     },
+    headers: headers,
   } as Request<T>
   if (secretaryStore.jwt) {
     request.jwt = secretaryStore.jwt

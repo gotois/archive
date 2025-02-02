@@ -208,8 +208,8 @@
       />
     </template>
     <QInput
-      v-show="locationName"
-      v-model.trim="locationName"
+      v-show="geolocation"
+      v-model.trim="geolocation"
       :label="'Location'"
       :hint="'Location'"
       type="text"
@@ -329,7 +329,7 @@ const $q = useQuasar()
 const contractStore = useContractStore()
 const geoStore = useGeoStore()
 
-const { locationName } = storeToRefs(geoStore)
+const { geolocation } = storeToRefs(geoStore)
 let cloneStartDate = null
 const contract = ref<VerifiableCredential>(props.contract)
 const contractType = ref<string | null>(null)

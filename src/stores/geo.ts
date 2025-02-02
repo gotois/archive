@@ -6,11 +6,17 @@ import {
 
 interface Store {
   coordinates: GeolocationCoordinates
+  timezone: string
+  u: number // точность в метрах
+  cgen: string
 }
 
 export default defineStore('geo', {
   state: (): Store => ({
     coordinates: null,
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    u: 10,
+    cgen: 'gps',
   }),
   actions: {
     async start() {
@@ -26,12 +32,12 @@ export default defineStore('geo', {
     },
   },
   getters: {
-    locationName(state) {
+    geolocation(state): string | undefined {
       if (state.coordinates) {
-        // todo давать более читаемое название локации из геокоординат
-        return state.coordinates.latitude + ':' + state.coordinates.longitude
+        return `geo:${state.coordinates.latitude},${state.coordinates.longitude};cgen=${this.cgen};u=${this.u}`
       }
     },
+    // @deprecated
     point(state) {
       if (state.coordinates) {
         return {

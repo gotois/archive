@@ -152,7 +152,6 @@ import { useI18n } from 'vue-i18n'
 import { createWorker } from 'tesseract.js'
 import useChatStore from 'stores/chat'
 import useSecretaryStore from 'stores/secretary'
-import useGeoStore from 'stores/geo'
 import {
   PDF_MIME_TYPE,
   PNG_MIME_TYPE,
@@ -167,7 +166,6 @@ const $q = useQuasar()
 const $t = useI18n().t
 const chatStore = useChatStore()
 const secretaryStore = useSecretaryStore()
-const geoStore = useGeoStore()
 const router = useRouter()
 
 const select = ref<InstanceType<typeof QSelect> | null>(null)
@@ -206,12 +204,10 @@ async function sendChat(value: string) {
       content: value,
       mediaType: 'text/plain',
     })
-    if (geoStore.point) {
-      chatStore.add(geoStore.point)
-    }
     const { credentialSubject } = await chatStore.dialog()
+    const language = 'ru' // todo - использовать в соответствии с настройками языка пользователя
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    emit('sent', credentialSubject.object.contentMap.ru)
+    emit('sent', credentialSubject.object.contentMap[language])
   } catch (error) {
     console.error(error)
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
