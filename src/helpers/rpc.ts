@@ -1,16 +1,12 @@
 import { uid } from 'quasar'
 import requestJsonRpc2, {
-  JSONRPCResponseError,
-  JSONRPCResponseOk,
+  JSONRPCErrorResponse,
+  JSONRPCSuccessResponse,
 } from 'request-json-rpc2'
 import useSecretaryStore from 'stores/secretary'
 import useGeoStore from 'stores/geo'
 
 type RequestParams<T> = T extends object ? T : string[]
-type AuthParams = {
-  user: string
-  pass: string
-}
 
 type Request<T> = {
   url: string
@@ -19,8 +15,6 @@ type Request<T> = {
     method: string
     params: RequestParams<T>
   }
-  jwt?: string
-  auth?: AuthParams
 }
 
 export default async function <T>(
@@ -44,24 +38,16 @@ export default async function <T>(
       method,
       params,
     },
+    credentials: 'include',
     headers: headers,
   } as Request<T>
-  if (secretaryStore.jwt) {
-    request.jwt = secretaryStore.jwt
-  } else if (secretaryStore.login && secretaryStore.password) {
-    request.auth = {
-      user: secretaryStore.login,
-      pass: secretaryStore.password,
-    }
-  } else {
-    throw new Error('Auth Unavailable')
+  const response = (await requestJsonRpc2(request)) as {
+    error: JSONRPCErrorResponse
+    result: JSONRPCSuccessResponse
   }
-  const { result, error } = (await requestJsonRpc2(request)) as unknown as {
-    error: JSONRPCResponseError
-    result: JSONRPCResponseOk
+  if (response.error) {
+    throw response.error
   }
-  if (result) {
-    return result
-  }
-  throw error
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return response.result
 }

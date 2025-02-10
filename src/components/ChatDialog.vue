@@ -52,7 +52,7 @@ const $q = useQuasar()
 
 const virtualListRef = ref<InstanceType<typeof QVirtualScroll> | null>(null)
 const creatingNewContract = ref(false)
-const contract = ref<VerifiableCredential | null>(null)
+const contract = ref<VerifiableCredential>(null)
 const attachment = ref<Attachment[]>([])
 const size = ref(1)
 const allItems = Array(size.value)

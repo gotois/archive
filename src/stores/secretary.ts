@@ -10,18 +10,15 @@ import {
   VerifiableCredential,
 } from '../types/models'
 import { isTMA } from '../helpers/twaHelper'
-import { parseJwt } from '../helpers/dataHelper'
 
 interface Store {
   available: boolean
-  jwt: string
   login?: string
   password?: string
 }
 export default defineStore('secretary', {
   state: (): Store => ({
     available: false,
-    jwt: LocalStorage.getItem('jwt') ?? null,
     login: LocalStorage.getItem('login') ?? null,
     password: LocalStorage.getItem('password') ?? null,
   }),
@@ -60,9 +57,7 @@ export default defineStore('secretary', {
     },
     logout() {
       const tutorialStore = useTutorialStore()
-      LocalStorage.removeItem('jwt')
       tutorialStore.tutorialComplete(false)
-      this.jwt = null
     },
     async registration(requestedContact: RequestedContact | TelegramUser) {
       const response = await fetch(process.env.server + '/authorization', {
@@ -70,18 +65,13 @@ export default defineStore('secretary', {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify(requestedContact),
       })
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const jwt: string = await response.json()
-      LocalStorage.set('jwt', jwt)
-      this.jwt = jwt
-    },
-    async getOfferta() {
-      return await rpc('offerta')
+      return (await response.json()) as VerifiableCredential
     },
     async generate(object: ActivityObjectNote[] | ActivityObjectLink[]) {
       return await rpc('generate-calendar', {
@@ -102,8 +92,6 @@ export default defineStore('secretary', {
     auth(): string | Error {
       if (isTMA) {
         return this.tmaAuth
-      } else if (this.jwt) {
-        return this.bearerAuth
       }
       return this.basicAuth
     },
@@ -112,12 +100,6 @@ export default defineStore('secretary', {
         throw new Error('Empty login or password')
       }
       return 'Basic ' + btoa(store.login + ':' + store.password)
-    },
-    bearerAuth(store): string | Error {
-      if (!this.jwt) {
-        throw new Error('Empty jwt')
-      }
-      return 'Bearer ' + store.jwt
     },
     tmaAuth(): string | Error {
       const { initDataRaw } = retrieveLaunchParams()

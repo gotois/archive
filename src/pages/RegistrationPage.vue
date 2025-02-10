@@ -124,7 +124,7 @@
             {{ $t('tutorial.welcome.hint') }}
           </p>
           <QStepperNavigation v-if="!isTMA">
-            <SelectRegistration @authed="stepper.next()" />
+            <SelectRegistration @authed="registrationComplete" />
           </QStepperNavigation>
         </QStep>
         <QStep
@@ -256,6 +256,11 @@ function setMeta(value: number) {
   }
 }
 
+function registrationComplete(vc: VerifiableCredential) {
+  contract.value = vc
+  stepper.value.next()
+}
+
 function pageComplete() {
   tutorialStore.tutorialComplete(true)
   void router.push({
@@ -276,7 +281,6 @@ async function onFinish() {
     profileStore.consumerPhone(phone.value)
     await profileStore.setAvatar(email.value)
     await secretaryStore.ping()
-    contract.value = (await secretaryStore.getOfferta()) as VerifiableCredential
     creatingNewContract.value = true
   } catch (error) {
     console.error(error)

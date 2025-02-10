@@ -58,8 +58,8 @@ async function telegramSign(user: TelegramUser = process.env.demo_user) {
     // ignore
   }
   try {
-    await secretaryStore.registration(user)
-    emit('authed')
+    const vc = await secretaryStore.registration(user)
+    emit('authed', vc)
   } catch (error) {
     console.error(error)
     $q.notify({
