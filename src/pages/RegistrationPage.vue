@@ -324,10 +324,10 @@ async function mainClickFn() {
       hapticFeedbackNotificationOccurred('success')
     }
 
+    // todo больше нет смысла передавать jwt и дергать registration, потому что
     sendData(
       JSON.stringify({
         type: 'registration',
-        data: secretaryStore.jwt,
       }),
     )
   } else {

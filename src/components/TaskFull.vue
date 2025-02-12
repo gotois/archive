@@ -185,7 +185,6 @@ import useContractStore from 'stores/contract'
 import useLangStore from 'stores/lang'
 import { openMap } from '../services/geoService'
 import { keyPair } from '../services/databaseService'
-// import ContractPod from '../services/contractGeneratorService'
 import { parse } from '../helpers/markdownHelper'
 import { isDateNotOk } from '../helpers/dateHelper'
 import {

@@ -90,6 +90,23 @@ export default defineStore('contracts', {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return JSON.parse(JSON.stringify(c))
       })
+      // todo verifiedCredential.credentialSubject.object может быть массивом
+      const participant = []
+      if (verifiedCredential.credentialSubject.target) {
+        participant.push({
+          type: verifiedCredential.credentialSubject.target.type,
+          name: verifiedCredential.credentialSubject.target.name,
+          email: verifiedCredential.credentialSubject.target.email,
+          telephone: verifiedCredential.credentialSubject.target.telephone,
+          url: verifiedCredential.credentialSubject.target.url,
+        })
+      }
+      const startTime = verifiedCredential.credentialSubject.startTime
+        ? new Date(verifiedCredential.credentialSubject.startTime)
+        : null
+      const endTime = verifiedCredential.credentialSubject.endTime
+        ? new Date(verifiedCredential.credentialSubject.endTime)
+        : null
       const { contract } = await this.insertContract({
         context: context,
         resolver: verifiedCredential.id,
@@ -112,19 +129,9 @@ export default defineStore('contracts', {
         description: verifiedCredential.credentialSubject.object.summary,
         issuanceDate: new Date(verifiedCredential.issuanceDate),
         issuer: verifiedCredential.issuer,
-        participant: [
-          {
-            type: verifiedCredential.credentialSubject.target.type,
-            name: verifiedCredential.credentialSubject.target.name,
-            email: verifiedCredential.credentialSubject.target.email,
-            telephone: verifiedCredential.credentialSubject.target.telephone,
-            url: verifiedCredential.credentialSubject.target.url,
-          },
-        ],
-        startTime: new Date(verifiedCredential.credentialSubject.startTime),
-        endTime: verifiedCredential.credentialSubject.endTime
-          ? new Date(verifiedCredential.credentialSubject.endTime)
-          : null,
+        participant: participant,
+        startTime: startTime,
+        endTime: endTime,
         type: Array.from(verifiedCredential.type),
         proof: {
           ...verifiedCredential.proof,
@@ -132,12 +139,20 @@ export default defineStore('contracts', {
         tag: Array.from(verifiedCredential.credentialSubject.object?.tag ?? []),
         attachment:
           verifiedCredential.credentialSubject.object.attachment?.map(
-            (attach) => ({
-              type: attach.type,
-              name: attach.name,
-              mediaType: attach.mediaType,
-              url: attach.url,
-            }),
+            (attach) => {
+              if (typeof attach === 'object') {
+                return {
+                  type: attach.type,
+                  name: attach.name,
+                  mediaType: attach.mediaType,
+                  url: attach.url,
+                }
+              } else if (typeof attach === 'string') {
+                return {
+                  url: attach,
+                }
+              }
+            },
           ) ?? [],
       })
       const count = await db.contracts.count()

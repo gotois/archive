@@ -3,9 +3,7 @@
     v-if="contract.credentialSubject?.object?.attachment?.length"
     class="relative-position"
   >
-    <ContractCarouselComponent
-      :model="contract.credentialSubject.object.attachment"
-    />
+    <ContractCarouselComponent :model="attachments" />
   </div>
   <QSeparator spaced inset />
   <QForm
@@ -295,7 +293,7 @@ import { formatDate } from '../helpers/dateHelper'
 // import { signMessageUsePhantom } from '../services/phantomWalletService'
 // import { signMessageUseSecretKey } from '../services/cryptoService'
 // import { keys } from '../services/databaseService'
-import { VerifiableCredential } from '../types/models'
+import { VerifiableCredential, ImageType } from '../types/models'
 
 enum InputType {
   email = 'email',
@@ -303,11 +301,11 @@ enum InputType {
   tel = 'tel',
   text = 'text',
 }
-interface Duration {
+type Duration = {
   from: Date | string
   to: Date | string
 }
-interface MultiContact {
+type MultiContact = {
   type: InputType
   value: string
 }
@@ -342,7 +340,17 @@ const contractOptions = ref(contractStore.getArchiveKeys)
 const contractForm = ref<QForm>()
 const loadingForm = ref(false)
 const modelContact = ref<MultiContact[]>([])
+const attachments = ref<ImageType[]>([])
 
+if (contract.value.credentialSubject?.object?.attachment) {
+  contract.value.credentialSubject?.object?.attachment.forEach((attachment) => {
+    console.log('attachment', attachment)
+    attachments.value.push({
+      url: attachment,
+      mediaType: 'application/pdf',
+    })
+  })
+}
 customers.value.push(props.contract.credentialSubject.actor)
 if (props.contract.credentialSubject.actor?.email) {
   modelContact.value.push({

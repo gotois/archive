@@ -170,6 +170,7 @@
 </template>
 <script lang="ts" setup>
 import { ref, PropType } from 'vue'
+import { useI18n } from 'vue-i18n'
 import {
   useQuasar,
   QBtn,
@@ -188,7 +189,9 @@ import SwipeToClose from 'components/SwipeToClose.vue'
 import { PDF_MIME_TYPE } from '../helpers/mimeTypes'
 import { ImageType } from '../types/models'
 
+const i18n = useI18n()
 const $q = useQuasar()
+const $t = i18n.t
 
 const props = defineProps({
   model: {

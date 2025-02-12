@@ -93,7 +93,6 @@ export default defineStore('secretary', {
       if (isTMA) {
         return this.tmaAuth
       }
-      return this.basicAuth
     },
     basicAuth(store): string | Error {
       if (!store.login || !store.password) {
@@ -107,9 +106,6 @@ export default defineStore('secretary', {
         throw new Error('Empty telegram init data')
       }
       return `tma ${initDataRaw}`
-    },
-    payload(store) {
-      return parseJwt(store.jwt)
     },
   },
 })

@@ -41,9 +41,10 @@ export default async function <T>(
     credentials: 'include',
     headers: headers,
   } as Request<T>
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   const response = (await requestJsonRpc2(request)) as {
-    error: JSONRPCErrorResponse
-    result: JSONRPCSuccessResponse
+    error?: JSONRPCErrorResponse
+    result?: JSONRPCSuccessResponse
   }
   if (response.error) {
     throw response.error

@@ -1,6 +1,5 @@
 import { LocalStorage } from 'quasar'
 import { defineStore } from 'pinia'
-import useSecretaryStore from 'stores/secretary'
 import useAuthStore from 'stores/auth'
 import { getGravatarURL } from '../helpers/schemaHelper'
 import { validUrlString } from '../helpers/urlHelper'
@@ -15,7 +14,6 @@ interface State {
 
 export default defineStore('profile', {
   state: (): State => ({
-    // todo выбирать все не из LocalStorage, а из JWT payload
     email: LocalStorage.getItem('email') ?? '',
     phone: LocalStorage.getItem('phone') ?? '',
     avatar: LocalStorage.getItem('avatar') ?? '',
@@ -49,14 +47,13 @@ export default defineStore('profile', {
   },
   getters: {
     getPersonLD(state) {
-      const secretaryStore = useSecretaryStore()
       const authStore = useAuthStore()
       return {
         '@context': 'https://json-ld.org/contexts/person.jsonld',
         '@type': 'Person',
         'id': authStore.webId,
-        'email': secretaryStore.payload.email,
-        'name': secretaryStore.payload.name,
+        'email': this.email,
+        'name': 'User',
         'image': state.avatar,
         'telephone': state.phone?.length ? state.phone : null,
         'homepage': null, // todo поддержать значение личного сайта

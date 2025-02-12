@@ -61,8 +61,6 @@
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useQuasar, QBtn, QForm, QInput, QStepperNavigation } from 'quasar'
-import { storeToRefs } from 'pinia'
-import useProfileStore from 'stores/profile'
 import KeypairComponent from 'components/KeypairComponent.vue'
 import { DIDTable } from '../types/models'
 
@@ -70,13 +68,11 @@ const emit = defineEmits(['complete'])
 const $q = useQuasar()
 const i18n = useI18n()
 const $t = i18n.t
-const profileStore = useProfileStore()
 
-const { getPersonLD } = storeToRefs(profileStore)
 const keypair = ref<DIDTable>(null)
 
 const consumerValid = computed(() => {
-  return Boolean(getPersonLD.value.name?.length > 0 && keypair.value?.id)
+  return Boolean(keypair.value?.id)
 })
 
 function uploadKey(key: DIDTable) {

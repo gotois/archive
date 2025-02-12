@@ -10,7 +10,7 @@ export interface ContractDate {
   end?: string
 }
 
-export interface Attachment extends ImageType {
+export type Attachment = ImageType & {
   type: string
 }
 
@@ -125,7 +125,7 @@ interface BaseSchemaType {
 
 export interface FormatImageType extends BaseSchemaType, ImageType {}
 
-export interface ImageType {
+export type ImageType = {
   url: string
   mediaType: string
   name?: string

@@ -175,7 +175,7 @@ export default defineStore('pod', {
       const profileStore = useProfileStore()
 
       const profile = buildThing(createThing({ url: authStore.webId }))
-      profile.addStringNoLocale(FOAF.name, profileStore.getPersonLD.name)
+      // profile.addStringNoLocale(FOAF.name, profileStore.getPersonLD.name) // todo поддержать
       if (profileStore.email) {
         profile.addStringNoLocale(FOAF.mbox, profileStore.email)
       }
