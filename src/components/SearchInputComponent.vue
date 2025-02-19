@@ -157,7 +157,6 @@ import {
   PNG_MIME_TYPE,
   JPG_MIME_TYPE,
 } from '../helpers/mimeTypes'
-import { miniSearch } from '../services/searchService'
 import { ROUTE_NAMES } from '../router/routes'
 import { readFilePromise } from '../helpers/fileHelper'
 import { createPDFs } from '../helpers/pdfHelper'
@@ -367,23 +366,7 @@ function onFilterSelect(
         if (val === '') {
           /* empty */
         } else {
-          const suggestionElement = new Set()
-          miniSearch.autoSuggest(val, {
-            fuzzy: (term) => (term.length > 3 ? 0.2 : null),
-            processTerm: (term) => term.toLowerCase(),
-            boost: {
-              name: 2,
-            },
-            prefix: true,
-            filter: (searchResult) => {
-              if (suggestionElement.has(searchResult.name)) {
-                return false
-              }
-              suggestionElement.add(searchResult.name)
-              return true
-            },
-          })
-          searchOptions.value = Array.from(suggestionElement)
+          /* empty */
         }
         searching.value = false
       },

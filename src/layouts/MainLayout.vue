@@ -28,13 +28,13 @@
           round
           :dense="$q.platform.is.desktop"
           icon="menu"
-          @click="rightDrawerOpen = !rightDrawerOpen"
+          @click="layoutStore.rightDrawerOpen = !layoutStore.rightDrawerOpen"
         />
       </QToolbar>
     </QHeader>
     <QDrawer
       v-if="!isTMA"
-      v-model="leftDrawerOpen"
+      v-model="layoutStore.leftDrawerOpen"
       side="left"
       class="scroll-y"
       :show-if-above="bigScreen"
@@ -60,13 +60,13 @@
         </div>
         <QExpansionItem
           v-if="jwt"
-          v-model="profileOpen"
+          v-model="layoutStore.profileOpen"
           group="backupgroup"
           icon="person"
           expand-icon-class="text-primary"
           class="column non-selectable"
           :dense="$q.platform.is.desktop"
-          :expand-separator="profileOpen"
+          :expand-separator="layoutStore.profileOpen"
           :label="$t('settings.native.profile')"
         >
           <QItemSection class="q-pa-md">
@@ -76,13 +76,13 @@
         </QExpansionItem>
         <QSeparator />
         <QExpansionItem
-          v-model="walletOpen"
+          v-model="layoutStore.walletOpen"
           group="backupgroup"
           icon="wallet"
           expand-icon-class="text-primary"
           class="column non-selectable"
           :dense="$q.platform.is.desktop"
-          :expand-separator="walletOpen"
+          :expand-separator="layoutStore.walletOpen"
           :label="'Wallet'"
         >
           <QItemSection class="q-pa-md">
@@ -91,13 +91,13 @@
         </QExpansionItem>
         <QSeparator />
         <QExpansionItem
-          v-model="otpOpen"
+          v-model="layoutStore.otpOpen"
           group="backupgroup"
           icon="vpn_key"
           expand-icon-class="text-primary"
           class="column non-selectable"
           :dense="$q.platform.is.desktop"
-          :expand-separator="otpOpen"
+          :expand-separator="layoutStore.otpOpen"
           :label="$t('settings.native.otp')"
         >
           <QItemSection class="q-pa-md">
@@ -112,13 +112,13 @@
         </QExpansionItem>
         <QSeparator />
         <QExpansionItem
-          v-model="calendarOpen"
+          v-model="layoutStore.calendarOpen"
           group="backupgroup"
           icon="event_available"
           expand-icon-class="text-primary"
           class="column non-selectable"
           :dense="$q.platform.is.desktop"
-          :expand-separator="calendarOpen"
+          :expand-separator="layoutStore.calendarOpen"
           label="Calendars"
         >
           <QItemSection class="q-pa-md">
@@ -133,20 +133,20 @@
         </QExpansionItem>
         <QSeparator />
         <QExpansionItem
-          v-model="settingsOpen"
+          v-model="layoutStore.settingsOpen"
           group="backupgroup"
           icon="import_export"
           expand-icon-class="text-primary"
           class="column non-selectable"
           :dense="$q.platform.is.desktop"
-          :expand-separator="settingsOpen"
+          :expand-separator="layoutStore.settingsOpen"
           :label="$t('settings.native.title')"
         >
           <p class="q-pt-md q-pl-md q-pr-md">
             {{ $t('settings.native.description') }}
           </p>
           <QItemSection
-            v-if="settingsOpen"
+            v-if="layoutStore.settingsOpen"
             class="q-pr-md q-pb-md q-pl-md no-margin"
           >
             <DatabaseComponent />
@@ -194,13 +194,13 @@
         </QExpansionItem>
         <QSeparator />
         <QExpansionItem
-          v-model="spacesOpen"
+          v-model="layoutStore.spacesOpen"
           group="backupgroup"
           icon="home"
           expand-icon-class="text-primary"
           class="column non-selectable"
           :dense="$q.platform.is.desktop"
-          :expand-separator="spacesOpen"
+          :expand-separator="layoutStore.spacesOpen"
           :label="'Personal Spaces'"
         >
           <div class="q-pt-md q-pl-md q-pr-md">
@@ -252,13 +252,13 @@
         </QExpansionItem>
         <QSeparator />
         <QExpansionItem
-          v-model="languageOpen"
+          v-model="layoutStore.languageOpen"
           group="backupgroup"
           icon="translate"
           expand-icon-class="text-primary"
           class="column non-selectable"
           :dense="$q.platform.is.desktop"
-          :expand-separator="languageOpen"
+          :expand-separator="layoutStore.languageOpen"
           :label="$t('settings.language.title')"
         >
           <QItemSection class="q-pa-md">
@@ -282,7 +282,7 @@
     </QDrawer>
     <QDrawer
       v-if="!isTMA"
-      v-model="rightDrawerOpen"
+      v-model="layoutStore.rightDrawerOpen"
       side="right"
       :width="320"
       class="q-pa-md scroll-y full-height"
@@ -392,10 +392,10 @@ import usePodStore from 'stores/pod'
 import useSecretaryStore from 'stores/secretary'
 import useNotification from 'stores/notification'
 import useGeoStore from 'stores/geo'
+import useLayoutStore from 'stores/layout'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
 import UserProfile from 'components/UserProfile.vue'
 import ChatDialog from 'components/ChatDialog.vue'
-import { indexAllDocuments } from '../services/searchService'
 import { isTWA, isTMA } from '../helpers/twaHelper'
 import { keyPair } from '../services/databaseService'
 import { open } from '../helpers/urlHelper'
@@ -436,6 +436,7 @@ const $t = i18n.t
 const authStore = useAuthStore()
 const contractStore = useContractStore()
 const geoStore = useGeoStore()
+const layoutStore = useLayoutStore()
 const notificationStore = useNotification()
 const podStore = usePodStore()
 const secretaryStore = useSecretaryStore()
@@ -451,20 +452,12 @@ const bigScreen = computed(
 )
 
 const miniState = ref(bigScreen.value)
-const leftDrawerOpen = ref(false)
-const rightDrawerOpen = ref(false)
-const calendarOpen = ref(false)
-const settingsOpen = ref(false)
-const spacesOpen = ref(false)
-const languageOpen = ref(false)
-const walletOpen = ref(false)
-const profileOpen = ref(false)
-const otpOpen = ref(false)
+
 const confirm = ref(false)
 const showSearch = ref(false)
 
 function onToggleLeftDrawer(): void {
-  leftDrawerOpen.value = !leftDrawerOpen.value
+  layoutStore.toggleLeftDrawer()
 }
 
 async function onExportKeychain() {
@@ -566,15 +559,22 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
-  Promise.all([indexAllDocuments()]).catch((error) => {
-    console.error('indexing error', error)
-  })
   Promise.all([secretaryStore.ping()]).catch((error) => {
     console.warn('ping', error)
   })
   Promise.all([geoStore.start()]).catch((error) => {
     console.warn('geo', error)
   })
+
+  // todo нужно взять все документы из ContractDatabase (IndexedDB) и проверить их на завершение
+  // documents.forEach((doc) => {
+  //     const diff = date.getDateDiff(doc.endTime, new Date(), 'days')
+  //     if (diff === 1) {
+  //       notificationStore.add({
+  //         title: 'Tomorrow end: ' + doc.name,
+  //       })
+  //     }
+  //   })
 })
 
 function navCancel(e: Event) {

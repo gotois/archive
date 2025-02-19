@@ -62,8 +62,9 @@ export async function createPDFs({
     orientation: orientation,
     unit: 'px',
     format: 'a4',
+    compress: false,
     hotfixes: ['px_scaling'],
-    compressPdf: false,
+    putOnlyUsedFonts: true,
   })
   doc.setProperties({
     title: title,

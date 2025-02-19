@@ -1,5 +1,5 @@
 <template>
-  <QDialog square @show="indexAllDocuments">
+  <QDialog square>
     <QCard
       class="full-width"
       :class="{
@@ -41,7 +41,6 @@ import {
   QCardActions,
 } from 'quasar'
 import InputComponent from 'components/SearchInputComponent.vue'
-import { indexAllDocuments } from '../services/searchService'
 
 const emit = defineEmits(['search'])
 

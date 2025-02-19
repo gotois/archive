@@ -3,22 +3,31 @@
     <div>{{ $t('productName') }}</div>
     <QIcon v-if="!$q.dark.isActive" name="img:/icons/safari-pinned-tab.svg" />
     <QSpace />
-    <QIcon v-if="connectionSupports" :name="signalIcon(connectionType)" />
-    <div v-if="batteryLevel >= 0" class="gt-xs">{{ batteryLevel * 100 }}%</div>
+    <QIcon v-if="connectionSupports" :name="signalIcon(state.connectionType)" />
+    <div v-if="state.batteryLevel >= 0" class="gt-xs">{{ batteryLevel }}%</div>
     <QIcon
       v-if="batterySupports"
-      :name="batteryIcon(batteryLevel, batteryCharging)"
+      :name="batteryIcon(state.batteryLevel, state.batteryCharging)"
     />
     <div>{{ date.formatDate(now as Date, 'HH:mm') }}</div>
   </QBar>
 </template>
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted } from 'vue'
-import { date, QSpace, QBar, QIcon } from 'quasar'
+import { ref, onMounted, onUnmounted, reactive, computed } from 'vue'
+import { useQuasar, date, QSpace, QBar, QIcon } from 'quasar'
 
-const batteryCharging = ref(false)
-const batteryLevel = ref(-1)
-const connectionType = ref('')
+const $q = useQuasar()
+
+const state = reactive({
+  batteryCharging: false,
+  batteryLevel: -1,
+  connectionType: '',
+})
+
+const batteryLevel = computed(() => {
+  return state.batteryLevel * 100
+})
+
 const now = ref<Date>(new Date())
 
 const connectionSupports = Reflect.has(navigator, 'connection')
@@ -72,30 +81,31 @@ function signalIcon(connectionType: string) {
 
 function watchConnection() {
   /* eslint-disable */
-  connectionType.value = navigator.connection.effectiveType
+  state.connectionType.value = navigator.connection.effectiveType
   navigator.connection.addEventListener('change', () => {
     console.warn(
       `Connection type changed to ${navigator.connection.effectiveType}`,
     )
-    connectionType.value = navigator.connection.effectiveType
+    state.connectionType.value = navigator.connection.effectiveType
   })
   /* eslint-enable */
 }
 
+// todo очищать слушатели
 async function watchBattery() {
   /* eslint-disable */
   const battery = await navigator.getBattery()
-  batteryCharging.value = battery.charging
-  batteryLevel.value = battery.level
+  state.batteryCharging.value = battery.charging
+  state.batteryLevel.value = battery.level
 
   battery.addEventListener('chargingchange', () => {
     console.warn(`Battery charging - ${battery.charging ? 'Yes' : 'No'}`)
-    batteryCharging.value = battery.charging
+    state.batteryCharging.value = battery.charging
   });
 
   battery.addEventListener('levelchange', () => {
     console.warn(`Battery level: ${battery.level * 100}%`)
-    batteryLevel.value = battery.level
+    state.batteryLevel.value = battery.level
   })
   /* eslint-enable */
 }

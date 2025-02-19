@@ -14,7 +14,6 @@ import {
   DIDTable,
   ContractData,
   WalletType,
-  FullTextDocument,
   Suite,
 } from '../types/models'
 
@@ -251,19 +250,6 @@ class ContractDatabase extends Dexie {
         console.error(error)
       })
     return map
-  }
-
-  public async getFulltextDocument() {
-    const documents: FullTextDocument[] = []
-    await this.contracts.each((contract) => {
-      documents.push({
-        id: contract.id,
-        name: contract.name,
-        endTime: contract.endTime,
-        description: contract.description,
-      })
-    })
-    return documents
   }
 
   public add(contract: ContractTable) {

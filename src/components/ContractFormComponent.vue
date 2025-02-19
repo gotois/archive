@@ -265,7 +265,7 @@
   </QForm>
 </template>
 <script lang="ts" setup>
-import { PropType, ref } from 'vue'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   useQuasar,
@@ -311,16 +311,16 @@ type MultiContact = {
 }
 
 const emit = defineEmits(['create'])
-const props = defineProps({
-  signing: {
-    type: Boolean as PropType<boolean>,
-    default: false,
+const props = withDefaults(
+  defineProps<{
+    signing: boolean
+    contract: VerifiableCredential
+  }>(),
+  {
+    signing: false,
+    contract: null,
   },
-  contract: {
-    type: Object as PropType<VerifiableCredential>,
-    default: () => ({}),
-  },
-})
+)
 
 const $t = useI18n().t
 const $q = useQuasar()

@@ -235,40 +235,6 @@ export default defineStore('contracts', {
         to: endDate,
       })
     },
-    async searchFromContracts({
-      query,
-      offset,
-      limit,
-      scoreRate = 0.5,
-    }: {
-      query: string
-      offset: number
-      limit: number
-      scoreRate?: number
-    }) {
-      this.contracts = []
-      if (query.length <= 0) {
-        return
-      }
-      const MiniSearch = await import('minisearch')
-      const miniSearch = new MiniSearch.default({
-        fields: ['name'],
-      })
-      const documents = await db.getFulltextDocument()
-      miniSearch.addAll(documents)
-      const searchResults = miniSearch.search(query, {
-        fuzzy: (term) => (term.length > 3 ? 0.2 : null),
-        filter({ score }) {
-          return score >= scoreRate
-        },
-      })
-      const ids = searchResults.map((results) => results.id as number)
-      if (!ids) {
-        return
-      }
-      const contracts = await db.contracts.bulkGet(ids)
-      this.contracts = contracts.slice(offset, offset + limit)
-    },
     async getCalendarContracts({ from, to }: { from: Date; to: Date }) {
       const contracts = await db.contracts
         .filter((c) => {
