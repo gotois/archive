@@ -83,8 +83,6 @@ import {
 import useAuthStore from 'stores/auth'
 import useTFAStore from 'stores/tfa'
 import { open } from '../helpers/urlHelper'
-import { createQR } from '../helpers/qrHelper'
-
 import { storeToRefs } from 'pinia'
 
 const authStore = useAuthStore()
@@ -167,9 +165,9 @@ function onOTPHandleComplete(token: string) {
 }
 
 async function openOTPDialog() {
-  const authURI = tfaStore.generate()
-  authUri.value = authURI
-  authUriQR.value = await createQR(authURI)
+  const { uri, qr } = await tfaStore.generate()
+  authUri.value = uri
+  authUriQR.value = qr
   showOTPDialog.value = true
 }
 </script>

@@ -9,6 +9,7 @@ interface PhantomSolana {
 }
 export function getSolana() {
   /* eslint-disable */
+  // @ts-ignore
   return globalThis?.phantom?.solana as PhantomSolana
   /* eslint-enable */
 }

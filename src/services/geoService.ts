@@ -42,19 +42,20 @@ export function openMap(place: Place) {
       { id: 'apple', label: 'Apple Maps', icon: 'map', color: 'yellow' },
     ],
   }).onOk((action: { id: string }) => {
+    const zoom = 12
     switch (action.id) {
       case 'apple':
         return open(
-          `https://maps.apple.com/?q=${query}&sll=${lng + ',' + lat}&z=10&t=s`,
+          `https://maps.apple.com/?q=${query}&sll=${lng + ',' + lat}&z=${zoom}&t=s`,
         )
       case 'google':
         return open(
           `https://www.google.com/maps/search/${query}/@${
             lng + ', ' + lat
-          },12z`,
+          },${zoom}z`,
         )
       case 'yandex':
-        return open(`https://maps.yandex.ru/?ll=${lat + ',' + lng}&z=12`)
+        return open(`https://maps.yandex.ru/?ll=${lat + ',' + lng}&z=${zoom}`)
       default:
         break
     }

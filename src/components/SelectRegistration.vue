@@ -1,6 +1,6 @@
 <template>
   <TelegramLogin
-    v-if="isProductionApp"
+    v-if="isPWA"
     mode="callback"
     :telegram-login="TELEGRAM_BOT_NAME"
     size="large"
@@ -41,7 +41,7 @@ import useProfileStore from 'stores/profile'
 import useSecretaryStore from 'stores/secretary'
 import { TELEGRAM_BOT_NAME } from '../services/telegram'
 import { TelegramUser } from '../types/models'
-import { isProductionApp } from '../helpers/googlePlayHelper'
+import { isPWA } from '../composables/detector'
 
 const emit = defineEmits(['authed'])
 

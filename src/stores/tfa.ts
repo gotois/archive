@@ -8,6 +8,7 @@ import {
   period,
   productName,
 } from '../helpers/tfa'
+import { createQR } from '../helpers/qrHelper'
 
 interface Store {
   activated: boolean
@@ -42,7 +43,7 @@ export default defineStore('tfa', {
       })
       return delta !== null
     },
-    generate() {
+    async generate() {
       this.secret = createRandomSecret()
       const totp = new TOTP({
         issuer,
@@ -51,7 +52,12 @@ export default defineStore('tfa', {
         period,
         secret: this.secret,
       })
-      return totp.toString()
+      const uri = totp.toString()
+
+      return {
+        uri: uri,
+        qr: await createQR(uri),
+      }
     },
   },
 })

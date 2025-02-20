@@ -185,7 +185,7 @@ import useTutorialStore from 'stores/tutorial'
 import useProfileStore from 'stores/profile'
 import useSecretaryStore from 'stores/secretary'
 import pkg from '../../package.json'
-import { isTMA } from '../helpers/twaHelper'
+import { isTMA } from '../composables/detector'
 import { ROUTE_NAMES, STEP } from '../router/routes'
 import { parse } from '../helpers/markdownHelper'
 import { VerifiableCredential } from '../types/models'
@@ -341,7 +341,7 @@ async function mainClickFn() {
 setMeta(step.value)
 
 onBeforeMount(() => {
-  if (isTMA) {
+  if (isTMA.value) {
     mainButton.mount()
     mainButton.setParams({
       backgroundColor: '#000000',

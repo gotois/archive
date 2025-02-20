@@ -9,7 +9,7 @@ import {
   ActivityObjectLink,
   VerifiableCredential,
 } from '../types/models'
-import { isTMA } from '../helpers/twaHelper'
+import { isTMA } from '../composables/detector'
 
 interface Store {
   available: boolean
@@ -90,7 +90,7 @@ export default defineStore('secretary', {
   },
   getters: {
     auth(): string | Error {
-      if (isTMA) {
+      if (isTMA.value) {
         return this.tmaAuth
       }
     },

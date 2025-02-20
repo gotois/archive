@@ -1,7 +1,7 @@
 import { LocalStorage, SessionStorage } from 'quasar'
 import { defineStore } from 'pinia'
 import { WebId } from '@inrupt/solid-client'
-import { getDefaultSession } from '@inrupt/solid-client-authn-browser'
+import { getDefaultSession, logout } from '@inrupt/solid-client-authn-browser'
 
 interface Store {
   pinIsLoggedIn: boolean
@@ -27,6 +27,13 @@ export default defineStore('auth', {
     },
     removeAuthValue() {
       SessionStorage.remove('isLoggedIn')
+    },
+    async logout() {
+      await logout()
+      this.openIdHandleIncoming()
+      LocalStorage.removeItem('oidcIssuer')
+      SessionStorage.remove('restorePreviousSession')
+      SessionStorage.remove('connect')
     },
     openIdHandleIncoming() {
       const { info } = getDefaultSession()

@@ -41,7 +41,7 @@ import {
 } from 'quasar'
 import { useRouter, RouterView } from 'vue-router'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
-import { isTWA, isTMA } from '../helpers/twaHelper'
+import { isTWA, isTMA } from '../composables/detector'
 import { ROUTE_NAMES } from '../router/routes'
 
 const router = useRouter()

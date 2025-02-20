@@ -385,7 +385,6 @@ import {
 } from 'quasar'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { logout } from '@inrupt/solid-client-authn-browser'
 import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
 import usePodStore from 'stores/pod'
@@ -396,7 +395,7 @@ import useLayoutStore from 'stores/layout'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
 import UserProfile from 'components/UserProfile.vue'
 import ChatDialog from 'components/ChatDialog.vue'
-import { isTWA, isTMA } from '../helpers/twaHelper'
+import { isTWA, isTMA } from '../composables/detector'
 import { keyPair } from '../services/databaseService'
 import { open } from '../helpers/urlHelper'
 import { ROUTE_NAMES } from '../router/routes'
@@ -452,7 +451,6 @@ const bigScreen = computed(
 )
 
 const miniState = ref(bigScreen.value)
-
 const confirm = ref(false)
 const showSearch = ref(false)
 
@@ -489,15 +487,19 @@ function loginToPod() {
 }
 
 async function logOutFromPod() {
-  await logout()
-  authStore.openIdHandleIncoming()
-  $q.localStorage.removeItem('oidcIssuer')
-  $q.sessionStorage.remove('restorePreviousSession')
-  $q.sessionStorage.remove('connect')
-  $q.notify({
-    message: $t('database.pod.disconnected'),
-    type: 'positive',
-  })
+  try {
+    await authStore.logout()
+    $q.notify({
+      message: $t('database.pod.disconnected'),
+      type: 'positive',
+    })
+  } catch (error) {
+    console.error(error)
+    $q.notify({
+      message: error.message as string,
+      type: 'negative',
+    })
+  }
 }
 
 async function otpPage() {

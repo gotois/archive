@@ -3,7 +3,9 @@ export const appendErundaScript = () => {
   script.src = 'https://cdn.jsdelivr.net/npm/eruda'
   document.body.append(script)
   script.onload = function () {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,no-undef
-    eruda.init()
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-call
+    globalThis.eruda.init()
   }
 }

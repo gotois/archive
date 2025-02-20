@@ -8,7 +8,7 @@ import useLangStore from 'stores/lang'
 import routes, { ROUTE_NAMES } from './routes'
 import { deleteDatabases, reset } from '../services/databaseService'
 import solidAuth from '../services/authService'
-import { isTWA, isTMA } from '../helpers/twaHelper'
+import { isTWA, isTMA } from '../composables/detector'
 import { appendTelegramWebAppScript } from '../services/telegram'
 import { appendErundaScript } from '../services/debug'
 

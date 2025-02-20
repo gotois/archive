@@ -26,7 +26,7 @@ import useProfileStore from 'stores/profile'
 import useWalletStore from 'stores/wallet'
 import { getSolana } from './services/phantomWalletService'
 import { WalletType } from './types/models'
-import { isTWA, isTMA } from './helpers/twaHelper'
+import { isTWA, isTMA } from './composables/detector'
 import pkg from '../package.json'
 import twaMinifest from '../twa-manifest.json'
 
@@ -175,7 +175,7 @@ events.on(EVENTS.ERROR, (error) => {
   console.error('Login error:', error)
 })
 
-if (isTMA) {
+if (isTMA.value) {
   init()
   viewport.expand()
 } else {
