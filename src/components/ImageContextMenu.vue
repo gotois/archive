@@ -57,7 +57,7 @@ import {
   convertBlobToPng,
 } from '../helpers/fileHelper'
 import { PNG_MIME_TYPE } from '../helpers/mimeTypes'
-import { ImageType } from '../types/models'
+import type { ImageType } from '../types/models'
 
 const props = defineProps({
   image: {

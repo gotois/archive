@@ -22,7 +22,7 @@ import { useI18n } from 'vue-i18n'
 import { QDate, date } from 'quasar'
 import useContractStore from 'stores/contract'
 import useLangStore from 'stores/lang'
-import { ContractDate, NavigationDate } from '../types/models'
+import type { ContractDate, NavigationDate } from '../types/models'
 
 const i18n = useI18n()
 const langStore = useLangStore()

@@ -401,7 +401,7 @@ import { open } from '../helpers/urlHelper'
 import { ROUTE_NAMES } from '../router/routes'
 import ContractPod from '../services/contractGeneratorService'
 import { formatToCalendarDate } from '../helpers/calendarHelper'
-import { DIDTable } from '../types/models'
+import type { DIDTable } from '../types/models'
 
 const LocaleComponent = defineAsyncComponent(
   () => import('components/LocaleComponent.vue'),
@@ -545,6 +545,7 @@ function syncPods() {
         const message = 'refreshing ' + link
         const newDogovor = await ContractPod.fromSolidUrl(link)
         dialog.update({ message: message })
+        // fixme - добавление теперь делается через Модель Dexie
         await contractStore.insertContract(newDogovor.presentation)
       }
     })
@@ -558,6 +559,21 @@ onBeforeMount(() => {
     open(router.currentRoute.value.query.action)
     return
   }
+
+  // todo думаю это надо перенести на /loginPage
+  // const { query } = router.currentRoute.value
+  // Если пользователь отменил вход через WebId, возвращаем его на страницу подтверждения
+  // if (isLoggedIn.value && query.error === 'access_denied') {
+  //   step.value = STEP.FINAL
+  // }
+  // if (
+  //   step.value === Number(STEP.FINAL) &&
+  //   walletStore.getMultibase?.length === 0
+  // ) {
+  //   $q.loading.hide()
+  // } else if (isLoggedIn.value && query.code && query.state) {
+  //   step.value = STEP.FINAL
+  // }
 })
 
 onMounted(() => {

@@ -187,7 +187,7 @@ import analyze from 'rgbaster'
 import ImageContextMenu from 'components/ImageContextMenu.vue'
 import SwipeToClose from 'components/SwipeToClose.vue'
 import { PDF_MIME_TYPE } from '../helpers/mimeTypes'
-import { ImageType } from '../types/models'
+import type { ImageType } from '../types/models'
 
 const i18n = useI18n()
 const $q = useQuasar()

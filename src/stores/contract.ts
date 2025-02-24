@@ -2,7 +2,7 @@ import { is, date, LocalStorage, SessionStorage } from 'quasar'
 import { defineStore } from 'pinia'
 // import usePodStore from 'stores/pod'
 import { db } from '../services/databaseService'
-import {
+import type {
   ContractData,
   ContractTable,
   FormatContract,

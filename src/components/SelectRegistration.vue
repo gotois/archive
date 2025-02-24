@@ -40,8 +40,8 @@ import { useQuasar, QTooltip, QBtn, QBtnGroup, QBtnDropdown } from 'quasar'
 import useProfileStore from 'stores/profile'
 import useSecretaryStore from 'stores/secretary'
 import { TELEGRAM_BOT_NAME } from '../services/telegram'
-import { TelegramUser } from '../types/models'
 import { isPWA } from '../composables/detector'
+import type { TelegramUser } from '../types/models'
 
 const emit = defineEmits(['authed'])
 

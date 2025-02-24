@@ -62,7 +62,7 @@ import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useQuasar, QBtn, QForm, QInput, QStepperNavigation } from 'quasar'
 import KeypairComponent from 'components/KeypairComponent.vue'
-import { DIDTable } from '../types/models'
+import type { DIDTable } from '../types/models'
 
 const emit = defineEmits(['complete'])
 const $q = useQuasar()

@@ -43,8 +43,8 @@ import {
 } from 'quasar'
 import { useRouter } from 'vue-router'
 import { ROUTE_NAMES } from '../router/routes'
-import { VerifiableCredential, ContractTable } from '../types/models'
 import ContractPod from '../services/contractGeneratorService'
+import type { VerifiableCredential, ContractTable } from '../types/models'
 
 const ContractFormComponent = defineAsyncComponent({
   loader: () => import('components/ContractFormComponent.vue'),

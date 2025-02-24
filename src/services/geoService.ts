@@ -1,6 +1,6 @@
 import { BottomSheet } from 'quasar'
 import { open } from '../helpers/urlHelper'
-import { Place } from '../types/models'
+import type { Place } from '../types/models'
 
 export function checkGeolocationPermission() {
   if (!navigator.permissions) {

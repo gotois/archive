@@ -56,7 +56,7 @@ import { QCard, QCardSection, QPopupProxy, date, useQuasar } from 'quasar'
 import TaskFull from 'components/TaskFull.vue'
 import useContractStore from 'stores/contract'
 import useAuthStore from 'stores/auth'
-import { Agent, FormatImageType, Place } from '../types/models'
+import type { Agent, FormatImageType, Place } from '../types/models'
 
 const $q = useQuasar()
 const i18n = useI18n()

@@ -1,8 +1,8 @@
 import { ImageFormat, jsPDF } from 'jspdf'
 import { PDF_MIME_TYPE } from './mimeTypes'
 import { getFileFromUrl } from './fileHelper'
-import { Attachment } from '../types/models'
 import pkg from '../../package.json'
+import type { Attachment } from '../types/models'
 
 const { productName } = pkg
 const FILE_EXT = '.pdf'

@@ -49,7 +49,7 @@ import {
   QBtn,
   QSkeleton,
 } from 'quasar'
-import { VerifiableCredential } from '../types/models'
+import type { VerifiableCredential } from '../types/models'
 
 const $q = useQuasar()
 const creatingNewContract = ref(true)

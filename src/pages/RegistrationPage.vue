@@ -188,8 +188,8 @@ import pkg from '../../package.json'
 import { isTMA } from '../composables/detector'
 import { ROUTE_NAMES, STEP } from '../router/routes'
 import { parse } from '../helpers/markdownHelper'
-import { VerifiableCredential } from '../types/models'
 import CreateNewDogovor from 'components/CreateNewDogovor.vue'
+import type { VerifiableCredential } from '../types/models'
 
 const SelectRegistration = defineAsyncComponent(
   () => import('components/SelectRegistration.vue'),

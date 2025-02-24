@@ -293,7 +293,7 @@ import { formatDate } from '../helpers/dateHelper'
 // import { signMessageUsePhantom } from '../services/phantomWalletService'
 // import { signMessageUseSecretKey } from '../services/cryptoService'
 // import { keys } from '../services/databaseService'
-import { VerifiableCredential, ImageType } from '../types/models'
+import type { VerifiableCredential, ImageType } from '../types/models'
 
 enum InputType {
   email = 'email',

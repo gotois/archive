@@ -3,7 +3,7 @@ import { LocalStorage } from 'quasar'
 import { RequestedContact, retrieveLaunchParams } from '@telegram-apps/sdk'
 import useTutorialStore from 'stores/tutorial'
 import rpc from '../helpers/rpc'
-import {
+import type {
   TelegramUser,
   ActivityObjectNote,
   ActivityObjectLink,

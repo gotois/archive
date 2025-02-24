@@ -19,7 +19,7 @@ import {
   // saveFileInContainer,
 } from '@inrupt/solid-client'
 import { RDF /*, SCHEMA_INRUPT*/ } from '@inrupt/vocab-common-rdf'
-import { VerifiableCredential, Presentation } from '../types/models'
+import type { VerifiableCredential, Presentation } from '../types/models'
 
 export default class ContractPod {
   resourceUrl = ''

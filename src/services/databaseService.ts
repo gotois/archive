@@ -8,7 +8,7 @@ import { Ed25519Signature2020 } from '@digitalbazaar/ed25519-signature-2020'
 // @ts-ignore
 import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020'
 import recommendationContractTypes from './recommendationContractEnum'
-import {
+import type {
   ContractTable,
   KeysTable,
   DIDTable,

@@ -44,7 +44,7 @@ import useSecretaryStore from 'stores/secretary'
 import ChatComponent from 'components/ChatComponent.vue'
 import InputComponent from 'components/SearchInputComponent.vue'
 import CreateNewDogovor from 'components/CreateNewDogovor.vue'
-import { Attachment, VerifiableCredential } from '../types/models'
+import type { Attachment, VerifiableCredential } from '../types/models'
 
 const secretaryStore = useSecretaryStore()
 const chatStore = useChatStore()
