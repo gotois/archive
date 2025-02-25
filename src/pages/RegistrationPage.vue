@@ -309,22 +309,18 @@ async function onStep(step: number) {
 }
 
 async function mainClickFn() {
-  if (mainButton.isLoaderVisible()) {
-    return
-  }
   mainButton.setParams({
     isLoaderVisible: true,
   })
   if (requestContact.isSupported()) {
     const requestedContact = await requestContact()
-    await secretaryStore.registration(requestedContact)
-    tutorialStore.tutorialComplete(true)
+    const vc = await secretaryStore.registration(requestedContact)
 
     if (hapticFeedbackNotificationOccurred.isAvailable()) {
       hapticFeedbackNotificationOccurred('success')
     }
+    tutorialStore.tutorialComplete(true)
 
-    // todo больше нет смысла передавать jwt и дергать registration, потому что
     sendData(
       JSON.stringify({
         type: 'registration',
@@ -333,9 +329,6 @@ async function mainClickFn() {
   } else {
     throw new Error('RequestContact is not supported')
   }
-  mainButton.setParams({
-    isLoaderVisible: false,
-  })
 }
 
 setMeta(step.value)
@@ -353,6 +346,9 @@ onBeforeMount(() => {
     })
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     mainButton.onClick(async () => {
+      if (mainButton.isLoaderVisible()) {
+        return
+      }
       try {
         await mainClickFn()
       } catch (error) {
@@ -368,6 +364,10 @@ onBeforeMount(() => {
             message: error.message as string,
           })
         }
+      } finally {
+        mainButton.setParams({
+          isLoaderVisible: false,
+        })
       }
     })
   }
