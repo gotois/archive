@@ -324,6 +324,7 @@ async function mainClickFn() {
     sendData(
       JSON.stringify({
         type: 'registration',
+        data: vc,
       }),
     )
   } else {
