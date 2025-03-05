@@ -39,6 +39,7 @@
     "build:apk": "bubblewrap build",
     "fingerprint": "bubblewrap fingerprint generateAssetLinks --output=\"public/.well-known/assetlinks.json\"",
     "lint": "eslint --ext .js,.ts,.vue ./",
+    "typecheck": "vue-tsc --noEmit",
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
@@ -94,6 +95,7 @@
     "quasar-app-extension-q-otp": "~0.1.4",
     "typescript": "~5.7.3",
     "vite": ">=4.4.11",
+    "vue-tsc": "~2.2.8",
     "workbox-build": "~6.6.1",
     "workbox-cacheable-response": "~7.0.0",
     "workbox-core": "~7.0.0",
