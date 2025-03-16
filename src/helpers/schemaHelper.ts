@@ -6,7 +6,7 @@
 //   FormatPlace,
 //   // VerifiableCredential,
 // } from '../types/models'
-import { getHash } from '../helpers/cryptoHelper'
+import { getHash } from './cryptoHelper'
 
 /* fixme парсить контракт схему с выгруженного solid
 export function getContractFromLD(jsldContract: VerifiableCredential) {

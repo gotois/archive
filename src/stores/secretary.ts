@@ -89,15 +89,15 @@ export default defineStore('secretary', {
     },
   },
   getters: {
-    auth(): string | Error {
+    auth(store): string | Error {
       if (isTMA.value) {
         return this.tmaAuth
+      } else if (store.login && store.password) {
+        return this.basicAuth
       }
+      throw new Error('Empty login or password')
     },
     basicAuth(store): string | Error {
-      if (!store.login || !store.password) {
-        throw new Error('Empty login or password')
-      }
       return 'Basic ' + btoa(store.login + ':' + store.password)
     },
     tmaAuth(): string | Error {

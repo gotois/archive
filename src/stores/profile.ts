@@ -2,7 +2,6 @@ import { LocalStorage } from 'quasar'
 import { defineStore } from 'pinia'
 import useAuthStore from 'stores/auth'
 import { getGravatarURL } from '../helpers/schemaHelper'
-import { validUrlString } from '../helpers/urlHelper'
 import getLocation from '../services/cloudflare'
 
 interface State {
@@ -40,7 +39,7 @@ export default defineStore('profile', {
     },
     async setAvatar(email: string) {
       const avatarURL = await getGravatarURL(email)
-      if (validUrlString(avatarURL)) {
+      if (avatarURL) {
         this.consumerImg(avatarURL)
       }
     },
