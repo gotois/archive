@@ -87,7 +87,7 @@ function onComplete() {
   emit('onComplete')
 }
 
-function checkUrl(value?: string) {
+function checkUrl(value: NonNullable<string>) {
   if (validUrlString(value)) {
     return 'Введите валидный URL SOLID провайдера.'
   }
