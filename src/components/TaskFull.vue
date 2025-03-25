@@ -526,7 +526,7 @@ function onSheet() {
         return open(url)
       }
       case Action.CALENDAR: {
-        const icalFile = createCal($t('organization.prodid'), {
+        const icalFile: File = createCal($t('organization.prodid'), {
           event: {
             uid: uid(),
             url: props.link ? new URL(props.link) : null,
