@@ -4,5 +4,10 @@
     "baseUrl": ".",
     "strictNullChecks": false
   },
-  "include": ["src"]
+  "include": [
+    "src/**/*",
+    "src/*",
+    "src-pwa/*",
+    "quasar.conf.js"
+  ]
 }
