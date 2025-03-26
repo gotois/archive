@@ -192,7 +192,7 @@
         </template>
       </QInput>
       <MultiContactComponent
-        :model-value="modelContact"
+        v-model="modelContact"
         :readonly="Boolean(true)"
         :label="$t('customer.contact')"
         :hint="$t('customer.hintContact')"
@@ -202,7 +202,6 @@
         :dense="$q.platform.is.desktop"
         color="secondary"
         @focus="onFocusInput"
-        @update:model-value="(value) => (modelContact = value)"
       />
     </template>
     <QInput

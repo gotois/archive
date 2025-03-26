@@ -40,7 +40,7 @@
   </QSelect>
 </template>
 <script lang="ts" setup>
-import { ref, computed, PropType } from 'vue'
+import { ref, PropType } from 'vue'
 import { QSelect, QIcon, QChip, patterns } from 'quasar'
 
 enum InputType {
@@ -54,13 +54,9 @@ interface MultiContact {
   value: string
 }
 
-const emit = defineEmits(['focus', 'update:modelValue'])
+const emit = defineEmits(['focus'])
 
-const props = defineProps({
-  modelValue: {
-    type: Array as PropType<MultiContact[]>,
-    required: true,
-  },
+defineProps({
   readonly: {
     type: Boolean as PropType<boolean>,
     required: false,
@@ -103,17 +99,10 @@ const props = defineProps({
   },
 })
 
+const modelContact = defineModel<MultiContact[]>({ required: true })
+
 const hasErrorMessage = ref(false)
 const currentContactType = ref<InputType>(InputType.text)
-
-const modelContact = computed({
-  get() {
-    return props.modelValue
-  },
-  set(value) {
-    emit('update:modelValue', value)
-  },
-})
 
 function validTelString(tel: string) {
   return tel.startsWith('+')
