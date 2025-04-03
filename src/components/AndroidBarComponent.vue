@@ -86,7 +86,7 @@ function watchConnection() {
     console.warn(
       `Connection type changed to ${navigator.connection.effectiveType}`,
     )
-    state.connectionType.value = navigator.connection.effectiveType
+    state.connectionType.value = navigator.connection.effectiveType as string
   })
   /* eslint-enable */
 }
@@ -96,16 +96,16 @@ async function watchBattery() {
   /* eslint-disable */
   const battery = await navigator.getBattery()
   state.batteryCharging.value = battery.charging
-  state.batteryLevel.value = battery.level
+  state.batteryLevel.value = battery.level as number
 
   battery.addEventListener('chargingchange', () => {
     console.warn(`Battery charging - ${battery.charging ? 'Yes' : 'No'}`)
-    state.batteryCharging.value = battery.charging
+    state.batteryCharging.value = battery.charging as boolean
   });
 
   battery.addEventListener('levelchange', () => {
     console.warn(`Battery level: ${battery.level * 100}%`)
-    state.batteryLevel.value = battery.level
+    state.batteryLevel.value = battery.level as number
   })
   /* eslint-enable */
 }
