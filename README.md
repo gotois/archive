@@ -62,6 +62,14 @@ npm i
 - Опционально установите `GOOGLE_CLIENT_ID` ([google-one-tap](https://developers.google.com/identity/gsi/web/guides/display-google-one-tap)) в качестве переменной среды.
 - Опционально установите `GOOGLE_REDIRECT_URI` необходимый в качестве переменной среды.
 - Опционально установите `TELEGRAM_BOT_NAME` в качестве переменной среды вашего личного телеграм бота.
+- Опционально установите `VAPID_PUBLIC_KEY` в качестве переменной среды вашего сервера идентификации при отправке push-уведомлений через WebPush API.
+
+#### Создание ключей для локального HTTPS
+
+```bash
+mkcert -install
+mkcert -key-file certs/localhost-key.pem -cert-file certs/localhost.pem localhost 127.0.0.1 ::1
+```
 
 #### Запуск в режиме локальной разработки
 > hot-code reloading, error reporting, etc.

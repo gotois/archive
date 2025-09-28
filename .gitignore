@@ -34,3 +34,5 @@ manifest-checksum.txt
 android.keystore
 deployment_cert.der
 .gradle/
+
+certs/

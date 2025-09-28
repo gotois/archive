@@ -48,6 +48,7 @@ module.exports = configure((ctx) => {
         telegram_bot_name: process.env.TELEGRAM_BOT_NAME,
         google_client_id: process.env.GOOGLE_CLIENT_ID,
         google_redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+        vapid_public_key: process.env.VAPID_PUBLIC_KEY,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         demo_user: !ctx.prod && JSON.parse(process.env.TELEGRAM_TEST_USER),
       },
@@ -71,7 +72,11 @@ module.exports = configure((ctx) => {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
     devServer: {
-      https: false,
+      https: {
+        key: 'certs/localhost-key.pem',
+        cert: 'certs/localhost.pem',
+      },
+      host: 'localhost',
       port: 8080,
       open: true, // opens browser window automatically
     },
@@ -103,7 +108,9 @@ module.exports = configure((ctx) => {
     // https://v2.quasar.dev/quasar-cli/developing-pwa/configuring-pwa
     pwa: {
       workboxMode: 'injectManifest',
-      workboxOptions: {},
+      workboxOptions: {
+        globPatterns: ['**/*.{js,css,html,png,svg}'],
+      },
       manifest: {
         name: pkg.productName,
         short_name: pkg.productName,

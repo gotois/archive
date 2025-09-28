@@ -9,16 +9,23 @@ import {
 } from 'workbox-precaching'
 import { registerRoute, NavigationRoute } from 'workbox-routing'
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-void self.skipWaiting().then(() => ({}))
+// eslint-disable-next-line @typescript-eslint/no-unsafe-call
+self.skipWaiting()
 clientsClaim()
 
 // Use with precache injection
 precacheAndRoute(self.__WB_MANIFEST)
 
 cleanupOutdatedCaches()
+
+if (process.env.PWA_FALLBACK_HTML) {
+  precacheAndRoute([
+    {
+      url: process.env.PWA_FALLBACK_HTML,
+      revision: null,
+    },
+  ])
+}
 
 // Non-SSR fallback to index.html
 // Production SSR fallback to offline.html (except for dev)

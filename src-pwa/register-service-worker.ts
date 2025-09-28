@@ -13,8 +13,24 @@ register(process.env.SERVICE_WORKER_FILE, {
 
   registrationOptions: { scope: './' },
 
-  ready(/* registration */) {
-    console.log('Service worker is active.')
+  ready(registration) {
+    registration.pushManager
+      .subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: process.env.vapid_public_key,
+      })
+      .then((subscription) => {
+        return fetch(process.env.server + '/webpush/subscribe', {
+          method: 'POST',
+          body: JSON.stringify(subscription),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+      })
+      .catch((error) => {
+        console.error('Error during webpush subscription', error)
+      })
   },
   registered(/* registration */) {
     console.log('Service worker has been registered.')
