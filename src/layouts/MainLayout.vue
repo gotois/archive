@@ -390,7 +390,6 @@ import useContractStore from 'stores/contract'
 import usePodStore from 'stores/pod'
 import useSecretaryStore from 'stores/secretary'
 import useNotification from 'stores/notification'
-import useGeoStore from 'stores/geo'
 import useLayoutStore from 'stores/layout'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
 import UserProfile from 'components/UserProfile.vue'
@@ -434,7 +433,6 @@ const i18n = useI18n()
 const $t = i18n.t
 const authStore = useAuthStore()
 const contractStore = useContractStore()
-const geoStore = useGeoStore()
 const layoutStore = useLayoutStore()
 const notificationStore = useNotification()
 const podStore = usePodStore()
@@ -577,13 +575,6 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
-  Promise.all([secretaryStore.ping()]).catch((error) => {
-    console.warn('ping', error)
-  })
-  Promise.all([geoStore.start()]).catch((error) => {
-    console.warn('geo', error)
-  })
-
   // todo нужно взять все документы из ContractDatabase (IndexedDB) и проверить их на завершение
   // documents.forEach((doc) => {
   //     const diff = date.getDateDiff(doc.endTime, new Date(), 'days')

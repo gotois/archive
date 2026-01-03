@@ -50,11 +50,10 @@ export default defineStore('secretary', {
         throw error
       }
     },
-    // todo - нужно делать запрос RPC на Hello чтобы убедиться что все работает
     async authWithLoginAndPassword(login: string, password: string) {
       this.login = login
       this.password = password
-      await this.ping()
+      await rpc('hello', {})
       LocalStorage.set('login', login)
       LocalStorage.set('password', password)
     },

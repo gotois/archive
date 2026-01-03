@@ -33,7 +33,7 @@ module.exports = configure((ctx) => {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli/boot-files
-    boot: ['i18n', 'addressbar-color'],
+    boot: ['i18n', 'addressbar-color', 'health'],
 
     // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
