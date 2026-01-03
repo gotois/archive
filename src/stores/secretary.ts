@@ -24,19 +24,20 @@ export default defineStore('secretary', {
   }),
   actions: {
     async ping() {
-      if (!process.env.server) {
-        console.warn('Unknown Server host')
-        this.available = false
-        return
-      }
       try {
-        const response = await fetch(process.env.server + '/ping', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'text/plain',
-            'Authorization': this.auth as string,
+        if (!process.env.server) {
+          throw new Error('Unknown Server host')
+        }
+        const response = await fetch(
+          process.env.server + '/health?service=redis',
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'text/plain',
+              'Authorization': this.auth as string,
+            },
           },
-        })
+        )
         if (!response.ok) {
           throw new Error('Network response was not ok')
         }
@@ -46,12 +47,14 @@ export default defineStore('secretary', {
         // @ts-expect-error
         console.warn('GIC Server: ', error.message)
         this.available = false
+        throw error
       }
     },
-    // todo - похоже это не нужно больше
-    setLoginAndPassword(login: string, password: string) {
+    // todo - нужно делать запрос RPC на Hello чтобы убедиться что все работает
+    async authWithLoginAndPassword(login: string, password: string) {
       this.login = login
       this.password = password
+      await this.ping()
       LocalStorage.set('login', login)
       LocalStorage.set('password', password)
     },
@@ -60,7 +63,7 @@ export default defineStore('secretary', {
       tutorialStore.tutorialComplete(false)
     },
     async registration(requestedContact: RequestedContact | TelegramUser) {
-      const response = await fetch(process.env.server + '/authorization', {
+      const response = await fetch(process.env.server + '/users/telegram/bot', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
