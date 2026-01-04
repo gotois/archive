@@ -34,7 +34,6 @@ export default defineStore('secretary', {
             method: 'GET',
             headers: {
               'Content-Type': 'text/plain',
-              'Authorization': this.auth as string,
             },
           },
         )
@@ -51,11 +50,17 @@ export default defineStore('secretary', {
       }
     },
     async authWithLoginAndPassword(login: string, password: string) {
-      this.login = login
-      this.password = password
-      await rpc('hello', {})
-      LocalStorage.set('login', login)
-      LocalStorage.set('password', password)
+      try {
+        this.login = login
+        this.password = password
+        await rpc('hello', {})
+        LocalStorage.set('login', login)
+        LocalStorage.set('password', password)
+      } catch (error) {
+        console.error(error)
+        this.login = null
+        this.password = null
+      }
     },
     logout() {
       const tutorialStore = useTutorialStore()
@@ -91,15 +96,23 @@ export default defineStore('secretary', {
     },
   },
   getters: {
-    auth(store): string | Error {
-      if (isTMA.value) {
-        return this.tmaAuth
-      } else if (store.login && store.password) {
-        return this.basicAuth
+    auth(store): string {
+      try {
+        if (isTMA.value) {
+          return this.tmaAuth as string
+        } else if (store.login && store.password) {
+          return this.basicAuth as string
+        }
+        throw new Error('Unknown auth error')
+      } catch (error) {
+        console.warn(error)
+        return ''
       }
-      throw new Error('Empty login or password')
     },
     basicAuth(store): string | Error {
+      if (store.login?.length || store.password?.length) {
+        throw new Error('Empty login or password')
+      }
       return 'Basic ' + btoa(store.login + ':' + store.password)
     },
     tmaAuth(): string | Error {

@@ -30,6 +30,10 @@ export default async function <T>(
   if (geoStore.geolocation) {
     headers.geolocation = geoStore.geolocation
   }
+  if (secretaryStore.auth) {
+    headers['Authorization'] = secretaryStore.auth
+  }
+
   const request = {
     url: process.env.server + '/rpc',
     body: {

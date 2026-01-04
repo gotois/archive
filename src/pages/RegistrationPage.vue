@@ -124,7 +124,10 @@
             {{ $t('tutorial.welcome.hint') }}
           </p>
           <QStepperNavigation v-if="!isTMA">
-            <SelectRegistration @authed="registrationComplete" />
+            <SelectRegistration
+              @registered="registrationComplete"
+              @authed="pageComplete"
+            />
           </QStepperNavigation>
         </QStep>
         <QStep
@@ -280,7 +283,6 @@ async function onFinish() {
     profileStore.consumerEmail(email.value)
     profileStore.consumerPhone(phone.value)
     await profileStore.setAvatar(email.value)
-    await secretaryStore.ping()
     creatingNewContract.value = true
   } catch (error) {
     console.error(error)

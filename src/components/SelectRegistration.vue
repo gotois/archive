@@ -46,35 +46,41 @@
       <QCardSection>
         <div class="text-h6">Your Login with Password</div>
       </QCardSection>
-      <QCardSection class="q-pt-none">
-        <QInput
-          v-model.trim="login"
-          label="Login"
-          type="text"
-          :maxlength="32"
-          :hide-bottom-space="!$q.platform.is.desktop"
-          color="secondary"
-          autocomplete="off"
-          outlined
-          autofocus
-        >
-        </QInput>
-        <QInput
-          v-model.trim="password"
-          label="Password"
-          type="password"
-          :maxlength="32"
-          :hide-bottom-space="!$q.platform.is.desktop"
-          color="secondary"
-          autocomplete="off"
-          outlined
-        >
-        </QInput>
-      </QCardSection>
-      <QCardActions align="right" class="text-secondary">
-        <QBtn v-close-popup label="Cancel" />
-        <QBtn label="Submit" @click="submitForm" />
-      </QCardActions>
+      <QForm @submit="submitForm">
+        <QCardSection class="q-pt-none">
+          <QInput
+            v-model.trim="login"
+            label="Login"
+            type="text"
+            :maxlength="32"
+            :hide-bottom-space="!$q.platform.is.desktop"
+            :rules="[(val) => !!val || 'Login is required']"
+            lazy-rules
+            color="secondary"
+            autocomplete="off"
+            outlined
+            autofocus
+          >
+          </QInput>
+          <QInput
+            v-model.trim="password"
+            label="Password"
+            type="password"
+            :maxlength="32"
+            :hide-bottom-space="!$q.platform.is.desktop"
+            :rules="[(val) => !!val || 'Password is required']"
+            lazy-rules
+            color="secondary"
+            autocomplete="off"
+            outlined
+          >
+          </QInput>
+        </QCardSection>
+        <QCardActions align="right" class="text-secondary">
+          <QBtn v-close-popup label="Cancel" />
+          <QBtn label="Submit" type="submit" />
+        </QCardActions>
+      </QForm>
     </QCard>
   </QDialog>
 </template>
@@ -89,6 +95,7 @@ import {
   QBtnGroup,
   QBtnDropdown,
   QInput,
+  QForm,
   QDialog,
   QCard,
   QCardActions,
@@ -100,7 +107,7 @@ import { TELEGRAM_BOT_NAME } from '../services/telegram'
 import { isPWA } from '../composables/detector'
 import type { TelegramUser } from '../types/models'
 
-const emit = defineEmits(['authed'])
+const emit = defineEmits(['authed', 'registered'])
 
 const $q = useQuasar()
 const i18n = useI18n()
@@ -117,11 +124,8 @@ function openLoginPasswordSign() {
 }
 
 async function submitForm() {
-  const vc = await secretaryStore.authWithLoginAndPassword(
-    login.value,
-    password.value,
-  )
-  emit('authed', vc)
+  await secretaryStore.authWithLoginAndPassword(login.value, password.value)
+  emit('authed')
 }
 
 async function telegramSign(user: TelegramUser = process.env.demo_user) {
@@ -132,7 +136,7 @@ async function telegramSign(user: TelegramUser = process.env.demo_user) {
   }
   try {
     const vc = await secretaryStore.registration(user)
-    emit('authed', vc)
+    emit('registered', vc)
   } catch (error) {
     console.error(error)
     $q.notify({
