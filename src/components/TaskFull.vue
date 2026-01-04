@@ -93,7 +93,7 @@
           {{ prettyDate(startTime, endTime) }}
         </span>
       </div>
-      <div class="row items-center">
+      <div v-if="organizer" class="row items-center">
         <div
           class="flex overflow-hidden text-left ellipsis"
           style="left: 32px; right: 0"
@@ -105,7 +105,7 @@
           </div>
         </div>
       </div>
-      <div v-if="participant.length" class="row items-center">
+      <div v-if="participant?.length" class="row items-center">
         <div
           class="flex overflow-hidden text-left ellipsis"
           style="left: 32px; right: 0"
@@ -389,7 +389,7 @@ function onSheet() {
     actions = actions.concat(group2)
   }
   const group3 = [] // Message Group
-  if (props.organizer.email || props.organizer.telephone) {
+  if (props.organizer && (props.organizer.email || props.organizer.telephone)) {
     if (props.organizer.email) {
       group3.push({
         label: $t('components.archiveList.sheet.mail.label'),
