@@ -15,7 +15,7 @@
       class="absolute-full fit"
     >
       <QPullToRefresh class="absolute-full fit" @refresh="onRefresh">
-        <ScheduleXCalendar :calendar-app="calendarApp">
+        <ScheduleXCalendar v-if="calendarApp" :calendar-app="calendarApp">
           <template #dateGridEvent="{ calendarEvent }">
             <CalendarEventCard
               class="fit"
@@ -101,7 +101,7 @@
   </QPage>
 </template>
 <script lang="ts" setup>
-import { ref, onBeforeMount } from 'vue'
+import { ref, shallowRef, nextTick, onBeforeMount, onMounted } from 'vue'
 import {
   useQuasar,
   useMeta,
@@ -114,7 +114,13 @@ import {
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { ScheduleXCalendar } from '@schedule-x/vue'
-import { viewDay, createCalendar, createViewDay } from '@schedule-x/calendar'
+import {
+  viewDay,
+  createCalendar,
+  createViewDay,
+  type CalendarApp,
+} from '@schedule-x/calendar'
+import { createIcalendarPlugin } from '@schedule-x/ical'
 import { createCurrentTimePlugin } from '@schedule-x/current-time'
 import { createCalendarControlsPlugin } from '@schedule-x/calendar-controls'
 import { createEventsServicePlugin } from '@schedule-x/events-service'
@@ -127,12 +133,6 @@ import { formatToCalendarDate, isCurrentDate } from '../helpers/calendarHelper'
 import { ROUTE_NAMES } from '../router/routes'
 import '@schedule-x/theme-shadcn/dist/index.css'
 
-function onRefresh(done: () => void) {
-  console.log('aaa')
-  // await updateContracts(router.currentRoute.value.query)
-  done()
-}
-
 const CALENDAR_WEEK_NUM = 7
 const INITIAL_SCROLL = '06:30'
 
@@ -141,11 +141,9 @@ const router = useRouter()
 const i18n = useI18n()
 const langStore = useLangStore()
 const contractStore = useContractStore()
+const calendarApp = shallowRef<CalendarApp>(null)
 const calendarControls = createCalendarControlsPlugin()
-const eventsServicePlugin = createEventsServicePlugin()
-const scrollController = createScrollControllerPlugin({
-  initialScroll: INITIAL_SCROLL,
-})
+
 const $t = i18n.t
 const scrollAreaRef = ref<InstanceType<typeof QScrollArea> | null>(null)
 
@@ -158,52 +156,83 @@ const weeks = ref<Date[]>([])
 const virtualScroll = ref(null)
 const selectedDay = ref(null)
 
-const calendarApp = createCalendar({
-  theme: 'shadcn',
-  selectedDate:
-    (router.currentRoute.value.query.date as string) ??
-    formatToCalendarDate(new Date()),
-  locale: langStore.language,
-  defaultView: viewDay.name,
-  firstDayOfWeek: 1,
-  isDark: $q.dark.isActive,
-  views: [createViewDay()],
-  events: contractStore.events,
-  plugins: [
-    createCurrentTimePlugin({
-      fullWeekWidth: false,
-    }),
-    calendarControls,
-    eventsServicePlugin,
-    scrollController,
-  ],
-  isResponsive: false,
-  callbacks: {
-    async onRangeUpdate(range): void {
-      const date = formatToCalendarDate(new Date(range.start)) // todo - это должно браться из router.currentRoute.value.query
-      await router.push({
-        name: ROUTE_NAMES.CALENDAR,
-        query: {
-          date: date,
-        },
-      })
-      selectedDay.value = date
-    },
-    async onRender(): void {
-      const currentDate = getCurrentDateRoute()
-      const day = new Date(currentDate)
-      await loadWeek(day)
+async function onRefresh(done: () => void) {
+  try {
+    $q.loading.show()
+    const ics = await contractStore.loadCalendar()
+    calendarApp.value = createCalendarView(ics)
+    done()
+  } catch (error) {
+    console.error(error)
+    done()
+  } finally {
+    $q.loading.hide()
+  }
+}
 
-      const currentIndexDay = weeks.value.findIndex((elem) =>
-        isCurrentDate(elem),
-      )
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-      virtualScroll.value.scrollTo(currentIndexDay)
-    },
-  },
-})
+function createCalendarView(ics: string): CalendarApp {
+  const icalendarPlugin = createIcalendarPlugin({
+    data: ics,
+  })
+  const eventsServicePlugin = createEventsServicePlugin()
+  const scrollController = createScrollControllerPlugin({
+    initialScroll: INITIAL_SCROLL,
+  })
 
-async function loadWeek(now: Date) {
+  return createCalendar({
+    theme: 'shadcn',
+    locale: langStore.language,
+    defaultView: viewDay.name,
+    firstDayOfWeek: 1,
+    isDark: $q.dark.isActive,
+    views: [createViewDay()],
+    events: contractStore.events,
+    plugins: [
+      createCurrentTimePlugin({
+        fullWeekWidth: false,
+      }),
+      icalendarPlugin,
+      calendarControls,
+      eventsServicePlugin,
+      scrollController,
+    ],
+    isResponsive: false,
+    callbacks: {
+      async onRangeUpdate(range): void {
+        icalendarPlugin.between(range.start, range.end)
+
+        return
+        const date = formatToCalendarDate(new Date(range.start)) // todo - это должно браться из router.currentRoute.value.query
+        await router.push({
+          name: ROUTE_NAMES.CALENDAR,
+          query: {
+            date: date,
+          },
+        })
+        selectedDay.value = date
+      },
+      async onRender(): void {
+        const day = getCurrentDateRoute()
+        loadWeek(day)
+        const currentIndexDay = weeks.value.findIndex((elem) =>
+          isCurrentDate(elem),
+        )
+        await nextTick()
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+        virtualScroll.value.scrollTo(currentIndexDay)
+      },
+    },
+  })
+}
+
+function getCurrentDateRoute() {
+  const instant = formatToCalendarDate(
+    router.currentRoute.value.query.date as string,
+  )
+  return new Date(instant.toJSON())
+}
+
+function loadWeek(now: Date) {
   const startOfWeek = new Date(
     now.setDate(now.getDate() - ((now.getDay() + 6) % CALENDAR_WEEK_NUM)),
   )
@@ -218,43 +247,26 @@ async function loadWeek(now: Date) {
     }
     dates.push(new Date(d))
   }
-  try {
-    await contractStore.loadCalendar(dates.at(0), dates.at(-1))
-    eventsServicePlugin.set(contractStore.events)
-  } catch (error) {
-    console.error(error)
-  }
-
   weeks.value = dates
 }
 
-async function loadPrevWeek() {
-  const currentDate = getCurrentDateRoute()
-  const day = new Date(currentDate)
+function loadPrevWeek() {
+  const [day] = weeks.value
   day.setDate(day.getDate() - CALENDAR_WEEK_NUM)
-  await loadWeek(day)
+  loadWeek(day)
 }
 
-function getCurrentDateRoute() {
-  return (
-    (router.currentRoute.value.query.date as string) ??
-    formatToCalendarDate(new Date())
-  )
-}
-
-async function loadNextWeek() {
-  const currentDate = getCurrentDateRoute()
-  const day = new Date(currentDate)
+function loadNextWeek() {
+  const [day] = weeks.value
   day.setDate(day.getDate() + CALENDAR_WEEK_NUM)
-  await loadWeek(day)
+  loadWeek(day)
 }
 
 function selectDay(item: Date) {
-  const day = formatToCalendarDate(item)
-  calendarControls.setDate(day)
+  const instant = formatToCalendarDate(item)
+  calendarControls.setDate(instant)
 
   /* todo - нужно при селекте дня обновлять роутер например так:
-  $q.loading.show()
   await router.push({
     name: router.currentRoute.value.name,
     query: {
@@ -262,7 +274,6 @@ function selectDay(item: Date) {
       name: router.currentRoute.value.query?.name,
     },
   })
-  $q.loading.hide()
   */
 }
 
@@ -322,12 +333,9 @@ async function updateContracts({
 }
 */
 
-onBeforeMount(() => {
-  /* todo - сделать проверку, что если нет текущего дня, то мы его добавляем напримере:
-  if (!router.currentRoute.value.query.page) {
-    router.currentRoute.value.query.page = '1'
-  }
-   */
+onBeforeMount(async () => {
+  const ics = await contractStore.loadCalendar()
+  calendarApp.value = createCalendarView(ics)
 })
 
 useMeta(metaData)

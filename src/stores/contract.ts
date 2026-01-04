@@ -1,6 +1,7 @@
 import { is, date, LocalStorage, SessionStorage } from 'quasar'
 import { defineStore } from 'pinia'
 // import usePodStore from 'stores/pod'
+import useSecretaryStore from 'stores/secretary'
 import { db } from '../services/databaseService'
 import type {
   ContractData,
@@ -215,25 +216,20 @@ export default defineStore('contracts', {
     async filteredByIds(ids: number[]) {
       return await db.contracts.bulkGet(ids)
     },
-    async loadCalendar(startDate: Date, endDate?: Date) {
-      /* todo - восстановить RPC
-      const result = await rpc('get-calendar', {
-        '@context': 'https://www.w3.org/ns/activitystreams',
-        'type': 'Offer',
-        'object': {
-          type: 'Activity',
-          startTime: startDate,
-          endTime: endDate,
+    async loadCalendar() {
+      const secretaryStore = useSecretaryStore()
+      const res = await fetch(process.env.server + '/users/89/subscription', {
+        method: 'GET',
+        headers: {
+          Accept: 'text/calendar',
+          Authorization: secretaryStore.auth,
         },
       })
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
-      const calendar = result.data as string[]
-      // this.events = calendar.map((icalEvent) => convertIcalToEvent(icalEvent))
-      */
-      this.events = await this.getCalendarContracts({
-        from: startDate,
-        to: endDate,
-      })
+      if (!res.ok) {
+        console.error(res.status)
+        throw new Error('Failed to load calendar')
+      }
+      return res.text()
     },
     async getCalendarContracts({ from, to }: { from: Date; to: Date }) {
       const contracts = await db.contracts

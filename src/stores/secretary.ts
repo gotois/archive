@@ -33,7 +33,7 @@ export default defineStore('secretary', {
           {
             method: 'GET',
             headers: {
-              'Content-Type': 'text/plain',
+              Accept: 'text/plain',
             },
           },
         )
@@ -110,7 +110,7 @@ export default defineStore('secretary', {
       }
     },
     basicAuth(store): string | Error {
-      if (store.login?.length || store.password?.length) {
+      if (!store.login?.length || !store.password?.length) {
         throw new Error('Empty login or password')
       }
       return 'Basic ' + btoa(store.login + ':' + store.password)

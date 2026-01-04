@@ -1,4 +1,5 @@
 import { date } from 'quasar'
+import { Temporal } from '@js-temporal/polyfill'
 import { VEvent, default as ICalendar } from 'ical-browser'
 import type { Event } from 'ical-browser/dist/types/types'
 import { formatIcal } from './dateHelper'
@@ -40,8 +41,8 @@ export function googleCalendarUrl(
   return link
 }
 
-export function formatToCalendarDate(elem: Date) {
-  return date.formatDate(elem, 'YYYY-MM-DD')
+export function formatToCalendarDate(elem: Date | string = new Date()) {
+  return Temporal.PlainDate.from(date.formatDate(elem, 'YYYY-MM-DD'))
 }
 
 export function isCurrentDate(
