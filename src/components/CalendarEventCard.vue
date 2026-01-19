@@ -17,9 +17,9 @@
       </div>
       <div class="text-caption text-red">
         ⏰
-        {{ date.formatDate(start, 'HH:mm') }}
+        {{ date.formatDate(convertTemporalToDate(start), 'HH:mm') }}
         -
-        {{ date.formatDate(end, 'HH:mm') }}
+        {{ date.formatDate(convertTemporalToDate(end), 'HH:mm') }}
       </div>
       <div v-if="location?.name" class="ellipsis-2-lines">
         📍 {{ location.name }}
@@ -35,8 +35,8 @@
         :title="title"
         :description="description"
         :attaches="attaches"
-        :start-time="start"
-        :end-time="end"
+        :start-time="convertTemporalToDate(start)"
+        :end-time="convertTemporalToDate(end)"
         :tag="tag"
         :same-as="''"
         :location="location"
@@ -53,10 +53,12 @@ import { PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { storeToRefs } from 'pinia'
 import { QCard, QCardSection, QPopupProxy, date, useQuasar } from 'quasar'
+import type { Temporal } from '@js-temporal/polyfill'
 import TaskFull from 'components/TaskFull.vue'
 import useContractStore from 'stores/contract'
 import useAuthStore from 'stores/auth'
 import type { Agent, FormatImageType, Place } from '../types/models'
+import { convertTemporalToDate } from '../helpers/dateHelper'
 
 const $q = useQuasar()
 const i18n = useI18n()
@@ -83,11 +85,11 @@ const props = defineProps({
     required: true,
   },
   start: {
-    type: Date as PropType<Date>,
+    type: Object as PropType<Temporal.ZonedDateTime>,
     required: true,
   },
   end: {
-    type: Date as PropType<Date>,
+    type: Object as PropType<Temporal.ZonedDateTime>,
     required: true,
   },
   location: {

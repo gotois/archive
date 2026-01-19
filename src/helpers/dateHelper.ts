@@ -1,4 +1,5 @@
 import { date } from 'quasar'
+import { Temporal } from '@js-temporal/polyfill'
 
 export function isDateNotOk(value: Date) {
   return Number.isNaN(Date.parse(String(value)))
@@ -7,6 +8,14 @@ export function isDateNotOk(value: Date) {
 // Специальный формат для календаря Quasar
 export function formatDate(x: Date): string {
   return date.formatDate(x, 'YYYY/MM/DD')
+}
+
+export function convertTemporalToDate(temporal: Temporal.ZonedDateTime) {
+  return new Date(
+    temporal
+      .toPlainDateTime()
+      .toZonedDateTime(Temporal.Now.timeZoneId()).epochMilliseconds,
+  )
 }
 
 // Специальный формат для календаря Google
