@@ -43,6 +43,7 @@
         :link="link"
         :organizer="organizer"
         :participant="participant"
+        @edit="onEdit"
         @remove="onRemove"
       />
     </QPopupProxy>
@@ -121,6 +122,9 @@ const props = defineProps({
     default: null,
   },
 })
+
+function onEdit() {
+}
 
 function onRemove() {
   $q.notify({

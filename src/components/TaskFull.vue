@@ -11,12 +11,12 @@
           }"
         >
           <!-- Todo поддержать проверку на верификацию криптоключом Solana -->
-          <template v-if="false /*isVerified(item, publicKey)*/">
+          <!--template v-if="false /*isVerified(item, publicKey)*/">
             <QIcon name="verified" />
           </template>
           <template v-else>
             <QIcon name="error" color="warning" />
-          </template>
+          </template-->
           {{ title }}
           <QTooltip>{{ title }}</QTooltip>
         </p>
@@ -71,7 +71,7 @@
         fab-mini
         color="white"
         text-color="accent"
-        icon="add"
+        icon="share"
         class="absolute"
         style="top: 0; left: 18px; transform: translateY(-50%)"
         @click="onSheet"
@@ -122,7 +122,11 @@
       <div>
         {{ link }}
       </div>
-      <div style="overflow-x: hidden" class="scroll-y q-mt-md q-mb-md">
+      <div
+        v-if="tag.length"
+        style="overflow-x: hidden"
+        class="scroll-y q-mt-md q-mb-md"
+      >
         <QChip
           v-for="(name, objectKey) in tag"
           :key="objectKey"
@@ -141,12 +145,6 @@
           <div class="ellipsis">{{ name }}</div>
           <QTooltip>{{ name }}</QTooltip>
         </QChip>
-        <QSkeleton
-          v-show="tag.length === 0"
-          type="QChip"
-          animation="blink"
-          width="100%"
-        />
       </div>
     </QCardSection>
   </QCard>
@@ -157,7 +155,6 @@ import { useRouter } from 'vue-router'
 import {
   uid,
   useQuasar,
-  QSkeleton,
   QChip,
   QBtn,
   QIcon,

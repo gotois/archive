@@ -75,7 +75,9 @@
             v-if="$q.loading.isActive"
             type="rect"
             square
+            animation="blink"
             height="400px"
+            width="100%"
           />
           <template
             v-else-if="
