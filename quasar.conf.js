@@ -33,10 +33,14 @@ module.exports = configure((ctx) => {
     // https://v2.quasar.dev/quasar-cli/prefetch-feature
     preFetch: true,
 
-    // app boot file (/src/boot)
-    // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli/boot-files
-    boot: ['i18n', 'addressbar-color', 'health'],
+    // eslint-disable-next-line
+    boot: [
+      'i18n',
+      'addressbar-color',
+      'health',
+      'tg-mini-app',
+    ],
 
     // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [

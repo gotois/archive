@@ -1,15 +1,19 @@
 import { computed } from 'vue'
 import { Platform } from 'quasar'
+import * as tgAppSDK from '@telegram-apps/sdk'
 import { host } from '../../twa-manifest.json'
 
 export const isTWA = computed(() => {
-  return document.referrer.includes('android-app://') && Platform.is.android
+  return Platform.is.android && document.referrer.includes('android-app://')
 })
 
 export const isTMA = computed(() => {
-  /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-  return Boolean(window?.Telegram) || Boolean(window?.TelegramWebviewProxy)
-  /* eslint-enable */
+  return tgAppSDK.isTMA()
+})
+
+export const isWebApp = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  return Boolean(window?.TelegramWebviewProxy || window?.Telegram?.WebView)
 })
 
 export const isPWA = computed(() => {

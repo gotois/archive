@@ -1,6 +1,10 @@
 import { defineStore } from 'pinia'
 import { LocalStorage } from 'quasar'
-import { RequestedContact, retrieveLaunchParams } from '@telegram-apps/sdk'
+import {
+  RequestedContact,
+  retrieveLaunchParams,
+  serializeInitDataQuery,
+} from '@telegram-apps/sdk'
 import useTutorialStore from 'stores/tutorial'
 import rpc from '../helpers/rpc'
 import type {
@@ -116,7 +120,8 @@ export default defineStore('secretary', {
       return 'Basic ' + btoa(store.login + ':' + store.password)
     },
     tmaAuth(): string | Error {
-      const { initDataRaw } = retrieveLaunchParams()
+      const params = retrieveLaunchParams()
+      const initDataRaw = serializeInitDataQuery(params.tgWebAppData)
       if (!initDataRaw?.length) {
         throw new Error('Empty telegram init data')
       }

@@ -16,7 +16,6 @@ export default {
 import { useI18n } from 'vue-i18n'
 import { RouterView } from 'vue-router'
 import { useMeta, useQuasar } from 'quasar'
-import { init, viewport } from '@telegram-apps/sdk'
 import { EVENTS } from '@inrupt/solid-client-authn-core'
 import { getDefaultSession } from '@inrupt/solid-client-authn-browser'
 import { useRouter } from 'vue-router'
@@ -118,7 +117,7 @@ const metaData = {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
-events.on(EVENTS.SESSION_RESTORED, async (urlString) => {
+events.on(EVENTS.SESSION_RESTORED, async (urlString: string) => {
   const url = new URL(urlString)
   $q.sessionStorage.remove('connect')
   try {
@@ -176,8 +175,7 @@ events.on(EVENTS.ERROR, (error) => {
 })
 
 if (isTMA.value) {
-  init()
-  viewport.expand()
+  /* empty */
 } else {
   const solana = getSolana()
   if (solana) {

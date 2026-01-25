@@ -1,7 +1,6 @@
-import { Platform, Loading, LocalStorage, Notify, SessionStorage } from 'quasar'
+import { Loading, LocalStorage, Notify, SessionStorage } from 'quasar'
 import { route } from 'quasar/wrappers'
 import { createRouter, createWebHistory } from 'vue-router'
-import { initDataStartParam } from '@telegram-apps/sdk'
 import useTutorialStore from 'stores/tutorial'
 import useAuthStore from 'stores/auth'
 import usePodStore from 'stores/pod'
@@ -9,9 +8,7 @@ import useLangStore from 'stores/lang'
 import routes, { ROUTE_NAMES } from './routes'
 import { deleteDatabases, reset } from '../services/databaseService'
 import solidAuth from '../services/authService'
-import { isTWA, isTMA } from '../composables/detector'
-import { appendTelegramWebAppScript } from '../services/telegram'
-import { appendErundaScript } from '../services/debug'
+import { isTWA } from '../composables/detector'
 
 export default route(() => {
   const Router = createRouter({
@@ -24,13 +21,7 @@ export default route(() => {
   })
   // Если пользователь уже входил через Pod, пробуем авторизовать автоматически
   Router.beforeEach(async (to) => {
-    if (isTMA) {
-      console.log('initDataStartParam:', initDataStartParam)
-      // const raw = Telegram.WebApp.initDataUnsafe.start_param
-      // const payload = JSON.parse(atob(raw))
-      // console.log('payload:::', payload)
-    }
-    const { code, state, error, lang, debug } = to.query as {
+    const { code, state, error, lang } = to.query as {
       code?: string
       state?: string
       error?: string
@@ -48,20 +39,12 @@ export default route(() => {
       return
     }
 
-    if (debug) {
-      if (!Platform.is.desktop) {
-        appendErundaScript()
-      }
-      if (!isTMA) {
-        appendTelegramWebAppScript()
-      }
+    if (error || !(code && state)) {
+      return
     }
     if (lang) {
       const langStore = useLangStore()
       langStore.setLang(lang)
-    }
-    if (error || !(code && state)) {
-      return
     }
     const podStore = usePodStore()
     if (!podStore.getOidcIssuer) {
