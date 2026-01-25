@@ -513,13 +513,13 @@ function onSheet() {
         return shareURL(shareLink)
       }
       case Action.GOOGLE_CALENDAR: {
-        const url = googleCalendarUrl(
-          props.title,
-          props.description,
-          props.startTime,
-          props.endTime,
-          props.sameAs,
-        ).toString()
+        const url = googleCalendarUrl({
+          text: props.title,
+          details: props.description,
+          startTime: props.startTime,
+          endTime: props.endTime,
+          location: props.sameAs,
+        }).toString()
         return open(url)
       }
       case Action.CALENDAR: {

@@ -3,11 +3,14 @@
 
 /* eslint-env node */
 /* eslint-disable @typescript-eslint/no-var-requires */
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { configure } = require('quasar/wrappers')
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const pkg = require('./package.json')
 
 module.exports = configure((ctx) => {
   if (ctx.dev) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     require('dotenv').config()
   }
   return {

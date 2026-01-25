@@ -437,7 +437,7 @@ export default {
             fail: 'Ошибка скачивания ICS файла',
           },
           google: {
-            label: 'Добавить в Google календарь',
+            label: 'Добавить событие в календарь Google',
           },
         },
         mail: {

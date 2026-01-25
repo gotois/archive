@@ -51,6 +51,7 @@ export default async function <T>(
     result?: JSONRPCSuccessResponse
   }
   if (response.error) {
+    // eslint-disable-next-line @typescript-eslint/only-throw-error
     throw response.error
   }
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return

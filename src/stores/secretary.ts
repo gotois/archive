@@ -67,7 +67,7 @@ export default defineStore('secretary', {
       tutorialStore.tutorialComplete(false)
     },
     async registration(requestedContact: RequestedContact | TelegramUser) {
-      const response = await fetch(process.env.server + '/users/telegram/bot', {
+      const response = await fetch(process.env.server + '/auth/telegram/bot', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

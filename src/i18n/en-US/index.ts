@@ -434,7 +434,7 @@ export default {
             fail: 'Error downloading ICS file',
           },
           google: {
-            label: 'Add to Google Calendar',
+            label: 'Add event to Google Calendar',
           },
         },
         mail: {

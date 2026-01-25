@@ -1,6 +1,7 @@
 import { Platform, Loading, LocalStorage, Notify, SessionStorage } from 'quasar'
 import { route } from 'quasar/wrappers'
 import { createRouter, createWebHistory } from 'vue-router'
+import { initDataStartParam } from '@telegram-apps/sdk'
 import useTutorialStore from 'stores/tutorial'
 import useAuthStore from 'stores/auth'
 import usePodStore from 'stores/pod'
@@ -23,6 +24,12 @@ export default route(() => {
   })
   // Если пользователь уже входил через Pod, пробуем авторизовать автоматически
   Router.beforeEach(async (to) => {
+    if (isTMA) {
+      console.log('initDataStartParam:', initDataStartParam)
+      // const raw = Telegram.WebApp.initDataUnsafe.start_param
+      // const payload = JSON.parse(atob(raw))
+      // console.log('payload:::', payload)
+    }
     const { code, state, error, lang, debug } = to.query as {
       code?: string
       state?: string

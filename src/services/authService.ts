@@ -23,12 +23,14 @@ export default async ({
     throw new Error('oidcIssuer empty')
   }
   if (!navigator.onLine) {
-    return Promise.reject('Not onLine')
+    return Promise.reject(new Error('Not onLine'))
   }
   let currentConnect = Number(SessionStorage.getItem('connect')) ?? 0
   SessionStorage.set('connect', ++currentConnect)
   if (currentConnect > 3) {
-    return Promise.reject('Cannot connect: ' + String(currentConnect))
+    return Promise.reject(
+      new Error('Cannot connect: ' + String(currentConnect)),
+    )
   }
   const defaultSession = getDefaultSession().info
   const sessionInfo = await handleIncomingRedirect({

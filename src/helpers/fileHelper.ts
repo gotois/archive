@@ -8,6 +8,7 @@ export function readFilePromise(file: FileLike) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onerror = (error) => {
+      // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
       reject(error)
     }
     reader.onloadend = () => {

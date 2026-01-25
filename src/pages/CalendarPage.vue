@@ -101,7 +101,7 @@
   </QPage>
 </template>
 <script lang="ts" setup>
-import { ref, shallowRef, nextTick, onBeforeMount, onMounted } from 'vue'
+import { ref, shallowRef, nextTick, onBeforeMount } from 'vue'
 import {
   useQuasar,
   useMeta,
@@ -130,7 +130,7 @@ import CalendarEventCard from 'components/CalendarEventCard.vue'
 import useContractStore from 'stores/contract'
 import useLangStore from 'stores/lang'
 import { formatToCalendarDate, isCurrentDate } from '../helpers/calendarHelper'
-import { ROUTE_NAMES } from '../router/routes'
+// import { ROUTE_NAMES } from '../router/routes'
 import '@schedule-x/theme-shadcn/dist/index.css'
 
 const CALENDAR_WEEK_NUM = 7
@@ -198,10 +198,10 @@ function createCalendarView(ics: string): CalendarApp {
     ],
     isResponsive: false,
     callbacks: {
-      async onRangeUpdate(range): void {
+      onRangeUpdate(range): void {
         icalendarPlugin.between(range.start, range.end)
 
-        return
+        /* todo - восстановить это если требуется
         const date = formatToCalendarDate(new Date(range.start)) // todo - это должно браться из router.currentRoute.value.query
         await router.push({
           name: ROUTE_NAMES.CALENDAR,
@@ -210,6 +210,7 @@ function createCalendarView(ics: string): CalendarApp {
           },
         })
         selectedDay.value = date
+         */
       },
       async onRender(): void {
         const day = getCurrentDateRoute()

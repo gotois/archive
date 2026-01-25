@@ -27,7 +27,8 @@ export default defineStore('lang', {
         // поэтому этот код неработает
         const i18n = useI18n()
         return String(i18n.locale.value)
-      } catch (e) {
+      } catch (error) {
+        console.error(error)
         return 'en'
       }
     },

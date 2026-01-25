@@ -63,7 +63,7 @@ class KeyPairDatabase extends Dexie {
     if (!keysTable) {
       throw new Error('KeyPair not found')
     }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return
     return Ed25519VerificationKey2020.from(
       keysTable,
     ) as Promise<Ed25519VerificationKey2020>

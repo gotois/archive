@@ -53,7 +53,7 @@ export default defineStore('wallet', {
           })
           const getBalance = await connection.getBalance(keypair.publicKey)
           if (getBalance === 0) {
-            throw 'Cannot connect unbalanced wallet'
+            throw new Error('Cannot connect unbalanced wallet')
           }
           await keys.add({
             type: this.type,

@@ -68,7 +68,7 @@ export default defineStore('contracts', {
     async insertContract(contract: ContractTable) {
       const index = await db.add(contract)
       if (index === 0) {
-        return Promise.reject('Cannot add this item')
+        return Promise.reject(new Error('Cannot add this item'))
       }
       this.addContractName(contract.name)
       // после первичной записи обновляем идентификатор Dexie
@@ -174,7 +174,7 @@ export default defineStore('contracts', {
       const i = this.contracts.map((item) => item.id).indexOf(id)
       this.contracts[i].instrument_description = contract.instrument.description
        */
-      return Promise.reject('Not implemented')
+      return Promise.reject(new Error('Not implemented'))
     },
     async removeContract(id: number, usePod = false) {
       // Step 1: JS
@@ -188,7 +188,7 @@ export default defineStore('contracts', {
       // Step 2: IndexedDB
       const removedCount = await db.remove(id)
       if (removedCount === 0) {
-        return Promise.reject('Cannot remove this item')
+        return Promise.reject(new Error('Cannot remove this item'))
       }
       const count = await db.contracts.count()
       this.setContractsCount(count)
@@ -201,7 +201,7 @@ export default defineStore('contracts', {
       //   return Promise.reject('Not exist sameAs')
       // }
       // return usePodStore().removeFromPod(contract.sameAs)
-      return Promise.reject('Not implemented')
+      return Promise.reject(new Error('Not implemented'))
     },
     async filterFromContracts(query: string) {
       if (!query) {
@@ -218,7 +218,7 @@ export default defineStore('contracts', {
     },
     async loadCalendar() {
       const secretaryStore = useSecretaryStore()
-      const res = await fetch(process.env.server + '/users/89/subscription', {
+      const res = await fetch(process.env.server + '/tasks/subscription', {
         method: 'GET',
         headers: {
           Accept: 'text/calendar',
@@ -227,7 +227,7 @@ export default defineStore('contracts', {
       })
       if (!res.ok) {
         console.error(res.status)
-        throw new Error('Failed to load calendar')
+        throw new Error('Failed to load subscription calendar')
       }
       return res.text()
     },

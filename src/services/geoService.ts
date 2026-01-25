@@ -4,6 +4,7 @@ import type { Place } from '../types/models'
 
 export function checkGeolocationPermission() {
   if (!navigator.permissions) {
+    // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
     return Promise.reject('Текущий браузер не поддерживает API разрешений')
   }
   return navigator.permissions.query({ name: 'geolocation' })
@@ -11,6 +12,7 @@ export function checkGeolocationPermission() {
 
 export function getCurrentPosition(): Promise<GeolocationPosition> {
   if (!navigator.geolocation) {
+    // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
     return Promise.reject('navigator.geolocation error')
   }
   return new Promise((resolve, reject) => {
@@ -19,6 +21,7 @@ export function getCurrentPosition(): Promise<GeolocationPosition> {
         resolve(position)
       },
       (error) => {
+        // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
         reject(error)
       },
       {

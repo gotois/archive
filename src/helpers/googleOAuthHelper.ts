@@ -32,7 +32,7 @@ export function loadGoogleSignIn(lang: string): Promise<unknown> {
     googleid.defer = true
     document.head.appendChild(googleid)
     googleid.onerror = () => {
-      reject('Cannot load Google Sign In')
+      reject(new Error('Cannot load Google Sign In'))
     }
     googleid.onload = () => {
       resolve(true)
@@ -59,6 +59,7 @@ export async function googleSignInitialize(
     window.google.accounts.id.prompt((notification: unknown) => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       if (notification.isSkippedMoment()) {
+        // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
         reject('Continue with another identity provider.')
         return
       }

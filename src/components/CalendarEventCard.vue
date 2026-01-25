@@ -124,6 +124,7 @@ const props = defineProps({
 })
 
 function onEdit() {
+  console.log('on edit')
 }
 
 function onRemove() {
