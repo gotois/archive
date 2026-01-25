@@ -2,7 +2,7 @@
   Cache-Control: public, max-age=604800, immutable
 
 /*
-  X-Frame-Options: DENY
+  Content-Security-Policy: frame-ancestors 'self' https://t.me https://web.telegram.org https://desktop.telegram.org https://telegram.org;
   X-XSS-Protection: 1; mode=block
 
 /*.json

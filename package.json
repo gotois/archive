@@ -3,13 +3,12 @@
   "version": "0.10.0",
   "description": "Take control of your contracts with our app",
   "keywords": [
-    "archive",
+    "Секретарь",
     "my archive",
     "архив договоров",
     "мои договоры",
     "contract master",
-    "contract keeper",
-    "договоры оффлайн"
+    "contract keeper"
   ],
   "license": "GPL-3.0",
   "homepage": "https://archive.gotointeractive.com/",
@@ -74,9 +73,9 @@
     "rgbaster": "2.1.1",
     "tesseract.js": "5.0.5",
     "tweetnacl": "1.0.3",
-    "vue": "3.5.13",
+    "vue": "3.5.27",
     "vue-i18n": "11.0.1",
-    "vue-router": "4.5.0",
+    "vue-router": "4.5.1",
     "vue3-telegram-login": "1.1.0"
   },
   "devDependencies": {
