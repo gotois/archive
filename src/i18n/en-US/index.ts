@@ -94,6 +94,8 @@ export default {
     native: {
       profile: 'My profile',
       title: 'Database',
+      calendars: 'Calendars',
+      pod: 'Personal Spaces',
       description: 'Loading and unloading your contracts.',
       import: 'Select contract database file',
       submit: 'Import contracts',

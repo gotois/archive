@@ -64,6 +64,7 @@ export default defineStore('secretary', {
         console.error(error)
         this.login = null
         this.password = null
+        throw error
       }
     },
     logout() {

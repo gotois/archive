@@ -13,6 +13,8 @@ export enum ROUTE_NAMES {
   PRIVACY = 'privacy',
   LOGIN = 'login',
   CALENDAR = 'calendar',
+  VIEW = 'view',
+  EDIT = 'edit',
   ABOUT = 'about',
   CALENDAR_IMPORT = 'calendar-import',
   OTP = 'otp',
@@ -95,17 +97,6 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
-    path: '/' + ROUTE_NAMES.SIGN,
-    component: () => import('layouts/MainLayout.vue'),
-    children: [
-      {
-        path: '',
-        name: ROUTE_NAMES.SIGN,
-        component: () => import('pages/SignPage.vue'),
-      },
-    ],
-  },
-  {
     path: '/' + ROUTE_NAMES.TUTORIAL,
     component: () => import('layouts/EmptyLayout.vue'),
     children: [
@@ -135,6 +126,24 @@ const routes: RouteRecordRaw[] = [
         path: '',
         name: ROUTE_NAMES.CALENDAR,
         component: () => import('pages/CalendarPage.vue'),
+      },
+      {
+        path: ':taskId/' + ROUTE_NAMES.SIGN,
+        name: ROUTE_NAMES.SIGN,
+        component: () => import('pages/SignPage.vue'),
+        props: true,
+      },
+      {
+        path: ':taskId/' + ROUTE_NAMES.VIEW,
+        name: ROUTE_NAMES.VIEW,
+        component: () => import('pages/SignPage.vue'),
+        props: true,
+      },
+      {
+        path: ':taskId/' + ROUTE_NAMES.EDIT,
+        name: ROUTE_NAMES.EDIT,
+        component: () => import('pages/SignPage.vue'),
+        props: true,
       },
     ],
   },

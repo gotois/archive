@@ -2,7 +2,7 @@
   <QPage
     :class="{
       'bg-transparent': $q.dark.isActive,
-      'bg-grey-1': !$q.dark.isActive,
+      'bg-white': !$q.dark.isActive,
     }"
     :style="{
       'max-width': $q.platform.is.desktop ? '720px' : 'auto',
@@ -96,6 +96,22 @@
             </div>
           </template>
         </ScheduleXCalendar>
+        <div v-else-if="!secretaryStore.available" class="flex justify-center">
+          <h1
+            class="text-primary text-uppercase text-center text-weight-light no-padding"
+          >
+            Secretary is not available
+          </h1>
+          <QBtn
+            color="accent"
+            square
+            glossy
+            push
+            label="Reload page"
+            @click="router.go(0)"
+          />
+        </div>
+        <QSpinner v-else size="5em" />
       </QPullToRefresh>
     </QScrollArea>
   </QPage>
@@ -110,6 +126,7 @@ import {
   QPage,
   QBtn,
   QPullToRefresh,
+  QSpinner,
 } from 'quasar'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -129,6 +146,7 @@ import DayCalendar from 'components/DayCalendar.vue'
 import CalendarEventCard from 'components/CalendarEventCard.vue'
 import useContractStore from 'stores/contract'
 import useLangStore from 'stores/lang'
+import useSecretaryStore from 'stores/secretary'
 import { formatToCalendarDate, isCurrentDate } from '../helpers/calendarHelper'
 // import { ROUTE_NAMES } from '../router/routes'
 import '@schedule-x/theme-shadcn/dist/index.css'
@@ -141,6 +159,7 @@ const router = useRouter()
 const i18n = useI18n()
 const langStore = useLangStore()
 const contractStore = useContractStore()
+const secretaryStore = useSecretaryStore()
 const calendarApp = shallowRef<CalendarApp>(null)
 const calendarControls = createCalendarControlsPlugin()
 
@@ -335,6 +354,9 @@ async function updateContracts({
 */
 
 onBeforeMount(async () => {
+  if (!secretaryStore.available) {
+    return
+  }
   const ics = await contractStore.loadCalendar()
   calendarApp.value = createCalendarView(ics)
 })

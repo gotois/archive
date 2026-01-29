@@ -1,7 +1,6 @@
 import { is, date, LocalStorage, SessionStorage } from 'quasar'
 import { defineStore } from 'pinia'
 // import usePodStore from 'stores/pod'
-import useSecretaryStore from 'stores/secretary'
 import { db } from '../services/databaseService'
 import type {
   ContractData,
@@ -217,13 +216,12 @@ export default defineStore('contracts', {
       return await db.contracts.bulkGet(ids)
     },
     async loadCalendar() {
-      const secretaryStore = useSecretaryStore()
       const res = await fetch(process.env.server + '/tasks/subscription', {
         method: 'GET',
         headers: {
           Accept: 'text/calendar',
-          Authorization: secretaryStore.auth,
         },
+        credentials: 'include',
       })
       if (!res.ok) {
         console.error(res.status)

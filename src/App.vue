@@ -15,28 +15,12 @@ export default {
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
 import { RouterView } from 'vue-router'
-import { useMeta, useQuasar } from 'quasar'
-import { EVENTS } from '@inrupt/solid-client-authn-core'
-import { getDefaultSession } from '@inrupt/solid-client-authn-browser'
-import { useRouter } from 'vue-router'
-import usePodStore from 'stores/pod'
-import useAuthStore from 'stores/auth'
-import useProfileStore from 'stores/profile'
-import useWalletStore from 'stores/wallet'
-import { getSolana } from './services/phantomWalletService'
-import { WalletType } from './types/models'
-import { isTWA, isTMA } from './composables/detector'
+import { useMeta } from 'quasar'
+import { isTWA } from './composables/detector'
 import pkg from '../package.json'
 import twaMinifest from '../twa-manifest.json'
 
 const $t = useI18n().t
-const $q = useQuasar()
-const router = useRouter()
-const podStore = usePodStore()
-const authStore = useAuthStore()
-const profileStore = useProfileStore()
-const walletStore = useWalletStore()
-const events = getDefaultSession().events
 
 const webSite = {
   '@context': 'https://schema.org',
@@ -114,94 +98,6 @@ const metaData = {
       href: pkg.homepage + 'opensearch.xml',
     },
   },
-}
-
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
-events.on(EVENTS.SESSION_RESTORED, async (urlString: string) => {
-  const url = new URL(urlString)
-  $q.sessionStorage.remove('connect')
-  try {
-    authStore.openIdHandleIncoming()
-    await podStore.setResourceRootUrl()
-    await router.push({
-      path: url.pathname,
-      replace: true,
-    })
-  } catch (e) {
-    console.error(e)
-  } finally {
-    $q.loading.hide()
-  }
-})
-
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
-events.on(EVENTS.LOGIN, async () => {
-  authStore.openIdHandleIncoming()
-  try {
-    await podStore.setResourceRootUrl()
-  } catch (error) {
-    console.error(error)
-    $q.notify({
-      type: 'negative',
-      message: 'Login Failed',
-    })
-    $q.loading.show()
-    return
-  } finally {
-    $q.sessionStorage.remove('connect')
-  }
-  try {
-    const { email, avatar } = await podStore.getProfileFOAF()
-    if (email) {
-      profileStore.consumerEmail(email)
-    }
-    if (avatar) {
-      profileStore.consumerImg(avatar)
-    }
-  } catch (error) {
-    console.error(error)
-  } finally {
-    $q.sessionStorage.set('restorePreviousSession', true)
-  }
-})
-
-events.on(EVENTS.LOGOUT, () => {
-  $q.sessionStorage.remove('connect')
-  $q.sessionStorage.remove('restorePreviousSession')
-})
-
-events.on(EVENTS.ERROR, (error) => {
-  console.error('Login error:', error)
-})
-
-if (isTMA.value) {
-  /* empty */
-} else {
-  const solana = getSolana()
-  if (solana) {
-    solana.on('connect', (/*publicKey*/) => {
-      console.warn('connected to phantom account')
-    })
-    solana.on('disconnect', () => {
-      console.warn('Phantom disconnect')
-      $q.notify({
-        type: 'warning',
-        message: $t('wallet.disconnected'),
-      })
-    })
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    solana.on('accountChanged', async (publicKey: string) => {
-      console.warn('accountChanged')
-      await walletStore.setKeypare({
-        publicKey: publicKey,
-        type: WalletType.Phantom,
-      })
-      $q.notify({
-        type: 'warning',
-        message: $t('wallet.accountChanged'),
-      })
-    })
-  }
 }
 
 useMeta(metaData)

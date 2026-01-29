@@ -81,7 +81,7 @@
             icon="telegram"
             class="q-ma-xs"
             color="blue"
-            :href="TELEGRAM_MINI_APPS_URL"
+            :href="`https://t.me/${TELEGRAM_BOT_NAME}?start=start`"
           >
             Telegram
           </QBtn>
@@ -387,7 +387,7 @@ import useLangStore from 'stores/lang'
 import PricingComponent from 'components/PricingComponent.vue'
 import { ROUTE_NAMES, STEP } from '../router/routes'
 import { GOOGLE_PLAY_URL } from '../helpers/googlePlayHelper'
-import { TELEGRAM_MINI_APPS_URL } from '../services/telegram'
+import { TELEGRAM_BOT_NAME } from '../services/telegram'
 import { open } from '../helpers/urlHelper'
 import pkg from '../../package.json'
 

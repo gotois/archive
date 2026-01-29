@@ -124,8 +124,16 @@ function openLoginPasswordSign() {
 }
 
 async function submitForm() {
-  await secretaryStore.authWithLoginAndPassword(login.value, password.value)
-  emit('authed')
+  try {
+    await secretaryStore.authWithLoginAndPassword(login.value, password.value)
+    emit('authed')
+  } catch (error) {
+    console.error(error)
+    $q.notify({
+      type: 'negative',
+      message: 'Registration Failed. Please try later.',
+    })
+  }
 }
 
 async function telegramSign(user: TelegramUser = process.env.demo_user) {

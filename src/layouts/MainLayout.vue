@@ -119,7 +119,7 @@
           class="column non-selectable"
           :dense="$q.platform.is.desktop"
           :expand-separator="layoutStore.calendarOpen"
-          label="Calendars"
+          :label="$t('settings.native.calendars')"
         >
           <QItemSection class="q-pa-md">
             <QBtn
@@ -201,7 +201,7 @@
           class="column non-selectable"
           :dense="$q.platform.is.desktop"
           :expand-separator="layoutStore.spacesOpen"
-          :label="'Personal Spaces'"
+          :label="$t('settings.native.pod')"
         >
           <div class="q-pt-md q-pl-md q-pr-md">
             <QBtn
@@ -280,7 +280,7 @@
         />
       </QList>
     </QDrawer>
-    <QDrawer
+    <!--QDrawer
       v-if="!isTMA"
       v-model="layoutStore.rightDrawerOpen"
       side="right"
@@ -290,7 +290,7 @@
       bordered
     >
       <ChatDialog />
-    </QDrawer>
+    </QDrawer-->
     <QPageContainer>
       <RouterView
         class="q-ml-auto q-mr-auto"
@@ -393,7 +393,7 @@ import useNotification from 'stores/notification'
 import useLayoutStore from 'stores/layout'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
 import UserProfile from 'components/UserProfile.vue'
-import ChatDialog from 'components/ChatDialog.vue'
+// import ChatDialog from 'components/ChatDialog.vue'
 import { isTWA, isTMA } from '../composables/detector'
 import { keyPair } from '../services/databaseService'
 import { open } from '../helpers/urlHelper'
