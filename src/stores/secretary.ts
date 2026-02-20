@@ -14,6 +14,7 @@ import type {
   VerifiableCredential,
 } from '../types/models'
 import { isTMA } from '../composables/detector'
+import useGeoStore from 'stores/geo'
 
 interface Store {
   available: boolean
@@ -72,18 +73,27 @@ export default defineStore('secretary', {
       tutorialStore.tutorialComplete(false)
     },
     async registration(requestedContact: RequestedContact | TelegramUser) {
-      const response = await fetch(process.env.server + '/auth/telegram/bot', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const geoStore = useGeoStore()
+      const headers = {} as Record<string, string>
+      headers['Content-Type'] = 'application/json'
+      if (geoStore.geolocation) {
+        headers['Geolocation'] = geoStore.geolocation
+      }
+      headers['Timezone'] = geoStore.timezone
+
+      const response = await fetch(
+        process.env.server + '/auth/telegram/oauth',
+        {
+          method: 'POST',
+          headers: headers,
+          credentials: 'include',
+          body: JSON.stringify(requestedContact),
         },
-        credentials: 'include',
-        body: JSON.stringify(requestedContact),
-      })
+      )
       if (!response.ok) {
         throw new Error('Network response was not ok')
       }
-      return (await response.json()) as VerifiableCredential
+      return response
     },
     async generate(object: ActivityObjectNote[] | ActivityObjectLink[]) {
       return await rpc('generate-calendar', {

@@ -1,5 +1,5 @@
 <template>
-  <QBtnGroup square flat>
+  <QBtnGroup spread square flat>
     <QBtn
       label="en"
       class="full-width"

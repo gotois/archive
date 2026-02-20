@@ -69,22 +69,6 @@ class KeyPairDatabase extends Dexie {
     ) as Promise<Ed25519VerificationKey2020>
   }
 
-  async setNewKeyPair(controller: string) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const keyPair: DIDTable =
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-      await Ed25519VerificationKey2020.generate({
-        controller,
-      })
-    return this.installKey(keyPair)
-  }
-
-  async installKey(keyPair: DIDTable) {
-    await this.keyPair.clear()
-    await this.keyPair.add(keyPair)
-    return keyPair
-  }
-
   async getSuite() {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const key = await keyPair.last()
@@ -93,18 +77,6 @@ class KeyPairDatabase extends Dexie {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       key: key,
     }) as Suite
-  }
-
-  // eslint-disable-next-line @typescript-eslint/require-await
-  public async destroy() {
-    this.close()
-    try {
-      void this.delete()
-    } catch (error) {
-      console.error(error)
-    } finally {
-      void this.open()
-    }
   }
 }
 
@@ -267,8 +239,9 @@ class ContractDatabase extends Dexie {
   public async destroy() {
     try {
       await this.contracts.clear()
-    } catch (e) {
-      if (e.name === 'DatabaseClosedError') {
+    } catch (error) {
+      console.error(error)
+      if (error.name === 'DatabaseClosedError') {
         this.close()
         await this.delete()
       }

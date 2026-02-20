@@ -54,6 +54,10 @@ const ContractFormComponent = defineAsyncComponent({
   }),
 })
 
+const props = defineProps<{
+  taskId: string
+}>()
+
 const $t = useI18n().t
 const $q = useQuasar()
 const router = useRouter()

@@ -66,9 +66,15 @@ npm i
 
 #### Создание ключей для локального HTTPS
 
+В файле `/etc/hosts` добавьте следующую строку:
+```bash
+127.0.0.1       app.lh
+```
+
+В терминале выполните следующие команды для создания сертификата для `app.lh`:
 ```bash
 mkcert -install
-mkcert -key-file certs/localhost-key.pem -cert-file certs/localhost.pem localhost 127.0.0.1 ::1
+mkcert -key-file certs/localhost-key.pem -cert-file certs/localhost.pem app.lh 127.0.0.1 ::1
 ```
 
 #### Запуск в режиме локальной разработки

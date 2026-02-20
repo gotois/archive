@@ -105,7 +105,7 @@ import useProfileStore from 'stores/profile'
 import useSecretaryStore from 'stores/secretary'
 import { TELEGRAM_BOT_NAME } from '../services/telegram'
 import { isPWA } from '../composables/detector'
-import type { TelegramUser } from '../types/models'
+import type { VerifiableCredential, TelegramUser } from '../types/models'
 
 const emit = defineEmits(['authed', 'registered'])
 
@@ -143,7 +143,9 @@ async function telegramSign(user: TelegramUser = process.env.demo_user) {
     // ignore
   }
   try {
-    const vc = await secretaryStore.registration(user)
+    const response = await secretaryStore.registration(user)
+    const vc = (await response.json()) as VerifiableCredential
+
     emit('registered', vc)
   } catch (error) {
     console.error(error)

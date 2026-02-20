@@ -8,6 +8,8 @@ const { configure } = require('quasar/wrappers')
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const pkg = require('./package.json')
 
+const localhost = 'http://app.lh'
+
 module.exports = configure((ctx) => {
   if (ctx.dev) {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -83,8 +85,8 @@ module.exports = configure((ctx) => {
         key: 'certs/localhost-key.pem',
         cert: 'certs/localhost.pem',
       },
-      host: 'localhost',
-      port: 8080,
+      host: new URL(localhost).hostname,
+      port: new URL(localhost).port || 8080,
       open: true, // opens browser window automatically
     },
 

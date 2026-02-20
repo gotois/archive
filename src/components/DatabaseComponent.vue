@@ -8,6 +8,9 @@
         :max-file-size="1024 * 1024 * 1024 * 2"
         filled
         outlined
+        square
+        color="accent"
+        class="col"
         :dense="$q.platform.is.desktop"
         @update:model-value="onFileSelected"
         @rejected="onRejectedEntries"
@@ -16,7 +19,7 @@
           {{ $t('database.fileSize') }}
         </QTooltip>
         <template #prepend>
-          <QIcon name="attach_file" />
+          <QIcon name="attach_file" @click.stop.prevent />
         </template>
       </QFile>
       <QBtn

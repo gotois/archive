@@ -162,8 +162,6 @@ export default {
     type: 'Full name',
     email: 'Email',
     emailRules: 'Enter email address',
-    phone: 'Phone',
-    phoneRules: 'Enter phone number',
     rules: 'Enter consumer (client) of the service',
     save: 'Save',
     success: 'Profile updated',
@@ -250,7 +248,6 @@ export default {
     data: {
       title: '{name}, confirm your account data',
       body: 'To use the application, use your name and email address. Add your cryptographic key DID',
-      hint: 'To establish your contract identity, you need to know your decentralized identifier.',
       submit: 'Start',
     },
   },

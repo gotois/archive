@@ -197,9 +197,6 @@ import type { VerifiableCredential } from '../types/models'
 const SelectRegistration = defineAsyncComponent(
   () => import('components/SelectRegistration.vue'),
 )
-const IdComponent = defineAsyncComponent(
-  () => import('components/IdComponent.vue'),
-)
 
 const $t = useI18n().t
 const $q = useQuasar()
@@ -311,24 +308,21 @@ async function onStep(step: number) {
 }
 
 async function mainClickFn() {
-  mainButton.setParams({
-    isLoaderVisible: true,
-  })
   if (requestContact.isSupported()) {
     const requestedContact = await requestContact()
-    const vc = await secretaryStore.registration(requestedContact)
+    const response = await secretaryStore.registration(requestedContact)
 
     if (hapticFeedbackNotificationOccurred.isAvailable()) {
       hapticFeedbackNotificationOccurred('success')
     }
     tutorialStore.tutorialComplete(true)
 
-    sendData(
-      JSON.stringify({
-        type: 'registration',
-        data: vc,
-      }),
-    )
+    const jwt = response.headers.get('Authorization')
+    const token = {
+      type: 'jwt',
+      data: jwt,
+    }
+    sendData(JSON.stringify(token))
   } else {
     throw new Error('RequestContact is not supported')
   }
@@ -344,6 +338,7 @@ onBeforeMount(() => {
       hasShineEffect: true,
       isEnabled: true,
       isVisible: true,
+      isLoaderVisible: false,
       text: $t('navigation.register'),
       textColor: '#ffffff',
     })
@@ -353,11 +348,15 @@ onBeforeMount(() => {
         return
       }
       try {
+        mainButton.setParams({
+          isLoaderVisible: true,
+        })
         await mainClickFn()
-      } catch (error) {
+        // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+      } catch (error: Error | unknown) {
         console.error(error)
         if (popup.isSupported()) {
-          await popup.open({
+          await popup.show({
             title: 'RequestContact ERROR',
             message: error.message as string,
           })
