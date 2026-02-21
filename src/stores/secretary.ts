@@ -86,7 +86,6 @@ export default defineStore('secretary', {
         {
           method: 'POST',
           headers: headers,
-          credentials: 'include',
           body: JSON.stringify(requestedContact),
         },
       )
@@ -94,13 +93,6 @@ export default defineStore('secretary', {
         throw new Error('Network response was not ok')
       }
       return response
-    },
-    async generate(object: ActivityObjectNote[] | ActivityObjectLink[]) {
-      return await rpc('generate-calendar', {
-        '@context': 'https://www.w3.org/ns/activitystreams',
-        'type': 'Activity',
-        'object': object,
-      })
     },
     async notify(contract: VerifiableCredential) {
       return await rpc('add-calendar', {
@@ -111,18 +103,17 @@ export default defineStore('secretary', {
     },
   },
   getters: {
-    auth(store): string {
+    auth(store): string|null {
       try {
         if (isTMA.value) {
           return this.tmaAuth as string
         } else if (store.login && store.password) {
           return this.basicAuth as string
         }
-        throw new Error('Unknown auth error')
       } catch (error) {
         console.warn(error)
-        return ''
       }
+      return null
     },
     basicAuth(store): string | Error {
       if (!store.login?.length || !store.password?.length) {

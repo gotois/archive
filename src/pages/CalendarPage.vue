@@ -19,7 +19,7 @@
           <template #dateGridEvent="{ calendarEvent }">
             <CalendarEventCard
               class="fit"
-              :event-id="calendarEvent.id"
+              :event-id="String(calendarEvent.id)"
               :title="calendarEvent.title"
               :description="calendarEvent.description"
               :start="calendarEvent.start"
@@ -37,7 +37,7 @@
             <CalendarEventCard
               class="fit"
               horizontal
-              :event-id="calendarEvent.id"
+              :event-id="String(calendarEvent.id)"
               :title="calendarEvent.title"
               :description="calendarEvent.description"
               :start="calendarEvent.start"
@@ -111,7 +111,9 @@
             @click="router.go(0)"
           />
         </div>
-        <QSpinner v-else size="5em" />
+        <div v-else class="absolute-full flex flex-center">
+          <QSpinner size="5em" />
+        </div>
       </QPullToRefresh>
     </QScrollArea>
   </QPage>

@@ -177,7 +177,7 @@ export default defineStore('contracts', {
        */
       return Promise.reject(new Error('Not implemented'))
     },
-    async removeContract(id: number, usePod = false) {
+    async removeContract(id: number | string, usePod = false) {
       // Step 1: JS
       if (!id) {
         throw new Error('Unknown Dexie ID')
@@ -214,7 +214,7 @@ export default defineStore('contracts', {
         .reverse()
         .sortBy('startTime')
     },
-    async filteredByIds(ids: number[]) {
+    async filteredByIds(ids: number[] | string[]) {
       return await db.contracts.bulkGet(ids)
     },
     async loadCalendar() {

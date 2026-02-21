@@ -239,7 +239,7 @@ const { isLoggedIn } = storeToRefs(authStore)
 const emit = defineEmits(['remove', 'edit'])
 const props = defineProps({
   eventId: {
-    type: Number as PropType<number>,
+    type: String as PropType<string>,
     required: true,
   },
   attaches: {
@@ -271,7 +271,7 @@ const props = defineProps({
     default: '',
   },
   location: {
-    type: Object as PropType<Place>,
+    type: String as PropType<string>,
     default: null,
   },
   organizer: {
@@ -410,7 +410,7 @@ function onSheet() {
       id: Action.LAW,
     })
   }
-  if (props.location && Object.keys(props.location).length > 0) {
+  if (props.location?.length) {
     group3.push({
       label: $t('components.archiveList.sheet.map.label'),
       icon: 'map',

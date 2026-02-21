@@ -9,6 +9,7 @@ import routes, { ROUTE_NAMES } from './routes'
 import { deleteDatabases, reset } from '../services/databaseService'
 import solidAuth from '../services/authService'
 import { isTWA } from '../composables/detector'
+import rpc from '../helpers/rpc'
 
 export default route(() => {
   const Router = createRouter({
@@ -63,26 +64,16 @@ export default route(() => {
     }
   })
 
-  Router.beforeEach((to, from) => {
+  Router.beforeEach(async (to, from) => {
     const authStore = useAuthStore()
     const tutorialStore = useTutorialStore()
 
     switch (to.name) {
+      case ROUTE_NAMES.PROMO:
       case ROUTE_NAMES.PRIVACY: {
-        return true
-      }
-      case ROUTE_NAMES.PROMO: {
-        if (isTWA.value) {
-          return {
-            name: ROUTE_NAMES.ROOT,
-          }
-        }
         break
       }
       case ROUTE_NAMES.LOGIN: {
-        if (!authStore.isLoggedIn) {
-          return true
-        }
         break
       }
       case ROUTE_NAMES.TUTORIAL: {
@@ -97,7 +88,26 @@ export default route(() => {
         return true
       }
       case ROUTE_NAMES.AUTH: {
-        return true
+        try {
+          await rpc('hello', {})
+
+          if (isTWA.value) {
+            // todo - нужно делать sendData jwt в бота
+            return {
+              name: ROUTE_NAMES.ROOT,
+            }
+          }
+
+          return {
+            name: ROUTE_NAMES.ARCHIVE,
+            query: {
+              fullPath: to.fullPath,
+            },
+          }
+        } catch (error) {
+          console.warn('auth:', error)
+        }
+        break
       }
       default: {
         switch (to.query.error) {
@@ -114,12 +124,6 @@ export default route(() => {
           }
           default: {
             break
-          }
-        }
-        if (isTWA.value) {
-          return {
-            name: ROUTE_NAMES.TUTORIAL,
-            query: {},
           }
         }
         if (!tutorialStore.tutorialCompleted) {
@@ -142,10 +146,6 @@ export default route(() => {
               ],
             })
           }
-          return {
-            name: ROUTE_NAMES.PROMO, // fixme
-            query: {},
-          }
         }
         if (
           !authStore.isLoggedIn &&
@@ -164,6 +164,7 @@ export default route(() => {
         break
       }
     }
+    return true
   })
 
   return Router

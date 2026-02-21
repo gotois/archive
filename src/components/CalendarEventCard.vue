@@ -21,8 +21,8 @@
         -
         {{ date.formatDate(convertTemporalToDate(end), 'HH:mm') }}
       </div>
-      <div v-if="location?.name" class="ellipsis-2-lines">
-        📍 {{ location.name }}
+      <div v-if="location" class="ellipsis-2-lines text-caption">
+        📍 {{ location }}
       </div>
       <div v-if="description" class="ellipsis-2-lines">
         {{ description }}
@@ -78,7 +78,7 @@ const props = defineProps({
     default: false,
   },
   eventId: {
-    type: Number as PropType<number>,
+    type: String as PropType<string>,
     required: true,
   },
   title: {
@@ -94,8 +94,8 @@ const props = defineProps({
     required: true,
   },
   location: {
-    type: Object as PropType<Place>,
-    default: () => {},
+    type: String as PropType<string>,
+    default: () => '',
   },
   description: {
     type: String as PropType<string>,

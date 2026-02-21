@@ -25,14 +25,6 @@ export default async function <T>(
   if (!secretaryStore.available) {
     throw new Error('Server Unavailable')
   }
-  const geoStore = useGeoStore()
-  const headers = {} as Record<string, string>
-  if (geoStore.geolocation) {
-    headers.geolocation = geoStore.geolocation
-  }
-  if (secretaryStore.auth) {
-    headers['Authorization'] = secretaryStore.auth
-  }
 
   const request = {
     url: process.env.server + '/rpc',
@@ -42,9 +34,20 @@ export default async function <T>(
       method,
       params,
     },
-    credentials: 'include',
-    headers: headers,
   } as Request<T>
+
+  const geoStore = useGeoStore()
+  const headers = {} as Record<string, string>
+  if (geoStore.geolocation) {
+    headers.geolocation = geoStore.geolocation
+  }
+  if (secretaryStore.auth) {
+    headers['Authorization'] = secretaryStore.auth
+  } else {
+    request.credentials = 'include'
+  }
+  request.headers = headers
+
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   const response = (await requestJsonRpc2(request)) as {
     error?: JSONRPCErrorResponse
