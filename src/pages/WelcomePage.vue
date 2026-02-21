@@ -404,7 +404,7 @@ const metaData = {
 
 function registerPage() {
   return router.push({
-    name: ROUTE_NAMES.TUTORIAL,
+    name: ROUTE_NAMES.AUTH,
     query: {
       step: STEP.WELCOME,
       lang: langStore.language,

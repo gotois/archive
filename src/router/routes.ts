@@ -65,7 +65,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/' + ROUTE_NAMES.AUTH,
-    component: () => import('layouts/EmptyLayout.vue'),
+    component: () => import('layouts/MainLayout.vue'),
     children: [
       {
         path: '',
@@ -93,17 +93,6 @@ const routes: RouteRecordRaw[] = [
         path: '',
         name: ROUTE_NAMES.SUPPORT,
         component: () => import('pages/SupportPage.vue'),
-      },
-    ],
-  },
-  {
-    path: '/' + ROUTE_NAMES.TUTORIAL,
-    component: () => import('layouts/EmptyLayout.vue'),
-    children: [
-      {
-        path: '',
-        name: ROUTE_NAMES.TUTORIAL,
-        component: () => import('pages/RegistrationPage.vue'),
       },
     ],
   },

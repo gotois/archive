@@ -72,7 +72,7 @@ export default route(() => {
         return true
       }
       case ROUTE_NAMES.PROMO: {
-        if (isTWA) {
+        if (isTWA.value) {
           return {
             name: ROUTE_NAMES.ROOT,
           }
@@ -97,15 +97,6 @@ export default route(() => {
         return true
       }
       case ROUTE_NAMES.AUTH: {
-        if (
-          !LocalStorage.has('secret') ||
-          (LocalStorage.has('secret') && authStore.pinIsLoggedIn)
-        ) {
-          return {
-            name: ROUTE_NAMES.ARCHIVE,
-            query: { page: 1 },
-          }
-        }
         return true
       }
       default: {
@@ -123,6 +114,12 @@ export default route(() => {
           }
           default: {
             break
+          }
+        }
+        if (isTWA.value) {
+          return {
+            name: ROUTE_NAMES.TUTORIAL,
+            query: {},
           }
         }
         if (!tutorialStore.tutorialCompleted) {
@@ -145,23 +142,9 @@ export default route(() => {
               ],
             })
           }
-          if (isTWA) {
-            return {
-              name: ROUTE_NAMES.TUTORIAL,
-              query: {},
-            }
-          }
           return {
-            name: ROUTE_NAMES.PROMO,
+            name: ROUTE_NAMES.PROMO, // fixme
             query: {},
-          }
-        }
-        if (LocalStorage.has('secret') && !authStore.pinIsLoggedIn) {
-          return {
-            name: ROUTE_NAMES.AUTH,
-            query: {
-              fullPath: to.fullPath,
-            },
           }
         }
         if (
