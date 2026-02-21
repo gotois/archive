@@ -9,6 +9,8 @@ import type {
   VerifiableCredential,
   CalendarEventExternal,
 } from '../types/models'
+import useSecretaryStore from 'stores/secretary'
+import useGeoStore from 'stores/geo'
 
 interface Store {
   contractNames: Map<string, ContractData>
@@ -216,13 +218,27 @@ export default defineStore('contracts', {
       return await db.contracts.bulkGet(ids)
     },
     async loadCalendar() {
-      const res = await fetch(process.env.server + '/tasks/subscription', {
+      const requestInit: RequestInit = {
         method: 'GET',
-        headers: {
-          Accept: 'text/calendar',
-        },
-        credentials: 'include',
-      })
+      }
+      const secretaryStore = useSecretaryStore()
+      const geoStore = useGeoStore()
+
+      const headers = new Headers()
+      headers.set('Accept', 'text/calendar')
+      headers.set('Timezone', geoStore.timezone)
+
+      if (secretaryStore.auth) {
+        headers.set('Authorization', secretaryStore.auth)
+      } else {
+        requestInit.credentials = 'include'
+      }
+      requestInit.headers = headers
+
+      const res = await fetch(
+        process.env.server + '/tasks/subscription',
+        requestInit,
+      )
       if (!res.ok) {
         console.error(res.status)
         throw new Error('Failed to load subscription calendar')
