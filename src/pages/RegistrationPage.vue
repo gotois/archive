@@ -123,7 +123,7 @@
           <p class="text-caption no-margin text-weight-light">
             {{ $t('tutorial.welcome.hint') }}
           </p>
-          <QStepperNavigation v-if="!isTMA">
+          <QStepperNavigation>
             <SelectRegistration
               @registered="registrationComplete"
               @authed="pageComplete"
@@ -158,7 +158,7 @@
   </QPage>
 </template>
 <script lang="ts" setup>
-import { defineAsyncComponent, onBeforeMount, ref, watch } from 'vue'
+import { defineAsyncComponent, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import {
@@ -177,16 +177,8 @@ import {
   useQuasar,
 } from 'quasar'
 import { storeToRefs } from 'pinia'
-import {
-  mainButton,
-  sendData,
-  requestContact,
-  popup,
-  hapticFeedbackNotificationOccurred,
-} from '@telegram-apps/sdk'
 import useTutorialStore from 'stores/tutorial'
 import useProfileStore from 'stores/profile'
-import useSecretaryStore from 'stores/secretary'
 import pkg from '../../package.json'
 import { isTMA } from '../composables/detector'
 import { ROUTE_NAMES, STEP } from '../router/routes'
@@ -203,7 +195,6 @@ const $q = useQuasar()
 const router = useRouter()
 const profileStore = useProfileStore()
 const tutorialStore = useTutorialStore()
-const secretaryStore = useSecretaryStore()
 
 const stepParam = 'step'
 
@@ -307,71 +298,5 @@ async function onStep(step: number) {
   scroll.value.setScrollPosition('vertical', step * 30, 100)
 }
 
-async function mainClickFn() {
-  if (requestContact.isSupported()) {
-    const requestedContact = await requestContact()
-    const response = await secretaryStore.registration(requestedContact)
-
-    if (hapticFeedbackNotificationOccurred.isAvailable()) {
-      hapticFeedbackNotificationOccurred('success')
-    }
-    tutorialStore.tutorialComplete(true)
-
-    const jwt = response.headers.get('Authorization')
-    const token = {
-      type: 'jwt',
-      data: jwt,
-    }
-    sendData(JSON.stringify(token))
-  } else {
-    throw new Error('RequestContact is not supported')
-  }
-}
-
 setMeta(step.value)
-
-onBeforeMount(() => {
-  if (isTMA.value) {
-    mainButton.mount()
-    mainButton.setParams({
-      backgroundColor: '#000000',
-      hasShineEffect: true,
-      isEnabled: true,
-      isVisible: true,
-      isLoaderVisible: false,
-      text: $t('navigation.register'),
-      textColor: '#ffffff',
-    })
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    mainButton.onClick(async () => {
-      if (mainButton.isLoaderVisible()) {
-        return
-      }
-      try {
-        mainButton.setParams({
-          isLoaderVisible: true,
-        })
-        await mainClickFn()
-        // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-      } catch (error: Error | unknown) {
-        console.error(error)
-        if (popup.isSupported()) {
-          await popup.show({
-            title: 'RequestContact ERROR',
-            message: error.message as string,
-          })
-        } else {
-          $q.notify({
-            type: 'negative',
-            message: error.message as string,
-          })
-        }
-      } finally {
-        mainButton.setParams({
-          isLoaderVisible: false,
-        })
-      }
-    })
-  }
-})
 </script>

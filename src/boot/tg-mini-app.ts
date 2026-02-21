@@ -13,8 +13,10 @@ export default boot(() => {
   const { tgWebAppStartParam } = retrieveLaunchParams()
   console.log('tgWebAppStartParam::', tgWebAppStartParam)
   if (tgWebAppStartParam) {
-    const payload: unknown = JSON.parse(atob(tgWebAppStartParam))
-    console.log('payload', payload)
+    const payload = JSON.parse(atob(tgWebAppStartParam)) as Record<
+      string,
+      unknown
+    >
 
     if (payload?.debug) {
       appendErundaScript()
