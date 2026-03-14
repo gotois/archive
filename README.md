@@ -58,6 +58,7 @@ npm i
 
 ### Сборка и запуск
 
+[//]: # (DEPRECATED - TELEGRAM BOT NAME и прочие GOOGLE CLIENT ID должны храниться на сервере gotois, а здесь должны храниться только SERVER_HOST)
 - Обязательно установите `SERVER_HOST` в качестве переменной среды вашего сервера.
 - Опционально установите `GOOGLE_CLIENT_ID` ([google-one-tap](https://developers.google.com/identity/gsi/web/guides/display-google-one-tap)) в качестве переменной среды.
 - Опционально установите `GOOGLE_REDIRECT_URI` необходимый в качестве переменной среды.
@@ -74,6 +75,7 @@ npm i
 В терминале выполните следующие команды для создания сертификата для `app.lh`:
 ```bash
 mkcert -install
+mkdir certs
 mkcert -key-file certs/localhost-key.pem -cert-file certs/localhost.pem app.lh 127.0.0.1 ::1
 ```
 

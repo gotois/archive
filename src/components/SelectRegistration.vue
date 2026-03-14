@@ -147,7 +147,7 @@ async function submitForm() {
   }
 }
 
-async function telegramSign(user: TelegramUser = process.env.demo_user) {
+async function telegramSign(user: TelegramUser) {
   try {
     await profileStore.setNetworkUser()
   } catch {

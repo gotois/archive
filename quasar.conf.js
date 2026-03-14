@@ -58,8 +58,6 @@ module.exports = configure((ctx) => {
         google_client_id: process.env.GOOGLE_CLIENT_ID,
         google_redirect_uri: process.env.GOOGLE_REDIRECT_URI,
         vapid_public_key: process.env.VAPID_PUBLIC_KEY,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        demo_user: !ctx.prod && JSON.parse(process.env.TELEGRAM_TEST_USER),
       },
       target: {
         browser: 'esnext',
