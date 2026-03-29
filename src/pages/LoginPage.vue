@@ -62,23 +62,159 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { useMeta, useQuasar, QBtn, QChip, QPage, QCard, QTooltip } from 'quasar'
+import {
+  useMeta,
+  useQuasar,
+  LocalStorage,
+  SessionStorage,
+  QBtn,
+  QChip,
+  QPage,
+  QCard,
+  QTooltip,
+} from 'quasar'
 import { storeToRefs } from 'pinia'
 import usePodStore from 'stores/pod'
+import useAuthStore from 'stores/auth'
+import useProfileStore from 'stores/profile'
 import OIDCIssuerComponent from 'components/OIDCIssuerComponent.vue'
-import solidAuth from '../services/authService'
+import {
+  getDefaultSession,
+  handleIncomingRedirect,
+  login,
+} from '@inrupt/solid-client-authn-browser'
 import { parse } from '../helpers/markdownHelper'
+import { EVENTS } from '@inrupt/solid-client-authn-core'
 
 const $t = useI18n().t
 const $q = useQuasar()
 const router = useRouter()
 const podStore = usePodStore()
+const profileStore = useProfileStore()
+const authStore = useAuthStore()
 
 const { getOidcIssuer } = storeToRefs(podStore)
 
 const metaData = {
   'title': $t('pages.create.title'),
   'og:title': $t('pages.create.title'),
+}
+
+const TOKEN_TYPE = 'DPoP'
+
+const events = getDefaultSession().events
+
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
+events.on(EVENTS.SESSION_RESTORED, async (urlString: string) => {
+  const url = new URL(urlString)
+  $q.sessionStorage.remove('connect')
+  try {
+    authStore.openIdHandleIncoming()
+    await podStore.setResourceRootUrl()
+    await router.push({
+      path: url.pathname,
+      replace: true,
+    })
+  } catch (e) {
+    console.error(e)
+  } finally {
+    $q.loading.hide()
+  }
+})
+
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
+events.on(EVENTS.LOGIN, async () => {
+  authStore.openIdHandleIncoming()
+  try {
+    await podStore.setResourceRootUrl()
+  } catch (error) {
+    console.error(error)
+    $q.notify({
+      type: 'negative',
+      message: 'Login Failed',
+    })
+    $q.loading.show()
+    return
+  } finally {
+    $q.sessionStorage.remove('connect')
+  }
+  try {
+    const { email, avatar } = await podStore.getProfileFOAF()
+    if (email) {
+      profileStore.consumerEmail(email)
+    }
+    if (avatar) {
+      profileStore.consumerImg(avatar)
+    }
+  } catch (error) {
+    console.error(error)
+  } finally {
+    $q.sessionStorage.set('restorePreviousSession', true)
+  }
+})
+
+events.on(EVENTS.LOGOUT, () => {
+  $q.sessionStorage.remove('connect')
+  $q.sessionStorage.remove('restorePreviousSession')
+})
+
+events.on(EVENTS.ERROR, (error) => {
+  console.error('Login error:', error)
+})
+
+interface AuthData {
+  redirectUrl?: string
+  oidcIssuer?: string
+  restorePreviousSession?: boolean
+}
+
+async function solidAuth({
+  redirectUrl = window.location.href,
+  oidcIssuer = LocalStorage.getItem('oidcIssuer'),
+  restorePreviousSession,
+}: AuthData) {
+  if (!oidcIssuer) {
+    throw new Error('oidcIssuer empty')
+  }
+  if (!navigator.onLine) {
+    return Promise.reject(new Error('Not onLine'))
+  }
+  let currentConnect = Number(SessionStorage.getItem('connect')) ?? 0
+  SessionStorage.set('connect', ++currentConnect)
+  if (currentConnect > 3) {
+    return Promise.reject(
+      new Error('Cannot connect: ' + String(currentConnect)),
+    )
+  }
+  const defaultSession = getDefaultSession().info
+  const sessionInfo = await handleIncomingRedirect({
+    restorePreviousSession,
+  })
+  LocalStorage.set('oidcIssuer', oidcIssuer)
+  if (!sessionInfo) {
+    return login({
+      oidcIssuer,
+      tokenType: TOKEN_TYPE,
+    })
+  }
+  const expiresDate = sessionInfo.expirationDate
+  const nowDate = new Date()
+  const isExpirationAlive =
+    (sessionInfo.expirationDate && expiresDate.valueOf() < nowDate.valueOf()) ??
+    false
+  if (
+    sessionInfo.isLoggedIn ||
+    isExpirationAlive ||
+    defaultSession.sessionId === sessionInfo.sessionId
+  ) {
+    console.warn('Session alive')
+    window.location.href = window.location.origin
+    return
+  }
+  return login({
+    oidcIssuer,
+    tokenType: TOKEN_TYPE,
+  })
 }
 
 function onRemove() {
@@ -92,10 +228,7 @@ async function onLogin() {
   await tryLogin()
 }
 
-async function tryLogin(
-  redirectUrl = window.location.origin +
-    String(router.currentRoute.value.query.fullPath ?? ''),
-) {
+async function tryLogin() {
   try {
     $q.loading.show({
       message: $t('components.oidcIssuer.processing'),

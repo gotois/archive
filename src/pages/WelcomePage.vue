@@ -67,7 +67,13 @@
       <QSpace class="q-mb-xl" />
 
       <div class="flex justify-center row">
-        <QCardSection class="flex q-pt-none text-left col-12">
+        <QCardSection
+          class="flex q-pt-none col-12"
+          :class="{
+            'text-left': $q.platform.is.desktop,
+            'text-center': !$q.platform.is.desktop,
+          }"
+        >
           <QBtn
             v-if="!langStore.isRussian"
             class="q-ma-xs"
@@ -78,6 +84,7 @@
             Google Play
           </QBtn>
           <QBtn
+            v-if="TELEGRAM_BOT_NAME"
             icon="telegram"
             class="q-ma-xs"
             color="blue"
@@ -404,9 +411,8 @@ const metaData = {
 
 function registerPage() {
   return router.push({
-    name: ROUTE_NAMES.AUTH,
+    name: ROUTE_NAMES.LOGIN,
     query: {
-      step: STEP.WELCOME,
       lang: langStore.language,
     },
   })

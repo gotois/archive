@@ -36,7 +36,6 @@ module.exports = configure((ctx) => {
     preFetch: true,
 
     // https://v2.quasar.dev/quasar-cli/boot-files
-    // eslint-disable-next-line
     boot: [
       'i18n',
       'addressbar-color',

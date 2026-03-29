@@ -1,4 +1,4 @@
-import { Loading, LocalStorage, Notify, SessionStorage } from 'quasar'
+import { uid, Loading, LocalStorage, Notify, SessionStorage } from 'quasar'
 import { route } from 'quasar/wrappers'
 import { createRouter, createWebHistory } from 'vue-router'
 import useTutorialStore from 'stores/tutorial'
@@ -7,9 +7,12 @@ import usePodStore from 'stores/pod'
 import useLangStore from 'stores/lang'
 import routes, { ROUTE_NAMES } from './routes'
 import { deleteDatabases, reset } from '../services/databaseService'
-import solidAuth from '../services/authService'
 import { isTWA } from '../composables/detector'
 import rpc from '../helpers/rpc'
+import {
+  getDefaultSession,
+  handleIncomingRedirect,
+} from '@inrupt/solid-client-authn-browser'
 
 export default route(() => {
   const Router = createRouter({
@@ -40,7 +43,7 @@ export default route(() => {
       return
     }
 
-    if (error || !(code && state)) {
+    if (error) {
       return
     }
     if (lang) {
@@ -51,16 +54,33 @@ export default route(() => {
     if (!podStore.getOidcIssuer) {
       return
     }
-    Loading.show()
-    try {
-      await solidAuth({
-        restorePreviousSession: true,
-        oidcIssuer: podStore.getOidcIssuer,
-      })
-    } catch (error) {
-      console.error(error)
-    } finally {
-      Loading.hide()
+    if (code && state) {
+      Loading.show()
+      try {
+        const sessionInfo = await handleIncomingRedirect({
+          restorePreviousSession: true,
+        })
+        const session = getDefaultSession();
+        const response = await session.fetch("https://steepled-lisabeth-blazingly.ngrok-free.dev/rpc/hello", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          body: JSON.stringify({
+            jsonrpc: '2.0',
+            id: uid(),
+            method: 'hello',
+          }),
+          credentials: "include",
+        });
+        const ok = await response.json();
+        console.log('ok', ok)
+      } catch (error) {
+        console.error(error)
+      } finally {
+        Loading.hide()
+      }
     }
   })
 
