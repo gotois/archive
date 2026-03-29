@@ -61,7 +61,7 @@ export default route(() => {
           restorePreviousSession: true,
         })
         const session = getDefaultSession();
-        const response = await session.fetch("https://steepled-lisabeth-blazingly.ngrok-free.dev/rpc/hello", {
+        const response = await session.fetch(process.env.server + '/rpc', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ export default route(() => {
             id: uid(),
             method: 'hello',
           }),
-          credentials: "include",
+          credentials: 'include',
         });
         const ok = await response.json();
         console.log('ok', ok)

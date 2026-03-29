@@ -238,7 +238,7 @@ async function tryLogin() {
       spinnerColor: 'primary',
     })
     await solidAuth({
-      redirectUrl,
+      redirectUrl: window.location.href,
       oidcIssuer: getOidcIssuer.value,
       restorePreviousSession: false,
     })

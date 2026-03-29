@@ -84,7 +84,7 @@ module.exports = configure((ctx) => {
       },
       host: new URL(localhost).hostname,
       port: new URL(localhost).port || 8080,
-      open: true, // opens browser window automatically
+      open: !process.env.TURBO_HASH, // opens browser window automatically
     },
 
     // https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework

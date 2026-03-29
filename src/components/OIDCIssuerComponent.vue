@@ -62,12 +62,14 @@ defineProps({
   },
 })
 
+const gitHostname = new URL(process.env.server).hostname
+
 const loginOptions = ref([
-  new URL(process.env.server).hostname,
+  gitHostname,
   'login.inrupt.com',
   'login.inrupt.net',
 ])
-const oidcIssuer = ref('')
+const oidcIssuer = ref(gitHostname)
 const prefix = ref('https://')
 
 function onNewValueIssuer(value: string, done: (value: string) => void) {
