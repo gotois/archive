@@ -62,7 +62,7 @@ defineProps({
   },
 })
 
-const gitHostname = new URL(process.env.server).hostname
+const gitHostname = new URL(process.env.server).host
 
 const loginOptions = ref([
   gitHostname,

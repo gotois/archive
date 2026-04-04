@@ -13,7 +13,9 @@ const localhost = 'http://app.lh'
 module.exports = configure((ctx) => {
   if (ctx.dev) {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    require('dotenv').config()
+    require('dotenv').config({
+      quiet: true,
+    })
   }
   return {
     eslint: {

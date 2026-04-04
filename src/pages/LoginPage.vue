@@ -1,62 +1,69 @@
 <template>
-  <QPage class="flex column flex-center q-ma-md">
-    <QCard
-      flat
-      square
-      bordered
-      class="q-pa-md"
-      style="width: 400px"
-      :class="{
-        'full-width': $q.platform.is.mobile,
-      }"
+  <QPage>
+    <QScrollArea
+      visible
+      class="absolute-full"
+      :content-style="contentStyle"
+      :content-active-style="contentStyle"
     >
-      <p class="text-h4">
-        {{ $t('tutorial.oidc.title') }}
-      </p>
-      <p class="text-caption">
-        {{ $t('tutorial.oidc.caption') }}
-      </p>
-      <div
-        class="text-body1"
-        style="white-space: break-spaces"
-        v-html="parse($t('tutorial.oidc.body'))"
+      <QCard
+        flat
+        square
+        bordered
+        class="q-pa-md"
+        style="width: 400px"
+        :class="{
+          'full-width': $q.platform.is.mobile,
+        }"
       >
-      </div>
-
-      <template v-if="getOidcIssuer">
-        <QChip
-          class="full-width q-pl-none"
-          color="transparent"
-          :label="$t('login.oidcIssuer', { oidcIssuer: getOidcIssuer })"
-          removable
-          @remove="onRemove"
-        />
-        <QBtn
-          color="accent"
-          :label="$t('login.authentication')"
-          :disable="$q.loading.isActive"
-          :loading="$q.loading.isActive"
-          square
-          glossy
-          push
-          unelevated
-          no-caps
-          class="full-width"
-          @click="onLogin"
-        />
-      </template>
-      <template v-else>
-        <OIDCIssuerComponent
-          :label="$t('components.oidcIssuer.label')"
-          @on-complete="onOnlineAuthorize"
+        <p class="text-h4">
+          {{ $t('tutorial.oidc.title') }}
+        </p>
+        <p class="text-caption">
+          {{ $t('tutorial.oidc.caption') }}
+        </p>
+        <div
+          class="text-body1"
+          style="white-space: break-spaces"
+          v-html="parse($t('tutorial.oidc.body'))"
         >
-          <QTooltip>
-            {{ $t('components.oidcIssuer.input') }}
-            {{ $t('oidc.tutorialHint') }}
-          </QTooltip>
-        </OIDCIssuerComponent>
-      </template>
-    </QCard>
+        </div>
+
+        <template v-if="getOidcIssuer">
+          <QChip
+            class="full-width q-pl-none"
+            color="transparent"
+            :label="$t('login.oidcIssuer', { oidcIssuer: getOidcIssuer })"
+            removable
+            @remove="onRemove"
+          />
+          <QBtn
+            color="accent"
+            :label="$t('login.authentication')"
+            :disable="$q.loading.isActive"
+            :loading="$q.loading.isActive"
+            square
+            glossy
+            push
+            unelevated
+            no-caps
+            class="full-width"
+            @click="onLogin"
+          />
+        </template>
+        <template v-else>
+          <OIDCIssuerComponent
+            :label="$t('components.oidcIssuer.label')"
+            @on-complete="onOnlineAuthorize"
+          >
+            <QTooltip>
+              {{ $t('components.oidcIssuer.input') }}
+              {{ $t('oidc.tutorialHint') }}
+            </QTooltip>
+          </OIDCIssuerComponent>
+        </template>
+      </QCard>
+    </QScrollArea>
   </QPage>
 </template>
 <script lang="ts" setup>
@@ -72,6 +79,7 @@ import {
   QPage,
   QCard,
   QTooltip,
+  QScrollArea,
 } from 'quasar'
 import { storeToRefs } from 'pinia'
 import usePodStore from 'stores/pod'
@@ -98,6 +106,11 @@ const { getOidcIssuer } = storeToRefs(podStore)
 const metaData = {
   'title': $t('pages.create.title'),
   'og:title': $t('pages.create.title'),
+}
+const contentStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
 }
 
 const TOKEN_TYPE = 'DPoP'
