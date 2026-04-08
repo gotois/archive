@@ -60,22 +60,23 @@ export default route(() => {
         const sessionInfo = await handleIncomingRedirect({
           restorePreviousSession: true,
         })
-        const session = getDefaultSession();
-        const response = await session.fetch(process.env.server + '/rpc', {
-          method: 'POST',
+        const response = await getDefaultSession().fetch(sessionInfo.webId + '/inbox', {
+          method: 'GET',
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
           },
-          body: JSON.stringify({
-            jsonrpc: '2.0',
-            id: uid(),
-            method: 'hello',
-          }),
           credentials: 'include',
         });
         const ok = await response.json();
         console.log('ok', ok)
+
+        return {
+          name: ROUTE_NAMES.ARCHIVE,
+          query: {
+            page: 1,
+          },
+        }
       } catch (error) {
         console.error(error)
       } finally {
