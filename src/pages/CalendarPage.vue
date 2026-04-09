@@ -150,7 +150,6 @@ import useContractStore from 'stores/contract'
 import useLangStore from 'stores/lang'
 import useSecretaryStore from 'stores/secretary'
 import { formatToCalendarDate, isCurrentDate } from '../helpers/calendarHelper'
-import { isTMA } from '../composables/detector'
 // import { ROUTE_NAMES } from '../router/routes'
 import '@schedule-x/theme-shadcn/dist/index.css'
 
@@ -357,11 +356,6 @@ async function updateContracts({
 */
 
 onBeforeMount(async () => {
-  if (!isTMA.value) {
-    if (!secretaryStore.available) {
-      return
-    }
-  }
   const ics = await contractStore.loadCalendar()
   calendarApp.value = createCalendarView(ics)
 })

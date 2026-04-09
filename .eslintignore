@@ -1,4 +1,7 @@
 /dist
+/certs
 /.quasar
 /node_modules
+.quasar/
+src-pwa/
 .eslintrc.js

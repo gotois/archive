@@ -68,6 +68,9 @@ export default route(() => {
           },
           credentials: 'include',
         });
+        if (!response.ok) {
+          throw new Error('Not logged in')
+        }
         const ok = await response.json();
         console.log('ok', ok)
 

@@ -2,17 +2,13 @@
 // https://v2.quasar.dev/quasar-cli/quasar-conf-js
 
 /* eslint-env node */
-/* eslint-disable @typescript-eslint/no-var-requires */
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { configure } = require('quasar/wrappers')
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const pkg = require('./package.json')
 
 const localhost = 'http://app.lh'
 
 module.exports = configure((ctx) => {
   if (ctx.dev) {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     require('dotenv').config({
       quiet: true,
     })
