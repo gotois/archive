@@ -5,8 +5,6 @@
 const { configure } = require('quasar/wrappers')
 const pkg = require('./package.json')
 
-const localhost = 'http://app.lh'
-
 module.exports = configure((ctx) => {
   if (ctx.dev) {
     require('dotenv').config({
@@ -39,6 +37,7 @@ module.exports = configure((ctx) => {
       'addressbar-color',
       'health',
       'tg-mini-app',
+      'webpush',
     ],
 
     // https://github.com/quasarframework/quasar/tree/dev/extras
@@ -54,7 +53,6 @@ module.exports = configure((ctx) => {
         telegram_bot_name: process.env.TELEGRAM_BOT_NAME,
         google_client_id: process.env.GOOGLE_CLIENT_ID,
         google_redirect_uri: process.env.GOOGLE_REDIRECT_URI,
-        vapid_public_key: process.env.VAPID_PUBLIC_KEY,
       },
       target: {
         browser: 'esnext',
@@ -80,8 +78,8 @@ module.exports = configure((ctx) => {
         key: 'certs/localhost-key.pem',
         cert: 'certs/localhost.pem',
       },
-      host: new URL(localhost).hostname,
-      port: new URL(localhost).port || 8080,
+      host: new URL(process.env.APP_URL).hostname,
+      port: new URL(process.env.APP_URL).port || 8080,
       open: !process.env.TURBO_HASH, // opens browser window automatically
     },
 
