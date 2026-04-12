@@ -1,4 +1,5 @@
-import { createRequire } from 'module';
+import globals from 'globals';
+import vuePlugin from 'eslint-plugin-vue';
 import vueParser from 'vue-eslint-parser';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
@@ -22,6 +23,7 @@ export default [
         ecmaVersion: 2023,
       },
       globals: {
+        ...globals.browser,
         __statics: 'readonly',
         __QUASAR_SSR__: 'readonly',
         __QUASAR_SSR_SERVER__: 'readonly',

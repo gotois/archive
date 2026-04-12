@@ -1,4 +1,4 @@
-import { uid, Loading, LocalStorage, Notify, SessionStorage } from 'quasar'
+import { Loading, LocalStorage, Notify, SessionStorage } from 'quasar'
 import { route } from 'quasar/wrappers'
 import { createRouter, createWebHistory } from 'vue-router'
 import useTutorialStore from 'stores/tutorial'
