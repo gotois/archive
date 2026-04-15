@@ -19,10 +19,6 @@ export default defineStore('profile', {
     loc: undefined,
   }),
   actions: {
-    async setNetworkUser() {
-      const { loc } = await getLocation()
-      this.loc = loc
-    },
     consumerEmail(value: string) {
       const email = value.trim()
       LocalStorage.set('email', email)

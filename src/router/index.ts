@@ -113,7 +113,6 @@ export default route(() => {
       }
       case ROUTE_NAMES.AUTH: {
         try {
-          await rpc('hello', {})
 
           if (isTWA.value) {
             // todo - нужно делать sendData jwt в бота

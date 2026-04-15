@@ -1,20 +1,15 @@
 import { defineStore } from 'pinia'
 import { LocalStorage } from 'quasar'
 import {
-  RequestedContact,
   retrieveLaunchParams,
   serializeInitDataQuery,
 } from '@telegram-apps/sdk'
 import useTutorialStore from 'stores/tutorial'
 import rpc from '../helpers/rpc'
 import type {
-  TelegramUser,
-  ActivityObjectNote,
-  ActivityObjectLink,
   VerifiableCredential,
 } from '../types/models'
 import { isTMA } from '../composables/detector'
-import useGeoStore from 'stores/geo'
 
 interface Store {
   available: boolean
@@ -54,45 +49,9 @@ export default defineStore('secretary', {
         throw error
       }
     },
-    async authWithLoginAndPassword(login: string, password: string) {
-      try {
-        this.login = login
-        this.password = password
-        await rpc('hello', {})
-        LocalStorage.set('login', login)
-        LocalStorage.set('password', password)
-      } catch (error) {
-        console.error(error)
-        this.login = null
-        this.password = null
-        throw error
-      }
-    },
     logout() {
       const tutorialStore = useTutorialStore()
       tutorialStore.tutorialComplete(false)
-    },
-    async registration(requestedContact: RequestedContact | TelegramUser) {
-      const geoStore = useGeoStore()
-      const headers = {} as Record<string, string>
-      headers['Content-Type'] = 'application/json'
-      if (geoStore.geolocation) {
-        headers['Geolocation'] = geoStore.geolocation
-      }
-      headers['Timezone'] = geoStore.timezone
-
-      const response = await fetch(
-        process.env.server + '/auth/telegram/oauth',
-        {
-          method: 'POST',
-          headers: headers,
-          body: JSON.stringify(requestedContact),
-        },
-      )
-      if (!response.ok) {
-        throw new Error('Network response was not ok')
-      }
-      return response
     },
     async notify(contract: VerifiableCredential) {
       return await rpc('add-calendar', {
