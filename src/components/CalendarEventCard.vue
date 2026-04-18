@@ -55,16 +55,19 @@ import { useI18n } from 'vue-i18n'
 import { storeToRefs } from 'pinia'
 import { QCard, QCardSection, QPopupProxy, date, useQuasar } from 'quasar'
 import type { Temporal } from '@js-temporal/polyfill'
+import { useRouter } from 'vue-router'
 import TaskFull from 'components/TaskFull.vue'
 import useContractStore from 'stores/contract'
 import useAuthStore from 'stores/auth'
 import type { Agent, FormatImageType, Place } from '../types/models'
 import { convertTemporalToDate } from '../helpers/dateHelper'
+import { ROUTE_NAMES } from '../router/routes'
 
 const $q = useQuasar()
 const i18n = useI18n()
 const contractStore = useContractStore()
 const authStore = useAuthStore()
+const router = useRouter()
 
 const { isLoggedIn } = storeToRefs(authStore)
 
@@ -124,7 +127,10 @@ const props = defineProps({
 })
 
 function onEdit() {
-  console.log('on edit')
+  void router.push({
+    name: ROUTE_NAMES.EDIT,
+    params: { taskId: props.eventId },
+  })
 }
 
 function onRemove() {

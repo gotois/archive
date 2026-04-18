@@ -152,6 +152,12 @@ import useSecretaryStore from 'stores/secretary'
 import { formatToCalendarDate, isCurrentDate } from '../helpers/calendarHelper'
 // import { ROUTE_NAMES } from '../router/routes'
 import '@schedule-x/theme-shadcn/dist/index.css'
+import { useWebPush } from '../composables/useWebPush'
+
+const {
+  permission,
+  enable: enableWebPush,
+} = useWebPush()
 
 const CALENDAR_WEEK_NUM = 7
 const INITIAL_SCROLL = '06:30'
@@ -358,6 +364,28 @@ async function updateContracts({
 onBeforeMount(async () => {
   const ics = await contractStore.loadCalendar()
   calendarApp.value = createCalendarView(ics)
+
+  if (permission.value === 'default') {
+    $q.notify({
+      position: 'top-right',
+      timeout: 0,
+      message: $t('webPush.requestMessage'),
+      actions: [
+        {
+          label: $t('webPush.enableButton'),
+          color: 'white',
+          handler: () => {
+            void enableWebPush()
+          },
+        },
+        {
+          icon: 'close',
+          color: 'white',
+          round: true,
+        },
+      ],
+    })
+  }
 })
 
 useMeta(metaData)

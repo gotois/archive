@@ -1,4 +1,5 @@
 import { ref, computed } from 'vue'
+import { Notify } from 'quasar'
 import { requestWebPushPermission } from '../services/webPushService'
 
 export function useWebPush() {
@@ -16,6 +17,10 @@ export function useWebPush() {
     try {
       await requestWebPushPermission()
     } catch (error) {
+      Notify.create({
+        message: 'Нет доступа к WebPush',
+        type: 'warning',
+      })
       console.warn(error)
     } finally {
       isLoading.value = false

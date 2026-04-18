@@ -474,6 +474,10 @@ export default {
       fail: 'Error occurred',
     },
   },
+  webPush: {
+    requestMessage: 'Enable notifications to stay updated on your contracts.',
+    enableButton: 'Enable',
+  },
   copy: {
     success: 'Copied successfull',
   },
