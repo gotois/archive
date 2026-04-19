@@ -160,7 +160,6 @@ import DayCalendar from 'components/DayCalendar.vue'
 import CalendarEventCard from 'components/CalendarEventCard.vue'
 import useContractStore from 'stores/contract'
 import useLangStore from 'stores/lang'
-import useSecretaryStore from 'stores/secretary'
 import { formatToCalendarDate, isCurrentDate } from '../helpers/calendarHelper'
 // import { ROUTE_NAMES } from '../router/routes'
 import '@schedule-x/theme-shadcn/dist/index.css'
@@ -248,7 +247,7 @@ function createCalendarView(ics: string): CalendarApp {
         selectedDay.value = date
          */
       },
-      async onRender(): void {
+      async onRender(): Promise<void> {
         const day = getCurrentDateRoute()
         loadWeek(day)
         const currentIndexDay = weeks.value.findIndex((elem) =>

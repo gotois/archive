@@ -127,27 +127,6 @@ export default route(() => {
             break
           }
         }
-        if (!tutorialStore.tutorialCompleted) {
-          if (to.path !== '/') {
-            Notify.create({
-              message: 'HTTP 403',
-              type: 'warning',
-              timeout: 99999999999,
-              multiLine: true,
-              actions: [
-                {
-                  label: 'Try again',
-                  handler() {
-                    void Router.replace(to.fullPath)
-                  },
-                },
-                {
-                  icon: 'close',
-                },
-              ],
-            })
-          }
-        }
         if (
           !authStore.isLoggedIn &&
           from.name !== ROUTE_NAMES.LOGIN &&
