@@ -7,7 +7,9 @@
       }"
     >
       <QCardSection class="no-border">
-        <div class="text-h6 non-selectable">{{ $t('archive.search') }}</div>
+        <div class="text-h6 non-selectable">
+          {{ $t('archive.search') }}
+        </div>
         <QTooltip>
           {{ $t('archive.tooltip') }}
         </QTooltip>
@@ -17,7 +19,10 @@
           @search="(value) => emit('search', value)"
         />
       </QCardSection>
-      <QCardActions align="right" class="text-primary">
+      <QCardActions
+        align="right"
+        class="text-primary"
+      >
         <QBtn
           v-close-popup
           flat

@@ -5,7 +5,10 @@
       'bg-grey-1': !$q.dark.isActive,
     }"
   >
-    <QScrollArea visible class="absolute-full fit q-pl-md q-pr-md">
+    <QScrollArea
+      visible
+      class="absolute-full fit q-pl-md q-pr-md"
+    >
       <QIcon
         class="flex q-ml-auto q-mr-auto q-ma-md bg-white rounded-borders"
         name="img:/icons/safari-pinned-tab.svg"

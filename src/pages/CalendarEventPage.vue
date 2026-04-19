@@ -1,7 +1,13 @@
 <template>
   <QPage :class="$q.dark.isActive ? 'bg-transparent' : 'bg-grey-1'">
-    <QScrollArea visible class="absolute-full fit">
-      <QPullToRefresh class="absolute-full fit" @refresh="onRefresh">
+    <QScrollArea
+      visible
+      class="absolute-full fit"
+    >
+      <QPullToRefresh
+        class="absolute-full fit"
+        @refresh="onRefresh"
+      >
         <QCard
           draggable="false"
           flat
@@ -14,7 +20,7 @@
         >
           <CalendarEventFormComponent
             v-if="task"
-            :task="(task as any)"
+            :task="task as any"
             :readonly="isViewMode"
             :task-id="props.taskId"
             @saved="onSaved"
@@ -75,7 +81,7 @@ async function loadTask() {
       'Accept': 'application/json',
     },
     credentials: 'include',
-  });
+  })
   if (!request.ok) {
     throw new Error('Unable to load task')
   }
@@ -120,7 +126,6 @@ onMounted(async () => {
     console.error(error)
     $q.notify({
       type: 'negative',
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       message: (error as Error)?.message ?? 'Ошибка загрузки',
     })
     await router.push({ path: '/', replace: true })
@@ -131,6 +136,3 @@ onMounted(async () => {
 
 useMeta(metaData)
 </script>
-
-
-

@@ -14,7 +14,8 @@ export function convertTemporalToDate(temporal: Temporal.ZonedDateTime) {
   return new Date(
     temporal
       .toPlainDateTime()
-      .toZonedDateTime(Temporal.Now.timeZoneId()).epochMilliseconds,
+      .toZonedDateTime(Temporal.Now.timeZoneId())
+      .epochMilliseconds,
   )
 }
 

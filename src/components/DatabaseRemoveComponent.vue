@@ -1,7 +1,12 @@
 <template>
-  <QCard class="bg-red text-white" style="width: 400px">
+  <QCard
+    class="bg-red text-white"
+    style="width: 400px"
+  >
     <QCardSection>
-      <div class="text-h6">{{ $t('settings.clean.submit') }}</div>
+      <div class="text-h6">
+        {{ $t('settings.clean.submit') }}
+      </div>
     </QCardSection>
     <QCardSection class="q-pt-none">
       {{ $t('settings.clean.label') }}

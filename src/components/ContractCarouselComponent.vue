@@ -94,7 +94,7 @@
                 width: '100%',
                 height: fullscreen ? '100dvh' : '400px',
               }"
-            ></object>
+            />
           </template>
           <template v-else-if="mediaType === 'image/heic'">
             <QIcon
@@ -138,7 +138,10 @@
               @mouseleave="onShowCaption"
               @mouseenter="onHideCaption"
             >
-              <div v-if="name" class="absolute-top-left text-caption">
+              <div
+                v-if="name"
+                class="absolute-top-left text-caption"
+              >
                 {{ name }}
               </div>
               <ImageContextMenu
@@ -151,7 +154,10 @@
       </QScrollArea>
     </QCarouselSlide>
     <template #control>
-      <QCarouselControl position="top-right" :offset="[18, 18]">
+      <QCarouselControl
+        position="top-right"
+        :offset="[18, 18]"
+      >
         <QBtn
           round
           color="white"

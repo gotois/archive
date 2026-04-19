@@ -14,8 +14,14 @@
       <QCardSection horizontal>
         <template v-if="true">
           <template v-if="googleCode && consumerValid">
-            <QBtn label="Sync" @click="syncGoogleCalendar" />
-            <QBtn label="Reset" @click="googleCode = null" />
+            <QBtn
+              label="Sync"
+              @click="syncGoogleCalendar"
+            />
+            <QBtn
+              label="Reset"
+              @click="googleCode = null"
+            />
           </template>
           <QBtn
             v-else
@@ -85,7 +91,6 @@ async function syncGoogleCalendar() {
     console.warn('Invalid email')
     return
   }
-  await secretaryStore.ping()
   const events = await rpc('get-calendar-google', {
     code: googleCode.value,
     username: googleEmail.value,

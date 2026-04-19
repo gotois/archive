@@ -18,7 +18,10 @@
           {{ $t('pricing.free.price') }}
         </div>
       </QCardSection>
-      <QSeparator inset color="grey-3" />
+      <QSeparator
+        inset
+        color="grey-3"
+      />
       <QCardSection>
         <QList
           :dense="$q.platform.is.desktop"
@@ -64,7 +67,10 @@
           {{ $t('pricing.premium.price') }}
         </div>
       </QCardSection>
-      <QSeparator inset color="grey-5" />
+      <QSeparator
+        inset
+        color="grey-5"
+      />
       <QCardSection>
         <QList
           :dense="$q.platform.is.desktop"
@@ -110,7 +116,10 @@
           {{ $t('pricing.vip.price') }}
         </div>
       </QCardSection>
-      <QSeparator inset color="grey-8" />
+      <QSeparator
+        inset
+        color="grey-8"
+      />
       <QCardSection>
         <QList
           :dense="$q.platform.is.desktop"

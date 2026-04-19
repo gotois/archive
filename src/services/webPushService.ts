@@ -1,5 +1,5 @@
 async function getVapidPublicKey(): Promise<string> {
-  const response = await fetch(process.env.server + '/web/push')
+  const response = await fetch(process.env.server + '/actor/vapid')
   const { publicKey } = (await response.json()) as { publicKey: string }
   return publicKey
 }
@@ -12,7 +12,8 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
 }
 
 async function getOrCreateSubscription(): Promise<PushSubscription> {
-  const registration: ServiceWorkerRegistration = await navigator.serviceWorker.ready
+  const registration: ServiceWorkerRegistration =
+    await navigator.serviceWorker.ready
 
   const existing = await registration.pushManager.getSubscription()
   if (existing) {
@@ -27,7 +28,12 @@ async function getOrCreateSubscription(): Promise<PushSubscription> {
     }),
     new Promise<never>((_, reject) =>
       setTimeout(
-        () => reject(new Error('pushManager.subscribe() timed out — check FCM connectivity')),
+        () =>
+          reject(
+            new Error(
+              'subscribe timed out — check FCM connectivity',
+            ),
+          ),
         3000,
       ),
     ),
@@ -63,7 +69,7 @@ export async function requestWebPushPermission(): Promise<void> {
     throw new Error('WebPush: permission denied')
   }
 
-  await silentResubscribe();
+  await silentResubscribe()
 }
 
 export async function silentResubscribe(): Promise<void> {

@@ -3,39 +3,95 @@
     <!-- View mode -->
     <template v-if="readonly">
       <QCardSection>
-        <p class="text-h6 q-mb-sm">{{ task.name }}</p>
-        <div v-if="task.description" class="text-body2 text-grey q-mb-sm">{{ task.description }}</div>
+        <p class="text-h6 q-mb-sm">
+          {{ task.name }}
+        </p>
+        <div
+          v-if="task.description"
+          class="text-body2 text-grey q-mb-sm"
+        >
+          {{ task.description }}
+        </div>
         <div class="text-caption q-mb-xs">
-          <QIcon name="schedule" class="q-mr-xs" />{{ prettyDate(task.start_date, task.end_date) }}
+          <QIcon
+            name="schedule"
+            class="q-mr-xs"
+          />
+          {{
+            prettyDate(task.start_date, task.end_date)
+          }}
         </div>
-        <div v-if="task.location" class="text-caption q-mb-xs">
-          <QIcon name="place" class="q-mr-xs" />{{ task.location }}
+        <div
+          v-if="task.location"
+          class="text-caption q-mb-xs"
+        >
+          <QIcon
+            name="place"
+            class="q-mr-xs"
+          />
+          {{ task.location }}
         </div>
-        <div v-if="task.link_meeting" class="text-caption q-mb-xs">
-          <QIcon name="videocam" class="q-mr-xs" /><a :href="task.link_meeting" target="_blank" rel="noopener">{{ task.link_meeting }}</a>
+        <div
+          v-if="task.link_meeting"
+          class="text-caption q-mb-xs"
+        >
+          <QIcon
+            name="videocam"
+            class="q-mr-xs"
+          />
+          <a
+            :href="task.link_meeting"
+            target="_blank"
+            rel="noopener"
+          >
+            {{ task.link_meeting }}
+          </a>
         </div>
         <div class="text-caption">
-          <QIcon name="flag" class="q-mr-xs" />{{ priorityLabel(task.priority) }}
+          <QIcon
+            name="flag"
+            class="q-mr-xs"
+          />
+          {{
+            priorityLabel(task.priority)
+          }}
         </div>
       </QCardSection>
       <QCardActions>
-        <QBtn flat icon="edit" label="Редактировать" @click="onGoToEdit" />
-        <QBtn flat icon="alarm" label="Напоминание" @click="remindDialog = true" />
+        <QBtn
+          flat
+          icon="edit"
+          label="Редактировать"
+          @click="onGoToEdit"
+        />
+        <QBtn
+          flat
+          icon="alarm"
+          label="Напоминание"
+          @click="remindDialog = true"
+        />
       </QCardActions>
     </template>
     <!-- Edit mode -->
-    <QForm v-else ref="formRef" class="q-gutter-md" @submit="onSave">
+    <QForm
+      v-else
+      ref="formRef"
+      class="q-gutter-md"
+      @submit="onSave"
+    >
       <QInput
         v-model="form.name"
         label="Название"
-        outlined square
+        outlined
+        square
         :dense="$q.platform.is.desktop"
         :rules="[(v) => !!v || 'Обязательно']"
       />
       <QInput
         v-model="form.description"
         label="Описание"
-        outlined square
+        outlined
+        square
         type="textarea"
         autogrow
         :dense="$q.platform.is.desktop"
@@ -43,27 +99,31 @@
       <QInput
         v-model="form.start_date"
         label="Начало"
-        outlined square
+        outlined
+        square
         type="datetime-local"
         :dense="$q.platform.is.desktop"
       />
       <QInput
         v-model="form.end_date"
         label="Конец"
-        outlined square
+        outlined
+        square
         type="datetime-local"
         :dense="$q.platform.is.desktop"
       />
       <QInput
         v-model="form.location"
         label="Место"
-        outlined square
+        outlined
+        square
         :dense="$q.platform.is.desktop"
       />
       <QInput
         v-model="form.link_meeting"
         label="Ссылка на встречу"
-        outlined square
+        outlined
+        square
         type="url"
         :dense="$q.platform.is.desktop"
       />
@@ -71,15 +131,34 @@
         v-model="form.priority"
         :options="priorityOptions"
         label="Приоритет"
-        outlined square
-        emit-value map-options
+        outlined
+        square
+        emit-value
+        map-options
         :dense="$q.platform.is.desktop"
       />
       <QCardActions class="q-px-none">
-        <QBtn type="submit" color="primary" icon="save" label="Сохранить" :loading="saving" />
-        <QBtn flat icon="alarm" label="Напоминание" @click="remindDialog = true" />
+        <QBtn
+          type="submit"
+          color="primary"
+          icon="save"
+          label="Сохранить"
+          :loading="saving"
+        />
+        <QBtn
+          flat
+          icon="alarm"
+          label="Напоминание"
+          @click="remindDialog = true"
+        />
         <QSpace />
-        <QBtn flat color="negative" icon="delete" label="Удалить" @click="onRemove" />
+        <QBtn
+          flat
+          color="negative"
+          icon="delete"
+          label="Удалить"
+          @click="onRemove"
+        />
       </QCardActions>
     </QForm>
     <!-- Remind dialog -->
@@ -88,15 +167,31 @@
         <QCardSection class="text-h6">Напоминание</QCardSection>
         <QCardSection class="q-pt-none row q-col-gutter-sm">
           <div class="col-12 col-sm-auto">
-            <QDate v-model="remindDate" minimal />
+            <QDate
+              v-model="remindDate"
+              minimal
+            />
           </div>
           <div class="col-12 col-sm-auto flex items-center">
-            <QTime v-model="remindTime" format24h />
+            <QTime
+              v-model="remindTime"
+              format24h
+            />
           </div>
         </QCardSection>
-        <QCardActions align="right">
-          <QBtn v-close-popup flat label="Отмена" />
-          <QBtn flat color="primary" label="Установить" :loading="reminding" @click="onRemind" />
+        <QCardActions>
+          <QBtn
+            v-close-popup
+            flat
+            label="Отмена"
+          />
+          <QBtn
+            flat
+            color="primary"
+            label="Установить"
+            :loading="reminding"
+            @click="onRemind"
+          />
         </QCardActions>
       </QCard>
     </QDialog>
@@ -143,6 +238,7 @@ const emit = defineEmits<{
   (e: 'saved'): void
   (e: 'removed'): void
 }>()
+
 const $q = useQuasar()
 useI18n()
 const router = useRouter()
@@ -170,10 +266,15 @@ function toDatetimeLocal(iso?: string | null): string {
 
 function prettyDate(start: string, end?: string | null): string {
   const fmt = new Intl.DateTimeFormat('ru', {
-    year: 'numeric', month: 'short', day: 'numeric',
-    hour: '2-digit', minute: '2-digit',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   })
-  if (!end) return fmt.format(new Date(start))
+  if (!end) {
+    return fmt.format(new Date(start))
+  }
   return `${fmt.format(new Date(start))} — ${fmt.format(new Date(end))}`
 }
 
@@ -189,7 +290,9 @@ const form = reactive({
 
 const _now = new Date()
 const _pad = (n: number) => String(n).padStart(2, '0')
-const remindDate = ref(`${_now.getFullYear()}/${_pad(_now.getMonth() + 1)}/${_pad(_now.getDate())}`)
+const remindDate = ref(
+  `${_now.getFullYear()}/${_pad(_now.getMonth() + 1)}/${_pad(_now.getDate())}`,
+)
 const remindTime = ref(`${_pad(_now.getHours())}:${_pad(_now.getMinutes())}`)
 
 function onGoToEdit() {
@@ -218,7 +321,10 @@ async function onSave() {
     emit('saved')
   } catch (err) {
     console.error(err)
-    $q.notify({ type: 'negative', message: (err as Error)?.message ?? 'Ошибка сохранения' })
+    $q.notify({
+      type: 'negative',
+      message: (err as Error)?.message ?? 'Ошибка сохранения',
+    })
   } finally {
     saving.value = false
   }
@@ -236,7 +342,10 @@ function onRemove() {
       emit('removed')
     } catch (err) {
       console.error(err)
-      $q.notify({ type: 'negative', message: (err as Error)?.message ?? 'Ошибка удаления' })
+      $q.notify({
+        type: 'negative',
+        message: (err as Error)?.message ?? 'Ошибка удаления',
+      })
     }
   })
 }
@@ -259,7 +368,10 @@ async function onRemind() {
     $q.notify({ type: 'positive', message: 'Напоминание установлено' })
   } catch (err) {
     console.error(err)
-    $q.notify({ type: 'negative', message: (err as Error)?.message ?? 'Ошибка напоминания' })
+    $q.notify({
+      type: 'negative',
+      message: (err as Error)?.message ?? 'Ошибка напоминания',
+    })
   } finally {
     reminding.value = false
   }

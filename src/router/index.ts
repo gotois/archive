@@ -1,6 +1,10 @@
-import { Loading, LocalStorage, Notify, SessionStorage } from 'quasar'
+import { Loading, LocalStorage, SessionStorage } from 'quasar'
 import { route } from 'quasar/wrappers'
 import { createRouter, createWebHistory } from 'vue-router'
+import {
+  getDefaultSession,
+  handleIncomingRedirect,
+} from '@inrupt/solid-client-authn-browser'
 import useTutorialStore from 'stores/tutorial'
 import useAuthStore from 'stores/auth'
 import usePodStore from 'stores/pod'
@@ -8,11 +12,6 @@ import useLangStore from 'stores/lang'
 import routes, { ROUTE_NAMES } from './routes'
 import { deleteDatabases, reset } from '../services/databaseService'
 import { isTWA } from '../composables/detector'
-import rpc from '../helpers/rpc'
-import {
-  getDefaultSession,
-  handleIncomingRedirect,
-} from '@inrupt/solid-client-authn-browser'
 
 export default route(() => {
   const Router = createRouter({
@@ -60,18 +59,21 @@ export default route(() => {
         const sessionInfo = await handleIncomingRedirect({
           restorePreviousSession: true,
         })
-        const response = await getDefaultSession().fetch(sessionInfo.webId + '/inbox', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
+        const response = await getDefaultSession().fetch(
+          sessionInfo.webId + '/inbox',
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+            },
+            credentials: 'include',
           },
-          credentials: 'include',
-        });
+        )
         if (!response.ok) {
           throw new Error('Not logged in')
         }
-        const ok = await response.json();
+        const ok = await response.json()
         console.log('ok', ok)
 
         return {
@@ -113,7 +115,6 @@ export default route(() => {
       }
       case ROUTE_NAMES.AUTH: {
         try {
-
           if (isTWA.value) {
             // todo - нужно делать sendData jwt в бота
             return {

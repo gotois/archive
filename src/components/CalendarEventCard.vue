@@ -1,5 +1,11 @@
 <template>
-  <QCard v-ripple flat :dark="!$q.dark.isActive" bordered square>
+  <QCard
+    v-ripple
+    flat
+    :dark="!$q.dark.isActive"
+    bordered
+    square
+  >
     <QCardSection
       class="q-pa-xs justify-between items-center"
       :horizontal="props.horizontal"
@@ -21,10 +27,16 @@
         -
         {{ date.formatDate(convertTemporalToDate(end), 'HH:mm') }}
       </div>
-      <div v-if="location" class="ellipsis-2-lines text-caption">
+      <div
+        v-if="location"
+        class="ellipsis-2-lines text-caption"
+      >
         📍 {{ location }}
       </div>
-      <div v-if="description" class="ellipsis-2-lines">
+      <div
+        v-if="description"
+        class="ellipsis-2-lines"
+      >
         {{ description }}
       </div>
     </QCardSection>
@@ -152,7 +164,6 @@ function onRemove() {
         icon: 'check_circle',
         label: $t('contract.removeDialog.ok'),
         color: 'white',
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         async handler() {
           try {
             await contractStore.removeContract(props.eventId, isLoggedIn.value)

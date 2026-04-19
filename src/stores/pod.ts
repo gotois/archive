@@ -66,9 +66,9 @@ export default defineStore('pod', {
     removeFromPod(url: string) {
       const separator = '.'
       const oidcIssuer: string = this.getOidcIssuer
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const [_x, ...hostIssuerHost] = new URL(oidcIssuer).host.split(separator)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars,no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const [_y, ...hostUrlHost] = new URL(url).host.split(separator)
 
       if (hostIssuerHost.join() !== hostUrlHost.join()) {
@@ -175,7 +175,6 @@ export default defineStore('pod', {
       const profileStore = useProfileStore()
 
       const profile = buildThing(createThing({ url: authStore.webId }))
-      // profile.addStringNoLocale(FOAF.name, profileStore.getPersonLD.name) // todo поддержать
       if (profileStore.email) {
         profile.addStringNoLocale(FOAF.mbox, profileStore.email)
       }

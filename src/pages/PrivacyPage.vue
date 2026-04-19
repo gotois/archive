@@ -1,6 +1,9 @@
 <template>
   <QPage>
-    <QScrollArea visible class="absolute-full fit q-pl-md q-pr-md">
+    <QScrollArea
+      visible
+      class="absolute-full fit q-pl-md q-pr-md"
+    >
       <PrivacyComponent
         class="overflow-auto"
         :class="$q.dark.isActive ? 'bg-dark text-white' : 'bg-white text-black'"

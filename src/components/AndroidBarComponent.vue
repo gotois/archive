@@ -1,10 +1,24 @@
 <template>
-  <QBar dense class="non-selectable bg-transparent text-primary">
+  <QBar
+    dense
+    class="non-selectable bg-transparent text-primary"
+  >
     <div>{{ $t('productName') }}</div>
-    <QIcon v-if="!$q.dark.isActive" name="img:/icons/safari-pinned-tab.svg" />
+    <QIcon
+      v-if="!$q.dark.isActive"
+      name="img:/icons/safari-pinned-tab.svg"
+    />
     <QSpace />
-    <QIcon v-if="connectionSupports" :name="signalIcon(state.connectionType)" />
-    <div v-if="state.batteryLevel >= 0" class="gt-xs">{{ batteryLevel }}%</div>
+    <QIcon
+      v-if="connectionSupports"
+      :name="signalIcon(state.connectionType)"
+    />
+    <div
+      v-if="state.batteryLevel >= 0"
+      class="gt-xs"
+    >
+      {{ batteryLevel }}%
+    </div>
     <QIcon
       v-if="batterySupports"
       :name="batteryIcon(state.batteryLevel, state.batteryCharging)"

@@ -21,8 +21,9 @@
         <div
           class="self-center no-outline no-margin no-padding non-selectable ellipsis absolute"
           style="left: 0; right: 0"
-          >{{ webId }}</div
         >
+          {{ webId }}
+        </div>
       </template>
       <template #append>
         <QIcon
@@ -32,6 +33,7 @@
         />
       </template>
     </QField>
+    <!-- todo поддержать выдачу Person LD из бэка
     <QInput
       v-model.trim="getPersonLD.name"
       color="secondary"
@@ -118,6 +120,7 @@
       type="submit"
       color="secondary"
     />
+    -->
   </QForm>
 </template>
 <script lang="ts" setup>
@@ -141,7 +144,7 @@ const profileStore = useProfileStore()
 const i18n = useI18n()
 const $t = i18n.t
 
-const { email, phone, getPersonLD } = storeToRefs(profileStore)
+const { email, phone } = storeToRefs(profileStore)
 const { isLoggedIn, webId } = storeToRefs(authStore)
 
 async function onFinishProfile() {

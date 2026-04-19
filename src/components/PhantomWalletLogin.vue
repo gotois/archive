@@ -41,10 +41,19 @@
       >
         <QBar>
           <QSpace />
-          <QBtn v-close-popup dense flat icon="close" />
+          <QBtn
+            v-close-popup
+            dense
+            flat
+            icon="close"
+          />
         </QBar>
         <QCardSection class="full-height overflow-hidden-y">
-          <QForm v-if="!hasPhantomWallet" greedy @submit="onWalletComplete">
+          <QForm
+            v-if="!hasPhantomWallet"
+            greedy
+            @submit="onWalletComplete"
+          >
             <QInput
               v-model.trim="walletPrivateKey"
               :label="$t('components.phantomWallet.label')"
@@ -67,8 +76,17 @@
                   class="cursor-pointer q-mr-md"
                   @click="isPwd = !isPwd"
                 />
-                <QBtn icon="info" flat no-wrap round class="no-padding">
-                  <QTooltip anchor="center left" self="center middle">
+                <QBtn
+                  icon="info"
+                  flat
+                  no-wrap
+                  round
+                  class="no-padding"
+                >
+                  <QTooltip
+                    anchor="center left"
+                    self="center middle"
+                  >
                     {{ $t('components.phantomWallet.info') }}
                   </QTooltip>
                 </QBtn>
@@ -103,7 +121,9 @@
                 <QItem v-bind="itemProps">
                   <QItemSection>
                     <QItemLabel>{{ opt.label }}</QItemLabel>
-                    <QItemLabel caption>{{ opt.description }}</QItemLabel>
+                    <QItemLabel caption>
+                      {{ opt.description }}
+                    </QItemLabel>
                   </QItemSection>
                 </QItem>
               </template>

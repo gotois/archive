@@ -1,5 +1,8 @@
 <template>
-  <QLayout v-if="needKey" view="lHr lpR lfr">
+  <QLayout
+    v-if="needKey"
+    view="lHr lpR lfr"
+  >
     <QPageContainer>
       <QPage
         class="flex flex-center column"
@@ -23,7 +26,10 @@
       </QPage>
     </QPageContainer>
   </QLayout>
-  <QLayout v-else view="lHr lpR lfr">
+  <QLayout
+    v-else
+    view="lHr lpR lfr"
+  >
     <QHeader
       v-if="!isTMA"
       reveal
@@ -73,14 +79,24 @@
       <p
         class="full-width block text-h6 q-pl-md q-pr-md q-pt-md no-border-radius non-selectable no-pointer-events"
       >
-        <QIcon size="24px" name="settings" color="primary" />
+        <QIcon
+          size="24px"
+          name="settings"
+          color="primary"
+        />
         <template v-if="!miniState">
           <span class="q-ml-md">{{ $t('navigation.title') }}</span>
         </template>
       </p>
-      <QList style="max-height: calc(100% - 64px)" class="fit column no-wrap">
+      <QList
+        style="max-height: calc(100% - 64px)"
+        class="fit column no-wrap"
+      >
         <div>
-          <QSpace class="q-mb-md" style="height: 8px" />
+          <QSpace
+            class="q-mb-md"
+            style="height: 8px"
+          />
         </div>
         <QExpansionItem
           v-if="jwt"
@@ -260,7 +276,11 @@
 
           <template v-if="isLoggedIn">
             <QSeparator />
-            <QBtn v-if="isLoggedIn" label="Sync Pod" @click="syncPods" />
+            <QBtn
+              v-if="isLoggedIn"
+              label="Sync Pod"
+              @click="syncPods"
+            />
 
             <QSeparator />
 
@@ -324,8 +344,15 @@
             : 'inherit'
         "
       />
-      <QDialog v-model="confirm" persistent square>
-        <DatabaseRemoveComponent v-if="confirm" @on-clear="confirm = false" />
+      <QDialog
+        v-model="confirm"
+        persistent
+        square
+      >
+        <DatabaseRemoveComponent
+          v-if="confirm"
+          @on-clear="confirm = false"
+        />
       </QDialog>
       <ArchiveSearchComponent
         v-if="showSearch"
@@ -350,7 +377,10 @@
           :to="{ name: ROUTE_NAMES.ARCHIVE }"
           @click="navCancel"
         >
-          <QPopupProxy transition-show="scale" transition-hide="scale">
+          <QPopupProxy
+            transition-show="scale"
+            transition-hide="scale"
+          >
             <CalendarEventsComponent
               default-view="Calendar"
               class="q-ml-auto q-mr-auto q-mb-md q-mt-md"
@@ -363,7 +393,10 @@
           :to="{ name: ROUTE_NAMES.CALENDAR }"
           @click="navCancel"
         >
-          <QPopupProxy transition-show="scale" transition-hide="scale">
+          <QPopupProxy
+            transition-show="scale"
+            transition-hide="scale"
+          >
             <CalendarEventsComponent
               class="q-ml-auto q-mr-auto q-mb-md q-mt-md"
               default-view="Months"

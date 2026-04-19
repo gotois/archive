@@ -1,6 +1,7 @@
 <template>
   <div>
-    <QForm greedy @submit="onImportDB">
+    <QForm greedy
+@submit="onImportDB">
       <QFile
         v-model="file"
         accept=".json,.zip"
@@ -19,7 +20,8 @@
           {{ $t('database.fileSize') }}
         </QTooltip>
         <template #prepend>
-          <QIcon name="attach_file" @click.stop.prevent />
+          <QIcon name="attach_file"
+@click.stop.prevent />
         </template>
       </QFile>
       <QBtn
@@ -89,7 +91,7 @@ function onFileSelected() {
     cancel: true,
     persistent: false,
   })
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+
   dialog.onOk(async () => {
     await onImportDB()
   })
@@ -152,7 +154,7 @@ function onExportDB() {
     cancel: true,
     persistent: false,
   })
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+
   dialog.onOk(async (exportName: string) => {
     const status = await databaseExport(exportName)
     if (status) {

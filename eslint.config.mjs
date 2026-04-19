@@ -29,6 +29,7 @@ export default [
         __QUASAR_SSR_SERVER__: 'readonly',
         __QUASAR_SSR_CLIENT__: 'readonly',
         __QUASAR_SSR_PWA__: 'readonly',
+        process: 'readonly',
       },
     },
     plugins: {

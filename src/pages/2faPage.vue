@@ -5,7 +5,10 @@
       'bg-grey-1': !$q.dark.isActive,
     }"
   >
-    <QScrollArea visible class="absolute-full fit q-pl-md q-pr-md">
+    <QScrollArea
+      visible
+      class="absolute-full fit q-pl-md q-pr-md"
+    >
       <template v-if="activated">
         <QBtn
           type="button"
@@ -29,8 +32,15 @@
           :label="$t('settings.otp.addCode')"
           @click="openOTPDialog"
         />
-        <QDialog v-model="showOTPDialog" position="bottom" square>
-          <QCard flat class="q-pa-md">
+        <QDialog
+          v-model="showOTPDialog"
+          position="bottom"
+          square
+        >
+          <QCard
+            flat
+            class="q-pa-md"
+          >
             <QCardSection>
               <p>{{ $t('settings.otp.description') }}</p>
               <QImg

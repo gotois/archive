@@ -96,7 +96,10 @@
                 @update:model-value="fileSelect"
               >
                 <template #prepend>
-                  <QIcon name="attach_file" color="primary" />
+                  <QIcon
+                    name="attach_file"
+                    color="primary"
+                  />
                 </template>
                 <QTooltip>{{ $t('files.hint') }}</QTooltip>
               </QFile>

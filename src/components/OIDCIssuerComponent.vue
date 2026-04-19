@@ -43,7 +43,9 @@
         <template v-if="oidcIssuer">
           {{ $t('oidc.issuerTooltipLogin', { oidcIssuer }) }}
         </template>
-        <template v-else>{{ $t('oidc.issuerTooltipEmpty') }}</template>
+        <template v-else>
+          {{ $t('oidc.issuerTooltipEmpty') }}
+        </template>
       </QTooltip>
     </QBtn>
   </div>
@@ -62,14 +64,14 @@ defineProps({
   },
 })
 
-const gitHostname = new URL(process.env.server).host
+const giсHostname = new URL(process.env.server).host
 
 const loginOptions = ref([
-  gitHostname,
+  giсHostname,
   'login.inrupt.com',
   'login.inrupt.net',
 ])
-const oidcIssuer = ref(gitHostname)
+const oidcIssuer = ref(giсHostname)
 const prefix = ref('https://')
 
 function onNewValueIssuer(value: string, done: (value: string) => void) {

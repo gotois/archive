@@ -6,7 +6,11 @@
       'bg-grey-1': !$q.dark.isActive,
     }"
   >
-    <QScrollArea ref="scroll" visible class="absolute-full fit">
+    <QScrollArea
+      ref="scroll"
+      visible
+      class="absolute-full fit"
+    >
       <QStepper
         ref="stepper"
         v-model.number="step"
@@ -41,14 +45,17 @@
             name="img:/icons/safari-pinned-tab.svg"
             size="128px"
           />
-          <p v-show="$q.platform.is.desktop" class="text-h4 text-center">
+          <p
+            v-show="$q.platform.is.desktop"
+            class="text-h4 text-center"
+          >
             {{ $t('tutorial.welcome.title') }}
           </p>
           <div
             class="text-body1"
             style="white-space: break-spaces"
             v-html="parse($t('tutorial.welcome.body'))"
-          ></div>
+          />
           <QList class="q-mb-md">
             <QExpansionItem
               :label="$t('tutorial.info.title')"
@@ -62,7 +69,7 @@
                     class="text-body1"
                     style="white-space: break-spaces"
                     v-html="parse($t('tutorial.info.body'))"
-                  ></div>
+                  />
                 </QCardSection>
               </QCard>
             </QExpansionItem>
@@ -79,8 +86,7 @@
                     class="text-body1"
                     style="white-space: break-spaces"
                     v-html="parse($t('tutorial.agreement.body'))"
-                  >
-                  </div>
+                  />
                 </QCardSection>
               </QCard>
             </QExpansionItem>
@@ -97,8 +103,7 @@
                     class="text-body1"
                     style="white-space: break-spaces"
                     v-html="parse($t('tutorial.wallet.body'))"
-                  >
-                  </div>
+                  />
                 </QCardSection>
               </QCard>
             </QExpansionItem>
@@ -115,8 +120,7 @@
                     class="text-body1"
                     style="white-space: break-spaces"
                     v-html="parse($t('tutorial.safety.body'))"
-                  >
-                  </div>
+                  />
                 </QCardSection>
               </QCard>
             </QExpansionItem>
@@ -139,10 +143,9 @@
           class="q-pb-md"
           :done="step > STEP.FINAL"
         >
-          <p v-show="$q.platform.is.desktop" class="text-h4">
-            {{ $t('tutorial.data.title', { name: getPersonLD.name }) }}
+          <p class="text-body1">
+            {{ $t('tutorial.data.body') }}
           </p>
-          <p class="text-body1">{{ $t('tutorial.data.body') }}</p>
           <QSpace class="q-pa-xs" />
 
           <!-- todo - лишний компонент - перенести его на сервер          -->
@@ -180,7 +183,6 @@
       @done="pageComplete"
       @hide="creatingNewContract = false"
     />
-
   </QPage>
 </template>
 <script lang="ts" setup>
@@ -240,7 +242,7 @@ const step = ref(getCurrentStep() ?? STEP.WELCOME)
 const creatingNewContract = ref(false)
 const contract = ref<VerifiableCredential>(null)
 
-const { getPersonLD, phone, email } = storeToRefs(profileStore)
+const { phone, email } = storeToRefs(profileStore)
 
 watch(
   () => step.value,

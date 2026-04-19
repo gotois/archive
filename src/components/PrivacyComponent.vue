@@ -1,5 +1,5 @@
 <template>
-  <div v-html="html"></div>
+  <div v-html="html" />
 </template>
 <script lang="ts" setup>
 import { onMounted } from 'vue'

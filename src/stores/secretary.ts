@@ -5,64 +5,25 @@ import {
   serializeInitDataQuery,
 } from '@telegram-apps/sdk'
 import useTutorialStore from 'stores/tutorial'
-import rpc from '../helpers/rpc'
-import type {
-  VerifiableCredential,
-} from '../types/models'
 import { isTMA } from '../composables/detector'
 
 interface Store {
-  available: boolean
   login?: string
   password?: string
 }
 export default defineStore('secretary', {
   state: (): Store => ({
-    available: false,
     login: LocalStorage.getItem('login') ?? null,
     password: LocalStorage.getItem('password') ?? null,
   }),
   actions: {
-    async ping() {
-      try {
-        if (!process.env.server) {
-          throw new Error('Unknown Server host')
-        }
-        const response = await fetch(
-          process.env.server + '/health?service=redis',
-          {
-            method: 'GET',
-            headers: {
-              Accept: 'text/plain',
-            },
-          },
-        )
-        if (!response.ok) {
-          throw new Error('Network response was not ok')
-        }
-        this.available = Boolean(await response.text())
-      } catch (error) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        console.warn('GIC Server: ', error.message)
-        this.available = false
-        throw error
-      }
-    },
     logout() {
       const tutorialStore = useTutorialStore()
       tutorialStore.tutorialComplete(false)
     },
-    async notify(contract: VerifiableCredential) {
-      return await rpc('add-calendar', {
-        '@context': 'https://www.w3.org/ns/activitystreams',
-        'type': 'Activity',
-        'object': contract,
-      })
-    },
   },
   getters: {
-    auth(store): string|null {
+    auth(store): string | null {
       try {
         if (isTMA.value) {
           return this.tmaAuth as string

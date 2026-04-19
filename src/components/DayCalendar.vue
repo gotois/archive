@@ -1,5 +1,9 @@
 <template>
-  <QBtn :color="color" square unelevated>
+  <QBtn
+    :color="color"
+    square
+    unelevated
+  >
     <div
       :class="{
         'text-grey-9': !$q.dark.isActive,
@@ -21,7 +25,10 @@
     >
       {{ props.day.getDate() }}
     </div>
-    <QTooltip anchor="bottom middle" self="bottom middle">
+    <QTooltip
+      anchor="bottom middle"
+      self="bottom middle"
+    >
       {{ date.formatDate(props.day, 'YYYY-MM-DD') }}
     </QTooltip>
   </QBtn>

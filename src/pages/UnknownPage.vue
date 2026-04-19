@@ -6,7 +6,10 @@
       <div style="font-size: 30vh">
         {{ $t('pages.unknown.title') }}
       </div>
-      <div class="text-h2" style="opacity: 0.4">
+      <div
+        class="text-h2"
+        style="opacity: 0.4"
+      >
         {{ $t('pages.unknown.description') }}
       </div>
       <QBtn

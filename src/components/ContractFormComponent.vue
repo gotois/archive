@@ -5,7 +5,10 @@
   >
     <ContractCarouselComponent :model="attachments" />
   </div>
-  <QSeparator spaced inset />
+  <QSeparator
+    spaced
+    inset
+  />
   <QForm
     ref="contractForm"
     class="q-gutter-md"
@@ -80,16 +83,30 @@
         class="my-dropdown col"
       >
         <template #label>
-          <div class="row no-wrap" style="flex: 1">
-            <QIcon left name="event" color="grey-6" />
-            <span class="text-caption text-grey-8" style="align-self: center">
+          <div
+            class="row no-wrap"
+            style="flex: 1"
+          >
+            <QIcon
+              left
+              name="event"
+              color="grey-6"
+            />
+            <span
+              class="text-caption text-grey-8"
+              style="align-self: center"
+            >
               {{ duration.from }}
               <template v-if="!dateNoLimit && duration.from !== duration.to">
                 - {{ duration.to }}
               </template>
             </span>
           </div>
-          <QSeparator vertical spaced inset />
+          <QSeparator
+            vertical
+            spaced
+            inset
+          />
           <QToggle
             v-model="dateNoLimit"
             :disable="Boolean(contract.credentialSubject.startTime)"
@@ -98,7 +115,10 @@
             size="lg"
           />
         </template>
-        <DateComponent :range="!dateNoLimit" @select="onSelectDate" />
+        <DateComponent
+          :range="!dateNoLimit"
+          @select="onSelectDate"
+        />
       </QBtnDropdown>
       <QInput
         v-if="!$q.platform.is.mobile"
@@ -114,8 +134,15 @@
         square
         color="secondary"
       >
-        <QTooltip v-if="!dateNoLimit">{{ $t('duration.toHint') }}</QTooltip>
-        <QSeparator v-if="!dateNoLimit" vertical spaced inset />
+        <QTooltip v-if="!dateNoLimit">
+          {{ $t('duration.toHint') }}
+        </QTooltip>
+        <QSeparator
+          v-if="!dateNoLimit"
+          vertical
+          spaced
+          inset
+        />
         <QToggle
           v-if="!$q.platform.is.mobile"
           v-model="dateNoLimit"

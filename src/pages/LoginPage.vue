@@ -26,8 +26,7 @@
           class="text-body1"
           style="white-space: break-spaces"
           v-html="parse($t('tutorial.oidc.body'))"
-        >
-        </div>
+        />
 
         <template v-if="getOidcIssuer">
           <QChip

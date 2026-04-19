@@ -1,8 +1,6 @@
 import { LocalStorage } from 'quasar'
 import { defineStore } from 'pinia'
-import useAuthStore from 'stores/auth'
 import { getGravatarURL } from '../helpers/schemaHelper'
-import getLocation from '../services/cloudflare'
 
 interface State {
   email: string
@@ -40,19 +38,5 @@ export default defineStore('profile', {
       }
     },
   },
-  getters: {
-    getPersonLD(state) {
-      const authStore = useAuthStore()
-      return {
-        '@context': 'https://json-ld.org/contexts/person.jsonld',
-        '@type': 'Person',
-        'id': authStore.webId,
-        'email': this.email,
-        'name': 'User',
-        'image': state.avatar,
-        'telephone': state.phone?.length ? state.phone : null,
-        'homepage': null, // todo поддержать значение личного сайта
-      }
-    },
-  },
+  getters: {},
 })

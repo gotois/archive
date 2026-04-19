@@ -2,14 +2,14 @@
 // https://v2.quasar.dev/quasar-cli/quasar-conf-js
 
 /* eslint-env node */
-const { configure } = require('quasar/wrappers')
-const pkg = require('./package.json')
+const { configure } = require('quasar/wrappers');
+const pkg = require('./package.json');
 
 module.exports = configure((ctx) => {
   if (ctx.dev) {
     require('dotenv').config({
       quiet: true,
-    })
+    });
   }
   return {
     eslint: {
@@ -177,5 +177,5 @@ module.exports = configure((ctx) => {
         pwaManifestFile: 'src-pwa/manifest.json',
       },
     },
-  }
-})
+  };
+});

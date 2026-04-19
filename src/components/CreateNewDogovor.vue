@@ -17,15 +17,27 @@
         'bg-dark text-white': $q.dark.isActive,
       }"
     >
-      <QBar :dense="false" :dark="false" class="bg-grey-2">
+      <QBar
+        :dense="false"
+        :dark="false"
+        class="bg-grey-2"
+      >
         <QSpace />
-        <QBtn v-close-popup flat color="dark" icon="close" />
+        <QBtn
+          v-close-popup
+          flat
+          color="dark"
+          icon="close"
+        />
       </QBar>
       <QScrollArea
         visible
         :style="{ height: props.maximized ? 'calc(100dvh - 32px)' : '520px' }"
       >
-        <QCardSection v-if="contract" class="fit overflow-auto q-pt-none">
+        <QCardSection
+          v-if="contract"
+          class="fit overflow-auto q-pt-none"
+        >
           <ContractFormComponent
             :contract="contract"
             :signing="signing"

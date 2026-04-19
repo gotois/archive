@@ -1,7 +1,14 @@
 <template>
-  <QCard flat square bordered>
+  <QCard
+    flat
+    square
+    bordered
+  >
     <div class="row">
-      <div class="column q-pl-md q-pb-sm" style="max-width: calc(100% - 45px)">
+      <div
+        class="column q-pl-md q-pb-sm"
+        style="max-width: calc(100% - 45px)"
+      >
         <p
           class="full-width q-pt-md text-subtitle1 text-uppercase text-weight-bold no-margin"
           :class="{
@@ -24,7 +31,7 @@
           v-if="description"
           class="full-width text-caption q-pb-md text-grey no-margin"
           v-html="parse(description)"
-        ></div>
+        />
       </div>
       <QSpace />
       <QBtn
@@ -35,11 +42,27 @@
         flat
         icon="more_vert"
       >
-        <QMenu transition-show="jump-down" transition-duration="200">
-          <QList bordered separator padding :dense="$q.platform.is.desktop">
-            <QItem v-close-popup clickable @click="emit('edit')">
+        <QMenu
+          transition-show="jump-down"
+          transition-duration="200"
+        >
+          <QList
+            bordered
+            separator
+            padding
+            :dense="$q.platform.is.desktop"
+          >
+            <QItem
+              v-close-popup
+              clickable
+              @click="emit('edit')"
+            >
               <QItemSection side>
-                <QItemLabel v-if="isLoggedIn && sameAs" overline caption>
+                <QItemLabel
+                  v-if="isLoggedIn && sameAs"
+                  overline
+                  caption
+                >
                   {{ $t('archiveList.pod') }}
                 </QItemLabel>
                 <QItemLabel class="text-uppercase">
@@ -47,9 +70,17 @@
                 </QItemLabel>
               </QItemSection>
             </QItem>
-            <QItem v-close-popup clickable @click="emit('remove')">
+            <QItem
+              v-close-popup
+              clickable
+              @click="emit('remove')"
+            >
               <QItemSection side>
-                <QItemLabel v-if="isLoggedIn && sameAs" overline caption>
+                <QItemLabel
+                  v-if="isLoggedIn && sameAs"
+                  overline
+                  caption
+                >
                   {{ $t('archiveList.pod') }}
                 </QItemLabel>
                 <QItemLabel class="text-negative text-uppercase">
@@ -93,7 +124,10 @@
           {{ prettyDate(startTime, endTime) }}
         </span>
       </div>
-      <div v-if="organizer" class="row items-center">
+      <div
+        v-if="organizer"
+        class="row items-center"
+      >
         <div
           class="flex overflow-hidden text-left ellipsis"
           style="left: 32px; right: 0"
@@ -105,7 +139,10 @@
           </div>
         </div>
       </div>
-      <div v-if="participant?.length" class="row items-center">
+      <div
+        v-if="participant?.length"
+        class="row items-center"
+      >
         <div
           class="flex overflow-hidden text-left ellipsis"
           style="left: 32px; right: 0"
@@ -142,7 +179,9 @@
           @remove="onRemoveArchiveName(name)"
           @click="onSelectArchiveName(name)"
         >
-          <div class="ellipsis">{{ name }}</div>
+          <div class="ellipsis">
+            {{ name }}
+          </div>
           <QTooltip>{{ name }}</QTooltip>
         </QChip>
       </div>
@@ -197,7 +236,6 @@ import { open } from '../helpers/urlHelper'
 import { documentLoader } from '../helpers/customLoaders'
 import {
   FormatImageType,
-  Place,
   Agent,
   Presentation,
   VerifiableCredential,

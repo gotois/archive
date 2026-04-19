@@ -14,8 +14,14 @@
       :delay="500"
       class="absolute-full fit"
     >
-      <QPullToRefresh class="absolute-full fit" @refresh="onRefresh">
-        <ScheduleXCalendar v-if="calendarApp" :calendar-app="calendarApp">
+      <QPullToRefresh
+        class="absolute-full fit"
+        @refresh="onRefresh"
+      >
+        <ScheduleXCalendar
+          v-if="calendarApp"
+          :calendar-app="calendarApp"
+        >
           <template #dateGridEvent="{ calendarEvent }">
             <CalendarEventCard
               class="fit"
@@ -96,7 +102,10 @@
             </div>
           </template>
         </ScheduleXCalendar>
-        <div v-else-if="!secretaryStore.available" class="flex justify-center">
+        <div
+          v-else-if="!secretaryStore.available"
+          class="flex justify-center"
+        >
           <h1
             class="text-primary text-uppercase text-center text-weight-light no-padding"
           >
@@ -111,7 +120,10 @@
             @click="router.go(0)"
           />
         </div>
-        <div v-else class="absolute-full flex flex-center">
+        <div
+          v-else
+          class="absolute-full flex flex-center"
+        >
           <QSpinner size="5em" />
         </div>
       </QPullToRefresh>
@@ -154,10 +166,7 @@ import { formatToCalendarDate, isCurrentDate } from '../helpers/calendarHelper'
 import '@schedule-x/theme-shadcn/dist/index.css'
 import { useWebPush } from '../composables/useWebPush'
 
-const {
-  permission,
-  enable: enableWebPush,
-} = useWebPush()
+const { permission, enable: enableWebPush } = useWebPush()
 
 const CALENDAR_WEEK_NUM = 7
 const INITIAL_SCROLL = '06:30'
@@ -246,7 +255,6 @@ function createCalendarView(ics: string): CalendarApp {
           isCurrentDate(elem),
         )
         await nextTick()
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
         virtualScroll.value.scrollTo(currentIndexDay)
       },
     },

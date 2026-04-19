@@ -1,5 +1,5 @@
 <template>
-  <template v-if="isTMA"></template>
+  <template v-if="isTMA" />
 </template>
 <script lang="ts" setup>
 import { onBeforeMount, ref } from 'vue'
@@ -10,9 +10,7 @@ import {
   requestContact,
   hapticFeedbackNotificationOccurred,
 } from '@telegram-apps/sdk'
-import {
-  useQuasar,
-} from 'quasar'
+import { useQuasar } from 'quasar'
 import { isTMA } from '../composables/detector'
 
 const emit = defineEmits(['authed', 'registered'])

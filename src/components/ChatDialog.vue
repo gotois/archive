@@ -118,10 +118,7 @@ async function tryGenerateCalendar() {
   }
 }
 
-async function contractComplete() {
-  if (contract.value) {
-    await secretaryStore.notify(contract.value as VerifiableCredential)
-  }
+function contractComplete() {
   creatingNewContract.value = false
   chatStore.messages = []
 }

@@ -13,8 +13,7 @@
     square
     @navigation="updateEvents"
     @update:model-value="selectDate"
-  >
-  </QDate>
+  />
 </template>
 <script lang="ts" setup>
 import { ref, computed, onMounted, PropType } from 'vue'

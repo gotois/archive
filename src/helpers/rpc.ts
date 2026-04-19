@@ -22,9 +22,6 @@ export default async function <T>(
   params: RequestParams<T> = {} as RequestParams<T>,
 ) {
   const secretaryStore = useSecretaryStore()
-  if (!secretaryStore.available) {
-    throw new Error('Server Unavailable')
-  }
 
   const request = {
     url: process.env.server + '/rpc',

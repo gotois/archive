@@ -16,7 +16,8 @@
     @update:model-value="range ? null : $emit('select', model)"
   >
     <div class="row items-center justify-end">
-      <QBtn v-close-popup :label="$t('duration.close')" color="primary" flat />
+      <QBtn v-close-popup
+:label="$t('duration.close')" color="primary" flat />
     </div>
   </QDate>
 </template>

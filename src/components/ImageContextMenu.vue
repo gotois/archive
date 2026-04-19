@@ -1,6 +1,12 @@
 <template>
-  <QMenu touch-position context-menu>
-    <QList :dense="$q.platform.is.desktop" style="min-width: 100px">
+  <QMenu
+    touch-position
+    context-menu
+  >
+    <QList
+      :dense="$q.platform.is.desktop"
+      style="min-width: 100px"
+    >
       <QItem
         v-close-popup
         :dense="$q.platform.is.desktop"

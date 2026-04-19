@@ -8,8 +8,7 @@
     data-callback="handleCredentialResponse"
     data-width="200"
     data-auto_prompt="false"
-  >
-  </div>
+  />
   <div
     class="g_id_signin"
     data-type="standard"
@@ -20,8 +19,7 @@
     data-width="200"
     data-size="large"
     data-logo_alignment="left"
-  >
-  </div>
+  />
 </template>
 <script lang="ts" setup>
 import { onMounted } from 'vue'
