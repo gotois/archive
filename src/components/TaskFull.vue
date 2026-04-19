@@ -33,64 +33,6 @@
           v-html="parse(description)"
         />
       </div>
-      <QSpace />
-      <QBtn
-        size="md"
-        class="q-ml-auto q-mr-auto q-mt-none q-mb-none"
-        round
-        square
-        flat
-        icon="more_vert"
-      >
-        <QMenu
-          transition-show="jump-down"
-          transition-duration="200"
-        >
-          <QList
-            bordered
-            separator
-            padding
-            :dense="$q.platform.is.desktop"
-          >
-            <QItem
-              v-close-popup
-              clickable
-              @click="emit('edit')"
-            >
-              <QItemSection side>
-                <QItemLabel
-                  v-if="isLoggedIn && sameAs"
-                  overline
-                  caption
-                >
-                  {{ $t('archiveList.pod') }}
-                </QItemLabel>
-                <QItemLabel class="text-uppercase">
-                  {{ $t('archiveList.edit') }}
-                </QItemLabel>
-              </QItemSection>
-            </QItem>
-            <QItem
-              v-close-popup
-              clickable
-              @click="emit('remove')"
-            >
-              <QItemSection side>
-                <QItemLabel
-                  v-if="isLoggedIn && sameAs"
-                  overline
-                  caption
-                >
-                  {{ $t('archiveList.pod') }}
-                </QItemLabel>
-                <QItemLabel class="text-negative text-uppercase">
-                  {{ $t('archiveList.remove') }}
-                </QItemLabel>
-              </QItemSection>
-            </QItem>
-          </QList>
-        </QMenu>
-      </QBtn>
     </div>
     <template v-if="attaches?.length">
       <QSeparator />
@@ -197,16 +139,10 @@ import {
   QChip,
   QBtn,
   QIcon,
-  QItemLabel,
   QSeparator,
-  QSpace,
-  QItemSection,
-  QList,
   QTooltip,
   QCardSection,
   QCard,
-  QItem,
-  QMenu,
   copyToClipboard,
 } from 'quasar'
 import { useI18n } from 'vue-i18n'

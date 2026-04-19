@@ -59,17 +59,60 @@
       </QCardSection>
       <QCardActions>
         <QBtn
+          size="md"
+          class="q-ml-auto q-mr-auto q-mt-none q-mb-none"
+          round
+          square
           flat
-          icon="edit"
-          label="Редактировать"
-          @click="onGoToEdit"
-        />
-        <QBtn
-          flat
-          icon="alarm"
-          label="Напоминание"
-          @click="remindDialog = true"
-        />
+          icon="more_vert"
+        >
+          <QMenu
+            transition-show="jump-down"
+            transition-duration="200"
+          >
+            <QList
+              bordered
+              separator
+              padding
+              :dense="$q.platform.is.desktop"
+            >
+              <QItem
+                v-close-popup
+                clickable
+                @click="onGoToEdit"
+              >
+                <QItemSection side>
+                  <QItemLabel
+                    overline
+                    caption
+                  >
+                    {{ $t('archiveList.pod') }}
+                  </QItemLabel>
+                  <QItemLabel class="text-uppercase">
+                    {{ $t('archiveList.edit') }}
+                  </QItemLabel>
+                </QItemSection>
+              </QItem>
+              <QItem
+                v-close-popup
+                clickable
+                @click="onRemove"
+              >
+                <QItemSection side>
+                  <QItemLabel
+                    overline
+                    caption
+                  >
+                    {{ $t('archiveList.pod') }}
+                  </QItemLabel>
+                  <QItemLabel class="text-negative text-uppercase">
+                    {{ $t('archiveList.remove') }}
+                  </QItemLabel>
+                </QItemSection>
+              </QItem>
+            </QList>
+          </QMenu>
+        </QBtn>
       </QCardActions>
     </template>
     <!-- Edit mode -->
@@ -213,6 +256,12 @@ import {
   QSelect,
   QSpace,
   QTime,
+  QItemLabel,
+  QItemSection,
+  QList,
+  QCard,
+  QItem,
+  QMenu,
 } from 'quasar'
 import { useRouter, useRoute } from 'vue-router'
 import rpc from '../helpers/rpc'

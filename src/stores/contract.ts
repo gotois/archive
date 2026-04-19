@@ -217,7 +217,7 @@ export default defineStore('contracts', {
     async filteredByIds(ids: number[] | string[]) {
       return await db.contracts.bulkGet(ids)
     },
-    async loadCalendar() {
+    async loadSubscriptionCalendar() {
       const requestInit: RequestInit = {
         method: 'GET',
       }
@@ -240,8 +240,7 @@ export default defineStore('contracts', {
         requestInit,
       )
       if (!res.ok) {
-        console.error(res.status)
-        throw new Error('Failed to load subscription calendar')
+        throw new Error(`${res.status} Failed to load subscription calendar`)
       }
       return res.text()
     },

@@ -370,7 +370,7 @@ async function updateContracts({
 
 onBeforeMount(async () => {
   try {
-    const ics = await contractStore.loadCalendar()
+    const ics = await contractStore.loadSubscriptionCalendar()
     calendarApp.value = createCalendarView(ics)
     available.value = true
   } catch (error) {
