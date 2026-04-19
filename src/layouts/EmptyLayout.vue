@@ -9,7 +9,7 @@
       <AndroidBarComponent v-if="isTWA" />
       <QToolbar>
         <QBtn
-          v-if="$route.name !== ROUTE_NAMES.TUTORIAL"
+          v-if="$route.name !== ROUTE_NAMES.LOGIN"
           color="primary"
           icon="arrow_back"
           class="absolute"

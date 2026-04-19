@@ -7,8 +7,6 @@ export enum ROUTE_NAMES {
   FILTER = 'filter',
   SEARCH = 'search',
   SUPPORT = 'support',
-  AUTH = 'auth',
-  TUTORIAL = 'tutorial',
   PRIVACY = 'privacy',
   LOGIN = 'login',
   CALENDAR = 'calendar',
@@ -59,17 +57,6 @@ const routes: RouteRecordRaw[] = [
         path: '',
         name: ROUTE_NAMES.PROMO,
         component: () => import('pages/WelcomePage.vue'),
-      },
-    ],
-  },
-  {
-    path: '/' + ROUTE_NAMES.AUTH,
-    component: () => import('layouts/MainLayout.vue'),
-    children: [
-      {
-        path: '',
-        name: ROUTE_NAMES.AUTH,
-        component: () => import('pages/AuthPage.vue'),
       },
     ],
   },

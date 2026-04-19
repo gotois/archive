@@ -9,7 +9,7 @@
     @dragleave="dragleave"
     @drop="drop"
   >
-    <!-- FIXME нужно объединить это в один умный Input
+    <!-- FIXME нужно умный Input перенести в логику SecreataryAI
     где пользователь будет выбирать уже существующие события из БД
     и добавлять их к своим запросам
     запросы будут отпраавляться в метод Chat Секретаря  -->
@@ -224,7 +224,7 @@ async function sendChat(value: string) {
               handler() {
                 secretaryStore.logout()
                 void router.push({
-                  name: ROUTE_NAMES.TUTORIAL,
+                  name: ROUTE_NAMES.LOGIN,
                 })
               },
             },

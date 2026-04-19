@@ -64,6 +64,9 @@ export async function requestWebPushPermission(): Promise<void> {
     throw new Error('WebPush: not supported in this context')
   }
 
+  if ('Notification' in window && Notification.permission === 'default') {
+    throw new Error('WebPush: Not permission in this context')
+  }
   const permission = await Notification.requestPermission()
   if (permission !== 'granted') {
     throw new Error('WebPush: permission denied')

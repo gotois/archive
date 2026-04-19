@@ -5,13 +5,11 @@ import {
   getDefaultSession,
   handleIncomingRedirect,
 } from '@inrupt/solid-client-authn-browser'
-import useTutorialStore from 'stores/tutorial'
 import useAuthStore from 'stores/auth'
 import usePodStore from 'stores/pod'
 import useLangStore from 'stores/lang'
 import routes, { ROUTE_NAMES } from './routes'
 import { deleteDatabases, reset } from '../services/databaseService'
-import { isTWA } from '../composables/detector'
 
 export default route(() => {
   const Router = createRouter({
@@ -92,7 +90,6 @@ export default route(() => {
 
   Router.beforeEach(async (to, from) => {
     const authStore = useAuthStore()
-    const tutorialStore = useTutorialStore()
 
     switch (to.name) {
       case ROUTE_NAMES.PROMO:
@@ -100,37 +97,17 @@ export default route(() => {
         break
       }
       case ROUTE_NAMES.LOGIN: {
-        break
-      }
-      case ROUTE_NAMES.TUTORIAL: {
+        /* todo - при ранее успешном логине и рабочем JWT перекидываем обратно на главную страницу
         if (tutorialStore.tutorialCompleted) {
           return {
             name: ROUTE_NAMES.ARCHIVE,
             query: {
+              fullPath: to.fullPath,
               page: 1,
             },
           }
         }
-        return true
-      }
-      case ROUTE_NAMES.AUTH: {
-        try {
-          if (isTWA.value) {
-            // todo - нужно делать sendData jwt в бота
-            return {
-              name: ROUTE_NAMES.ROOT,
-            }
-          }
-
-          return {
-            name: ROUTE_NAMES.ARCHIVE,
-            query: {
-              fullPath: to.fullPath,
-            },
-          }
-        } catch (error) {
-          console.warn('auth:', error)
-        }
+         */
         break
       }
       default: {

@@ -103,7 +103,7 @@
           </template>
         </ScheduleXCalendar>
         <div
-          v-else-if="!secretaryStore.available"
+          v-else-if="!available"
           class="flex justify-center"
         >
           <h1
@@ -176,9 +176,9 @@ const router = useRouter()
 const i18n = useI18n()
 const langStore = useLangStore()
 const contractStore = useContractStore()
-const secretaryStore = useSecretaryStore()
 const calendarApp = shallowRef<CalendarApp>(null)
 const calendarControls = createCalendarControlsPlugin()
+const available = ref(false)
 
 const $t = i18n.t
 const scrollAreaRef = ref<InstanceType<typeof QScrollArea> | null>(null)
@@ -370,8 +370,13 @@ async function updateContracts({
 */
 
 onBeforeMount(async () => {
-  const ics = await contractStore.loadCalendar()
-  calendarApp.value = createCalendarView(ics)
+  try {
+    const ics = await contractStore.loadCalendar()
+    calendarApp.value = createCalendarView(ics)
+    available.value = true
+  } catch (error) {
+    available.value = false
+  }
 
   if (permission.value === 'default') {
     $q.notify({

@@ -4,7 +4,6 @@ import {
   retrieveLaunchParams,
   serializeInitDataQuery,
 } from '@telegram-apps/sdk'
-import useTutorialStore from 'stores/tutorial'
 import { isTMA } from '../composables/detector'
 
 interface Store {
@@ -18,8 +17,6 @@ export default defineStore('secretary', {
   }),
   actions: {
     logout() {
-      const tutorialStore = useTutorialStore()
-      tutorialStore.tutorialComplete(false)
     },
   },
   getters: {

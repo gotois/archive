@@ -248,7 +248,7 @@ export default {
     data: {
       title: '{name}, confirm your account data',
       body: 'To use the application, use your name and email address. Add your cryptographic key DID',
-      submit: 'Start',
+      submit: 'Accept',
     },
   },
   pricing: {

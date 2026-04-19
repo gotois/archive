@@ -10,7 +10,7 @@ export default boot(({ urlPath }) => {
   }
 
   switch (urlPath) {
-    case '/' + ROUTE_NAMES.TUTORIAL: {
+    case '/' + ROUTE_NAMES.PROMO: {
       AddressbarColor.set('#31CCEC')
       break
     }
