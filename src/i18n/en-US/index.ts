@@ -301,8 +301,6 @@ export default {
           '1': 'Everything included in Premium, plus...',
           '2': 'Voice help 24/7',
           '3': 'Privileged training events',
-          '4': 'GIC Court',
-          '5': '10gb space SOLiD server',
         },
       },
       functions: {
