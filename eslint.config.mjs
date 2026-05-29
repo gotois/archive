@@ -11,6 +11,16 @@ const APP_FILES = ['src/**/*.vue', 'src/**/*.ts', 'src/**/*.js', 'src-boot/**/*.
 /** @type {import('eslint').Linter.Config[]} */
 export default [
   ...baseConfig,
+  {
+    ignores: [
+      'dist/',
+      'certs/',
+      '.quasar/',
+      'node_modules/',
+      'src-pwa/',
+      '.eslintrc.js',
+    ],
+  },
   ...vuePlugin.configs['flat/recommended'],
   {
     files: APP_FILES,
