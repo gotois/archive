@@ -162,8 +162,9 @@ import useContractStore from 'stores/contract'
 import useLangStore from 'stores/lang'
 import { formatToCalendarDate, isCurrentDate } from '../helpers/calendarHelper'
 // import { ROUTE_NAMES } from '../router/routes'
-import '@schedule-x/theme-shadcn/dist/index.css'
+import { isTMA } from '../composables/detector'
 import { useWebPush } from '../composables/useWebPush'
+import '@schedule-x/theme-shadcn/dist/index.css'
 
 const { permission, enable: enableWebPush } = useWebPush()
 
@@ -194,7 +195,7 @@ const selectedDay = ref(null)
 async function onRefresh(done: () => void) {
   try {
     $q.loading.show()
-    const ics = await contractStore.loadCalendar()
+    const ics = await contractStore.loadSubscriptionCalendar()
     calendarApp.value = createCalendarView(ics)
     done()
   } catch (error) {
@@ -377,7 +378,7 @@ onBeforeMount(async () => {
     available.value = false
   }
 
-  if (permission.value === 'default') {
+  if (!isTMA && permission.value === 'default') {
     $q.notify({
       position: 'top-right',
       timeout: 0,

@@ -99,7 +99,6 @@
           />
         </div>
         <QExpansionItem
-          v-if="jwt"
           v-model="layoutStore.profileOpen"
           group="backupgroup"
           icon="person"
@@ -360,6 +359,24 @@
         @search="onSearch"
       />
     </QPageContainer>
+    <QPageSticky
+      v-if="!isTMA"
+      position="bottom-right"
+      :offset="[18, 80]"
+    >
+      <QFab
+        color="primary"
+        icon="add"
+        direction="up"
+      >
+        <QFabAction
+          color="primary"
+          icon="event"
+          :label="$t('pages.calendar.newEvent')"
+          :to="{ name: ROUTE_NAMES.NEW }"
+        />
+      </QFab>
+    </QPageSticky>
     <QFooter
       bordered
       :class="{
@@ -424,8 +441,11 @@ import {
   QTabs,
   QRouteTab,
   QBtn,
+  QFab,
+  QFabAction,
   QPage,
   QPageContainer,
+  QPageSticky,
   QPopupProxy,
   QTooltip,
   QChip,
@@ -504,7 +524,6 @@ const TFA_LENGTH = 6
 
 const { contractsCount } = storeToRefs(contractStore)
 const { isLoggedIn } = storeToRefs(authStore)
-const { jwt } = storeToRefs(secretaryStore)
 
 const bigScreen = computed(
   () => $q.platform.is.desktop && ($q.screen.xl || $q.screen.lg),

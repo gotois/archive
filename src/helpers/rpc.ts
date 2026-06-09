@@ -24,7 +24,7 @@ export default async function <T>(
   const secretaryStore = useSecretaryStore()
 
   const request = {
-    url: process.env.server + '/rpc',
+    url: process.env.secretary + '/rpc',
     body: {
       jsonrpc: '2.0',
       id: uid(),

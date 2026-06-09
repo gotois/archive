@@ -95,6 +95,37 @@
         'q-pl-md q-pr-md': !$q.platform.is.desktop,
       }"
     >
+      О платформе
+    </h2>
+    <div class="flex justify-center full-width q-mb-xl">
+      <QCard
+        flat
+        class="q-ma-xs full-width"
+        :style="{
+          paddingLeft: $q.platform.is.desktop ? 'calc(50vw / 2)' : null,
+          paddingRight: $q.platform.is.desktop ? 'calc(50vw / 2)' : null,
+        }"
+      >
+        <QCardSection>
+          <div class="text-subtitle1 text-weight-bold">Секретарь — платформа календарей для сообществ Telegram.</div>
+          <div class="q-mt-sm">
+            <b>Принцип работы:</b>
+            <ul>
+              <li>в сообщество добавляет бота</li>
+              <li>через бота администраторы создают событие</li>
+              <li>участники сообщества добавляют событие в календарь</li>
+            </ul>
+          </div>
+        </QCardSection>
+      </QCard>
+    </div>
+
+    <h2
+      :class="{
+        'text-center q-ma-md': $q.platform.is.desktop,
+        'q-pl-md q-pr-md': !$q.platform.is.desktop,
+      }"
+    >
       Персональный помощник для управления временем и задачами
     </h2>
 
@@ -812,6 +843,38 @@ size="xs" class="q-mr-xs" />
     </QBanner>
 
     <QSpace class="q-mt-xl" />
+
+    <h2
+      :class="{
+        'text-center q-ma-md': $q.platform.is.desktop,
+        'q-pl-md q-pr-md': !$q.platform.is.desktop,
+      }"
+    >
+      Цены
+    </h2>
+    <div class="flex justify-center full-width q-mb-md">
+      <QCard
+        flat
+        class="q-ma-xs full-width"
+        :style="{
+          paddingLeft: $q.platform.is.desktop ? 'calc(50vw / 2)' : null,
+          paddingRight: $q.platform.is.desktop ? 'calc(50vw / 2)' : null,
+        }"
+      >
+        <QCardSection>
+          <ul>
+            <li><b>Три события в месяц</b> бесплатно в одном сообществе</li>
+            <li><b>White label решение:</b> 50к разово + поддержка за каждый тикет</li>
+            <li><b>Self-hosted решение:</b> 20к за setup файл
+              <ul>
+                <li>Клиент покупает ключ</li>
+                <li>Клиент сам платит за расход ИИ и сам организует себе сервер.</li>
+              </ul>
+            </li>
+          </ul>
+        </QCardSection>
+      </QCard>
+    </div>
 
     <QCard flat>
       <!--  AND location !== RU-->

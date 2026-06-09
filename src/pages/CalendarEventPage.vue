@@ -74,7 +74,7 @@ const metaData = {
 }
 
 async function loadTask() {
-  const request = await fetch(process.env.server + `/tasks/${props.taskId}`, {
+  const request = await fetch(process.env.secretary + `/tasks/${props.taskId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

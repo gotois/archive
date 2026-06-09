@@ -6,55 +6,26 @@
         <p class="text-h6 q-mb-sm">
           {{ task.name }}
         </p>
-        <div
-          v-if="task.description"
-          class="text-body2 text-grey q-mb-sm"
-        >
+        <div v-if="task.description" class="text-body2 text-grey q-mb-sm">
           {{ task.description }}
         </div>
         <div class="text-caption q-mb-xs">
-          <QIcon
-            name="schedule"
-            class="q-mr-xs"
-          />
-          {{
-            prettyDate(task.start_date, task.end_date)
-          }}
+          <QIcon name="schedule" class="q-mr-xs" />
+          {{ prettyDate(task.start_date, task.end_date) }}
         </div>
-        <div
-          v-if="task.location"
-          class="text-caption q-mb-xs"
-        >
-          <QIcon
-            name="place"
-            class="q-mr-xs"
-          />
+        <div v-if="task.location" class="text-caption q-mb-xs">
+          <QIcon name="place" class="q-mr-xs" />
           {{ task.location }}
         </div>
-        <div
-          v-if="task.link_meeting"
-          class="text-caption q-mb-xs"
-        >
-          <QIcon
-            name="videocam"
-            class="q-mr-xs"
-          />
-          <a
-            :href="task.link_meeting"
-            target="_blank"
-            rel="noopener"
-          >
+        <div v-if="task.link_meeting" class="text-caption q-mb-xs">
+          <QIcon name="videocam" class="q-mr-xs" />
+          <a :href="task.link_meeting" target="_blank" rel="noopener">
             {{ task.link_meeting }}
           </a>
         </div>
         <div class="text-caption">
-          <QIcon
-            name="flag"
-            class="q-mr-xs"
-          />
-          {{
-            priorityLabel(task.priority)
-          }}
+          <QIcon name="flag" class="q-mr-xs" />
+          {{ priorityLabel(task.priority) }}
         </div>
       </QCardSection>
       <QCardActions>
@@ -66,26 +37,11 @@
           flat
           icon="more_vert"
         >
-          <QMenu
-            transition-show="jump-down"
-            transition-duration="200"
-          >
-            <QList
-              bordered
-              separator
-              padding
-              :dense="$q.platform.is.desktop"
-            >
-              <QItem
-                v-close-popup
-                clickable
-                @click="onGoToEdit"
-              >
+          <QMenu transition-show="jump-down" transition-duration="200">
+            <QList bordered separator padding :dense="$q.platform.is.desktop">
+              <QItem v-close-popup clickable @click="onGoToEdit">
                 <QItemSection side>
-                  <QItemLabel
-                    overline
-                    caption
-                  >
+                  <QItemLabel overline caption>
                     {{ $t('archiveList.pod') }}
                   </QItemLabel>
                   <QItemLabel class="text-uppercase">
@@ -93,16 +49,9 @@
                   </QItemLabel>
                 </QItemSection>
               </QItem>
-              <QItem
-                v-close-popup
-                clickable
-                @click="onRemove"
-              >
+              <QItem v-close-popup clickable @click="onRemove">
                 <QItemSection side>
-                  <QItemLabel
-                    overline
-                    caption
-                  >
+                  <QItemLabel overline caption>
                     {{ $t('archiveList.pod') }}
                   </QItemLabel>
                   <QItemLabel class="text-negative text-uppercase">
@@ -116,132 +65,120 @@
       </QCardActions>
     </template>
     <!-- Edit mode -->
-    <QForm
-      v-else
-      ref="formRef"
-      class="q-gutter-md"
-      @submit="onSave"
-    >
-      <QInput
-        v-model="form.name"
-        label="Название"
-        outlined
-        square
-        :dense="$q.platform.is.desktop"
-        :rules="[(v) => !!v || 'Обязательно']"
-      />
-      <QInput
-        v-model="form.description"
-        label="Описание"
-        outlined
-        square
-        type="textarea"
-        autogrow
-        :dense="$q.platform.is.desktop"
-      />
-      <QInput
-        v-model="form.start_date"
-        label="Начало"
-        outlined
-        square
-        type="datetime-local"
-        :dense="$q.platform.is.desktop"
-      />
-      <QInput
-        v-model="form.end_date"
-        label="Конец"
-        outlined
-        square
-        type="datetime-local"
-        :dense="$q.platform.is.desktop"
-      />
-      <QInput
-        v-model="form.location"
-        label="Место"
-        outlined
-        square
-        :dense="$q.platform.is.desktop"
-      />
-      <QInput
-        v-model="form.link_meeting"
-        label="Ссылка на встречу"
-        outlined
-        square
-        type="url"
-        :dense="$q.platform.is.desktop"
-      />
-      <QSelect
-        v-model="form.priority"
-        :options="priorityOptions"
-        label="Приоритет"
-        outlined
-        square
-        emit-value
-        map-options
-        :dense="$q.platform.is.desktop"
-      />
-      <QCardActions class="q-px-none">
-        <QBtn
-          type="submit"
-          color="primary"
-          icon="save"
-          label="Сохранить"
-          :loading="saving"
+    <template v-else>
+      <QForm ref="formRef" class="q-gutter-md" @submit="onSave">
+        <QInput
+          v-model="form.name"
+          label="Название"
+          outlined
+          square
+          :dense="$q.platform.is.desktop"
+          :rules="[(v) => !!v || 'Обязательно']"
         />
-        <QBtn
-          flat
-          icon="alarm"
-          label="Напоминание"
-          @click="remindDialog = true"
+        <QInput
+          v-model="form.description"
+          label="Описание"
+          outlined
+          square
+          type="textarea"
+          autogrow
+          :dense="$q.platform.is.desktop"
         />
-        <QSpace />
-        <QBtn
-          flat
-          color="negative"
-          icon="delete"
-          label="Удалить"
-          @click="onRemove"
+        <QInput
+          v-model="form.start_date"
+          label="Начало"
+          outlined
+          square
+          type="datetime-local"
+          :dense="$q.platform.is.desktop"
         />
-      </QCardActions>
-    </QForm>
-    <!-- Remind dialog -->
-    <QDialog v-model="remindDialog">
-      <QCard>
-        <QCardSection class="text-h6">Напоминание</QCardSection>
-        <QCardSection class="q-pt-none row q-col-gutter-sm">
-          <div class="col-12 col-sm-auto">
-            <QDate
-              v-model="remindDate"
-              minimal
-            />
-          </div>
-          <div class="col-12 col-sm-auto flex items-center">
-            <QTime
-              v-model="remindTime"
-              format24h
-            />
-          </div>
-        </QCardSection>
-        <QCardActions>
+        <QInput
+          v-model="form.end_date"
+          label="Конец"
+          outlined
+          square
+          type="datetime-local"
+          :dense="$q.platform.is.desktop"
+        />
+        <QInput
+          v-model="form.location"
+          label="Место"
+          outlined
+          square
+          :dense="$q.platform.is.desktop"
+        />
+        <QInput
+          v-model="form.link_meeting"
+          label="Ссылка на встречу"
+          outlined
+          square
+          type="url"
+          :dense="$q.platform.is.desktop"
+        />
+        <QSelect
+          v-model="form.priority"
+          :options="priorityOptions"
+          label="Приоритет"
+          outlined
+          square
+          emit-value
+          map-options
+          :dense="$q.platform.is.desktop"
+        />
+        <QCardActions v-if="!isTMA" class="q-px-none">
           <QBtn
-            v-close-popup
-            flat
-            label="Отмена"
+            type="submit"
+            color="primary"
+            icon="save"
+            label="Сохранить"
+            :loading="saving"
           />
           <QBtn
             flat
-            color="primary"
-            label="Установить"
-            :loading="reminding"
-            @click="onRemind"
+            icon="alarm"
+            label="Напоминание"
+            @click="remindDialog = true"
+          />
+          <QSpace />
+          <QBtn
+            v-if="taskId !== 'new'"
+            flat
+            color="negative"
+            icon="delete"
+            label="Удалить"
+            @click="onRemove"
           />
         </QCardActions>
-      </QCard>
-    </QDialog>
+      </QForm>
+      <!-- Remind dialog -->
+      <QDialog v-model="remindDialog">
+        <QCard>
+          <QCardSection class="text-h6">Напоминание</QCardSection>
+          <QCardSection class="q-pt-none row q-col-gutter-sm">
+            <div class="col-12 col-sm-auto">
+              <QDate v-model="remindDate" minimal />
+            </div>
+            <div class="col-12 col-sm-auto flex items-center">
+              <QTime v-model="remindTime" format24h />
+            </div>
+          </QCardSection>
+          <QCardActions v-if="!isTMA">
+            <QBtn v-close-popup flat label="Отмена" />
+            <QBtn
+              flat
+              color="primary"
+              label="Установить"
+              :loading="reminding"
+              @click="onRemind"
+            />
+          </QCardActions>
+        </QCard>
+      </QDialog>
+    </template>
   </div>
 </template>
 <script lang="ts" setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   useQuasar,
@@ -265,7 +202,10 @@ import {
 } from 'quasar'
 import { useRouter, useRoute } from 'vue-router'
 import rpc from '../helpers/rpc'
+import { isTMA } from '../composables/detector'
+import { prettyDate, toDatetimeLocal } from '../helpers/dateHelper'
 import { ROUTE_NAMES } from '../router/routes'
+import { mainButton } from '@telegram-apps/sdk'
 
 interface TaskObject {
   id_task: number
@@ -292,6 +232,7 @@ const $q = useQuasar()
 useI18n()
 const router = useRouter()
 const route = useRoute()
+
 const formRef = ref<InstanceType<typeof QForm> | null>(null)
 const saving = ref(false)
 const reminding = ref(false)
@@ -301,30 +242,11 @@ const priorityOptions = [
   { label: 'Средний', value: 2 },
   { label: 'Низкий', value: 3 },
 ]
+const _now = new Date()
+const _pad = (n: number) => String(n).padStart(2, '0')
 
 function priorityLabel(priority?: number): string {
   return priorityOptions.find((o) => o.value === priority)?.label ?? '—'
-}
-
-function toDatetimeLocal(iso?: string | null): string {
-  if (!iso) return ''
-  const d = new Date(iso)
-  const pad = (n: number) => String(n).padStart(2, '0')
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
-}
-
-function prettyDate(start: string, end?: string | null): string {
-  const fmt = new Intl.DateTimeFormat('ru', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-  if (!end) {
-    return fmt.format(new Date(start))
-  }
-  return `${fmt.format(new Date(start))} — ${fmt.format(new Date(end))}`
 }
 
 const form = reactive({
@@ -337,8 +259,6 @@ const form = reactive({
   priority: props.task.priority ?? 3,
 })
 
-const _now = new Date()
-const _pad = (n: number) => String(n).padStart(2, '0')
 const remindDate = ref(
   `${_now.getFullYear()}/${_pad(_now.getMonth() + 1)}/${_pad(_now.getDate())}`,
 )
@@ -352,21 +272,52 @@ function onGoToEdit() {
   })
 }
 
-async function onSave() {
-  const valid = await formRef.value?.validate()
-  if (!valid) return
-  saving.value = true
-  try {
-    await rpc('edit', {
-      id_task: props.task.id_task,
+async function createEvent() {
+  await fetch(process.env.server + '/event', {
+    method: 'POST',
+    body: JSON.stringify({
       name: form.name,
-      description: form.description,
+      description: form.description || undefined,
       start_date: new Date(form.start_date),
       end_date: form.end_date ? new Date(form.end_date) : undefined,
-      location: form.location,
-      link_meeting: form.link_meeting,
+      location: form.location || undefined,
+      link_meeting: form.link_meeting || undefined,
       priority: form.priority,
-    })
+    }),
+    credentials: 'include', // todo для TMA нужно передавать иначе
+  })
+}
+
+async function editEvent() {
+  await fetch(process.env.server + '/event', {
+    method: 'PUT',
+    body: JSON.stringify({
+      name: form.name,
+      description: form.description || undefined,
+      start_date: new Date(form.start_date),
+      end_date: form.end_date ? new Date(form.end_date) : undefined,
+      location: form.location || undefined,
+      link_meeting: form.link_meeting || undefined,
+      priority: form.priority,
+    }),
+    credentials: 'include', // todo для TMA нужно передавать иначе
+  })
+}
+
+async function onSave() {
+  const valid = await formRef.value?.validate()
+  if (!valid) {
+    return
+  }
+  saving.value = true
+  try {
+    if (props.taskId === 'new') {
+      await createEvent()
+      console.log('Данные успешно добавлены')
+    } else {
+      await editEvent()
+      console.log('Данные успешно изменены')
+    }
     emit('saved')
   } catch (err) {
     console.error(err)
@@ -425,4 +376,27 @@ async function onRemind() {
     reminding.value = false
   }
 }
+
+onMounted(() => {
+  if (!isTMA) {
+    return
+  }
+
+  // todo - иногда не монтируется почему-то
+  if (!mainButton.isMounted()) {
+    mainButton.mount()
+  }
+  mainButton.setParams({
+    text: 'СОХРАНИТЬ',
+    backgroundColor: '#2481cc',
+    textColor: '#ffffff',
+    isEnabled: true,
+    isVisible: true,
+  })
+  mainButton.onClick(async () => {
+    await createEvent()
+
+    // postEvent('web_app_close') // todo просто закрываем TMA
+  })
+})
 </script>
