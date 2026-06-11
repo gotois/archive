@@ -1,8 +1,5 @@
 import { uid } from 'quasar'
-import requestJsonRpc2, {
-  JSONRPCErrorResponse,
-  JSONRPCSuccessResponse,
-} from 'request-json-rpc2'
+import jsonRpc from 'request-json-rpc2'
 import useSecretaryStore from 'stores/secretary'
 import useGeoStore from 'stores/geo'
 
@@ -45,15 +42,9 @@ export default async function <T>(
   }
   request.headers = headers
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  const response = (await requestJsonRpc2(request)) as {
-    error?: JSONRPCErrorResponse
-    result?: JSONRPCSuccessResponse
-  }
+  const response = await jsonRpc(request)
   if (response.error) {
-    // eslint-disable-next-line @typescript-eslint/only-throw-error
     throw response.error
   }
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return response.result
 }
