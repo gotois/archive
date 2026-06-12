@@ -35,7 +35,7 @@ module.exports = configure((ctx) => {
     boot: [
       'i18n',
       'addressbar-color',
-      'health',
+      'geo',
       'tg-mini-app',
       'webpush',
     ],

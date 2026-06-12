@@ -66,7 +66,11 @@
     </template>
     <!-- Edit mode -->
     <template v-else>
-      <QForm ref="formRef" class="q-gutter-md" @submit="isNew ? onSave : onEdit">
+      <QForm
+        ref="formRef"
+        class="q-gutter-md"
+        @submit="isNew ? onSave : onEdit"
+      >
         <QInput
           v-model="form.name"
           label="Название"
