@@ -411,7 +411,7 @@ async function onRemind() {
 }
 
 onMounted(() => {
-  if (!isTMA) {
+  if (!isTMA.value) {
     return
   }
 
