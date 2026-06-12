@@ -397,9 +397,34 @@ function onRemove() {
     cancel: { label: 'Отмена', flat: true },
   }).onOk(async () => {
     try {
-      await rpc('remove', { ids: [props.task.id_task] })
+      const headers = new Headers({
+        'Content-Type': 'application/json',
+      })
+      if (secretaryStore.auth) {
+        headers.set('Authorization', secretaryStore.auth)
+      }
+      if (route.query.tgGroupChatId) {
+        headers.set('X-Telegram-Chat-Id', String(route.query.tgGroupChatId))
+      }
+      if (route.query.tgGroupMessageId) {
+        headers.set(
+          'X-Telegram-Message-Id',
+          String(route.query.tgGroupMessageId),
+        )
+      }
+      const response = await fetch(process.env.server + '/event', {
+        method: 'DELETE',
+        headers,
+        body: JSON.stringify({
+          ids: [props.task.id_task],
+        }),
+        credentials: 'include',
+      })
+      if (!response.ok) {
+        throw new Error('Response failed')
+      }
+      console.log('Данные успешно удалены')
       emit('removed')
-    } catch (err) {
     } catch (error: Error | unknown) {
       console.error(error)
       $q.notify({
