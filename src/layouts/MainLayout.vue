@@ -378,6 +378,7 @@
       </QFab>
     </QPageSticky>
     <QFooter
+      v-if="!isTMA"
       bordered
       :class="{
         'bg-white text-dark': !$q.dark.isActive,

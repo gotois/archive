@@ -201,8 +201,9 @@ import {
   QMenu,
 } from 'quasar'
 import { useRouter, useRoute } from 'vue-router'
-import rpc from '../helpers/rpc'
 import { isTMA } from '../composables/detector'
+import useSecretaryStore from 'stores/secretary'
+import useGeoStore from 'stores/geo'
 import { prettyDate, toDatetimeLocal } from '../helpers/dateHelper'
 import { ROUTE_NAMES } from '../router/routes'
 import { mainButton } from '@telegram-apps/sdk'
@@ -232,6 +233,8 @@ const $q = useQuasar()
 useI18n()
 const router = useRouter()
 const route = useRoute()
+const secretaryStore = useSecretaryStore()
+const geoStore = useGeoStore()
 
 const formRef = ref<InstanceType<typeof QForm> | null>(null)
 const saving = ref(false)
@@ -273,8 +276,24 @@ function onGoToEdit() {
 }
 
 async function createEvent() {
-  await fetch(process.env.server + '/event', {
+  const headers = new Headers({
+    'Content-Type': 'application/json',
+  })
+  if (secretaryStore.auth) {
+    headers.set('Authorization', secretaryStore.auth)
+  }
+  if (geoStore.geolocation) {
+    headers.set('Geolocation', geoStore.geolocation)
+  }
+  if (route.query.tgGroupChatId) {
+    headers.set('X-Telegram-Chat-Id', String(route.query.tgGroupChatId))
+  }
+  if (route.query.tgGroupMessageId) {
+    headers.set('X-Telegram-Message-Id', String(route.query.tgGroupMessageId))
+  }
+  const response = await fetch(process.env.server + '/event', {
     method: 'POST',
+    headers,
     body: JSON.stringify({
       name: form.name,
       description: form.description || undefined,
@@ -286,6 +305,9 @@ async function createEvent() {
     }),
     credentials: 'include', // todo для TMA нужно передавать иначе
   })
+  if (!response.ok) {
+    throw new Error('Response failed')
+  }
 }
 
 async function editEvent() {
