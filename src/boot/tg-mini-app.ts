@@ -12,24 +12,22 @@ export default boot(({ router }: { router: Router }) => {
   }
   init()
   const { tgWebAppStartParam } = retrieveLaunchParams()
-  if (tgWebAppStartParam) {
-    const payload = JSON.parse(atob(tgWebAppStartParam)) as Record<
+  const payload = tgWebAppStartParam && JSON.parse(atob(tgWebAppStartParam)) as Record<
       string,
       unknown
     >
 
-    if (payload?.debug) {
-      appendErundaScript()
-    }
-    if (payload?.twa) {
-      appendTelegramWebAppScript()
-    }
-
-    if (typeof payload?.to === 'string') {
+  if (typeof payload?.to === 'string') {
       router.isReady()
         .then(() => router.replace(payload.to))
         .catch(error => console.error(error))
     }
+  if (payload?.debug) {
+    appendErundaScript()
   }
+  if (payload?.twa) {
+    appendTelegramWebAppScript()
+  }
+
   viewport.expand()
 })

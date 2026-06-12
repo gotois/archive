@@ -311,8 +311,19 @@ async function createEvent() {
 }
 
 async function editEvent() {
+  const headers = new Headers({ 'Content-Type': 'application/json' })
+  if (secretaryStore.auth) {
+    headers.set('Authorization', secretaryStore.auth)
+  }
+  if (route.query.tgGroupChatId) {
+    headers.set('X-Telegram-Chat-Id', String(route.query.tgGroupChatId))
+  }
+  if (route.query.tgGroupMessageId) {
+    headers.set('X-Telegram-Message-Id', String(route.query.tgGroupMessageId))
+  }
   await fetch(process.env.server + '/event', {
     method: 'PUT',
+    headers,
     body: JSON.stringify({
       name: form.name,
       description: form.description || undefined,
