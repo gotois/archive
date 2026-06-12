@@ -94,17 +94,100 @@
           label="Начало"
           outlined
           square
-          type="datetime-local"
+          mask="####-##-## ##:##"
           :dense="$q.platform.is.desktop"
-        />
+        >
+          <template #append>
+            <QIcon name="event" class="cursor-pointer">
+              <QPopupProxy
+                cover
+                transition-show="scale"
+                transition-hide="scale"
+              >
+                <QCard>
+                  <QTabs v-model="startDateTimeTab" dense>
+                    <QTab name="date" label="Дата" />
+                    <QTab name="time" label="Время" />
+                  </QTabs>
+                  <QSeparator />
+                  <QTabPanels v-model="startDateTimeTab">
+                    <QTabPanel name="date" class="q-pa-none">
+                      <QDate
+                        v-model="form.start_date"
+                        mask="YYYY-MM-DD HH:mm"
+                        minimal
+                      />
+                    </QTabPanel>
+                    <QTabPanel name="time" class="q-pa-none">
+                      <QTime
+                        v-model="form.start_date"
+                        mask="YYYY-MM-DD HH:mm"
+                        format24h
+                      />
+                    </QTabPanel>
+                  </QTabPanels>
+                </QCard>
+              </QPopupProxy>
+            </QIcon>
+          </template>
+        </QInput>
         <QInput
           v-model="form.end_date"
           label="Конец"
           outlined
           square
-          type="datetime-local"
+          mask="####-##-## ##:##"
           :dense="$q.platform.is.desktop"
-        />
+        >
+          <template #append>
+            <QIcon name="event" class="cursor-pointer">
+              <QPopupProxy
+                cover
+                transition-show="scale"
+                transition-hide="scale"
+              >
+                <QCard>
+                  <QTabs v-model="endDateTimeTab" dense>
+                    <QTab name="date" label="Дата" />
+                    <QTab name="time" label="Время" />
+                  </QTabs>
+                  <QSeparator />
+                  <QTabPanels v-model="endDateTimeTab">
+                    <QTabPanel name="date" class="q-pa-none">
+                      <QDate
+                        v-model="form.end_date"
+                        mask="YYYY-MM-DD HH:mm"
+                        minimal
+                      />
+                    </QTabPanel>
+                    <QTabPanel name="time" class="q-pa-none">
+                      <QTime
+                        v-model="form.end_date"
+                        mask="YYYY-MM-DD HH:mm"
+                        format24h
+                      />
+                    </QTabPanel>
+                  </QTabPanels>
+                </QCard>
+              </QPopupProxy>
+            </QIcon>
+          </template>
+        </QInput>
+        <QSelect
+          v-model="form.remind_before"
+          :options="remindOptions"
+          label="Напоминание"
+          outlined
+          square
+          clearable
+          emit-value
+          map-options
+          :dense="$q.platform.is.desktop"
+        >
+          <template #prepend>
+            <QIcon name="notifications_none" />
+          </template>
+        </QSelect>
         <QInput
           v-model="form.location"
           label="Место"
@@ -138,12 +221,6 @@
             label="Сохранить"
             :loading="saving"
           />
-          <QBtn
-            flat
-            icon="alarm"
-            label="Напоминание"
-            @click="remindDialog = true"
-          />
           <QSpace />
           <QBtn
             v-if="taskId !== 'new'"
@@ -155,30 +232,6 @@
           />
         </QCardActions>
       </QForm>
-      <!-- Remind dialog -->
-      <QDialog v-model="remindDialog">
-        <QCard>
-          <QCardSection class="text-h6">Напоминание</QCardSection>
-          <QCardSection class="q-pt-none row q-col-gutter-sm">
-            <div class="col-12 col-sm-auto">
-              <QDate v-model="remindDate" minimal />
-            </div>
-            <div class="col-12 col-sm-auto flex items-center">
-              <QTime v-model="remindTime" format24h />
-            </div>
-          </QCardSection>
-          <QCardActions v-if="!isTMA">
-            <QBtn v-close-popup flat label="Отмена" />
-            <QBtn
-              flat
-              color="primary"
-              label="Установить"
-              :loading="reminding"
-              @click="onRemind"
-            />
-          </QCardActions>
-        </QCard>
-      </QDialog>
     </template>
   </div>
 </template>
@@ -191,12 +244,17 @@ import {
   QCardActions,
   QCardSection,
   QDate,
-  QDialog,
   QForm,
   QIcon,
   QInput,
+  QPopupProxy,
   QSelect,
+  QSeparator,
   QSpace,
+  QTab,
+  QTabPanel,
+  QTabPanels,
+  QTabs,
   QTime,
   QItemLabel,
   QItemSection,
@@ -243,15 +301,19 @@ const geoStore = useGeoStore()
 
 const formRef = ref<InstanceType<typeof QForm> | null>(null)
 const saving = ref(false)
-const reminding = ref(false)
-const remindDialog = ref(false)
+const startDateTimeTab = ref('date')
+const endDateTimeTab = ref('date')
 const priorityOptions = [
   { label: 'Высокий', value: 1 },
   { label: 'Средний', value: 2 },
   { label: 'Низкий', value: 3 },
 ]
-const now = new Date()
-const _pad = (n: number) => String(n).padStart(2, '0')
+const remindOptions = [
+  { label: 'Без напоминания', value: null },
+  { label: 'За 15 мин', value: 15 },
+  { label: 'За 1 час', value: 60 },
+  { label: 'За 24 часа', value: 1440 },
+]
 const isNew = props.taskId === 'new'
 
 function priorityLabel(priority?: number): string {
@@ -261,17 +323,17 @@ function priorityLabel(priority?: number): string {
 const form = reactive({
   name: props.task.name,
   description: props.task.description ?? '',
-  start_date: toDatetimeLocal(props.task.start_date),
-  end_date: toDatetimeLocal(props.task.end_date),
+  start_date: toDatetimeLocal(props.task.start_date).replace('T', ' '),
+  end_date: toDatetimeLocal(props.task.end_date).replace('T', ' '),
   location: props.task.location ?? '',
   link_meeting: props.task.link_meeting ?? '',
   priority: props.task.priority ?? 3,
+  remind_before: null as number | null,
 })
 
-const remindDate = ref(
-  `${now.getFullYear()}/${_pad(now.getMonth() + 1)}/${_pad(now.getDate())}`,
-)
-const remindTime = ref(`${_pad(now.getHours())}:${_pad(now.getMinutes())}`)
+function toLocalDate(value: string): Date {
+  return new Date(value.replace(' ', 'T'))
+}
 
 function onGoToEdit() {
   void router.push({
@@ -305,11 +367,12 @@ async function createEvent() {
     body: JSON.stringify({
       name: form.name,
       description: form.description || undefined,
-      start_date: new Date(form.start_date),
-      end_date: form.end_date ? new Date(form.end_date) : undefined,
+      start_date: toLocalDate(form.start_date),
+      end_date: form.end_date ? toLocalDate(form.end_date) : undefined,
       location: form.location || undefined,
       link_meeting: form.link_meeting || undefined,
       priority: form.priority,
+      remind_before: form.remind_before,
     }),
     credentials: 'include',
   })
@@ -339,11 +402,12 @@ async function editEvent() {
       id_task: Number(props.taskId),
       name: form.name,
       description: form.description || undefined,
-      start_date: new Date(form.start_date),
-      end_date: form.end_date ? new Date(form.end_date) : undefined,
+      start_date: toLocalDate(form.start_date),
+      end_date: form.end_date ? toLocalDate(form.end_date) : undefined,
       location: form.location || undefined,
       link_meeting: form.link_meeting || undefined,
       priority: form.priority,
+      remind_before: form.remind_before,
     }),
     credentials: 'include',
   })
@@ -437,33 +501,6 @@ function onRemove() {
       })
     }
   })
-}
-
-async function onRemind() {
-  reminding.value = true
-  try {
-    const [year, month, day_of_month] = remindDate.value.split('/').map(Number)
-    const [hour, minute] = remindTime.value.split(':').map(Number)
-    await rpc('remind-once', {
-      id_task: props.task.id_task,
-      name: props.task.name,
-      year,
-      month,
-      day_of_month,
-      hour,
-      minute,
-    })
-    remindDialog.value = false
-    $q.notify({ type: 'positive', message: 'Напоминание установлено' })
-  } catch (err) {
-    console.error(err)
-    $q.notify({
-      type: 'negative',
-      message: (err as Error)?.message ?? 'Ошибка напоминания',
-    })
-  } finally {
-    reminding.value = false
-  }
 }
 
 onMounted(() => {

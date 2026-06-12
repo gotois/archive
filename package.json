@@ -30,6 +30,7 @@
     }
   ],
   "private": false,
+  "type": "module",
   "scripts": {
     "dev": "quasar dev -m pwa --debug",
     "dev:apk": "bubblewrap install",
