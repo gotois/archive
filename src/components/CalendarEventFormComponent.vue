@@ -72,6 +72,7 @@
           label="Название"
           outlined
           square
+          hide-bottom-space
           :dense="$q.platform.is.desktop"
           :rules="[(v) => !!v || 'Обязательно']"
         />
@@ -222,7 +223,7 @@ interface TaskObject {
 const props = defineProps<{
   task: TaskObject
   readonly: boolean
-  taskId: string
+  taskId: string | number
 }>()
 const emit = defineEmits<{
   (e: 'saved'): void
@@ -271,7 +272,9 @@ const remindTime = ref(`${_pad(now.getHours())}:${_pad(now.getMinutes())}`)
 function onGoToEdit() {
   void router.push({
     name: ROUTE_NAMES.EDIT,
-    params: { taskId: props.taskId },
+    params: {
+      taskId: props.taskId,
+    },
     query: route.query,
   })
 }
@@ -304,7 +307,7 @@ async function createEvent() {
       link_meeting: form.link_meeting || undefined,
       priority: form.priority,
     }),
-    credentials: 'include', // todo для TMA нужно передавать иначе
+    credentials: 'include',
   })
   if (!response.ok) {
     throw new Error('Response failed')
@@ -313,7 +316,9 @@ async function createEvent() {
 }
 
 async function editEvent() {
-  const headers = new Headers({ 'Content-Type': 'application/json' })
+  const headers = new Headers({
+    'Content-Type': 'application/json',
+  })
   if (secretaryStore.auth) {
     headers.set('Authorization', secretaryStore.auth)
   }
@@ -327,7 +332,7 @@ async function editEvent() {
     method: 'PUT',
     headers,
     body: JSON.stringify({
-      id_task: props.taskId,
+      id_task: Number(props.taskId),
       name: form.name,
       description: form.description || undefined,
       start_date: new Date(form.start_date),
@@ -336,7 +341,7 @@ async function editEvent() {
       link_meeting: form.link_meeting || undefined,
       priority: form.priority,
     }),
-    credentials: 'include', // todo для TMA нужно передавать иначе
+    credentials: 'include',
   })
   if (!response.ok) {
     throw new Error('Response failed')
@@ -353,11 +358,11 @@ async function onSave() {
   try {
     await createEvent()
     emit('saved')
-  } catch (err) {
-    console.error(err)
+  } catch (error: Error | unknown) {
+    console.error(error)
     $q.notify({
       type: 'negative',
-      message: (err as Error)?.message ?? 'Ошибка сохранения',
+      message: error?.message ?? 'Ошибка сохранения',
     })
   } finally {
     saving.value = false
@@ -395,10 +400,11 @@ function onRemove() {
       await rpc('remove', { ids: [props.task.id_task] })
       emit('removed')
     } catch (err) {
-      console.error(err)
+    } catch (error: Error | unknown) {
+      console.error(error)
       $q.notify({
         type: 'negative',
-        message: (err as Error)?.message ?? 'Ошибка удаления',
+        message: error?.message ?? 'Ошибка удаления',
       })
     }
   })
