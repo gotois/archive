@@ -1,7 +1,7 @@
 // https://developers.google.com/identity/gsi/web/reference/html-reference
 
-export const GOOGLE_OAUTH_CLIENT_ID = process.env.google_client_id
-export const GOOGLE_REDIRECT_URI = process.env.google_redirect_uri
+export const GOOGLE_OAUTH_CLIENT_ID = import.meta.env.google_client_id
+export const GOOGLE_REDIRECT_URI = import.meta.env.google_redirect_uri
 
 export type GoogleHandlerResponse = {
   clientId: string

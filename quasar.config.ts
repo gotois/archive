@@ -1,11 +1,10 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli/quasar-conf-js
 
-/* eslint-env node */
-const { configure } = require('quasar/wrappers');
-const pkg = require('./package.json');
+import { defineConfig } from '@quasar/app-vite';
+import pkg from './package.json' with { type: 'json' };
 
-module.exports = configure((ctx) => {
+export default defineConfig((ctx) => {
   if (ctx.dev) {
     require('dotenv').config({
       quiet: true,
@@ -48,12 +47,18 @@ module.exports = configure((ctx) => {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
-      env: {
+      defineEnv: {
         secretary: process.env.SECRETARY_HOST,
         server: process.env.SERVER_HOST,
         telegram_bot_name: process.env.TELEGRAM_BOT_NAME,
         google_client_id: process.env.GOOGLE_CLIENT_ID,
         google_redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+      },
+      alias: {
+        components: ctx.appPaths.resolve.app('src/components'),
+        layouts: ctx.appPaths.resolve.app('src/layouts'),
+        pages: ctx.appPaths.resolve.app('src/pages'),
+        stores: ctx.appPaths.resolve.app('src/stores'),
       },
       target: {
         browser: 'esnext',
@@ -108,9 +113,15 @@ module.exports = configure((ctx) => {
       ],
     },
 
+    sourceFiles: {
+      pwaRegisterServiceWorker: 'src-pwa/register-service-worker',
+      pwaServiceWorker: 'src-pwa/custom-service-worker',
+      pwaManifestFile: 'src-pwa/manifest.json',
+    },
+
     // https://v2.quasar.dev/quasar-cli/developing-pwa/configuring-pwa
     pwa: {
-      workboxMode: 'injectManifest',
+      workboxMode: 'InjectManifest',
       workboxOptions: {
         globPatterns: ['**/*.{js,css,html,png,svg}'],
       },
@@ -171,11 +182,6 @@ module.exports = configure((ctx) => {
         appleSafariPinnedTab: 'icons/safari-pinned-tab.svg',
         msapplicationTileImage: 'icons/ms-icon-144x144.png',
         msapplicationTileColor: '#000000',
-      },
-      sourceFiles: {
-        pwaRegisterServiceWorker: 'src-pwa/register-service-worker',
-        pwaServiceWorker: 'src-pwa/custom-service-worker',
-        pwaManifestFile: 'src-pwa/manifest.json',
       },
     },
   };

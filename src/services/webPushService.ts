@@ -1,5 +1,5 @@
 async function getVapidPublicKey(): Promise<string> {
-  const response = await fetch(process.env.secretary + '/actor/vapid')
+  const response = await fetch(import.meta.env.secretary + '/actor/vapid')
   const { publicKey } = (await response.json()) as { publicKey: string }
   return publicKey
 }
@@ -41,7 +41,7 @@ async function getOrCreateSubscription(): Promise<PushSubscription> {
 }
 
 export async function sendSubscriptionToServer(subscription: PushSubscription) {
-  const response = await fetch(process.env.secretary + '/web/push/subscribe', {
+  const response = await fetch(import.meta.env.secretary + '/web/push/subscribe', {
     method: 'POST',
     credentials: 'include',
     body: JSON.stringify({

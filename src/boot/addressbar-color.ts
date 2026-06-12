@@ -1,6 +1,6 @@
 import { AddressbarColor, Dark } from 'quasar'
 import { boot } from 'quasar/wrappers'
-import { ROUTE_NAMES } from 'src/router/routes'
+import { ROUTE_NAMES } from '@/router/routes'
 
 // more info on params: https://v2.quasar.dev/quasar-cli/boot-files
 export default boot(({ urlPath }) => {

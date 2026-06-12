@@ -236,7 +236,7 @@ export default defineStore('contracts', {
       requestInit.headers = headers
 
       const res = await fetch(
-        process.env.secretary + '/tasks/subscription',
+        import.meta.env.secretary + '/tasks/subscription',
         requestInit,
       )
       if (!res.ok) {

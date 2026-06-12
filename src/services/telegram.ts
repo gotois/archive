@@ -1,4 +1,4 @@
-export const TELEGRAM_BOT_NAME = process.env.telegram_bot_name
+export const TELEGRAM_BOT_NAME = import.meta.env.telegram_bot_name
 
 export function appendTelegramWebAppScript(
   cb?: () => void,

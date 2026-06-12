@@ -361,7 +361,7 @@ async function createEvent() {
   if (route.query.tgGroupMessageId) {
     headers.set('X-Telegram-Message-Id', String(route.query.tgGroupMessageId))
   }
-  const response = await fetch(process.env.server + '/event', {
+  const response = await fetch(import.meta.env.server + '/event', {
     method: 'POST',
     headers,
     body: JSON.stringify({
@@ -395,7 +395,7 @@ async function editEvent() {
   if (route.query.tgGroupMessageId) {
     headers.set('X-Telegram-Message-Id', String(route.query.tgGroupMessageId))
   }
-  const response = await fetch(process.env.server + '/event', {
+  const response = await fetch(import.meta.env.server + '/event', {
     method: 'PUT',
     headers,
     body: JSON.stringify({
@@ -480,7 +480,7 @@ function onRemove() {
           String(route.query.tgGroupMessageId),
         )
       }
-      const response = await fetch(process.env.server + '/event', {
+      const response = await fetch(import.meta.env.server + '/event', {
         method: 'DELETE',
         headers,
         body: JSON.stringify({

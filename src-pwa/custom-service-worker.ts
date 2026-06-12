@@ -18,23 +18,17 @@ precacheAndRoute(self.__WB_MANIFEST)
 
 cleanupOutdatedCaches()
 
-if (process.env.PWA_FALLBACK_HTML) {
-  precacheAndRoute([
-    {
-      url: process.env.PWA_FALLBACK_HTML,
-      revision: null,
-    },
-  ])
-}
-
 // Non-SSR fallback to index.html
 // Production SSR fallback to offline.html (except for dev)
-if (process.env.MODE !== 'ssr' || process.env.PROD) {
+if (import.meta.env.QUASAR_PROD) {
   registerRoute(
     new NavigationRoute(
-      createHandlerBoundToURL(process.env.PWA_FALLBACK_HTML),
+      createHandlerBoundToURL(import.meta.env.QUASAR_PWA_FALLBACK_HTML),
       {
-        denylist: [/sw\.js$/, /workbox-(.)*\.js$/],
+        denylist: [
+          new RegExp(import.meta.env.QUASAR_PWA_SERVICE_WORKER_REGEX),
+          /workbox-(.)*\.js$/,
+        ],
       },
     ),
   )
@@ -90,4 +84,3 @@ self.addEventListener('notificationclick', (event: NotificationEvent) => {
       }),
   )
 })
-

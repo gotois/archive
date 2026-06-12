@@ -18,7 +18,7 @@ export default route(() => {
       top: 0,
     }),
     routes,
-    history: createWebHistory(process.env.VUE_ROUTER_BASE),
+    history: createWebHistory(import.meta.env.QUASAR_VUE_ROUTER_BASE),
   })
   // Если пользователь уже входил через Pod, пробуем авторизовать автоматически
   Router.beforeEach(async (to) => {

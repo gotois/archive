@@ -85,7 +85,7 @@ async function loadTask() {
   }
 
   const request = await fetch(
-    process.env.secretary + `/tasks/${props.taskId}`,
+    import.meta.env.secretary + `/tasks/${props.taskId}`,
     {
       method: 'GET',
       headers,

@@ -64,7 +64,7 @@ defineProps({
   },
 })
 
-const giсHostname = new URL(process.env.secretary).host
+const giсHostname = new URL(import.meta.env.secretary).host
 
 const loginOptions = ref([
   giсHostname,

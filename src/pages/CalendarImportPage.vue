@@ -94,7 +94,7 @@ async function syncGoogleCalendar() {
   if (secretaryStore.auth) {
     headers.set('Authorization', secretaryStore.auth)
   }
-  const response = await fetch(process.env.server + '/calendar/google', {
+  const response = await fetch(import.meta.env.server + '/calendar/google', {
     method: 'POST',
     headers,
     body: JSON.stringify({
