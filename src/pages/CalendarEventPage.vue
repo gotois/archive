@@ -106,6 +106,7 @@ async function loadTask() {
     location: result.location,
     link_meeting: result.link_meeting,
     priority: result.priority,
+    remind_before: result.remind_before,
   }
 }
 

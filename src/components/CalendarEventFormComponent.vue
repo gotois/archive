@@ -280,6 +280,7 @@ interface TaskObject {
   location?: string | null
   link_meeting?: string | null
   priority?: number
+  remind_before?: number | null
 }
 
 const props = defineProps<{
@@ -328,7 +329,10 @@ const form = reactive({
   location: props.task.location ?? '',
   link_meeting: props.task.link_meeting ?? '',
   priority: props.task.priority ?? 3,
-  remind_before: null as number | null,
+  remind_before:
+    typeof props.task.remind_before === 'number'
+      ? props.task.remind_before / 60
+      : null,
 })
 
 function toLocalDate(value: string): Date {
