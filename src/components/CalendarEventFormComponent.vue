@@ -66,7 +66,7 @@
     </template>
     <!-- Edit mode -->
     <template v-else>
-      <QForm ref="formRef" class="q-gutter-md" @submit="onSave">
+      <QForm ref="formRef" class="q-gutter-md" @submit="isNew ? onSave : onEdit">
         <QInput
           v-model="form.name"
           label="Название"
@@ -201,12 +201,12 @@ import {
   QMenu,
 } from 'quasar'
 import { useRouter, useRoute } from 'vue-router'
+import { mainButton, postEvent } from '@telegram-apps/sdk'
 import { isTMA } from '../composables/detector'
 import useSecretaryStore from 'stores/secretary'
 import useGeoStore from 'stores/geo'
 import { prettyDate, toDatetimeLocal } from '../helpers/dateHelper'
 import { ROUTE_NAMES } from '../router/routes'
-import { mainButton } from '@telegram-apps/sdk'
 
 interface TaskObject {
   id_task: number
@@ -245,8 +245,9 @@ const priorityOptions = [
   { label: 'Средний', value: 2 },
   { label: 'Низкий', value: 3 },
 ]
-const _now = new Date()
+const now = new Date()
 const _pad = (n: number) => String(n).padStart(2, '0')
+const isNew = props.taskId === 'new'
 
 function priorityLabel(priority?: number): string {
   return priorityOptions.find((o) => o.value === priority)?.label ?? '—'
@@ -263,9 +264,9 @@ const form = reactive({
 })
 
 const remindDate = ref(
-  `${_now.getFullYear()}/${_pad(_now.getMonth() + 1)}/${_pad(_now.getDate())}`,
+  `${now.getFullYear()}/${_pad(now.getMonth() + 1)}/${_pad(now.getDate())}`,
 )
-const remindTime = ref(`${_pad(_now.getHours())}:${_pad(_now.getMinutes())}`)
+const remindTime = ref(`${_pad(now.getHours())}:${_pad(now.getMinutes())}`)
 
 function onGoToEdit() {
   void router.push({
@@ -308,6 +309,7 @@ async function createEvent() {
   if (!response.ok) {
     throw new Error('Response failed')
   }
+  console.log('Данные успешно добавлены')
 }
 
 async function editEvent() {
@@ -339,6 +341,7 @@ async function editEvent() {
   if (!response.ok) {
     throw new Error('Response failed')
   }
+  console.log('Данные успешно изменены')
 }
 
 async function onSave() {
@@ -348,19 +351,33 @@ async function onSave() {
   }
   saving.value = true
   try {
-    if (props.taskId === 'new') {
-      await createEvent()
-      console.log('Данные успешно добавлены')
-    } else {
-      await editEvent()
-      console.log('Данные успешно изменены')
-    }
+    await createEvent()
     emit('saved')
   } catch (err) {
     console.error(err)
     $q.notify({
       type: 'negative',
       message: (err as Error)?.message ?? 'Ошибка сохранения',
+    })
+  } finally {
+    saving.value = false
+  }
+}
+
+async function onEdit() {
+  const valid = await formRef.value?.validate()
+  if (!valid) {
+    return
+  }
+  saving.value = true
+  try {
+    await editEvent()
+    emit('saved')
+  } catch (error: Error | unknown) {
+    console.error(error)
+    $q.notify({
+      type: 'negative',
+      message: error?.message ?? 'Ошибка обновления',
     })
   } finally {
     saving.value = false
@@ -418,23 +435,24 @@ onMounted(() => {
   if (!isTMA.value) {
     return
   }
-
-  // todo - иногда не монтируется почему-то
   if (!mainButton.isMounted()) {
     mainButton.mount()
   }
   mainButton.setParams({
-    text: 'СОХРАНИТЬ',
+    text: isNew ? 'Создать' : 'Обновить',
     backgroundColor: '#2481cc',
     textColor: '#ffffff',
     isEnabled: true,
     isVisible: true,
   })
   mainButton.onClick(async () => {
-    // todo нужно разделять сохранение и редактирование
-    await onSave()
+    if (isNew) {
+      await onSave()
+    } else {
+      await onEdit()
+    }
 
-    // postEvent('web_app_close') // todo просто закрываем TMA
+    postEvent('web_app_close')
   })
 })
 </script>
