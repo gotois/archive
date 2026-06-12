@@ -47,6 +47,7 @@ import {
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { ROUTE_NAMES } from '../router/routes'
+import useSecretaryStore from 'stores/secretary'
 
 const CalendarEventFormComponent = defineAsyncComponent({
   loader: () => import('components/CalendarEventFormComponent.vue'),
@@ -62,6 +63,7 @@ const $q = useQuasar()
 const $t = useI18n().t
 const router = useRouter()
 const route = useRoute()
+const secretaryStore = useSecretaryStore()
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const task = ref<Record<string, any> | null>(null)
@@ -74,14 +76,22 @@ const metaData = {
 }
 
 async function loadTask() {
-  const request = await fetch(process.env.secretary + `/tasks/${props.taskId}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    },
-    credentials: 'include',
+  const headers = new Headers({
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
   })
+  if (secretaryStore.auth) {
+    headers.set('Authorization', secretaryStore.auth)
+  }
+
+  const request = await fetch(
+    process.env.secretary + `/tasks/${props.taskId}`,
+    {
+      method: 'GET',
+      headers,
+      credentials: 'include',
+    },
+  )
   if (!request.ok) {
     throw new Error('Unable to load task')
   }

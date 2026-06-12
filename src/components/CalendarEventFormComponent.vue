@@ -321,10 +321,11 @@ async function editEvent() {
   if (route.query.tgGroupMessageId) {
     headers.set('X-Telegram-Message-Id', String(route.query.tgGroupMessageId))
   }
-  await fetch(process.env.server + '/event', {
+  const response = await fetch(process.env.server + '/event', {
     method: 'PUT',
     headers,
     body: JSON.stringify({
+      id_task: props.taskId,
       name: form.name,
       description: form.description || undefined,
       start_date: new Date(form.start_date),
@@ -335,6 +336,9 @@ async function editEvent() {
     }),
     credentials: 'include', // todo для TMA нужно передавать иначе
   })
+  if (!response.ok) {
+    throw new Error('Response failed')
+  }
 }
 
 async function onSave() {
@@ -427,7 +431,8 @@ onMounted(() => {
     isVisible: true,
   })
   mainButton.onClick(async () => {
-    await createEvent()
+    // todo нужно разделять сохранение и редактирование
+    await onSave()
 
     // postEvent('web_app_close') // todo просто закрываем TMA
   })
