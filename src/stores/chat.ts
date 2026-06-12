@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import rpc from '../helpers/rpc'
 
 type Message = {
   type: string
@@ -19,13 +18,8 @@ export default defineStore('chat', {
     add(item: Message) {
       this.messages.push(item)
     },
-    async dialog() {
-      return await rpc('chat', {
-        '@context': 'https://www.w3.org/ns/activitystreams',
-        'type': 'Collection',
-        'totalItems': this.messages.length,
-        'items': this.messages,
-      })
+    dialog() {
+      console.log('передавать данные через AI иным способом')
     },
   },
 })
