@@ -69,15 +69,12 @@
 import { onMounted, ref, computed } from 'vue'
 import { QBtn, QCard, QCardSection, QIcon, QInput, patterns } from 'quasar'
 import useSecretaryStore from 'stores/secretary'
-import useContractStore from 'stores/contract'
 import GoogleOAuth from 'components/GoogleOAuth.vue'
-import rpc from '../helpers/rpc'
 import {
   GOOGLE_OAUTH_CLIENT_ID,
   GOOGLE_OAUTH_LINK,
 } from '../helpers/googleOAuthHelper'
 
-const contractStore = useContractStore()
 const secretaryStore = useSecretaryStore()
 
 const googleCode = ref<string>(null)
@@ -91,10 +88,25 @@ async function syncGoogleCalendar() {
     console.warn('Invalid email')
     return
   }
-  const events = await rpc('get-calendar-google', {
-    code: googleCode.value,
-    username: googleEmail.value,
+  const headers = new Headers({
+    'Content-Type': 'application/json',
   })
+  if (secretaryStore.auth) {
+    headers.set('Authorization', secretaryStore.auth)
+  }
+  const response = await fetch(process.env.server + '/calendar/google', {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      code: googleCode.value,
+      username: googleEmail.value,
+    }),
+    credentials: 'include',
+  })
+  if (!response.ok) {
+    throw new Error('Failed to import Google Calendar')
+  }
+  const events = await response.json()
   // TODO после записи нужно сбрасывать queryString чтобы код не сохранялся
   // ...
   alert('WIP...')
@@ -102,7 +114,7 @@ async function syncGoogleCalendar() {
   console.log('WIP...', events)
   /* eslint-disable */
   // fixme
-  const calendarEvents = events.credentialSubject.object.map((event: unknown) => {
+  const calendarEvents = events.object.map((event: unknown) => {
     console.log('event', event)
     return event
     // return {
