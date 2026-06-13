@@ -49,12 +49,13 @@
     "@inrupt/solid-client-authn-browser": "3.1.1",
     "@inrupt/vocab-common-rdf": "1.0.5",
     "@quasar/extras": "1.18.0",
-    "@schedule-x/calendar-controls": "4.6.0",
-    "@schedule-x/current-time": "4.6.0",
-    "@schedule-x/events-service": "4.6.0",
-    "@schedule-x/ical": "4.6.0",
-    "@schedule-x/scroll-controller": "4.6.0",
-    "@schedule-x/theme-shadcn": "4.6.0",
+    "@schedule-x/calendar": "4.1.0",
+    "@schedule-x/calendar-controls": "4.1.0",
+    "@schedule-x/current-time": "4.1.0",
+    "@schedule-x/events-service": "4.1.0",
+    "@schedule-x/ical": "4.1.0",
+    "@schedule-x/scroll-controller": "4.1.0",
+    "@schedule-x/theme-shadcn": "4.1.0",
     "@schedule-x/vue": "4.1.0",
     "@solana/web3.js": "1.98.4",
     "@telegram-apps/sdk": "3.11.8",
@@ -74,7 +75,7 @@
     "rgbaster": "2.1.1",
     "tesseract.js": "5.0.5",
     "tweetnacl": "1.0.3",
-    "vue": "3.5.34",
+    "vue": "3.5.38",
     "vue-i18n": "11.4.5",
     "vue-router": "5.1.0"
   },
@@ -105,9 +106,6 @@
     "workbox-precaching": "7.4.1",
     "workbox-routing": "7.4.1",
     "workbox-strategies": "7.4.1"
-  },
-  "overrides": {
-    "vite": "$vite"
   },
   "engines": {
     "node": ">= 26",

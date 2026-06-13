@@ -1,6 +1,3 @@
-// Configuration for your app
-// https://v2.quasar.dev/quasar-cli/quasar-conf-js
-
 import { defineConfig } from '@quasar/app-vite';
 import pkg from './package.json' with { type: 'json' };
 
@@ -47,6 +44,7 @@ export default defineConfig((ctx) => {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
+      vueOptionsAPI: true,
       defineEnv: {
         secretary: process.env.SECRETARY_HOST,
         server: process.env.SERVER_HOST,

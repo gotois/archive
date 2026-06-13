@@ -36,4 +36,6 @@ android.keystore
 deployment_cert.der
 .gradle/
 
+quasar.config.js
+
 certs/
