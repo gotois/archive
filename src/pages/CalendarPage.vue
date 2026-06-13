@@ -103,7 +103,7 @@
           </template>
         </ScheduleXCalendar>
         <div
-          v-else-if="!available"
+          v-else-if="!calendarApp"
           class="flex justify-center"
         >
           <h1
@@ -178,7 +178,6 @@ const langStore = useLangStore()
 const contractStore = useContractStore()
 const calendarApp = shallowRef<CalendarApp>(null)
 const calendarControls = createCalendarControlsPlugin()
-const available = ref(false)
 
 const $t = i18n.t
 const scrollAreaRef = ref<InstanceType<typeof QScrollArea> | null>(null)
@@ -373,9 +372,8 @@ onBeforeMount(async () => {
   try {
     const ics = await contractStore.loadSubscriptionCalendar()
     calendarApp.value = createCalendarView(ics)
-    available.value = true
   } catch (error) {
-    available.value = false
+    console.error(error)
   }
 
   if (!isTMA && permission.value === 'default') {
