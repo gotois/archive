@@ -73,7 +73,7 @@ import useContractStore from 'stores/contract'
 import useAuthStore from 'stores/auth'
 import type { Agent, FormatImageType, Place } from '../types/models'
 import { convertTemporalToDate } from '../helpers/dateHelper'
-import { ROUTE_NAMES } from '../router/routes'
+import { ROUTE_NAMES } from '@/router/routes'
 
 const $q = useQuasar()
 const i18n = useI18n()

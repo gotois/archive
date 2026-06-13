@@ -46,7 +46,7 @@ import {
 } from 'quasar'
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { ROUTE_NAMES } from '../router/routes'
+import { ROUTE_NAMES } from '@/router/routes'
 import useSecretaryStore from 'stores/secretary'
 
 const CalendarEventFormComponent = defineAsyncComponent({

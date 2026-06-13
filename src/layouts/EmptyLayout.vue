@@ -42,7 +42,7 @@ import {
 import { useRouter, RouterView } from 'vue-router'
 import ToolbarTitleComponent from 'components/ToolbarTitleComponent.vue'
 import { isTWA, isTMA } from '../composables/detector'
-import { ROUTE_NAMES } from '../router/routes'
+import { ROUTE_NAMES } from '@/router/routes'
 
 const router = useRouter()
 

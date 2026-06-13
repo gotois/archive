@@ -29,7 +29,7 @@
 <script lang="ts" setup>
 import { useMeta, QBtn } from 'quasar'
 import { useI18n } from 'vue-i18n'
-import { ROUTE_NAMES } from '../router/routes'
+import { ROUTE_NAMES } from '@/router/routes'
 
 const $t = useI18n().t
 

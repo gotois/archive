@@ -24,7 +24,7 @@ import { QToolbarTitle, QIcon, QBadge, useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 import { open } from '../helpers/urlHelper'
 import pkg from '../../package.json'
-import { ROUTE_NAMES } from '../router/routes'
+import { ROUTE_NAMES } from '@/router/routes'
 
 const router = useRouter()
 const i18n = useI18n()

@@ -176,7 +176,7 @@ import {
   Presentation,
   VerifiableCredential,
 } from '../types/models'
-import { ROUTE_NAMES } from '../router/routes'
+import { ROUTE_NAMES } from '@/router/routes'
 
 enum Action {
   LINK = 'link',

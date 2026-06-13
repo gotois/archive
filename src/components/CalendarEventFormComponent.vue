@@ -265,11 +265,10 @@ import {
 } from 'quasar'
 import { useRouter, useRoute } from 'vue-router'
 import { mainButton, postEvent } from '@telegram-apps/sdk'
-import { isTMA } from '../composables/detector'
-import useSecretaryStore from 'stores/secretary'
-import useGeoStore from 'stores/geo'
+import { isTMA } from '@/composables/detector'
+import useEventStore from '@/stores/event'
 import { prettyDate, toDatetimeLocal } from '../helpers/dateHelper'
-import { ROUTE_NAMES } from '../router/routes'
+import { ROUTE_NAMES } from '@/router/routes'
 
 interface TaskObject {
   id_task: number
@@ -297,8 +296,7 @@ const $q = useQuasar()
 useI18n()
 const router = useRouter()
 const route = useRoute()
-const secretaryStore = useSecretaryStore()
-const geoStore = useGeoStore()
+const eventStore = useEventStore()
 
 const formRef = ref<InstanceType<typeof QForm> | null>(null)
 const saving = ref(false)
@@ -335,10 +333,6 @@ const form = reactive({
       : null,
 })
 
-function toLocalDate(value: string): Date {
-  return new Date(value.replace(' ', 'T'))
-}
-
 function onGoToEdit() {
   void router.push({
     name: ROUTE_NAMES.EDIT,
@@ -349,84 +343,6 @@ function onGoToEdit() {
   })
 }
 
-async function createEvent() {
-  const headers = new Headers({
-    'Content-Type': 'application/json',
-  })
-  if (secretaryStore.auth) {
-    headers.set('Authorization', secretaryStore.auth)
-  }
-  if (geoStore.geolocation) {
-    headers.set('Geolocation', geoStore.geolocation)
-  }
-  if (geoStore.timezone) {
-    headers.set('Timezone', geoStore.timezone)
-  }
-  if (route.query.tgGroupChatId) {
-    headers.set('X-Telegram-Chat-Id', String(route.query.tgGroupChatId))
-  }
-  if (route.query.tgGroupMessageId) {
-    headers.set('X-Telegram-Message-Id', String(route.query.tgGroupMessageId))
-  }
-  const response = await fetch(import.meta.env.server + '/event', {
-    method: 'POST',
-    headers,
-    body: JSON.stringify({
-      name: form.name,
-      description: form.description || undefined,
-      start_date: toLocalDate(form.start_date),
-      end_date: form.end_date ? toLocalDate(form.end_date) : undefined,
-      location: form.location || undefined,
-      link_meeting: form.link_meeting || undefined,
-      priority: form.priority,
-      remind_before: form.remind_before,
-    }),
-    credentials: 'include',
-  })
-  if (!response.ok) {
-    throw new Error('Response failed')
-  }
-  console.log('Данные успешно добавлены')
-}
-
-async function editEvent() {
-  const headers = new Headers({
-    'Content-Type': 'application/json',
-  })
-  if (secretaryStore.auth) {
-    headers.set('Authorization', secretaryStore.auth)
-  }
-  if (geoStore.timezone) {
-    headers.set('Timezone', geoStore.timezone)
-  }
-  if (route.query.tgGroupChatId) {
-    headers.set('X-Telegram-Chat-Id', String(route.query.tgGroupChatId))
-  }
-  if (route.query.tgGroupMessageId) {
-    headers.set('X-Telegram-Message-Id', String(route.query.tgGroupMessageId))
-  }
-  const response = await fetch(import.meta.env.server + '/event', {
-    method: 'PUT',
-    headers,
-    body: JSON.stringify({
-      id_task: Number(props.taskId),
-      name: form.name,
-      description: form.description || undefined,
-      start_date: toLocalDate(form.start_date),
-      end_date: form.end_date ? toLocalDate(form.end_date) : undefined,
-      location: form.location || undefined,
-      link_meeting: form.link_meeting || undefined,
-      priority: form.priority,
-      remind_before: form.remind_before,
-    }),
-    credentials: 'include',
-  })
-  if (!response.ok) {
-    throw new Error('Response failed')
-  }
-  console.log('Данные успешно изменены')
-}
-
 async function onSave() {
   const valid = await formRef.value?.validate()
   if (!valid) {
@@ -434,7 +350,18 @@ async function onSave() {
   }
   saving.value = true
   try {
-    await createEvent()
+    await eventStore.createEvent({
+      name: form.name,
+      description: form.description || undefined,
+      start_date: new Date(form.start_date),
+      end_date: form.end_date ? new Date(form.end_date) : undefined,
+      location: form.location || undefined,
+      link_meeting: form.link_meeting || undefined,
+      priority: form.priority,
+      remind_before: form.remind_before,
+    },
+      String(route.query.tgGroupChatId),
+      String(route.query.tgGroupMessageId))
     emit('saved')
   } catch (error: Error | unknown) {
     console.error(error)
@@ -454,7 +381,18 @@ async function onEdit() {
   }
   saving.value = true
   try {
-    await editEvent()
+    await eventStore.editEvent({
+      id_task: Number(props.taskId),
+      name: form.name,
+      description: form.description || undefined,
+      start_date: new Date(form.start_date),
+      end_date: form.end_date ? new Date(form.end_date) : undefined,
+      location: form.location || undefined,
+      link_meeting: form.link_meeting || undefined,
+      priority: form.priority,
+      remind_before: form.remind_before,
+    }, String(route.query.tgGroupChatId),
+      String(route.query.tgGroupMessageId))
     emit('saved')
   } catch (error: Error | unknown) {
     console.error(error)
@@ -475,33 +413,10 @@ function onRemove() {
     cancel: { label: 'Отмена', flat: true },
   }).onOk(async () => {
     try {
-      const headers = new Headers({
-        'Content-Type': 'application/json',
-      })
-      if (secretaryStore.auth) {
-        headers.set('Authorization', secretaryStore.auth)
-      }
-      if (route.query.tgGroupChatId) {
-        headers.set('X-Telegram-Chat-Id', String(route.query.tgGroupChatId))
-      }
-      if (route.query.tgGroupMessageId) {
-        headers.set(
-          'X-Telegram-Message-Id',
-          String(route.query.tgGroupMessageId),
-        )
-      }
-      const response = await fetch(import.meta.env.server + '/event', {
-        method: 'DELETE',
-        headers,
-        body: JSON.stringify({
-          ids: [props.task.id_task],
-        }),
-        credentials: 'include',
-      })
-      if (!response.ok) {
-        throw new Error('Response failed')
-      }
-      console.log('Данные успешно удалены')
+      await eventStore.deleteEvent({
+        ids: [props.task.id_task],
+      }, String(route.query.tgGroupChatId),
+      String(route.query.tgGroupMessageId))
       emit('removed')
     } catch (error: Error | unknown) {
       console.error(error)

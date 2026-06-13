@@ -160,7 +160,7 @@ import {
   PNG_MIME_TYPE,
   JPG_MIME_TYPE,
 } from '../helpers/mimeTypes'
-import { ROUTE_NAMES } from '../router/routes'
+import { ROUTE_NAMES } from '@/router/routes'
 import { readFilePromise } from '../helpers/fileHelper'
 import { createPDFs } from '../helpers/pdfHelper'
 

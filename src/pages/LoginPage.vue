@@ -264,7 +264,7 @@ import { parse } from '../helpers/markdownHelper'
 import { EVENTS } from '@inrupt/solid-client-authn-core'
 import { isTMA } from '../composables/detector'
 import pkg from '../../package.json'
-import { STEP } from '../router/routes'
+import { STEP } from '@/router/routes'
 import type { VerifiableCredential } from '../types/models'
 import {
   mainButton,

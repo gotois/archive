@@ -82,7 +82,7 @@ import {
   QSeparator,
 } from 'quasar'
 import { open } from '../helpers/urlHelper'
-import { ROUTE_NAMES } from '../router/routes'
+import { ROUTE_NAMES } from '@/router/routes'
 import pkg from '../../package.json'
 
 const router = useRouter()
