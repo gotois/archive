@@ -236,7 +236,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   useQuasar,
@@ -320,18 +320,31 @@ function priorityLabel(priority?: number): string {
 }
 
 const form = reactive({
-  name: props.task.name,
-  description: props.task.description ?? '',
+  name: props.task.name || 'Новое событие',
+  description: props.task.description,
   start_date: toDatetimeLocal(props.task.start_date).replace('T', ' '),
   end_date: toDatetimeLocal(props.task.end_date).replace('T', ' '),
-  location: props.task.location ?? '',
-  link_meeting: props.task.link_meeting ?? '',
-  priority: props.task.priority ?? 3,
+  location: props.task.location,
+  link_meeting: props.task.link_meeting,
+  priority: props.task.priority ?? 2,
   remind_before:
     typeof props.task.remind_before === 'number'
       ? props.task.remind_before / 60
       : null,
 })
+
+watch(
+  () => form.start_date,
+  (startDate) => {
+    const endDate = new Date(startDate.replace(' ', 'T'))
+    if (Number.isNaN(endDate.getTime())) {
+      return
+    }
+
+    endDate.setHours(endDate.getHours() + 1)
+    form.end_date = toDatetimeLocal(endDate.toISOString()).replace('T', ' ')
+  },
+)
 
 function onGoToEdit() {
   void router.push({
