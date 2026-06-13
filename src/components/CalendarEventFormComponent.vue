@@ -359,6 +359,9 @@ async function createEvent() {
   if (geoStore.geolocation) {
     headers.set('Geolocation', geoStore.geolocation)
   }
+  if (geoStore.timezone) {
+    headers.set('Timezone', geoStore.timezone)
+  }
   if (route.query.tgGroupChatId) {
     headers.set('X-Telegram-Chat-Id', String(route.query.tgGroupChatId))
   }
@@ -392,6 +395,9 @@ async function editEvent() {
   })
   if (secretaryStore.auth) {
     headers.set('Authorization', secretaryStore.auth)
+  }
+  if (geoStore.timezone) {
+    headers.set('Timezone', geoStore.timezone)
   }
   if (route.query.tgGroupChatId) {
     headers.set('X-Telegram-Chat-Id', String(route.query.tgGroupChatId))
