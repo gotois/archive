@@ -23,6 +23,8 @@ yarn-error.log*
 .vscode
 contracts.iml
 
+*.map
+
 # APK
 *.aab
 *.apk
@@ -35,7 +37,5 @@ manifest-checksum.txt
 android.keystore
 deployment_cert.der
 .gradle/
-
-quasar.config.js
 
 certs/

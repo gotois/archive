@@ -1,6 +1,7 @@
 {
   "extends": "./.quasar/tsconfig.json",
   "compilerOptions": {
+    "noEmit": true,
     "strictNullChecks": false
   },
   "include": [
