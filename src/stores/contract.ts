@@ -9,14 +9,11 @@ import type {
   VerifiableCredential,
   CalendarEventExternal,
 } from '../types/models'
-import useSecretaryStore from 'stores/secretary'
-import useGeoStore from 'stores/geo'
 
 interface Store {
   contractNames: Map<string, ContractData>
   contracts: ContractTable[]
   contractsCount: number
-  events: CalendarEventExternal[]
 }
 
 let contractNames: Map<string, ContractData> = null
@@ -37,7 +34,6 @@ export default defineStore('contracts', {
     contracts: [],
     contractNames: contractNames,
     contractsCount: SessionStorage.getItem('contractsCount') ?? 0,
-    events: [],
   }),
   actions: {
     setContractsCount(count: number) {
@@ -216,33 +212,6 @@ export default defineStore('contracts', {
     },
     async filteredByIds(ids: number[] | string[]) {
       return await db.contracts.bulkGet(ids)
-    },
-    async loadSubscriptionCalendar() {
-      const requestInit: RequestInit = {
-        method: 'GET',
-      }
-      const secretaryStore = useSecretaryStore()
-      const geoStore = useGeoStore()
-
-      const headers = new Headers()
-      headers.set('Accept', 'text/calendar')
-      headers.set('Timezone', geoStore.timezone)
-
-      if (secretaryStore.auth) {
-        headers.set('Authorization', secretaryStore.auth)
-      } else {
-        requestInit.credentials = 'include'
-      }
-      requestInit.headers = headers
-
-      const res = await fetch(
-        import.meta.env.secretary + '/tasks/subscription',
-        requestInit,
-      )
-      if (!res.ok) {
-        throw new Error(`${res.status} Failed to load subscription calendar`)
-      }
-      return res.text()
     },
     async getCalendarContracts({ from, to }: { from: Date; to: Date }) {
       const contracts = await db.contracts

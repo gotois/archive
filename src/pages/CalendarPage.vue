@@ -158,7 +158,7 @@ import { createEventsServicePlugin } from '@schedule-x/events-service'
 import { createScrollControllerPlugin } from '@schedule-x/scroll-controller'
 import DayCalendar from 'components/DayCalendar.vue'
 import CalendarEventCard from 'components/CalendarEventCard.vue'
-import useContractStore from 'stores/contract'
+import useCalendarStore from 'stores/calendar'
 import useLangStore from 'stores/lang'
 import { formatToCalendarDate, isCurrentDate } from '../helpers/calendarHelper'
 // import { ROUTE_NAMES } from '@/router/routes'
@@ -175,7 +175,7 @@ const $q = useQuasar()
 const router = useRouter()
 const i18n = useI18n()
 const langStore = useLangStore()
-const contractStore = useContractStore()
+const calendarStore = useCalendarStore()
 const calendarApp = shallowRef<CalendarApp>(null)
 const calendarControls = createCalendarControlsPlugin()
 
@@ -194,7 +194,7 @@ const selectedDay = ref(null)
 async function onRefresh(done: () => void) {
   try {
     $q.loading.show()
-    const ics = await contractStore.loadSubscriptionCalendar()
+    const ics = await calendarStore.loadSubscriptionCalendar()
     calendarApp.value = createCalendarView(ics)
     done()
   } catch (error) {
@@ -221,7 +221,7 @@ function createCalendarView(ics: string): CalendarApp {
     firstDayOfWeek: 1,
     isDark: $q.dark.isActive,
     views: [createViewDay()],
-    events: contractStore.events,
+    events: calendarStore.events,
     plugins: [
       createCurrentTimePlugin({
         fullWeekWidth: false,
@@ -370,7 +370,7 @@ async function updateContracts({
 
 onBeforeMount(async () => {
   try {
-    const ics = await contractStore.loadSubscriptionCalendar()
+    const ics = await calendarStore.loadSubscriptionCalendar()
     calendarApp.value = createCalendarView(ics)
   } catch (error) {
     console.error(error)
