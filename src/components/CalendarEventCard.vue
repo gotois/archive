@@ -39,6 +39,12 @@
       >
         {{ description }}
       </div>
+      <div
+        v-if="participant.length"
+        class="ellipsis text-caption"
+      >
+        {{ participant.map((item) => item.name).join(', ') }}
+      </div>
     </QCardSection>
     <QPopupProxy>
       <TaskFull
@@ -71,7 +77,7 @@ import { useRouter } from 'vue-router'
 import TaskFull from 'components/TaskFull.vue'
 import useContractStore from 'stores/contract'
 import useAuthStore from 'stores/auth'
-import type { Agent, FormatImageType, Place } from '../types/models'
+import type { Agent, FormatImageType } from '../types/models'
 import { convertTemporalToDate } from '../helpers/dateHelper'
 import { ROUTE_NAMES } from '@/router/routes'
 
