@@ -34,7 +34,7 @@
   "scripts": {
     "dev": "cross-env QUASAR_DEBUG=true quasar dev -m pwa",
     "dev:apk": "bubblewrap install",
-    "build": "quasar c && quasar build -m pwa -P && cp public/_redirects dist/pwa/ && cp public/_headers dist/pwa/ && cp public/.well-known/assetlinks.json dist/pwa/.well-known/",
+    "build": "quasar c && quasar build -m pwa && cp public/_redirects dist/pwa/ && cp public/_headers dist/pwa/ && cp public/.well-known/assetlinks.json dist/pwa/.well-known/",
     "build:apk": "bubblewrap build",
     "fingerprint": "bubblewrap fingerprint generateAssetLinks --output=\"public/.well-known/assetlinks.json\"",
     "lint": "eslint .",
@@ -63,7 +63,7 @@
     "dexie": "4.0.11",
     "dexie-export-import": "4.1.4",
     "ical-browser": "0.1.9",
-    "jspdf": "2.5.2",
+    "jspdf": "4.2.1",
     "jszip": "3.10.1",
     "marked": "15.0.7",
     "otpauth": "9.3.6",

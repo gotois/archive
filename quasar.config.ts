@@ -44,6 +44,11 @@ export default defineConfig((ctx) => {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
+      async onPublish({ arg }) {
+        if (arg !== 'netlify') {
+          throw new Error(`Unsupported publish target: ${arg}`);
+        }
+      },
       vueOptionsAPI: true,
       defineEnv: {
         secretary: process.env.SECRETARY_HOST,
