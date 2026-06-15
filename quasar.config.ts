@@ -30,6 +30,7 @@ export default defineConfig((ctx) => {
     // https://v2.quasar.dev/quasar-cli/boot-files
     boot: [
       'i18n',
+      'vue-query',
       'addressbar-color',
       'geo',
       'tg-mini-app',

@@ -102,10 +102,10 @@
             </div>
           </template>
         </ScheduleXCalendar>
-        <div
-          v-else-if="!calendarApp"
-          class="flex justify-center"
-        >
+        <div v-else-if="isPending" class="absolute-full flex flex-center">
+          <QSpinner size="5em" />
+        </div>
+        <div v-else class="flex justify-center">
           <h1
             class="text-primary text-uppercase text-center text-weight-light no-padding"
           >
@@ -120,18 +120,12 @@
             @click="router.go(0)"
           />
         </div>
-        <div
-          v-else
-          class="absolute-full flex flex-center"
-        >
-          <QSpinner size="5em" />
-        </div>
       </QPullToRefresh>
     </QScrollArea>
   </QPage>
 </template>
 <script lang="ts" setup>
-import { ref, shallowRef, nextTick, onBeforeMount } from 'vue'
+import { ref, shallowRef, nextTick, onBeforeMount, watch } from 'vue'
 import {
   useQuasar,
   useMeta,
@@ -150,6 +144,7 @@ import {
   createCalendar,
   createViewDay,
   type CalendarApp,
+  type CalendarEventExternal,
 } from '@schedule-x/calendar'
 import { createIcalendarPlugin } from '@schedule-x/ical'
 import { createCurrentTimePlugin } from '@schedule-x/current-time'
@@ -158,12 +153,12 @@ import { createEventsServicePlugin } from '@schedule-x/events-service'
 import { createScrollControllerPlugin } from '@schedule-x/scroll-controller'
 import DayCalendar from 'components/DayCalendar.vue'
 import CalendarEventCard from 'components/CalendarEventCard.vue'
-import useCalendarStore from 'stores/calendar'
 import useLangStore from 'stores/lang'
 import { formatToCalendarDate, isCurrentDate } from '../helpers/calendarHelper'
 // import { ROUTE_NAMES } from '@/router/routes'
 import { isTMA } from '../composables/detector'
 import { useWebPush } from '../composables/useWebPush'
+import { useCalendarSubscriptionQuery } from '../queries/calendar.queries'
 import '@schedule-x/theme-shadcn/dist/index.css'
 
 const { permission, enable: enableWebPush } = useWebPush()
@@ -175,7 +170,6 @@ const $q = useQuasar()
 const router = useRouter()
 const i18n = useI18n()
 const langStore = useLangStore()
-const calendarStore = useCalendarStore()
 const calendarApp = shallowRef<CalendarApp>(null)
 const calendarControls = createCalendarControlsPlugin()
 
@@ -190,18 +184,34 @@ const metaData = {
 const weeks = ref<Date[]>([])
 const virtualScroll = ref(null)
 const selectedDay = ref(null)
+const {
+  data: calendarSubscription,
+  isPending,
+  refetch: refetchCalendarSubscription,
+} = useCalendarSubscriptionQuery()
+
+watch(
+  calendarSubscription,
+  (ics) => {
+    if (ics) {
+      calendarApp.value = createCalendarView(ics)
+    }
+  },
+  { immediate: true },
+)
 
 async function onRefresh(done: () => void) {
   try {
     $q.loading.show()
-    const ics = await calendarStore.loadSubscriptionCalendar()
-    calendarApp.value = createCalendarView(ics)
-    done()
+    const result = await refetchCalendarSubscription()
+    if (result.error) {
+      throw result.error
+    }
   } catch (error) {
     console.error(error)
-    done()
   } finally {
     $q.loading.hide()
+    done()
   }
 }
 
@@ -368,14 +378,7 @@ async function updateContracts({
 }
 */
 
-onBeforeMount(async () => {
-  try {
-    const ics = await calendarStore.loadSubscriptionCalendar()
-    calendarApp.value = createCalendarView(ics)
-  } catch (error) {
-    console.error(error)
-  }
-
+onBeforeMount(() => {
   if (!isTMA && permission.value === 'default') {
     $q.notify({
       position: 'top-right',
