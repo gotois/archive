@@ -231,7 +231,7 @@ function createCalendarView(ics: string): CalendarApp {
     firstDayOfWeek: 1,
     isDark: $q.dark.isActive,
     views: [createViewDay()],
-    events: calendarStore.events,
+    events: [],
     plugins: [
       createCurrentTimePlugin({
         fullWeekWidth: false,
