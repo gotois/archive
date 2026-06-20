@@ -204,6 +204,27 @@
           :dense="$q.platform.is.desktop"
         />
         <QSelect
+          v-if="isTMA"
+          v-model="form.target"
+          :options="targetOptions"
+          label="Кому"
+          outlined
+          square
+          use-input
+          input-debounce="300"
+          clearable
+          behavior="menu"
+          :loading="targetLoading"
+          :dense="$q.platform.is.desktop"
+          @filter="filterTargets"
+          @clear="form.target = ownTarget"
+        >
+          <!-- TODO: Добавить в список Telegram-контакты пользователя. -->
+          <template #prepend>
+            <QIcon name="group" />
+          </template>
+        </QSelect>
+        <QSelect
           v-model="form.priority"
           :options="priorityOptions"
           label="Приоритет"
@@ -282,6 +303,15 @@ interface TaskObject {
   remind_before?: number | null
 }
 
+interface TargetOption {
+  label: string
+  value: {
+    type: 'Person' | 'Group'
+    id: number
+    name: string
+  } | null
+}
+
 const props = defineProps<{
   task: TaskObject
   readonly: boolean
@@ -300,6 +330,12 @@ const eventStore = useEventStore()
 
 const formRef = ref<InstanceType<typeof QForm> | null>(null)
 const saving = ref(false)
+const targetLoading = ref(false)
+const ownTarget: TargetOption = {
+  label: 'Себе',
+  value: null,
+}
+const targetOptions = ref<TargetOption[]>([ownTarget])
 const startDateTimeTab = ref('date')
 const endDateTimeTab = ref('date')
 const priorityOptions = [
@@ -319,6 +355,43 @@ function priorityLabel(priority?: number): string {
   return priorityOptions.find((o) => o.value === priority)?.label ?? '—'
 }
 
+async function filterTargets(
+  value: string,
+  update: (callback: () => void) => void,
+) {
+  const query = value.trim()
+
+  if (!query) {
+    targetLoading.value = false
+    update(() => {
+      targetOptions.value = [ownTarget]
+    })
+    return
+  }
+
+  targetLoading.value = true
+  try {
+    const groups = await eventStore.getTelegramGroups(
+      query,
+    )
+
+    update(() => {
+      targetOptions.value = groups.map((group) => ({
+        label: group.title,
+        value: {
+          type: 'Group',
+          id: group.id,
+          name: group.title,
+        },
+      }))
+    })
+  } catch (error) {
+    console.error(error)
+  } finally {
+    targetLoading.value = false
+  }
+}
+
 const form = reactive({
   name: props.task.name || 'Новое событие',
   description: props.task.description,
@@ -326,10 +399,11 @@ const form = reactive({
   end_date: toDatetimeLocal(props.task.end_date).replace('T', ' '),
   location: props.task.location,
   link_meeting: props.task.link_meeting,
+  target: targetOptions.value[0],
   priority: props.task.priority ?? 2,
   remind_before:
     typeof props.task.remind_before === 'number'
-      ? props.task.remind_before / 60
+      ? Math.floor(props.task.remind_before) / 60
       : null,
 })
 
@@ -363,18 +437,19 @@ async function onSave() {
   }
   saving.value = true
   try {
-    await eventStore.createEvent({
-      name: form.name,
-      description: form.description || undefined,
-      start_date: new Date(form.start_date),
-      end_date: form.end_date ? new Date(form.end_date) : undefined,
-      location: form.location || undefined,
-      link_meeting: form.link_meeting || undefined,
-      priority: form.priority,
-      remind_before: form.remind_before,
-    },
-      String(route.query.tgGroupChatId),
-      String(route.query.tgGroupMessageId))
+    await eventStore.createEvent(
+      {
+        name: form.name,
+        description: form.description || undefined,
+        start_date: new Date(form.start_date),
+        end_date: form.end_date ? new Date(form.end_date) : undefined,
+        location: form.location || undefined,
+        link_meeting: form.link_meeting || undefined,
+        target: form.target?.value ?? undefined,
+        priority: form.priority,
+        remind_before: form.remind_before,
+      },
+    )
     emit('saved')
   } catch (error: Error | unknown) {
     console.error(error)
@@ -394,18 +469,20 @@ async function onEdit() {
   }
   saving.value = true
   try {
-    await eventStore.editEvent({
-      id_task: Number(props.taskId),
-      name: form.name,
-      description: form.description || undefined,
-      start_date: new Date(form.start_date),
-      end_date: form.end_date ? new Date(form.end_date) : undefined,
-      location: form.location || undefined,
-      link_meeting: form.link_meeting || undefined,
-      priority: form.priority,
-      remind_before: form.remind_before,
-    }, String(route.query.tgGroupChatId),
-      String(route.query.tgGroupMessageId))
+    await eventStore.editEvent(
+      {
+        id_task: Number(props.taskId),
+        name: form.name,
+        description: form.description || undefined,
+        start_date: new Date(form.start_date),
+        end_date: form.end_date ? new Date(form.end_date) : undefined,
+        location: form.location || undefined,
+        link_meeting: form.link_meeting || undefined,
+        priority: form.priority,
+        remind_before: form.remind_before,
+        target: form.target?.value ?? undefined,
+      },
+    )
     emit('saved')
   } catch (error: Error | unknown) {
     console.error(error)
@@ -426,10 +503,12 @@ function onRemove() {
     cancel: { label: 'Отмена', flat: true },
   }).onOk(async () => {
     try {
-      await eventStore.deleteEvent({
-        ids: [props.task.id_task],
-      }, String(route.query.tgGroupChatId),
-      String(route.query.tgGroupMessageId))
+      await eventStore.deleteEvent(
+        {
+          group: route.query.chatId, // fixme нужно передавать событие иначе
+          ids: [props.task.id_task],
+        },
+      )
       emit('removed')
     } catch (error: Error | unknown) {
       console.error(error)

@@ -27,6 +27,7 @@ export default defineStore('secretary', {
         } else if (store.login && store.password) {
           return this.basicAuth as string
         }
+        console.warn('Unknown auth')
       } catch (error) {
         console.warn(error)
       }

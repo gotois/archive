@@ -2,9 +2,43 @@ import { defineStore } from 'pinia'
 import useSecretaryStore from 'stores/secretary'
 import useGeoStore from 'stores/geo'
 
+interface TelegramGroup {
+  id: number
+  title: string
+  type: 'group' | 'supergroup'
+}
+
 export default defineStore('event', {
   actions: {
-    async createEvent(body, tgGroupChatId, tgGroupMessageId) {
+    async getTelegramGroups(query?: string) {
+      const secretaryStore = useSecretaryStore()
+
+      const headers = new Headers()
+      if (secretaryStore.auth) {
+        headers.set('Authorization', secretaryStore.auth)
+      }
+
+      const params = new URLSearchParams()
+      if (query?.trim()) {
+        params.set('query', query.trim())
+      }
+
+      const response = await fetch(
+        import.meta.env.server + '/groups?' + params.toString(),
+        {
+          method: 'GET',
+          headers,
+          credentials: 'include',
+        },
+      )
+      if (!response.ok) {
+        throw new Error('Response groups failed')
+      }
+      const groups = await response.json()
+      return groups as TelegramGroup[]
+    },
+    async createEvent(body: any) {
+      const {...event} = body;
       const secretaryStore = useSecretaryStore()
       const geoStore = useGeoStore()
 
@@ -20,27 +54,19 @@ export default defineStore('event', {
       if (geoStore.timezone) {
         headers.set('Timezone', geoStore.timezone)
       }
-      if (tgGroupChatId) {
-        headers.set('X-Telegram-Chat-Id', tgGroupChatId)
-      }
-      if (tgGroupMessageId) {
-        headers.set(
-          'X-Telegram-Message-Id',
-          tgGroupMessageId,
-        )
-      }
       const response = await fetch(import.meta.env.server + '/event', {
         method: 'POST',
         headers,
-        body: JSON.stringify(body),
+        body: JSON.stringify(event),
         credentials: 'include',
       })
       if (!response.ok) {
-        throw new Error('Response failed')
+        throw new Error('Response event failed')
       }
       console.log('Данные успешно добавлены')
     },
-    async editEvent(body, tgGroupChatId, tgGroupMessageId) {
+    async editEvent(body: any) {
+      const {...event} = body;
       const secretaryStore = useSecretaryStore()
       const geoStore = useGeoStore()
 
@@ -53,19 +79,10 @@ export default defineStore('event', {
       if (geoStore.timezone) {
         headers.set('Timezone', geoStore.timezone)
       }
-      if (tgGroupChatId) {
-        headers.set('X-Telegram-Chat-Id', tgGroupChatId)
-      }
-      if (tgGroupMessageId) {
-        headers.set(
-          'X-Telegram-Message-Id',
-          tgGroupMessageId,
-        )
-      }
       const response = await fetch(import.meta.env.server + '/event', {
         method: 'PUT',
         headers,
-        body: JSON.stringify(body),
+        body: JSON.stringify(event),
         credentials: 'include',
       })
       if (!response.ok) {
@@ -73,7 +90,7 @@ export default defineStore('event', {
       }
       console.log('Данные успешно изменены')
     },
-    async deleteEvent(body, tgGroupChatId, tgGroupMessageId) {
+    async deleteEvent(body: unknown) {
       const secretaryStore = useSecretaryStore()
 
       const headers = new Headers({
@@ -81,15 +98,6 @@ export default defineStore('event', {
       })
       if (secretaryStore.auth) {
         headers.set('Authorization', secretaryStore.auth)
-      }
-      if (tgGroupChatId) {
-        headers.set('X-Telegram-Chat-Id', tgGroupChatId)
-      }
-      if (tgGroupMessageId) {
-        headers.set(
-          'X-Telegram-Message-Id',
-          tgGroupMessageId,
-        )
       }
       const response = await fetch(import.meta.env.server + '/event', {
         method: 'DELETE',
