@@ -20,6 +20,7 @@
         >
           <CalendarEventFormComponent
             v-if="task"
+            ref="formRef"
             :task="task as any"
             :readonly="isViewMode"
             :task-id="props.taskId"
@@ -33,7 +34,7 @@
   </QPage>
 </template>
 <script lang="ts" setup>
-import { defineAsyncComponent, h, ref, computed, onMounted } from 'vue'
+import { defineAsyncComponent, h, ref, computed, watch, onMounted } from 'vue'
 import {
   useQuasar,
   useMeta,
@@ -46,8 +47,10 @@ import {
 } from 'quasar'
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { mainButton, postEvent } from '@telegram-apps/sdk'
 import { ROUTE_NAMES } from '@/router/routes'
 import useEventStore from '@/stores/event'
+import { isTMA } from '@/composables/detector'
 
 const CalendarEventFormComponent = defineAsyncComponent({
   loader: () => import('components/CalendarEventFormComponent.vue'),
@@ -64,11 +67,22 @@ const $t = useI18n().t
 const router = useRouter()
 const route = useRoute()
 const eventStore = useEventStore()
+const formRef = ref<{ submit: () => Promise<void> } | null>(null)
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const task = ref<Record<string, any> | null>(null)
 
 const isViewMode = computed(() => route.name === ROUTE_NAMES.VIEW)
+
+watch(() => isViewMode.value, () => {
+  mainButton.setParams({
+    text: 'Обновить',
+    backgroundColor: '#2481cc',
+    textColor: '#ffffff',
+    isEnabled: true,
+    isVisible: !isViewMode.value,
+  })
+})
 
 const metaData = {
   'title': $t('pages.calendar.title'),
@@ -111,4 +125,17 @@ onMounted(async () => {
 })
 
 useMeta(metaData)
+
+onMounted(() => {
+  if (!isTMA.value) {
+    return
+  }
+  if (!mainButton.isMounted()) {
+    mainButton.mount()
+  }
+  mainButton.onClick(async () => {
+    await formRef.value?.submit()
+    postEvent('web_app_close')
+  })
+})
 </script>

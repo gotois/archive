@@ -15,6 +15,7 @@
         class="q-pa-md q-ml-auto q-mr-auto q-mt-md q-mb-md"
       >
         <CalendarEventFormComponent
+          ref="formRef"
           :task="emptyTask"
           :readonly="false"
           task-id="new"
@@ -25,7 +26,7 @@
   </QPage>
 </template>
 <script lang="ts" setup>
-import { defineAsyncComponent, h } from 'vue'
+import { defineAsyncComponent, h, onMounted, ref } from 'vue'
 import {
   useQuasar,
   useMeta,
@@ -35,8 +36,10 @@ import {
   QSkeleton,
 } from 'quasar'
 import { useI18n } from 'vue-i18n'
+import { mainButton, postEvent } from '@telegram-apps/sdk'
 import { useRouter } from 'vue-router'
 import { ROUTE_NAMES } from '@/router/routes'
+import { isTMA } from '@/composables/detector'
 
 const CalendarEventFormComponent = defineAsyncComponent({
   loader: () => import('components/CalendarEventFormComponent.vue'),
@@ -47,6 +50,7 @@ const CalendarEventFormComponent = defineAsyncComponent({
 const $q = useQuasar()
 const $t = useI18n().t
 const router = useRouter()
+const formRef = ref<{ submit: () => Promise<void> } | null>(null)
 
 interface EmptyTask {
   id_task: number
@@ -90,5 +94,24 @@ async function onSaved() {
 useMeta({
   title: $t('pages.calendar.title'),
 })
-</script>
 
+onMounted(() => {
+  if (!isTMA.value) {
+    return
+  }
+  if (!mainButton.isMounted()) {
+    mainButton.mount()
+  }
+  mainButton.setParams({
+    text: 'Создать',
+    backgroundColor: '#2481cc',
+    textColor: '#ffffff',
+    isEnabled: true,
+    isVisible: true,
+  })
+  mainButton.onClick(async () => {
+    await formRef.value?.submit()
+    postEvent('web_app_close')
+  })
+})
+</script>

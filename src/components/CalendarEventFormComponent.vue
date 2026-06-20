@@ -257,7 +257,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { reactive, ref, onMounted, watch } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   useQuasar,
@@ -285,7 +285,6 @@ import {
   QMenu,
 } from 'quasar'
 import { useRouter, useRoute } from 'vue-router'
-import { mainButton, postEvent } from '@telegram-apps/sdk'
 import { isTMA } from '@/composables/detector'
 import useEventStore from '@/stores/event'
 import { prettyDate, toDatetimeLocal } from '../helpers/dateHelper'
@@ -392,19 +391,19 @@ async function filterTargets(
   }
 }
 
-const form = reactive({
+const form = reactive<TaskObject & TargetOption>({
   name: props.task.name || 'Новое событие',
   description: props.task.description,
   start_date: toDatetimeLocal(props.task.start_date).replace('T', ' '),
   end_date: toDatetimeLocal(props.task.end_date).replace('T', ' '),
   location: props.task.location,
   link_meeting: props.task.link_meeting,
-  target: targetOptions.value[0],
   priority: props.task.priority ?? 2,
   remind_before:
     typeof props.task.remind_before === 'number'
       ? Math.floor(props.task.remind_before) / 60
       : null,
+  target: targetOptions.value[0],
 })
 
 watch(
@@ -495,6 +494,16 @@ async function onEdit() {
   }
 }
 
+async function submit() {
+  if (isNew) {
+    await onSave()
+  } else {
+    await onEdit()
+  }
+}
+
+defineExpose({ submit })
+
 function onRemove() {
   $q.dialog({
     title: 'Удалить событие?',
@@ -505,7 +514,7 @@ function onRemove() {
     try {
       await eventStore.deleteEvent(
         {
-          group: route.query.chatId, // fixme нужно передавать событие иначе
+          chatId: route.query.chatId,
           ids: [props.task.id_task],
         },
       )
@@ -519,29 +528,4 @@ function onRemove() {
     }
   })
 }
-
-onMounted(() => {
-  if (!isTMA.value) {
-    return
-  }
-  if (!mainButton.isMounted()) {
-    mainButton.mount()
-  }
-  mainButton.setParams({
-    text: isNew ? 'Создать' : 'Обновить',
-    backgroundColor: '#2481cc',
-    textColor: '#ffffff',
-    isEnabled: true,
-    isVisible: true,
-  })
-  mainButton.onClick(async () => {
-    if (isNew) {
-      await onSave()
-    } else {
-      await onEdit()
-    }
-
-    postEvent('web_app_close')
-  })
-})
 </script>
