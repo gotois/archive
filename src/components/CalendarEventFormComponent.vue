@@ -211,15 +211,16 @@
           outlined
           square
           use-input
+          use-chips
+          multiple
           input-debounce="300"
           clearable
           behavior="menu"
           :loading="targetLoading"
           :dense="$q.platform.is.desktop"
           @filter="filterTargets"
-          @clear="form.target = ownTarget"
+          @clear="form.target = [ownTarget]"
         >
-          <!-- TODO: Добавить в список Telegram-контакты пользователя. -->
           <template #prepend>
             <QIcon name="group" />
           </template>
@@ -391,7 +392,7 @@ async function filterTargets(
   }
 }
 
-const form = reactive<TaskObject & TargetOption>({
+const form = reactive<Omit<TaskObject, 'id_task'> & { target: TargetOption[] }>({
   name: props.task.name || 'Новое событие',
   description: props.task.description,
   start_date: toDatetimeLocal(props.task.start_date).replace('T', ' '),
@@ -403,7 +404,7 @@ const form = reactive<TaskObject & TargetOption>({
     typeof props.task.remind_before === 'number'
       ? Math.floor(props.task.remind_before) / 60
       : null,
-  target: targetOptions.value[0],
+  target: [targetOptions.value[0]],
 })
 
 watch(
@@ -444,7 +445,7 @@ async function onSave() {
         end_date: form.end_date ? new Date(form.end_date) : undefined,
         location: form.location || undefined,
         link_meeting: form.link_meeting || undefined,
-        target: form.target?.value ?? undefined,
+        target: form.target.map((target) => target.value),
         priority: form.priority,
         remind_before: form.remind_before,
       },
@@ -479,7 +480,7 @@ async function onEdit() {
         link_meeting: form.link_meeting || undefined,
         priority: form.priority,
         remind_before: form.remind_before,
-        target: form.target?.value ?? undefined,
+        target: form.target.map((target) => target.value),
       },
     )
     emit('saved')
