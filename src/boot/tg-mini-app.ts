@@ -11,8 +11,8 @@ export default boot(({ router }: { router: Router }) => {
     return
   }
   init()
-  const { payload } = retrieveLaunchParams()
-  const { to, debug, twa } = JSON.parse(atob(payload))
+  const { payload, tgWebAppStartParam } = retrieveLaunchParams()
+  const { to, debug, twa } = JSON.parse(atob(payload || tgWebAppStartParam))
 
   if (typeof to === 'string') {
     router.isReady()
