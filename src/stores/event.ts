@@ -37,6 +37,28 @@ export default defineStore('event', {
       const groups = await response.json()
       return groups as TelegramGroup[]
     },
+    async getEvent(taskId: number | string) {
+      const secretaryStore = useSecretaryStore()
+
+      const headers = new Headers({
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      })
+      if (secretaryStore.auth) {
+        headers.set('Authorization', secretaryStore.auth)
+      }
+
+      const response = await fetch(import.meta.env.server + `/event/${taskId}`, {
+        method: 'GET',
+        headers,
+        credentials: 'include',
+      })
+      if (!response.ok) {
+        throw new Error('Unable to load task')
+      }
+      const result = await response.json()
+      return result
+    },
     async createEvent(body: any) {
       const {...event} = body;
       const secretaryStore = useSecretaryStore()
