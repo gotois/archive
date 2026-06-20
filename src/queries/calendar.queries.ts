@@ -2,9 +2,9 @@ import { computed } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
 import useGeoStore from 'stores/geo'
 import useSecretaryStore from 'stores/secretary'
-import { calendarApi } from '../api/modules/calendar.api'
-import { queryKeys } from '../api/queryKeys'
-import { isTMA } from '../composables/detector'
+import { calendarApi } from '@/api/modules/calendar.api'
+import { queryKeys } from '@/api/queryKeys'
+import { isTMA } from '@/composables/detector'
 
 export function useCalendarSubscriptionQuery() {
   const geoStore = useGeoStore()
@@ -17,7 +17,6 @@ export function useCalendarSubscriptionQuery() {
     ),
     queryFn: () =>
       calendarApi.getSubscription({
-        source: source.value,
         timezone: geoStore.timezone,
         authorization: secretaryStore.auth,
       }),

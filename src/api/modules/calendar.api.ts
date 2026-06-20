@@ -1,14 +1,12 @@
 import { requestText } from '../http'
 
 export interface CalendarSubscriptionParams {
-  source: 'web' | 'tma'
   timezone: string
   authorization: string | null
 }
 
 export const calendarApi = {
   getSubscription({
-    source,
     timezone,
     authorization,
   }: CalendarSubscriptionParams): Promise<string> {
@@ -21,14 +19,7 @@ export const calendarApi = {
       headers.set('Authorization', authorization)
     }
 
-    if (source === 'tma') {
-      return requestText(import.meta.env.server + '/calendar/subscription', {
-        method: 'GET',
-        headers,
-      })
-    }
-
-    return requestText(import.meta.env.secretary + '/tasks/subscription', {
+    return requestText(import.meta.env.server + '/calendar/subscription', {
       method: 'GET',
       headers,
       credentials: 'include',
