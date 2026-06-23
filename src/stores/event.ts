@@ -107,7 +107,7 @@ export default defineStore('event', {
         credentials: 'include',
       })
       if (!response.ok) {
-        throw new Error('Response failed')
+        throw new Error(await response.text() || 'Response failed')
       }
       console.log('Данные успешно изменены')
     },

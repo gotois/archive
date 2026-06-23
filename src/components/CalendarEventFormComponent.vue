@@ -293,6 +293,10 @@ import { ROUTE_NAMES } from '@/router/routes'
 
 interface TaskObject {
   id_task: number
+  chatId?: number
+  messageId?: number
+  targetName?: string
+  targetType: 'Group' | 'Person'
   name: string
   description?: string | null
   start_date: string
@@ -306,12 +310,8 @@ interface TaskObject {
 interface TargetOption {
   label: string
   value: {
-    type: 'Group'
+    type: 'Group' | 'Person'
     id: number
-    name: string
-    messageId?: number
-  } | {
-    type: 'Person'
     name: string
     messageId?: number
   } | null
@@ -340,7 +340,20 @@ const ownTarget: TargetOption = {
   label: 'Себе',
   value: null,
 }
-const targetOptions = ref<TargetOption[]>([ownTarget])
+const telegramTargetType = props.task.targetType === 'Person' ? 'Person' : 'Group'
+const telegramTargetName = props.task.targetName || `${telegramTargetType} ${props.task.chatId}`
+const telegramTarget: TargetOption | undefined = typeof props.task.chatId === 'number'
+  ? {
+      label: telegramTargetName,
+      value: {
+        type: telegramTargetType,
+        id: props.task.chatId,
+        name: telegramTargetName,
+        messageId: props.task.messageId,
+      },
+    }
+  : undefined
+const targetOptions = ref<TargetOption[]>(telegramTarget ? [ownTarget, telegramTarget] : [ownTarget])
 const startDateTimeTab = ref('date')
 const endDateTimeTab = ref('date')
 const priorityOptions = [
@@ -409,12 +422,15 @@ const form = reactive<Omit<TaskObject, 'id_task'> & { target: TargetOption[] }>(
     typeof props.task.remind_before === 'number'
       ? Math.floor(props.task.remind_before) / 60
       : null,
-  target: [targetOptions.value[0]],
+  target: [telegramTarget ?? ownTarget],
 })
 
 watch(
   () => form.start_date,
   (startDate) => {
+    if (!startDate) {
+      return
+    }
     const endDate = new Date(startDate.replace(' ', 'T'))
     if (Number.isNaN(endDate.getTime())) {
       return
@@ -435,7 +451,7 @@ function onGoToEdit() {
   })
 }
 
-async function onSave() {
+async function onSave(): Promise<void> {
   const valid = await formRef.value?.validate()
   if (!valid) {
     return
@@ -467,7 +483,7 @@ async function onSave() {
   }
 }
 
-async function onEdit() {
+async function onEdit(): Promise<void> {
   const valid = await formRef.value?.validate()
   if (!valid) {
     return
@@ -500,7 +516,7 @@ async function onEdit() {
   }
 }
 
-async function submit() {
+async function submit(): Promise<void> {
   if (isNew) {
     await onSave()
   } else {
