@@ -1,22 +1,10 @@
 <template>
-  <QBar
-    dense
-    class="non-selectable bg-transparent text-primary"
-  >
+  <QBar dense class="non-selectable bg-transparent text-primary">
     <div>{{ $t('productName') }}</div>
-    <QIcon
-      v-if="!$q.dark.isActive"
-      name="img:/icons/safari-pinned-tab.svg"
-    />
+    <QIcon v-if="!$q.dark.isActive" name="img:/icons/safari-pinned-tab.svg" />
     <QSpace />
-    <QIcon
-      v-if="connectionSupports"
-      :name="signalIcon(state.connectionType)"
-    />
-    <div
-      v-if="state.batteryLevel >= 0"
-      class="gt-xs"
-    >
+    <QIcon v-if="connectionSupports" :name="signalIcon(state.connectionType)" />
+    <div v-if="state.batteryLevel >= 0" class="gt-xs">
       {{ batteryLevel }}%
     </div>
     <QIcon
@@ -105,23 +93,19 @@ function watchConnection() {
   /* eslint-enable */
 }
 
-// todo очищать слушатели
-async function watchBattery() {
-  /* eslint-disable */
-  const battery = await navigator.getBattery()
-  state.batteryCharging.value = battery.charging
-  state.batteryLevel.value = battery.level as number
-
-  battery.addEventListener('chargingchange', () => {
-    console.warn(`Battery charging - ${battery.charging ? 'Yes' : 'No'}`)
-    state.batteryCharging.value = battery.charging as boolean
-  });
-
-  battery.addEventListener('levelchange', () => {
-    console.warn(`Battery level: ${battery.level * 100}%`)
-    state.batteryLevel.value = battery.level as number
-  })
-  /* eslint-enable */
+let batteryManager: {
+  charging: boolean
+  level: number
+  addEventListener: (type: string, listener: () => void) => void
+  removeEventListener: (type: string, listener: () => void) => void
+}
+const onChargingChange = () => {
+  console.warn(`Battery charging - ${batteryManager.charging ? 'Yes' : 'No'}`)
+  state.batteryCharging.value = batteryManager.charging as boolean
+}
+const onLevelChange = () => {
+  console.warn(`Battery level: ${batteryManager.level * 100}%`)
+  state.batteryLevel.value = batteryManager.level as number
 }
 
 onMounted(async () => {
@@ -129,10 +113,22 @@ onMounted(async () => {
     watchConnection()
   }
   if (batterySupports) {
-    await watchBattery()
+    /* eslint-disable */
+    batteryManager = await navigator.getBattery()
+
+    state.batteryCharging.value = batteryManager.charging
+    state.batteryLevel.value = batteryManager.level as number
+    /* eslint-enable */
+
+    batteryManager.addEventListener('chargingchange', onChargingChange)
+    batteryManager.addEventListener('levelchange', onLevelChange)
   }
 })
 onUnmounted(() => {
+  if (batteryManager) {
+    batteryManager.removeEventListener('chargingchange', onChargingChange)
+    batteryManager.removeEventListener('levelchange', onLevelChange)
+  }
   clearInterval(updateDate)
 })
 </script>
