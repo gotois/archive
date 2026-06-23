@@ -536,7 +536,6 @@ function onRemove() {
     try {
       await eventStore.deleteEvent(
         {
-          chatId: route.query.chatId,
           ids: [props.task.id_task],
         },
       )

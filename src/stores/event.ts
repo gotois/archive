@@ -112,7 +112,6 @@ export default defineStore('event', {
       console.log('Данные успешно изменены')
     },
     async deleteEvent(body: unknown) {
-      // TODO: Передавать только ids после переноса поиска chatId в SQLite на TG-сервере.
       const secretaryStore = useSecretaryStore()
 
       const headers = new Headers({
