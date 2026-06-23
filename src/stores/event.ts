@@ -88,9 +88,6 @@ export default defineStore('event', {
       console.log('Данные успешно добавлены')
     },
     async editEvent(body: any) {
-      const {...event} = body;
-      // TODO: После GET /event/:taskId передавать Telegram-метаданные события в PUT,
-      // пока TG-сервер не начнёт получать их сам из SQLite по id_task.
       const secretaryStore = useSecretaryStore()
       const geoStore = useGeoStore()
 
@@ -106,7 +103,7 @@ export default defineStore('event', {
       const response = await fetch(import.meta.env.server + '/event', {
         method: 'PUT',
         headers,
-        body: JSON.stringify(event),
+        body: JSON.stringify(body),
         credentials: 'include',
       })
       if (!response.ok) {

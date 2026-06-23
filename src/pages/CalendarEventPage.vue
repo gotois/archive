@@ -23,7 +23,7 @@
             ref="formRef"
             :task="task as any"
             :readonly="isViewMode"
-            :task-id="props.taskId"
+            :task-id="Number(props.taskId)"
             @saved="onSaved"
             @removed="onRemoved"
           />
@@ -74,13 +74,9 @@ const task = ref<Record<string, any> | null>(null)
 
 const isViewMode = computed(() => route.name === ROUTE_NAMES.VIEW)
 
-watch(() => isViewMode.value, () => {
+watch(() => isViewMode.value, (viewMode) => {
   mainButton.setParams({
-    text: 'Обновить',
-    backgroundColor: '#2481cc',
-    textColor: '#ffffff',
-    isEnabled: true,
-    isVisible: !isViewMode.value,
+    isVisible: !viewMode,
   })
 })
 
@@ -133,6 +129,13 @@ onMounted(() => {
   if (!mainButton.isMounted()) {
     mainButton.mount()
   }
+  mainButton.setParams({
+    text: 'Обновить',
+    backgroundColor: '#2481cc',
+    textColor: '#ffffff',
+    isEnabled: true,
+    isVisible: !isViewMode.value,
+  })
   mainButton.onClick(async () => {
     await formRef.value?.submit()
     postEvent('web_app_close')

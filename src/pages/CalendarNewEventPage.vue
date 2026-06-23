@@ -18,7 +18,7 @@
           ref="formRef"
           :task="emptyTask"
           :readonly="false"
-          task-id="new"
+          :task-id="null"
           @saved="onSaved"
         />
       </QCard>

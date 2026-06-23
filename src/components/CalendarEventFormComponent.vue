@@ -245,7 +245,7 @@
           />
           <QSpace />
           <QBtn
-            v-if="taskId !== 'new'"
+            v-if="taskId !== null"
             flat
             color="negative"
             icon="delete"
@@ -306,16 +306,21 @@ interface TaskObject {
 interface TargetOption {
   label: string
   value: {
-    type: 'Person' | 'Group'
+    type: 'Group'
     id: number
     name: string
+    messageId?: number
+  } | {
+    type: 'Person'
+    name: string
+    messageId?: number
   } | null
 }
 
 const props = defineProps<{
   task: TaskObject
   readonly: boolean
-  taskId: string | number
+  taskId: null | number
 }>()
 const emit = defineEmits<{
   (e: 'saved'): void
@@ -349,7 +354,7 @@ const remindOptions = [
   { label: 'За 1 час', value: 60 },
   { label: 'За 24 часа', value: 1440 },
 ]
-const isNew = props.taskId === 'new'
+const isNew = props.taskId === null
 
 function priorityLabel(priority?: number): string {
   return priorityOptions.find((o) => o.value === priority)?.label ?? '—'

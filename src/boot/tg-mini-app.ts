@@ -16,7 +16,7 @@ export default boot(({ router }: { router: Router }) => {
 
   if (typeof to === 'string') {
     router.isReady()
-      .then(() => router.replace(to))
+      .then(() => router.replace(decodeURIComponent(to)))
       .catch(error => console.error(error))
   }
   if (debug) {
