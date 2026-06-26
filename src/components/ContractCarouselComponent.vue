@@ -213,7 +213,6 @@ const fullscreen = ref(false)
 const color = ref('white')
 
 async function getColorFromImage(contentUrl: string) {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call
   const [{ color }]: { color: string }[] = await analyze(contentUrl, {
     scale: 0.7,
   })

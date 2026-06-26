@@ -125,15 +125,7 @@
 </template>
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
-import {
-  useQuasar,
-  QBtn,
-  QField,
-  QIcon,
-  QInput,
-  QForm,
-  copyToClipboard,
-} from 'quasar'
+import { useQuasar, QField, QIcon, QForm, copyToClipboard } from 'quasar'
 import { storeToRefs } from 'pinia'
 import useAuthStore from 'stores/auth'
 import useProfileStore from 'stores/profile'

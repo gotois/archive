@@ -4,6 +4,7 @@ import vueParser from 'vue-eslint-parser';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 import prettierPlugin from 'eslint-plugin-prettier';
+import prettierConfig from 'eslint-config-prettier';
 import baseConfig from '../eslint.config.base.js';
 
 const APP_FILES = ['src/**/*.vue', 'src/**/*.ts', 'src/**/*.js', 'src-boot/**/*.ts'];
@@ -22,6 +23,15 @@ export default [
     ],
   },
   ...vuePlugin.configs['flat/recommended'],
+  prettierConfig,
+  {
+    files: ['*.config.mjs', '.postcssrc.cjs'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
   {
     files: APP_FILES,
     languageOptions: {

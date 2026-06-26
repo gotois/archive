@@ -468,7 +468,6 @@ import QOtp from 'quasar-app-extension-q-otp/src/component/QOtp.vue'
 import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
 import usePodStore from 'stores/pod'
-import useSecretaryStore from 'stores/secretary'
 import useNotification from 'stores/notification'
 import useLayoutStore from 'stores/layout'
 import useTFAStore from 'stores/tfa'
@@ -517,7 +516,6 @@ const contractStore = useContractStore()
 const layoutStore = useLayoutStore()
 const notificationStore = useNotification()
 const podStore = usePodStore()
-const secretaryStore = useSecretaryStore()
 const tfaStore = useTFAStore()
 
 const NOTIFICATION_TIMER = 30000

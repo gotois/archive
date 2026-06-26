@@ -28,12 +28,7 @@ async function getOrCreateSubscription(): Promise<PushSubscription> {
     }),
     new Promise<never>((_, reject) =>
       setTimeout(
-        () =>
-          reject(
-            new Error(
-              'subscribe timed out — check FCM connectivity',
-            ),
-          ),
+        () => reject(new Error('subscribe timed out — check FCM connectivity')),
         3000,
       ),
     ),
@@ -41,18 +36,21 @@ async function getOrCreateSubscription(): Promise<PushSubscription> {
 }
 
 export async function sendSubscriptionToServer(subscription: PushSubscription) {
-  const response = await fetch(import.meta.env.secretary + '/web/push/subscribe', {
-    method: 'POST',
-    credentials: 'include',
-    body: JSON.stringify({
-      ...subscription.toJSON(),
-      userAgent: navigator.userAgent,
-    }),
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
+  const response = await fetch(
+    import.meta.env.secretary + '/web/push/subscribe',
+    {
+      method: 'POST',
+      credentials: 'include',
+      body: JSON.stringify({
+        ...subscription.toJSON(),
+        userAgent: navigator.userAgent,
+      }),
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
     },
-  })
+  )
   if (!response.ok) {
     throw new Error('Unable to send subscription')
   }

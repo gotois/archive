@@ -74,11 +74,14 @@ const task = ref<Record<string, any> | null>(null)
 
 const isViewMode = computed(() => route.name === ROUTE_NAMES.VIEW)
 
-watch(() => isViewMode.value, (viewMode) => {
-  mainButton.setParams({
-    isVisible: !viewMode,
-  })
-})
+watch(
+  () => isViewMode.value,
+  (viewMode) => {
+    mainButton.setParams({
+      isVisible: !viewMode,
+    })
+  },
+)
 
 const metaData = {
   'title': $t('pages.calendar.title'),

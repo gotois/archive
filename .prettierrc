@@ -9,6 +9,7 @@
   "htmlWhitespaceSensitivity": "strict",
   "useTabs": false,
   "bracketSpacing": true,
+  "singleAttributePerLine": true,
   "trailingComma": "all",
   "proseWrap": "preserve",
   "arrowParens": "always",

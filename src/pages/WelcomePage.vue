@@ -53,7 +53,9 @@
             v-if="$q.platform.is.desktop"
             name="img:/icons/safari-pinned-tab.svg"
           />
-          <span class="q-ml-xs text-accent text-weight-bolder">Подключиться</span>
+          <span class="q-ml-xs text-accent text-weight-bolder">
+            Подключиться
+          </span>
         </QBtn>
       </QCardActions>
 
@@ -107,7 +109,9 @@
         }"
       >
         <QCardSection>
-          <div class="text-subtitle1 text-weight-bold">Секретарь — платформа календарей для сообществ Telegram.</div>
+          <div class="text-subtitle1 text-weight-bold">
+            Секретарь — платформа календарей для сообществ Telegram.
+          </div>
           <div class="q-mt-sm">
             <b>Принцип работы:</b>
             <ul>
@@ -146,8 +150,10 @@
         <QList>
           <QItem>
             <QItemSection avatar>
-              <QIcon color="accent"
-name="psychology" />
+              <QIcon
+                color="accent"
+                name="psychology"
+              />
             </QItemSection>
             <QItemSection>
               <QItemLabel>Понимает цели на русском языке</QItemLabel>
@@ -159,8 +165,10 @@ name="psychology" />
           </QItem>
           <QItem>
             <QItemSection avatar>
-              <QIcon color="accent"
-name="sort" />
+              <QIcon
+                color="accent"
+                name="sort"
+              />
             </QItemSection>
             <QItemSection>
               <QItemLabel>Автоматически расставляет приоритеты</QItemLabel>
@@ -172,8 +180,10 @@ name="sort" />
           </QItem>
           <QItem>
             <QItemSection avatar>
-              <QIcon color="accent"
-name="calendar_today" />
+              <QIcon
+                color="accent"
+                name="calendar_today"
+              />
             </QItemSection>
             <QItemSection>
               <QItemLabel>Сразу показывает задачи во времени</QItemLabel>
@@ -184,8 +194,10 @@ name="calendar_today" />
           </QItem>
           <QItem>
             <QItemSection avatar>
-              <QIcon color="accent"
-name="sync" />
+              <QIcon
+                color="accent"
+                name="sync"
+              />
             </QItemSection>
             <QItemSection>
               <QItemLabel>Интегрируется с другими сервисами</QItemLabel>
@@ -197,11 +209,15 @@ name="sync" />
         </QList>
         <QCardSection class="q-pt-none text-left">
           1. Создание и регистрация* документов
-          <QSeparator spaced
-inset />
+          <QSeparator
+            spaced
+            inset
+          />
           2. Организация движения* и учета документов*
-          <QSeparator spaced
-inset />
+          <QSeparator
+            spaced
+            inset
+          />
           3. Хранение документов
         </QCardSection>
         <div>* В разработке</div>
@@ -286,8 +302,8 @@ inset />
             Обеспечение согласованности в управлении временем между участниками
           </div>
           <div class="text-subtitle2">
-            1. Создание расписания и его синхронизация с внешними системами.<br >
-            2. Рекомендации по приоритетам на основе анализа данных.<br >
+            1. Создание расписания и его синхронизация с внешними системами.<br />
+            2. Рекомендации по приоритетам на основе анализа данных.<br />
             3. Хранение, обновление и автоматическая передача договора.
           </div>
         </QCardSection>
@@ -412,10 +428,14 @@ inset />
             flat
             class="bg-grey-2 text-dark rounded-borders q-pa-sm q-mb-xs"
           >
-            <QIcon name="mic"
-size="xs" class="q-mr-xs" />
-            <em>«Напомни прочитать договор, когда приду домой и сяду за
-              компьютер»</em>
+            <QIcon
+              name="mic"
+              size="xs"
+              class="q-mr-xs"
+            />
+            <em>
+              «Напомни прочитать договор, когда приду домой и сяду за компьютер»
+            </em>
           </QCard>
           <div class="text-caption text-grey-7 q-mt-xs">
             Секретарь сам поймёт, где и когда вы сможете выполнить задачу, и
@@ -746,8 +766,7 @@ size="xs" class="q-mr-xs" />
           color="white"
         />
       </template>
-      Система, где задачи «летают» между разными
-      людьми и ботами
+      Система, где задачи «летают» между разными людьми и ботами
     </QBanner>
 
     <QList
@@ -760,7 +779,10 @@ size="xs" class="q-mr-xs" />
     >
       <QItem>
         <QItemSection avatar>
-          <QIcon color="accent" name="electrical_services" />
+          <QIcon
+            color="accent"
+            name="electrical_services"
+          />
         </QItemSection>
         <QItemSection>
           <QItemLabel>Подключение любых MCP клиентов</QItemLabel>
@@ -781,7 +803,10 @@ size="xs" class="q-mr-xs" />
       </QItem>
       <QItem>
         <QItemSection avatar>
-          <QIcon color="accent" name="event" />
+          <QIcon
+            color="accent"
+            name="event"
+          />
         </QItemSection>
         <QItemSection>
           <QItemLabel>Единый стандарт данных iCal</QItemLabel>
@@ -789,7 +814,10 @@ size="xs" class="q-mr-xs" />
       </QItem>
       <QItem>
         <QItemSection avatar>
-          <QIcon color="accent" name="verified" />
+          <QIcon
+            color="accent"
+            name="verified"
+          />
         </QItemSection>
         <QItemSection>
           <QItemLabel>
@@ -799,7 +827,10 @@ size="xs" class="q-mr-xs" />
       </QItem>
       <QItem>
         <QItemSection avatar>
-          <QIcon color="accent" name="history" />
+          <QIcon
+            color="accent"
+            name="history"
+          />
         </QItemSection>
         <QItemSection>
           <QItemLabel>Прозрачная история действий (Outbox)</QItemLabel>
@@ -864,11 +895,17 @@ size="xs" class="q-mr-xs" />
         <QCardSection>
           <ul>
             <li><b>Три события в месяц</b> бесплатно в одном сообществе</li>
-            <li><b>White label решение:</b> 50к разово + поддержка за каждый тикет</li>
-            <li><b>Self-hosted решение:</b> 20к за setup файл
+            <li>
+              <b>White label решение:</b> 50к разово + поддержка за каждый тикет
+            </li>
+            <li>
+              <b>Self-hosted решение:</b> 20к за setup файл
               <ul>
                 <li>Клиент покупает ключ</li>
-                <li>Клиент сам платит за расход ИИ и сам организует себе сервер.</li>
+                <li
+                  >Клиент сам платит за расход ИИ и сам организует себе
+                  сервер.</li
+                >
               </ul>
             </li>
           </ul>
@@ -1122,7 +1159,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import useLangStore from 'stores/lang'
 import PricingComponent from 'components/PricingComponent.vue'
-import { ROUTE_NAMES, STEP } from '@/router/routes'
+import { ROUTE_NAMES } from '@/router/routes'
 import { GOOGLE_PLAY_URL } from '@/helpers/googlePlayHelper'
 import { TELEGRAM_BOT_NAME } from '../services/telegram'
 import { open } from '../helpers/urlHelper'

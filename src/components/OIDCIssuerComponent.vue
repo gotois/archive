@@ -66,11 +66,7 @@ defineProps({
 
 const giсHostname = new URL(import.meta.env.secretary).host
 
-const loginOptions = ref([
-  giсHostname,
-  'login.inrupt.com',
-  'login.inrupt.net',
-])
+const loginOptions = ref([giсHostname, 'login.inrupt.com', 'login.inrupt.net'])
 const oidcIssuer = ref(giсHostname)
 const prefix = ref('https://')
 

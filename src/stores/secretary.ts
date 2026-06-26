@@ -16,8 +16,7 @@ export default defineStore('secretary', {
     password: LocalStorage.getItem('password') ?? null,
   }),
   actions: {
-    logout() {
-    },
+    logout() {},
   },
   getters: {
     auth(store): string | null {

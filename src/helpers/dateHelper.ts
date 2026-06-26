@@ -12,9 +12,7 @@ export function formatDate(x: Date): string {
 
 export function convertTemporalToDate(temporal: Temporal.ZonedDateTime) {
   return new Date(
-    temporal
-      .toPlainDateTime()
-      .toZonedDateTime(Temporal.Now.timeZoneId())
+    temporal.toPlainDateTime().toZonedDateTime(Temporal.Now.timeZoneId())
       .epochMilliseconds,
   )
 }

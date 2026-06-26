@@ -102,10 +102,16 @@
             </div>
           </template>
         </ScheduleXCalendar>
-        <div v-else-if="isPending" class="absolute-full flex flex-center">
+        <div
+          v-else-if="isPending"
+          class="absolute-full flex flex-center"
+        >
           <QSpinner size="5em" />
         </div>
-        <div v-else class="flex justify-center">
+        <div
+          v-else
+          class="flex justify-center"
+        >
           <h1
             class="text-primary text-uppercase text-center text-weight-light no-padding"
           >
@@ -144,7 +150,6 @@ import {
   createCalendar,
   createViewDay,
   type CalendarApp,
-  type CalendarEventExternal,
 } from '@schedule-x/calendar'
 import { createIcalendarPlugin } from '@schedule-x/ical'
 import { createCurrentTimePlugin } from '@schedule-x/current-time'

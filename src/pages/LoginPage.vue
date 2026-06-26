@@ -47,7 +47,10 @@
             name="img:/icons/safari-pinned-tab.svg"
             size="128px"
           />
-          <p v-show="$q.platform.is.desktop" class="text-h4 text-center">
+          <p
+            v-show="$q.platform.is.desktop"
+            class="text-h4 text-center"
+          >
             {{ $t('tutorial.welcome.title') }}
           </p>
           <div
@@ -265,7 +268,6 @@ import { EVENTS } from '@inrupt/solid-client-authn-core'
 import { isTMA } from '../composables/detector'
 import pkg from '../../package.json'
 import { STEP } from '@/router/routes'
-import type { VerifiableCredential } from '../types/models'
 import {
   mainButton,
   popup,
@@ -295,8 +297,6 @@ const TOKEN_TYPE = 'DPoP'
 const scroll = ref<InstanceType<typeof QScrollArea> | null>(null)
 const stepper = ref<InstanceType<typeof QStepper> | null>(null)
 const step = ref(getCurrentStep() ?? STEP.WELCOME)
-
-const { phone, email } = storeToRefs(profileStore)
 
 watch(
   () => step.value,
@@ -424,6 +424,7 @@ async function solidAuth({
   if (!sessionInfo) {
     return login({
       oidcIssuer,
+      redirectUrl,
       tokenType: TOKEN_TYPE,
     })
   }
@@ -443,6 +444,7 @@ async function solidAuth({
   }
   return login({
     oidcIssuer,
+    redirectUrl,
     tokenType: TOKEN_TYPE,
   })
 }
@@ -575,7 +577,7 @@ async function onMainButtonClick() {
     if (!requestContact.isSupported()) {
       throw new Error('RequestContact is not supported')
     }
-    const requestedContact = await requestContact()
+    await requestContact()
 
     if (hapticFeedbackNotificationOccurred.isAvailable()) {
       hapticFeedbackNotificationOccurred('success')

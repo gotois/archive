@@ -48,19 +48,24 @@ export default defineStore('event', {
         headers.set('Authorization', secretaryStore.auth)
       }
 
-      const response = await fetch(import.meta.env.server + `/event/${taskId}`, {
-        method: 'GET',
-        headers,
-        credentials: 'include',
-      })
+      const response = await fetch(
+        import.meta.env.server + `/event/${taskId}`,
+        {
+          method: 'GET',
+          headers,
+          credentials: 'include',
+        },
+      )
       if (!response.ok) {
         throw new Error('Unable to load task')
       }
       const result = await response.json()
       return result
     },
-    async createEvent(body: any) {
-      const {...event} = body;
+    // TODO: описать входную модель события и убрать `any`: деструктуризация ниже не
+    // валидирует payload, поэтому UI может отправить в API произвольные поля.
+    async createEvent(body: Record<string, unknown>) {
+      const { ...event } = body
       const secretaryStore = useSecretaryStore()
       const geoStore = useGeoStore()
 
@@ -87,7 +92,7 @@ export default defineStore('event', {
       }
       console.log('Данные успешно добавлены')
     },
-    async editEvent(body: any) {
+    async editEvent(body: Record<string, unknown>) {
       const secretaryStore = useSecretaryStore()
       const geoStore = useGeoStore()
 
@@ -107,7 +112,7 @@ export default defineStore('event', {
         credentials: 'include',
       })
       if (!response.ok) {
-        throw new Error(await response.text() || 'Response failed')
+        throw new Error((await response.text()) || 'Response failed')
       }
       console.log('Данные успешно изменены')
     },
@@ -130,6 +135,6 @@ export default defineStore('event', {
         throw new Error('Response failed')
       }
       console.log('Данные успешно удалены')
-    }
+    },
   },
 })

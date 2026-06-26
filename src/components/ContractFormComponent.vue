@@ -149,7 +149,7 @@
           :disable="
             Boolean(
               contract.credentialSubject.startTime ||
-                contract.credentialSubject.endTime,
+              contract.credentialSubject.endTime,
             )
           "
           color="secondary"

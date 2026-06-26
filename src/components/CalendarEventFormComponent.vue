@@ -6,25 +6,50 @@
         <p class="text-h6 q-mb-sm">
           {{ task.name }}
         </p>
-        <div v-if="task.description" class="text-body2 text-grey q-mb-sm">
+        <div
+          v-if="task.description"
+          class="text-body2 text-grey q-mb-sm"
+        >
           {{ task.description }}
         </div>
         <div class="text-caption q-mb-xs">
-          <QIcon name="schedule" class="q-mr-xs" />
+          <QIcon
+            name="schedule"
+            class="q-mr-xs"
+          />
           {{ prettyDate(task.start_date, task.end_date) }}
         </div>
-        <div v-if="task.location" class="text-caption q-mb-xs">
-          <QIcon name="place" class="q-mr-xs" />
+        <div
+          v-if="task.location"
+          class="text-caption q-mb-xs"
+        >
+          <QIcon
+            name="place"
+            class="q-mr-xs"
+          />
           {{ task.location }}
         </div>
-        <div v-if="task.link_meeting" class="text-caption q-mb-xs">
-          <QIcon name="videocam" class="q-mr-xs" />
-          <a :href="task.link_meeting" target="_blank" rel="noopener">
+        <div
+          v-if="task.link_meeting"
+          class="text-caption q-mb-xs"
+        >
+          <QIcon
+            name="videocam"
+            class="q-mr-xs"
+          />
+          <a
+            :href="task.link_meeting"
+            target="_blank"
+            rel="noopener"
+          >
             {{ task.link_meeting }}
           </a>
         </div>
         <div class="text-caption">
-          <QIcon name="flag" class="q-mr-xs" />
+          <QIcon
+            name="flag"
+            class="q-mr-xs"
+          />
           {{ priorityLabel(task.priority) }}
         </div>
       </QCardSection>
@@ -37,11 +62,26 @@
           flat
           icon="more_vert"
         >
-          <QMenu transition-show="jump-down" transition-duration="200">
-            <QList bordered separator padding :dense="$q.platform.is.desktop">
-              <QItem v-close-popup clickable @click="onGoToEdit">
+          <QMenu
+            transition-show="jump-down"
+            transition-duration="200"
+          >
+            <QList
+              bordered
+              separator
+              padding
+              :dense="$q.platform.is.desktop"
+            >
+              <QItem
+                v-close-popup
+                clickable
+                @click="onGoToEdit"
+              >
                 <QItemSection side>
-                  <QItemLabel overline caption>
+                  <QItemLabel
+                    overline
+                    caption
+                  >
                     {{ $t('archiveList.pod') }}
                   </QItemLabel>
                   <QItemLabel class="text-uppercase">
@@ -49,9 +89,16 @@
                   </QItemLabel>
                 </QItemSection>
               </QItem>
-              <QItem v-close-popup clickable @click="onRemove">
+              <QItem
+                v-close-popup
+                clickable
+                @click="onRemove"
+              >
                 <QItemSection side>
-                  <QItemLabel overline caption>
+                  <QItemLabel
+                    overline
+                    caption
+                  >
                     {{ $t('archiveList.pod') }}
                   </QItemLabel>
                   <QItemLabel class="text-negative text-uppercase">
@@ -98,27 +145,45 @@
           :dense="$q.platform.is.desktop"
         >
           <template #append>
-            <QIcon name="event" class="cursor-pointer">
+            <QIcon
+              name="event"
+              class="cursor-pointer"
+            >
               <QPopupProxy
                 cover
                 transition-show="scale"
                 transition-hide="scale"
               >
                 <QCard>
-                  <QTabs v-model="startDateTimeTab" dense>
-                    <QTab name="date" label="Дата" />
-                    <QTab name="time" label="Время" />
+                  <QTabs
+                    v-model="startDateTimeTab"
+                    dense
+                  >
+                    <QTab
+                      name="date"
+                      label="Дата"
+                    />
+                    <QTab
+                      name="time"
+                      label="Время"
+                    />
                   </QTabs>
                   <QSeparator />
                   <QTabPanels v-model="startDateTimeTab">
-                    <QTabPanel name="date" class="q-pa-none">
+                    <QTabPanel
+                      name="date"
+                      class="q-pa-none"
+                    >
                       <QDate
                         v-model="form.start_date"
                         mask="YYYY-MM-DD HH:mm"
                         minimal
                       />
                     </QTabPanel>
-                    <QTabPanel name="time" class="q-pa-none">
+                    <QTabPanel
+                      name="time"
+                      class="q-pa-none"
+                    >
                       <QTime
                         v-model="form.start_date"
                         mask="YYYY-MM-DD HH:mm"
@@ -140,27 +205,45 @@
           :dense="$q.platform.is.desktop"
         >
           <template #append>
-            <QIcon name="event" class="cursor-pointer">
+            <QIcon
+              name="event"
+              class="cursor-pointer"
+            >
               <QPopupProxy
                 cover
                 transition-show="scale"
                 transition-hide="scale"
               >
                 <QCard>
-                  <QTabs v-model="endDateTimeTab" dense>
-                    <QTab name="date" label="Дата" />
-                    <QTab name="time" label="Время" />
+                  <QTabs
+                    v-model="endDateTimeTab"
+                    dense
+                  >
+                    <QTab
+                      name="date"
+                      label="Дата"
+                    />
+                    <QTab
+                      name="time"
+                      label="Время"
+                    />
                   </QTabs>
                   <QSeparator />
                   <QTabPanels v-model="endDateTimeTab">
-                    <QTabPanel name="date" class="q-pa-none">
+                    <QTabPanel
+                      name="date"
+                      class="q-pa-none"
+                    >
                       <QDate
                         v-model="form.end_date"
                         mask="YYYY-MM-DD HH:mm"
                         minimal
                       />
                     </QTabPanel>
-                    <QTabPanel name="time" class="q-pa-none">
+                    <QTabPanel
+                      name="time"
+                      class="q-pa-none"
+                    >
                       <QTime
                         v-model="form.end_date"
                         mask="YYYY-MM-DD HH:mm"
@@ -235,7 +318,10 @@
           map-options
           :dense="$q.platform.is.desktop"
         />
-        <QCardActions v-if="!isTMA" class="q-px-none">
+        <QCardActions
+          v-if="!isTMA"
+          class="q-px-none"
+        >
           <QBtn
             type="submit"
             color="primary"
@@ -340,20 +426,25 @@ const ownTarget: TargetOption = {
   label: 'Себе',
   value: null,
 }
-const telegramTargetType = props.task.targetType === 'Person' ? 'Person' : 'Group'
-const telegramTargetName = props.task.targetName || `${telegramTargetType} ${props.task.chatId}`
-const telegramTarget: TargetOption | undefined = typeof props.task.chatId === 'number'
-  ? {
-      label: telegramTargetName,
-      value: {
-        type: telegramTargetType,
-        id: props.task.chatId,
-        name: telegramTargetName,
-        messageId: props.task.messageId,
-      },
-    }
-  : undefined
-const targetOptions = ref<TargetOption[]>(telegramTarget ? [ownTarget, telegramTarget] : [ownTarget])
+const telegramTargetType =
+  props.task.targetType === 'Person' ? 'Person' : 'Group'
+const telegramTargetName =
+  props.task.targetName || `${telegramTargetType} ${props.task.chatId}`
+const telegramTarget: TargetOption | undefined =
+  typeof props.task.chatId === 'number'
+    ? {
+        label: telegramTargetName,
+        value: {
+          type: telegramTargetType,
+          id: props.task.chatId,
+          name: telegramTargetName,
+          messageId: props.task.messageId,
+        },
+      }
+    : undefined
+const targetOptions = ref<TargetOption[]>(
+  telegramTarget ? [ownTarget, telegramTarget] : [ownTarget],
+)
 const startDateTimeTab = ref('date')
 const endDateTimeTab = ref('date')
 const priorityOptions = [
@@ -389,9 +480,7 @@ async function filterTargets(
 
   targetLoading.value = true
   try {
-    const groups = await eventStore.getTelegramGroups(
-      query,
-    )
+    const groups = await eventStore.getTelegramGroups(query)
 
     update(() => {
       targetOptions.value = groups.map((group) => ({
@@ -410,20 +499,22 @@ async function filterTargets(
   }
 }
 
-const form = reactive<Omit<TaskObject, 'id_task'> & { target: TargetOption[] }>({
-  name: props.task.name || 'Новое событие',
-  description: props.task.description,
-  start_date: toDatetimeLocal(props.task.start_date).replace('T', ' '),
-  end_date: toDatetimeLocal(props.task.end_date).replace('T', ' '),
-  location: props.task.location,
-  link_meeting: props.task.link_meeting,
-  priority: props.task.priority ?? 2,
-  remind_before:
-    typeof props.task.remind_before === 'number'
-      ? Math.floor(props.task.remind_before) / 60
-      : null,
-  target: [telegramTarget ?? ownTarget],
-})
+const form = reactive<Omit<TaskObject, 'id_task'> & { target: TargetOption[] }>(
+  {
+    name: props.task.name || 'Новое событие',
+    description: props.task.description,
+    start_date: toDatetimeLocal(props.task.start_date).replace('T', ' '),
+    end_date: toDatetimeLocal(props.task.end_date).replace('T', ' '),
+    location: props.task.location,
+    link_meeting: props.task.link_meeting,
+    priority: props.task.priority ?? 2,
+    remind_before:
+      typeof props.task.remind_before === 'number'
+        ? Math.floor(props.task.remind_before) / 60
+        : null,
+    target: [telegramTarget ?? ownTarget],
+  },
+)
 
 watch(
   () => form.start_date,
@@ -458,19 +549,17 @@ async function onSave(): Promise<void> {
   }
   saving.value = true
   try {
-    await eventStore.createEvent(
-      {
-        name: form.name,
-        description: form.description || undefined,
-        start_date: new Date(form.start_date),
-        end_date: form.end_date ? new Date(form.end_date) : undefined,
-        location: form.location || undefined,
-        link_meeting: form.link_meeting || undefined,
-        target: form.target.map((target) => target.value),
-        priority: form.priority,
-        remind_before: form.remind_before,
-      },
-    )
+    await eventStore.createEvent({
+      name: form.name,
+      description: form.description || undefined,
+      start_date: new Date(form.start_date),
+      end_date: form.end_date ? new Date(form.end_date) : undefined,
+      location: form.location || undefined,
+      link_meeting: form.link_meeting || undefined,
+      target: form.target.map((target) => target.value),
+      priority: form.priority,
+      remind_before: form.remind_before,
+    })
     emit('saved')
   } catch (error: Error | unknown) {
     console.error(error)
@@ -490,20 +579,18 @@ async function onEdit(): Promise<void> {
   }
   saving.value = true
   try {
-    await eventStore.editEvent(
-      {
-        id_task: Number(props.taskId),
-        name: form.name,
-        description: form.description || undefined,
-        start_date: new Date(form.start_date),
-        end_date: form.end_date ? new Date(form.end_date) : undefined,
-        location: form.location || undefined,
-        link_meeting: form.link_meeting || undefined,
-        priority: form.priority,
-        remind_before: form.remind_before,
-        target: form.target.map((target) => target.value),
-      },
-    )
+    await eventStore.editEvent({
+      id_task: Number(props.taskId),
+      name: form.name,
+      description: form.description || undefined,
+      start_date: new Date(form.start_date),
+      end_date: form.end_date ? new Date(form.end_date) : undefined,
+      location: form.location || undefined,
+      link_meeting: form.link_meeting || undefined,
+      priority: form.priority,
+      remind_before: form.remind_before,
+      target: form.target.map((target) => target.value),
+    })
     emit('saved')
   } catch (error: Error | unknown) {
     console.error(error)
@@ -534,11 +621,9 @@ function onRemove() {
     cancel: { label: 'Отмена', flat: true },
   }).onOk(async () => {
     try {
-      await eventStore.deleteEvent(
-        {
-          ids: [props.task.id_task],
-        },
-      )
+      await eventStore.deleteEvent({
+        ids: [props.task.id_task],
+      })
       emit('removed')
     } catch (error: Error | unknown) {
       console.error(error)

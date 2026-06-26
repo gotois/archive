@@ -210,7 +210,7 @@ const podStore = usePodStore()
 const { isLoggedIn } = storeToRefs(authStore)
 // const { publicKey } = storeToRefs(walletStore)
 
-const emit = defineEmits(['remove', 'edit'])
+defineEmits(['remove', 'edit'])
 const props = defineProps({
   eventId: {
     type: String as PropType<string>,

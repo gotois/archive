@@ -1,7 +1,9 @@
 <template>
   <div>
-    <QForm greedy
-@submit="onImportDB">
+    <QForm
+      greedy
+      @submit="onImportDB"
+    >
       <QFile
         v-model="file"
         accept=".json,.zip"
@@ -20,8 +22,10 @@
           {{ $t('database.fileSize') }}
         </QTooltip>
         <template #prepend>
-          <QIcon name="attach_file"
-@click.stop.prevent />
+          <QIcon
+            name="attach_file"
+            @click.stop.prevent
+          />
         </template>
       </QFile>
       <QBtn
