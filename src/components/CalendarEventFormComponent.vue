@@ -567,6 +567,7 @@ async function onSave(): Promise<void> {
       type: 'negative',
       message: error?.message ?? 'Ошибка сохранения',
     })
+    throw error
   } finally {
     saving.value = false
   }
@@ -598,6 +599,7 @@ async function onEdit(): Promise<void> {
       type: 'negative',
       message: error?.message ?? 'Ошибка обновления',
     })
+    throw error
   } finally {
     saving.value = false
   }
@@ -611,7 +613,9 @@ async function submit(): Promise<void> {
   }
 }
 
-defineExpose({ submit })
+defineExpose({
+  submit,
+})
 
 function onRemove() {
   $q.dialog({
