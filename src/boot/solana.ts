@@ -1,3 +1,5 @@
+// todo - думаю это стоит перенести в OIDC interaction login
+
 import { useI18n } from 'vue-i18n'
 import { useQuasar } from 'quasar'
 import { boot } from 'quasar/wrappers'

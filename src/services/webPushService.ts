@@ -1,4 +1,5 @@
 async function getVapidPublicKey(): Promise<string> {
+  // todo перепаковать вызов через tg вместо напрямую к секретарю
   const response = await fetch(import.meta.env.secretary + '/actor/vapid')
   const { publicKey } = (await response.json()) as { publicKey: string }
   return publicKey
@@ -21,6 +22,8 @@ async function getOrCreateSubscription(): Promise<PushSubscription> {
   }
 
   const publicKey = await getVapidPublicKey()
+  // TODO: заменить Promise.race на отменяемый timeout. Таймер продолжает жить после
+  // успешной подписки и усложняет диагностику зависших/повторных вызовов.
   return Promise.race([
     registration.pushManager.subscribe({
       userVisibleOnly: true,

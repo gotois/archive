@@ -107,6 +107,9 @@ async function syncGoogleCalendar() {
     throw new Error('Failed to import Google Calendar')
   }
   const events = await response.json()
+  // TODO: заменить этот прототип импорта на типизированный mapper. Сейчас берётся `event`,
+  // а ниже сохраняются поля из постороннего `verifiedCredential`; импорт либо падает,
+  // либо создаёт данные не из ответа Google.
   // TODO после записи нужно сбрасывать queryString чтобы код не сохранялся
   // ...
   alert('WIP...')
