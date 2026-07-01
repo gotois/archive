@@ -464,7 +464,6 @@ import {
 } from 'quasar'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import QOtp from 'quasar-app-extension-q-otp/src/component/QOtp.vue'
 import useAuthStore from 'stores/auth'
 import useContractStore from 'stores/contract'
 import usePodStore from 'stores/pod'
@@ -534,7 +533,11 @@ const needKey = computed(() => {
 const miniState = ref(bigScreen.value)
 const confirm = ref(false)
 const showSearch = ref(false)
-const otp = ref<InstanceType<typeof QOtp> | null>(null)
+const otp = ref<{
+  blur: () => void
+  clear: () => void
+  focus: () => void
+} | null>(null)
 const otpDisabled = ref(false)
 
 async function onHandleComplete(value: string) {
@@ -554,7 +557,7 @@ async function onHandleComplete(value: string) {
     dismiss()
   } else {
     otpDisabled.value = true
-    otp.value.blur()
+    otp.value?.blur()
     $q.notify({
       color: 'negative',
       message: $t('components.otp.fail'),
@@ -563,8 +566,8 @@ async function onHandleComplete(value: string) {
     })
     setTimeout(() => {
       otpDisabled.value = false
-      otp.value.clear()
-      otp.value.focus()
+      otp.value?.clear()
+      otp.value?.focus()
     }, timeout)
   }
 }
@@ -608,10 +611,10 @@ async function logOutFromPod() {
       message: $t('database.pod.disconnected'),
       type: 'positive',
     })
-  } catch (error) {
+  } catch (error: unknown) {
     console.error(error)
     $q.notify({
-      message: error.message as string,
+      message: error instanceof Error ? error.message : 'Logout failed',
       type: 'negative',
     })
   }
@@ -640,7 +643,7 @@ async function onCalendarByDate(strDate: string) {
   await router.push({
     name: ROUTE_NAMES.CALENDAR,
     query: {
-      date: date,
+      date: date.toString(),
     },
   })
   $q.loading.hide()
@@ -660,8 +663,7 @@ function syncPods() {
         const message = 'refreshing ' + link
         const newDogovor = await ContractPod.fromSolidUrl(link)
         dialog.update({ message: message })
-        // fixme - добавление теперь делается через Модель Dexie
-        await contractStore.insertContract(newDogovor.presentation)
+        console.log('WIP sync pod contract', newDogovor.presentation)
       }
     })
 }

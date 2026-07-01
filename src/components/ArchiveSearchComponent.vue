@@ -16,7 +16,7 @@
         <InputComponent
           :autofocus="$q.platform.is.desktop"
           :label="$t('searchDialog.searchText')"
-          @search="(value) => emit('search', value)"
+          @search="(value: string) => emit('search', value)"
         />
       </QCardSection>
       <QCardActions

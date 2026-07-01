@@ -94,15 +94,13 @@ function signalIcon(connectionType: string) {
 }
 
 function watchConnection() {
-  /* eslint-disable */
-  state.connectionType.value = navigator.connection.effectiveType
+  state.connectionType = navigator.connection?.effectiveType ?? ''
   navigator.connection.addEventListener('change', () => {
     console.warn(
       `Connection type changed to ${navigator.connection.effectiveType}`,
     )
-    state.connectionType.value = navigator.connection.effectiveType as string
+    state.connectionType = navigator.connection?.effectiveType ?? ''
   })
-  /* eslint-enable */
 }
 
 let batteryManager: {
@@ -113,11 +111,11 @@ let batteryManager: {
 }
 const onChargingChange = () => {
   console.warn(`Battery charging - ${batteryManager.charging ? 'Yes' : 'No'}`)
-  state.batteryCharging.value = batteryManager.charging as boolean
+  state.batteryCharging = batteryManager.charging
 }
 const onLevelChange = () => {
   console.warn(`Battery level: ${batteryManager.level * 100}%`)
-  state.batteryLevel.value = batteryManager.level as number
+  state.batteryLevel = batteryManager.level
 }
 
 onMounted(async () => {
@@ -125,12 +123,10 @@ onMounted(async () => {
     watchConnection()
   }
   if (batterySupports) {
-    /* eslint-disable */
     batteryManager = await navigator.getBattery()
 
-    state.batteryCharging.value = batteryManager.charging
-    state.batteryLevel.value = batteryManager.level as number
-    /* eslint-enable */
+    state.batteryCharging = batteryManager.charging
+    state.batteryLevel = batteryManager.level
 
     batteryManager.addEventListener('chargingchange', onChargingChange)
     batteryManager.addEventListener('levelchange', onLevelChange)

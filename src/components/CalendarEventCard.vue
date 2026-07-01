@@ -72,7 +72,6 @@ import { PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { storeToRefs } from 'pinia'
 import { QCard, QCardSection, QPopupProxy, date, useQuasar } from 'quasar'
-import type { Temporal } from '@js-temporal/polyfill'
 import { useRouter } from 'vue-router'
 import TaskFull from 'components/TaskFull.vue'
 import useContractStore from 'stores/contract'
@@ -107,11 +106,17 @@ const props = defineProps({
     required: true,
   },
   start: {
-    type: Object as PropType<Temporal.ZonedDateTime>,
+    type: Object as PropType<{
+      toPlainDateTime?: () => unknown
+      toString: () => string
+    }>,
     required: true,
   },
   end: {
-    type: Object as PropType<Temporal.ZonedDateTime>,
+    type: Object as PropType<{
+      toPlainDateTime?: () => unknown
+      toString: () => string
+    }>,
     required: true,
   },
   location: {
@@ -124,19 +129,19 @@ const props = defineProps({
   },
   attaches: {
     type: Array as PropType<FormatImageType[]>,
-    default: null,
+    default: (): FormatImageType[] => [],
   },
   organizer: {
     type: Object as PropType<Agent>,
-    default: () => {},
+    default: (): Agent => ({ type: 'Person', name: '' }),
   },
   participant: {
     type: Array as PropType<Agent[]>,
-    default: () => [],
+    default: (): Agent[] => [],
   },
   tag: {
     type: Array as PropType<string[]>,
-    default: () => [],
+    default: (): string[] => [],
   },
   link: {
     type: String as PropType<string>,

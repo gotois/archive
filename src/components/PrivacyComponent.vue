@@ -11,6 +11,6 @@ const html = ref('')
 onMounted(async () => {
   const response = await fetch('docs/privacy.md')
   const md = await response.text()
-  html.value = parse(md)
+  html.value = await parse(md)
 })
 </script>

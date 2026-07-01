@@ -241,7 +241,7 @@ const isPwd = ref(true)
 
 function onNewSolanaClusterApiUrl(
   value: string,
-  done: (value: unknown, format: string) => void,
+  done: (value: unknown, mode?: 'add' | 'add-unique' | 'toggle') => void,
 ) {
   solanaClusters.value.unshift({
     label: value,
@@ -291,12 +291,15 @@ async function tryToLoginPhantomWallet() {
   const signInDate = createSignInData()
   let publicKey = ''
   /* eslint-disable */
-  if (solana.isConnected) {
+  if (solana.isConnected && solana.publicKey) {
     publicKey = solana.publicKey.toBase58()
     /* eslint-enable */
   } else {
     try {
       /* eslint-disable */
+      if (!solana.signIn) {
+        throw new Error('Phantom signIn not available')
+      }
       const loginData = await solana.signIn(signInDate)
       publicKey = loginData.address.toBase58()
       /* eslint-enable */

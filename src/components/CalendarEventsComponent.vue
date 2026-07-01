@@ -31,13 +31,13 @@ const $t = i18n.t
 const emit = defineEmits(['select'])
 const props = defineProps({
   defaultView: {
-    type: String as PropType<string>,
+    type: String as PropType<'Calendar' | 'Months' | 'Years'>,
     default: 'Calendar',
   },
 })
 
-const events = ref([])
-const options = ref([])
+const events = ref<string[]>([])
+const options = ref<string[]>([])
 const model = ref(new Date())
 
 const calendarLocale = computed(() => {
@@ -60,7 +60,7 @@ function selectDate(date: string) {
 }
 
 function fillDates(dates: ContractDate[], { month, year }: NavigationDate) {
-  const res = new Set()
+  const res = new Set<string>()
   for (let i = 0; i < dates.length; i++) {
     if (dates[i].start && dates[i].end) {
       const start = new Date(dates[i].start)
@@ -95,10 +95,20 @@ async function updateEvents(navigationDate: NavigationDate) {
   const buildDate = date.buildDate(navigationDate)
   const startOfMonth = date.startOfDate(buildDate, 'month')
   const endOfMonth = date.endOfDate(buildDate, 'month')
-  contractDates = await contractStore.getCalendarContracts({
-    from: startOfMonth,
-    to: endOfMonth,
-  })
+  contractDates = await contractStore
+    .getCalendarContracts({
+      from: startOfMonth,
+      to: endOfMonth,
+    })
+    .then((contracts) =>
+      contracts
+        .filter((contract) => typeof contract.id === 'number')
+        .map((contract) => ({
+          id: contract.id as number,
+          start: contract.start,
+          end: contract.end,
+        })),
+    )
   options.value = fillDates(contractDates, navigationDate)
   events.value = contractDates.map(({ start }) => start)
 }

@@ -1,16 +1,13 @@
 import { date } from 'quasar'
 import { Temporal } from '@js-temporal/polyfill'
 import ICalendar, { VEvent } from 'ical-browser'
-import type { Event } from 'ical-browser/dist/types/types'
 import { formatIcal } from './dateHelper'
 
-export function createCal(id: string, obj: unknown): File {
-  /* eslint-disable */
-  const ev = new VEvent(obj.event as Event)
+export function createCal(id: string, obj: { event: unknown }): File {
+  const ev = new VEvent(obj.event)
   const calendar = new ICalendar()
   calendar.addEvent(id, ev)
   return calendar.download('calendar.ics')
-  /* eslint-enable */
 }
 
 type GoogleCalendarParams = {
@@ -25,7 +22,7 @@ export function googleCalendarUrl(o: GoogleCalendarParams) {
   const link = new URL('https://calendar.google.com/calendar/render')
   link.searchParams.append('action', 'TEMPLATE')
   link.searchParams.append('text', o.text)
-  link.searchParams.append('details', o.details)
+  link.searchParams.append('details', o.details ?? '')
   if (o.endTime) {
     link.searchParams.append(
       'dates',

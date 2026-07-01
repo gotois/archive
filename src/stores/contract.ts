@@ -8,6 +8,7 @@ import type {
   FormatContract,
   VerifiableCredential,
   CalendarEventExternal,
+  Attachment,
 } from '../types/models'
 
 interface Store {
@@ -55,9 +56,11 @@ export default defineStore('contracts', {
     // This contract already in IndexedDB
     async existContract(contract: unknown) {
       alert('WIP existContract')
+      if (!contract || typeof contract !== 'object' || !('id' in contract)) {
+        return false
+      }
       const dbContract = await db.contracts.get({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        id: contract?.id,
+        id: Number(contract.id),
       })
       return is.deepEqual(contract, dbContract)
     },
@@ -137,20 +140,12 @@ export default defineStore('contracts', {
         tag: Array.from(verifiedCredential.credentialSubject.object?.tag ?? []),
         attachment:
           verifiedCredential.credentialSubject.object.attachment?.map(
-            (attach) => {
-              if (typeof attach === 'object') {
-                return {
-                  type: attach.type,
-                  name: attach.name,
-                  mediaType: attach.mediaType,
-                  url: attach.url,
-                }
-              } else if (typeof attach === 'string') {
-                return {
-                  url: attach,
-                }
-              }
-            },
+            (attach): Attachment => ({
+              type: attach.type ?? 'Document',
+              name: attach.name,
+              mediaType: attach.mediaType,
+              url: attach.url,
+            }),
           ) ?? [],
       })
       const count = await db.contracts.count()
@@ -178,12 +173,13 @@ export default defineStore('contracts', {
       if (!id) {
         throw new Error('Unknown Dexie ID')
       }
-      const i = this.contracts.map((item) => item.id).indexOf(id)
+      const numericId = Number(id)
+      const i = this.contracts.map((item) => item.id).indexOf(numericId)
       this.contracts.splice(i, 1)
       // this.removeContractName(contract.instrument.name) // todo поддержать удаление по имени из БД полнотекстового поиска
 
       // Step 2: IndexedDB
-      const removedCount = await db.remove(id)
+      const removedCount = await db.remove(numericId)
       if (removedCount === 0) {
         return Promise.reject(new Error('Cannot remove this item'))
       }
@@ -211,7 +207,7 @@ export default defineStore('contracts', {
         .sortBy('startTime')
     },
     async filteredByIds(ids: number[] | string[]) {
-      return await db.contracts.bulkGet(ids)
+      return await db.contracts.bulkGet(ids.map(Number))
     },
     async getCalendarContracts({ from, to }: { from: Date; to: Date }) {
       const contracts = await db.contracts

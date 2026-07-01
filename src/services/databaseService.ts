@@ -13,9 +13,9 @@ import type {
   KeysTable,
   DIDTable,
   ContractData,
-  WalletType,
   Suite,
 } from '../types/models'
+import { WalletType } from '../types/models'
 
 export function reset() {
   return Promise.all([
@@ -50,11 +50,11 @@ class KeyPairDatabase extends Dexie {
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
   prepareKeyPair(keys: DIDTable) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    const exportKeys = keys.export({
+    const key = keys as DIDTable & { export: (options: unknown) => DIDTable }
+    const exportKeys = key.export({
       publicKey: true,
       privateKey: true,
-    }) as DIDTable
+    })
     return JSON.stringify(exportKeys, null, 2)
   }
 
@@ -228,7 +228,7 @@ class ContractDatabase extends Dexie {
     return this.contracts.add(contract)
   }
 
-  public update(id: number, contract: ContractTable) {
+  public update(id: number, contract: Partial<ContractTable>) {
     return this.contracts.update(id, contract)
   }
 
@@ -239,9 +239,9 @@ class ContractDatabase extends Dexie {
   public async destroy() {
     try {
       await this.contracts.clear()
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(error)
-      if (error.name === 'DatabaseClosedError') {
+      if (error instanceof Error && error.name === 'DatabaseClosedError') {
         this.close()
         await this.delete()
       }

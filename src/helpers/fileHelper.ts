@@ -4,7 +4,7 @@ import { PNG_MIME_TYPE } from './mimeTypes'
 
 type FileLike = File | Blob
 
-export function readFilePromise(file: FileLike) {
+export function readFilePromise(file: FileLike): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onerror = (error) => {
@@ -12,7 +12,7 @@ export function readFilePromise(file: FileLike) {
       reject(error)
     }
     reader.onloadend = () => {
-      resolve(reader.result)
+      resolve(String(reader.result))
     }
     reader.readAsDataURL(file)
   })
@@ -39,8 +39,8 @@ export async function filesShare(files: File[], title?: string) {
   }
   try {
     return await navigator.share(shareData)
-  } catch (error) {
-    if (error.name !== 'AbortError') {
+  } catch (error: unknown) {
+    if (!(error instanceof DOMException) || error.name !== 'AbortError') {
       throw error
     }
   }
@@ -56,8 +56,8 @@ export async function fileShare(file: File, title?: string) {
   }
   try {
     return await navigator.share(shareData)
-  } catch (error) {
-    if (error.name !== 'AbortError') {
+  } catch (error: unknown) {
+    if (!(error instanceof DOMException) || error.name !== 'AbortError') {
       throw error
     }
   }

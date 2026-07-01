@@ -54,12 +54,11 @@ async function importData() {
       type: 'positive',
       message: 'Ok',
     })
-  } catch (error) {
+  } catch (error: unknown) {
     console.error(error)
     $q.notify({
       type: 'negative',
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      message: error.message,
+      message: error instanceof Error ? error.message : 'Import failed',
     })
   } finally {
     dialog.hide()

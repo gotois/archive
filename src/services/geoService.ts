@@ -33,7 +33,12 @@ export function getCurrentPosition(): Promise<GeolocationPosition> {
   })
 }
 
-export function openMap(place: Place) {
+export function openMap(place: Place | string) {
+  if (typeof place === 'string') {
+    return open(
+      'https://www.google.com/maps/search/' + encodeURIComponent(place),
+    )
+  }
   const query = place.name ?? ''
   const lat = place.geo.latitude
   const lng = place.geo.longitude

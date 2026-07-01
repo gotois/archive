@@ -1,7 +1,7 @@
 // https://developers.google.com/identity/gsi/web/reference/html-reference
 
-export const GOOGLE_OAUTH_CLIENT_ID = import.meta.env.google_client_id
-export const GOOGLE_REDIRECT_URI = import.meta.env.google_redirect_uri
+export const GOOGLE_OAUTH_CLIENT_ID = String(import.meta.env.google_client_id)
+export const GOOGLE_REDIRECT_URI = String(import.meta.env.google_redirect_uri)
 
 export type GoogleHandlerResponse = {
   clientId: string
@@ -41,23 +41,23 @@ export function loadGoogleSignIn(lang: string): Promise<unknown> {
 }
 
 export async function googleSignInitialize(
-  callback: (data: unknown) => void,
+  callback: (data: GoogleHandlerResponse) => void,
 ): Promise<boolean> {
   return new Promise((resolve, reject) => {
-    window.handleCredentialResponse = callback
+    window.handleCredentialResponse = (data) =>
+      callback(data as GoogleHandlerResponse)
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
     window.google.accounts.id.initialize({
       client_id: GOOGLE_OAUTH_CLIENT_ID,
       auto_select: true,
       cancel_on_tap_outside: true,
-      callback: callback,
+      callback: (data) => callback(data as GoogleHandlerResponse),
       ux_mode: 'popup',
       itp_support: true,
       context: 'signin',
     })
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-    window.google.accounts.id.prompt((notification: unknown) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    window.google.accounts.id.prompt((notification) => {
       if (notification.isSkippedMoment()) {
         // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
         reject('Continue with another identity provider.')

@@ -156,7 +156,7 @@ function onInputValueContact(text: string) {
 
 function onNewValueContact(
   text: string,
-  done: (value: MultiContact, format: string) => void,
+  done: (value: MultiContact, mode?: 'add' | 'add-unique' | 'toggle') => void,
 ) {
   hasErrorMessage.value = false
   text = text.toLowerCase().replaceAll(' ', '')

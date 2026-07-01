@@ -54,6 +54,7 @@ const formRef = ref<{ submit: () => Promise<void> } | null>(null)
 
 interface EmptyTask {
   id_task: number
+  targetType: 'Group' | 'Person'
   name: string
   description: string | null
   start_date: string
@@ -77,6 +78,7 @@ function _nowPlusHour() {
 
 const emptyTask: EmptyTask = {
   id_task: 0,
+  targetType: 'Person',
   name: '',
   description: null,
   start_date: _now(),

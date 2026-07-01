@@ -40,13 +40,11 @@
 import { ref, nextTick, watch } from 'vue'
 import { QVirtualScroll, QBtn, useQuasar } from 'quasar'
 import useChatStore from 'stores/chat'
-import useSecretaryStore from 'stores/secretary'
 import ChatComponent from 'components/ChatComponent.vue'
 import InputComponent from 'components/SearchInputComponent.vue'
 import CreateNewDogovor from 'components/CreateNewDogovor.vue'
 import type { Attachment, VerifiableCredential } from '../types/models'
 
-const secretaryStore = useSecretaryStore()
 const chatStore = useChatStore()
 const $q = useQuasar()
 
@@ -102,13 +100,22 @@ function sendData(value: string) {
 }
 
 async function tryGenerateCalendar() {
-  const data = chatStore.messages
+  const data = [...chatStore.messages]
   if (attachment.value.length) {
-    data.push(Array.from(attachment.value))
+    data.push(
+      ...attachment.value.map((item) => ({
+        type: item.type,
+        mediaType: item.mediaType,
+        content: item.url,
+      })),
+    )
   }
   try {
-    contract.value = await secretaryStore.generate(data)
-    creatingNewContract.value = true
+    console.log('WIP generate calendar', data)
+    $q.notify({
+      type: 'warning',
+      message: 'Generation is not implemented',
+    })
   } catch (error) {
     console.error(error)
     $q.notify({

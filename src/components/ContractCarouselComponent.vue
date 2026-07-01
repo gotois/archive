@@ -213,13 +213,11 @@ const fullscreen = ref(false)
 const color = ref('white')
 
 async function getColorFromImage(contentUrl: string) {
-  const [{ color }]: { color: string }[] = await analyze(contentUrl, {
-    scale: 0.7,
-  })
+  const [{ color }] = await analyze(contentUrl)
   return color
 }
 
-function icon(fullscreen) {
+function icon(fullscreen: boolean) {
   if (fullscreen) {
     return 'fullscreen_exit'
   } else {
@@ -227,12 +225,16 @@ function icon(fullscreen) {
   }
 }
 
-function onHideCaption({ target }: { target: HTMLElement }) {
-  target.querySelector('.text-caption')?.classList?.remove('invisible')
+function onHideCaption(event: Event) {
+  if (event.target instanceof HTMLElement) {
+    event.target.querySelector('.text-caption')?.classList?.remove('invisible')
+  }
 }
 
-function onShowCaption({ target }: { target: HTMLElement }) {
-  target.querySelector('.text-caption')?.classList?.add('invisible')
+function onShowCaption(event: Event) {
+  if (event.target instanceof HTMLElement) {
+    event.target.querySelector('.text-caption')?.classList?.add('invisible')
+  }
 }
 
 async function prominentBGColors() {

@@ -188,7 +188,7 @@ const metaData = {
 
 const weeks = ref<Date[]>([])
 const virtualScroll = ref(null)
-const selectedDay = ref(null)
+const selectedDay = ref<string | null>(null)
 const {
   data: calendarSubscription,
   isPending,
@@ -314,7 +314,8 @@ function loadNextWeek() {
 
 function selectDay(item: Date) {
   const instant = formatToCalendarDate(item)
-  calendarControls.setDate(instant)
+  selectedDay.value = instant.toString()
+  calendarControls.setDate(instant as never)
 
   /* todo - нужно при селекте дня обновлять роутер например так:
   await router.push({

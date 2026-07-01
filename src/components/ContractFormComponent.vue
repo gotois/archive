@@ -328,8 +328,8 @@ enum InputType {
   text = 'text',
 }
 type Duration = {
-  from: Date | string
-  to: Date | string
+  from: string
+  to: string
 }
 type MultiContact = {
   type: InputType
@@ -354,7 +354,7 @@ const contractStore = useContractStore()
 const geoStore = useGeoStore()
 
 const { geolocation } = storeToRefs(geoStore)
-let cloneStartDate = null
+let cloneStartDate: Date | null = null
 const contract = ref<VerifiableCredential>(props.contract)
 const contractType = ref<string | null>(null)
 const customers = ref([])
@@ -372,7 +372,7 @@ if (contract.value.credentialSubject?.object?.attachment) {
   contract.value.credentialSubject?.object?.attachment.forEach((attachment) => {
     console.log('attachment', attachment)
     attachments.value.push({
-      url: attachment,
+      url: attachment.url,
       mediaType: 'application/pdf',
     })
   })
@@ -425,7 +425,7 @@ function onAddCustomer() {
 
 function resetForm() {
   const contractFormValue = contractForm.value
-  contractFormValue.resetValidation()
+  contractFormValue?.resetValidation()
   contractType.value = ''
   customer.value = ''
   description.value = ''
@@ -460,15 +460,15 @@ function onSelectDate(value: string | Duration) {
     })
     duration.value = {
       from: formatDate(contract.value.credentialSubject.startTime),
-      to: afterYearDate,
+      to: formatDate(afterYearDate),
     }
     return
   }
   switch (typeof value) {
     case 'string': {
       duration.value = {
-        from: date.isValid(value) ? formatDate(new Date(value)) : null,
-        to: date.isValid(value) ? formatDate(new Date(value)) : null,
+        from: date.isValid(value) ? formatDate(new Date(value)) : '',
+        to: date.isValid(value) ? formatDate(new Date(value)) : '',
       }
       break
     }
@@ -476,10 +476,10 @@ function onSelectDate(value: string | Duration) {
       duration.value = {
         from: date.isValid(String(value.from))
           ? formatDate(new Date(value.from))
-          : null,
+          : '',
         to: date.isValid(String(value.to))
           ? formatDate(new Date(value.to))
-          : null,
+          : '',
       }
       break
     }
@@ -493,8 +493,10 @@ function onSelectDate(value: string | Duration) {
   }
 }
 
-function onFocusInput({ target }: { target: HTMLElement }) {
-  target.scrollIntoView()
+function onFocusInput(event: Event) {
+  if (event.target instanceof HTMLElement) {
+    event.target.scrollIntoView()
+  }
 }
 
 /* fixme поддержать возможность подписывать контракты используя Solana

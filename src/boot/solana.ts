@@ -25,10 +25,10 @@ export default boot(() => {
       })
     })
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    solana.on('accountChanged', async (publicKey: string) => {
+    solana.on('accountChanged', async (publicKey) => {
       console.warn('accountChanged')
       await walletStore.setKeypare({
-        publicKey: publicKey,
+        publicKey: publicKey?.toBase58(),
         type: WalletType.Phantom,
       })
       $q.notify({

@@ -27,7 +27,9 @@ async function getOrCreateSubscription(): Promise<PushSubscription> {
   return Promise.race([
     registration.pushManager.subscribe({
       userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(publicKey),
+      applicationServerKey: urlBase64ToUint8Array(
+        publicKey,
+      ) as unknown as BufferSource,
     }),
     new Promise<never>((_, reject) =>
       setTimeout(

@@ -13,6 +13,10 @@ interface Store {
 
 const solanaKeys = await keys.last()
 
+function getMultibase(publicKey: PublicKey | null) {
+  return publicKey?.toBase58() ?? ''
+}
+
 export default defineStore('wallet', {
   state: (): Store => ({
     type: solanaKeys?.type ?? WalletType.Unknown,
@@ -37,7 +41,7 @@ export default defineStore('wallet', {
           await keys.add({
             type: this.type,
             privateKey: null,
-            publicKey: this.getMultibase as string,
+            publicKey: getMultibase(this.publicKey),
             clusterApiUrl: null,
           })
           break
@@ -58,7 +62,7 @@ export default defineStore('wallet', {
           await keys.add({
             type: this.type,
             privateKey: keypair.secretKey,
-            publicKey: this.getMultibase as string,
+            publicKey: getMultibase(this.publicKey),
             clusterApiUrl: clusterApiUrl,
           })
           break
@@ -75,23 +79,18 @@ export default defineStore('wallet', {
       return state.publicKey
     },
     getMultibase(state) {
-      if (state.type === WalletType.Phantom) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return
-        return (this.getPublicKey?.toBase58() as string) ?? ''
-      }
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      return state.publicKey?.toBase58() ?? ''
+      return getMultibase(state.publicKey)
     },
     getWalletLD(state) {
       const authStore = useAuthStore()
       const profileStore = useProfileStore()
+      const multibase = getMultibase(state.publicKey)
 
       return {
         '@context': ['https://w3id.org/wallet/v1'],
-        'id': profileStore.webId as string,
+        'id': authStore.webId ?? profileStore.email,
         'type': 'SolanaAddress',
-        'multibase': state.getMultibase as string,
+        'multibase': multibase,
         'name': String(state.type),
         'correlation': [authStore.webId, profileStore.email],
       }

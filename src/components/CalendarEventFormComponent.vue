@@ -508,6 +508,7 @@ const form = reactive<Omit<TaskObject, 'id_task'> & { target: TargetOption[] }>(
     location: props.task.location,
     link_meeting: props.task.link_meeting,
     priority: props.task.priority ?? 2,
+    targetType: telegramTargetType,
     remind_before:
       typeof props.task.remind_before === 'number'
         ? Math.floor(props.task.remind_before) / 60
@@ -561,11 +562,11 @@ async function onSave(): Promise<void> {
       remind_before: form.remind_before,
     })
     emit('saved')
-  } catch (error: Error | unknown) {
+  } catch (error: unknown) {
     console.error(error)
     $q.notify({
       type: 'negative',
-      message: error?.message ?? 'Ошибка сохранения',
+      message: error instanceof Error ? error.message : 'Ошибка сохранения',
     })
     throw error
   } finally {
@@ -593,11 +594,11 @@ async function onEdit(): Promise<void> {
       target: form.target.map((target) => target.value),
     })
     emit('saved')
-  } catch (error: Error | unknown) {
+  } catch (error: unknown) {
     console.error(error)
     $q.notify({
       type: 'negative',
-      message: error?.message ?? 'Ошибка обновления',
+      message: error instanceof Error ? error.message : 'Ошибка обновления',
     })
     throw error
   } finally {
@@ -629,11 +630,11 @@ function onRemove() {
         ids: [props.task.id_task],
       })
       emit('removed')
-    } catch (error: Error | unknown) {
+    } catch (error: unknown) {
       console.error(error)
       $q.notify({
         type: 'negative',
-        message: error?.message ?? 'Ошибка удаления',
+        message: error instanceof Error ? error.message : 'Ошибка удаления',
       })
     }
   })

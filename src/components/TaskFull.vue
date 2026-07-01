@@ -175,6 +175,7 @@ import {
   Agent,
   Presentation,
   VerifiableCredential,
+  CredentialSubject,
 } from '../types/models'
 import { ROUTE_NAMES } from '@/router/routes'
 
@@ -218,11 +219,11 @@ const props = defineProps({
   },
   attaches: {
     type: Array as PropType<FormatImageType[]>,
-    default: () => [],
+    default: (): FormatImageType[] => [],
   },
   tag: {
     type: Array as PropType<string[]>,
-    default: () => [],
+    default: (): string[] => [],
   },
   startTime: {
     type: Date as PropType<Date>,
@@ -250,11 +251,11 @@ const props = defineProps({
   },
   organizer: {
     type: Object as PropType<Agent>,
-    default: () => {},
+    default: (): Agent => ({ type: 'Person', name: '' }),
   },
   participant: {
     type: Array as PropType<Agent[]>,
-    default: () => [],
+    default: (): Agent[] => [],
   },
   link: {
     type: String as PropType<string>,
@@ -291,7 +292,9 @@ async function verifyPresentation(presentation: Presentation) {
     documentLoader,
     suite,
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    challenge: presentation.proof.challenge,
+    challenge: Array.isArray(presentation.proof)
+      ? presentation.proof[0]?.challenge
+      : presentation.proof.challenge,
   })
   console.log('v', verify)
 }
@@ -313,7 +316,7 @@ function prettyDate(startTime: Date, endTime?: Date) {
 
 function onSheet() {
   let actions: SheetAction[] = []
-  const group1 = [] // Share local
+  const group1: SheetAction[] = [] // Share local
   if (canShare && props.attaches?.length) {
     group1.push({
       label: $t('components.archiveList.sheet.share.label'),
@@ -332,7 +335,7 @@ function onSheet() {
     actions = actions.concat(group1)
     actions.push({})
   }
-  const group2 = [] // Publish Group
+  const group2: SheetAction[] = [] // Publish Group
   // todo отображать если был указан WebId внешнего клиента
   if (isLoggedIn.value) {
     group2.push({
@@ -359,7 +362,7 @@ function onSheet() {
   if (group2.length) {
     actions = actions.concat(group2)
   }
-  const group3 = [] // Message Group
+  const group3: SheetAction[] = [] // Message Group
   if (props.organizer && (props.organizer.email || props.organizer.telephone)) {
     if (props.organizer.email) {
       group3.push({
@@ -403,7 +406,7 @@ function onSheet() {
     class: $q.platform.is.desktop ? 'text-center' : '',
     actions: actions,
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  }).onOk(async (action: { id: SheetAction }) => {
+  }).onOk(async (action: SheetAction) => {
     switch (action.id) {
       case Action.SHARE: {
         try {
@@ -440,7 +443,7 @@ function onSheet() {
         // После этого пользователь делится ссылкой на свою презентацию с другим пользователем
         const [contract] = await contractStore.filteredByIds([props.eventId])
         /* eslint-disable */
-        const presentation: Presentation = await signPresentation({
+        const presentation = (await signPresentation({
           '@context': ['https://www.w3.org/2018/credentials/v1'],
           'id':
             'https://archive.gotointeractive.com/task/' +
@@ -453,9 +456,9 @@ function onSheet() {
             '@context': ['https://www.w3.org/ns/activitystreams'],
             'name': contract.name,
             'description': contract.description,
-          },
+          } as CredentialSubject,
           'proof': contract.proof,
-        })
+        })) as Presentation
         /* eslint-enable */
         console.log('presentation', presentation)
         // todo настроить правильную верификацию

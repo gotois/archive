@@ -23,6 +23,8 @@ import type { VerifiableCredential, Presentation } from '../types/models'
 
 export default class ContractPod {
   resourceUrl = ''
+  dataset?: SolidDataset
+  _credential?: VerifiableCredential
 
   constructor(resourceUrl: string) {
     this.resourceUrl = resourceUrl

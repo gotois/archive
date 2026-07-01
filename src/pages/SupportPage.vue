@@ -2,7 +2,7 @@
   <QPage class="full-height">
     <iframe
       v-if="!$q.platform.is.android"
-      :src="router.currentRoute.value.query.url"
+      :src="supportUrl"
       width="100%"
       height="100%"
       class="absolute-top absolute-bottom fit"
@@ -16,6 +16,7 @@
 </template>
 <script lang="ts" setup>
 import { onMounted } from 'vue'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useMeta, useQuasar, QPage } from 'quasar'
 import { useRouter } from 'vue-router'
@@ -26,6 +27,10 @@ import { GOOGLE_PLAY_URL } from '../helpers/googlePlayHelper'
 const $t = useI18n().t
 const router = useRouter()
 const $q = useQuasar()
+const supportUrl = computed(() => {
+  const url = router.currentRoute.value.query.url
+  return Array.isArray(url) ? (url[0] ?? '') : (url ?? '')
+})
 
 // todo - исправить мета данные
 const metaData = {

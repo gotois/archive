@@ -310,22 +310,37 @@ function setMeta(value: number) {
   switch (value as STEP) {
     case STEP.WELCOME: {
       useMeta({
-        'title': $t('pages.tutorial.welcome.title'),
-        'og:title': $t('pages.tutorial.welcome.title'),
+        title: $t('pages.tutorial.welcome.title'),
+        meta: {
+          ogTitle: {
+            property: 'og:title',
+            content: $t('pages.tutorial.welcome.title'),
+          },
+        },
       })
       break
     }
     case STEP.FINAL: {
       useMeta({
-        'title': $t('pages.tutorial.final.title'),
-        'og:title': $t('pages.tutorial.final.title'),
+        title: $t('pages.tutorial.final.title'),
+        meta: {
+          ogTitle: {
+            property: 'og:title',
+            content: $t('pages.tutorial.final.title'),
+          },
+        },
       })
       break
     }
     default: {
       useMeta({
-        'title': pkg.productName,
-        'og:title': pkg.productName,
+        title: pkg.productName,
+        meta: {
+          ogTitle: {
+            property: 'og:title',
+            content: pkg.productName,
+          },
+        },
       })
       break
     }
@@ -357,7 +372,7 @@ events.on(EVENTS.LOGIN, async () => {
   authStore.openIdHandleIncoming()
   try {
     await podStore.setResourceRootUrl()
-  } catch (error) {
+  } catch (error: unknown) {
     console.error(error)
     $q.notify({
       type: 'negative',
@@ -479,7 +494,7 @@ async function tryLogin() {
     $q.sessionStorage.remove('restorePreviousSession')
 
     $q.notify({
-      message: String(error.message),
+      message: error instanceof Error ? error.message : String(error),
       type: 'error',
       timeout: 99999999999,
       multiLine: true,
@@ -547,15 +562,16 @@ function onAccept() {
   stepper.value.next()
 }
 
-async function onStep(step: STEP) {
+async function onStep(step: string | number) {
+  const nextStep = Number(step)
   await router.push({
     query: {
       ...router.currentRoute.value.query,
-      step: step,
+      step: nextStep,
     },
     replace: true,
   })
-  scroll.value.setScrollPosition('vertical', step * 30, 100)
+  scroll.value?.setScrollPosition('vertical', nextStep * 30, 100)
 }
 
 function getCurrentStep() {
@@ -584,8 +600,9 @@ async function onMainButtonClick() {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-  } catch (error: Error | unknown) {
+  } catch (error: unknown) {
     console.error(error)
+    const message = error instanceof Error ? error.message : String(error)
 
     if (hapticFeedbackNotificationOccurred.isAvailable()) {
       hapticFeedbackNotificationOccurred('error')
@@ -594,12 +611,12 @@ async function onMainButtonClick() {
     if (popup.isSupported()) {
       await popup.show({
         title: 'RequestContact ERROR',
-        message: error.message as string,
+        message,
       })
     } else {
       $q.notify({
         type: 'negative',
-        message: error.message as string,
+        message,
       })
     }
   } finally {

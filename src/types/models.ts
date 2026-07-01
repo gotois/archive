@@ -60,6 +60,7 @@ enum ProofTypes {
 }
 
 interface Proof {
+  challenge?: string
   created: string
   proofPurpose: string
   proofValue: string
@@ -149,11 +150,14 @@ interface FormatContractInstrument extends BaseSchemaType, ContractInstrument {}
 export interface FormatPlace extends BaseSchemaType, Place {}
 
 export interface CredentialSubject {
-  actor: Agent
-  target: Agent
-  startTime: Date
-  endTime?: Date
-  object: {
+  '@context'?: string[]
+  'name'?: string
+  'description'?: string
+  'actor': Agent
+  'target': Agent
+  'startTime': Date
+  'endTime'?: Date
+  'object': {
     id: string
     type: string
     name: string
@@ -163,7 +167,7 @@ export interface CredentialSubject {
     tag?: string[]
     attachment: Attachment[]
   }
-  location?: Place
+  'location'?: Place
 }
 
 export type ContractData = {

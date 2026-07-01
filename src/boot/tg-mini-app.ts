@@ -22,7 +22,12 @@ export default boot(({ router }: { router: Router }) => {
   }
   init()
   const { payload, tgWebAppStartParam } = retrieveLaunchParams()
-  const startParams = payload || tgWebAppStartParam
+  const startParams =
+    typeof payload === 'string'
+      ? payload
+      : typeof tgWebAppStartParam === 'string'
+        ? tgWebAppStartParam
+        : ''
   if (startParams) {
     const { to, debug, twa } = getParams(startParams)
     if (typeof to === 'string') {

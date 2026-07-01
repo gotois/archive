@@ -206,14 +206,18 @@ async function sendChat(value: string) {
       content: value,
       mediaType: 'text/plain',
     })
-    const { credentialSubject } = await chatStore.dialog()
+    const response = await chatStore.dialog()
+    if (!response) {
+      return
+    }
+    const { credentialSubject } = response
     const language = 'ru' // todo - использовать в соответствии с настройками языка пользователя
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     emit('sent', credentialSubject.object.contentMap[language])
-  } catch (error) {
+  } catch (error: unknown) {
     console.error(error)
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    switch (error.message) {
+    const message = error instanceof Error ? error.message : String(error)
+    switch (message) {
       case 'Unauthorized': {
         $q.notify({
           message: 'JWT expired',
@@ -235,7 +239,7 @@ async function sendChat(value: string) {
       default: {
         $q.notify({
           type: 'negative',
-          message: error.message as string,
+          message,
         })
       }
     }
@@ -297,7 +301,11 @@ async function fileSelect(files: File[]) {
   if (files.length === 0) {
     return
   }
-  const documents = []
+  const documents: {
+    type: string
+    url: string
+    mediaType: string
+  }[] = []
   let description = ''
 
   // Step 1: пробуем взять текст из File с помощью Teseract
@@ -312,6 +320,7 @@ async function fileSelect(files: File[]) {
       langs,
     )
     documents.push({
+      type: 'Document',
       url: base64,
       mediaType: file.type,
     })
@@ -326,7 +335,12 @@ async function fileSelect(files: File[]) {
   })
 
   // Step 3: превращаем в ActivityStreams
-  const attach = []
+  const attach: {
+    type: string
+    url: string
+    name: string
+    mediaType: string
+  }[] = []
   for (const file of pdfs) {
     const base64 = await readFilePromise(file)
     attach.push({

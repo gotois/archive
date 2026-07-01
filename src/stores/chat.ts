@@ -6,6 +6,14 @@ type Message = {
   content: string
 }
 
+type DialogResponse = {
+  credentialSubject: {
+    object: {
+      contentMap: Record<string, string>
+    }
+  }
+}
+
 interface Store {
   messages: Message[]
 }
@@ -18,8 +26,9 @@ export default defineStore('chat', {
     add(item: Message) {
       this.messages.push(item)
     },
-    dialog() {
+    dialog(): DialogResponse | null {
       console.log('передавать данные через AI иным способом')
+      return null
     },
   },
 })
