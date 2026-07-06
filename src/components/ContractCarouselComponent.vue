@@ -41,8 +41,8 @@
             'bg-dark': $q.dark.isActive,
           }"
           :img-style="{
-            'border': navProps.active ? '1px solid var(--q-secondary)' : 'none',
-            'image-rendering': 'high-quality',
+            border: navProps.active ? '1px solid var(--q-secondary)' : 'none',
+            imageRendering: 'high-quality',
           }"
           :src="props.model[navProps.index].url"
           placeholder-src="/icons/icon-128x128.png"
