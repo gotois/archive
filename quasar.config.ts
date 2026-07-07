@@ -1,9 +1,12 @@
 import { defineConfig } from '@quasar/app-vite';
+import type { QuasarConf } from '@quasar/app-vite';
+import type { QuasarContext } from '@quasar/app-vite/types/configuration/context.d.ts';
+import dotenv from 'dotenv';
 import pkg from './package.json' with { type: 'json' };
 
-export default defineConfig((ctx) => {
+export default defineConfig((ctx: QuasarContext) => {
   if (ctx.dev) {
-    require('dotenv').config({
+    dotenv.config({
       quiet: true,
     });
   }
@@ -19,7 +22,7 @@ export default defineConfig((ctx) => {
       tsCheckerConfig: {
         eslint: {
           enabled: true,
-          files: './src/**/*.{ts,js,vue}',
+          files: './src/**/*.{ts,vue}',
         },
       },
     },
@@ -45,7 +48,7 @@ export default defineConfig((ctx) => {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
-      async onPublish({ arg }) {
+      async onPublish({ arg }: Parameters<NonNullable<NonNullable<QuasarConf['build']>['onPublish']>>[0]) {
         if (arg !== 'netlify') {
           throw new Error(`Unsupported publish target: ${arg}`);
         }
@@ -75,24 +78,21 @@ export default defineConfig((ctx) => {
       reportCompressedSize: ctx.prod,
       vueRouterMode: 'history',
       publicPath: '/',
-      rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
-      rtl: false, // https://v2.quasar.dev/options/rtl-support
+      rebuildCache: true,
+      rtl: false,
       showProgress: true,
       gzip: true,
-      // analyze: true,
     },
-
     // Full list of options: https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
-    devServer: {
+    devServer: ctx.dev ? {
       https: {
         key: 'certs/localhost-key.pem',
         cert: 'certs/localhost.pem',
       },
-      host: new URL(process.env.APP_URL).hostname,
-      port: new URL(process.env.APP_URL).port || 8080,
+      host: process.env.APP_URL ? new URL(process.env.APP_URL).hostname : undefined,
+      port: process.env.APP_URL ? Number(new URL(process.env.APP_URL).port) : 8080,
       open: !process.env.TURBO_HASH, // opens browser window automatically
-    },
-
+    } : {},
     // https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
     framework: {
       config: {
