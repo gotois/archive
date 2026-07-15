@@ -13,11 +13,11 @@ export function useCalendarSubscriptionQuery() {
 
   return useQuery({
     queryKey: computed(() =>
-      queryKeys.calendar.subscription(source.value, geoStore.timezone),
+      queryKeys.calendar.subscription(source.value, geoStore.timeZone),
     ),
     queryFn: () =>
       calendarApi.getSubscription({
-        timezone: geoStore.timezone,
+        timezone: geoStore.timeZone,
         authorization: secretaryStore.auth,
       }),
   })

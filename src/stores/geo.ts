@@ -6,7 +6,7 @@ import {
 
 interface Store {
   coordinates: GeolocationCoordinates
-  timezone: string
+  timeZone: string
   u: number // точность в метрах
   cgen: string
 }
@@ -14,7 +14,7 @@ interface Store {
 export default defineStore('geo', {
   state: (): Store => ({
     coordinates: null,
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     u: 10,
     cgen: 'gps',
   }),

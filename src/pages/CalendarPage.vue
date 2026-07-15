@@ -15,7 +15,9 @@
       class="absolute-full fit"
     >
       <QPullToRefresh
-        class="absolute-full fit"
+        ref="pullToRefreshRef"
+        class="calendar-pull-to-refresh absolute-full fit"
+        scroll-target=".sx__view-container"
         @refresh="onRefresh"
       >
         <ScheduleXCalendar
@@ -169,7 +171,6 @@ import '@schedule-x/theme-shadcn/dist/index.css'
 const { permission, enable: enableWebPush } = useWebPush()
 
 const CALENDAR_WEEK_NUM = 7
-const INITIAL_SCROLL = '06:30'
 
 const $q = useQuasar()
 const router = useRouter()
@@ -186,6 +187,7 @@ function asZonedDateTime(
 
 const $t = i18n.t
 const scrollAreaRef = ref<InstanceType<typeof QScrollArea> | null>(null)
+const pullToRefreshRef = ref<InstanceType<typeof QPullToRefresh> | null>(null)
 
 const metaData = {
   'title': $t('pages.calendar.title'),
@@ -231,8 +233,11 @@ function createCalendarView(ics: string): CalendarApp {
     data: ics,
   })
   const eventsServicePlugin = createEventsServicePlugin()
+  const initialScroll = Temporal.Now.plainTimeISO().toString({
+    smallestUnit: 'minute',
+  })
   const scrollController = createScrollControllerPlugin({
-    initialScroll: INITIAL_SCROLL,
+    initialScroll,
   })
 
   return createCalendar({
@@ -275,7 +280,11 @@ function createCalendarView(ics: string): CalendarApp {
           isCurrentDate(elem),
         )
         await nextTick()
-        virtualScroll.value.scrollTo(currentIndexDay)
+        pullToRefreshRef.value?.updateScrollTarget()
+        if (currentIndexDay >= 0) {
+          virtualScroll.value.scrollTo(currentIndexDay)
+          scrollController.scrollTo(initialScroll)
+        }
       },
     },
   })
@@ -416,14 +425,12 @@ onBeforeMount(() => {
 
 useMeta(metaData)
 </script>
-<style scoped>
+<style lang="scss" scoped>
 ::-webkit-scrollbar {
   height: 0;
   background: transparent;
 }
-</style>
-<style lang="scss">
-.sx-vue-calendar-wrapper {
+:deep(.sx-vue-calendar-wrapper) {
   height: 100%;
   max-width: calc(100dvi - 1px);
 
@@ -432,16 +439,19 @@ useMeta(metaData)
     background: transparent;
   }
 }
-.sx__calendar {
+:deep(.calendar-pull-to-refresh > .q-pull-to-refresh__content) {
+  height: 100%;
+}
+:deep(.sx__calendar) {
   border: none;
 }
-.sx__week-grid__date-axis {
+:deep(.sx__week-grid__date-axis) {
   display: none;
 }
-.sx__calendar-header {
+:deep(.sx__calendar-header) {
   padding: 0;
 }
-.sx__date-grid-cell {
+:deep(.sx__date-grid-cell) {
   height: clamp(80px, 1.25rem, 24px) !important;
 }
 </style>

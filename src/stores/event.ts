@@ -78,8 +78,8 @@ export default defineStore('event', {
       if (geoStore.geolocation) {
         headers.set('Geolocation', geoStore.geolocation)
       }
-      if (geoStore.timezone) {
-        headers.set('Timezone', geoStore.timezone)
+      if (geoStore.timeZone) {
+        headers.set('Timezone', geoStore.timeZone)
       }
       const response = await fetch(import.meta.env.server + '/event', {
         method: 'POST',
@@ -103,8 +103,8 @@ export default defineStore('event', {
       if (secretaryStore.auth) {
         headers.set('Authorization', secretaryStore.auth)
       }
-      if (geoStore.timezone) {
-        headers.set('Timezone', geoStore.timezone)
+      if (geoStore.timeZone) {
+        headers.set('Timezone', geoStore.timeZone)
       }
       const response = await fetch(import.meta.env.server + '/event', {
         method: 'PUT',
