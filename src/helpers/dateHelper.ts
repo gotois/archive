@@ -9,14 +9,8 @@ export function formatDate(x: Date): string {
   return date.formatDate(x, 'YYYY/MM/DD')
 }
 
-export function convertTemporalToDate(temporal: {
-  toPlainDateTime?: () => unknown
-  toString: () => string
-}) {
-  if (!temporal.toPlainDateTime) {
-    return new Date(temporal.toString())
-  }
-  return new Date(temporal.toString())
+export function convertTemporalToDate(temporal: Temporal.ZonedDateTime): Date {
+  return new Date(temporal.epochMilliseconds)
 }
 
 // Специальный формат для календаря Google

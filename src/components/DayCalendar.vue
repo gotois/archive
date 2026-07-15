@@ -3,6 +3,7 @@
     :color="color"
     square
     unelevated
+    class="q-ml-xs q-mr-xs"
   >
     <div
       :class="{

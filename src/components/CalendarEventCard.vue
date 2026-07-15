@@ -7,7 +7,7 @@
     square
   >
     <QCardSection
-      class="q-pa-xs justify-between items-center"
+      class="q-pa-xs justify-between items-center items-baseline"
       :horizontal="props.horizontal"
     >
       <div
@@ -21,7 +21,7 @@
           {{ title }}
         </div>
       </div>
-      <div class="text-caption text-red">
+      <div class="text-caption text-red ellipsis">
         ⏰
         {{ date.formatDate(convertTemporalToDate(start), 'HH:mm') }}
         -
@@ -106,17 +106,11 @@ const props = defineProps({
     required: true,
   },
   start: {
-    type: Object as PropType<{
-      toPlainDateTime?: () => unknown
-      toString: () => string
-    }>,
+    type: Object as PropType<Temporal.ZonedDateTime>,
     required: true,
   },
   end: {
-    type: Object as PropType<{
-      toPlainDateTime?: () => unknown
-      toString: () => string
-    }>,
+    type: Object as PropType<Temporal.ZonedDateTime>,
     required: true,
   },
   location: {

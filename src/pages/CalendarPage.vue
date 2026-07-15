@@ -28,8 +28,8 @@
               :event-id="String(calendarEvent.id)"
               :title="calendarEvent.title"
               :description="calendarEvent.description"
-              :start="calendarEvent.start"
-              :end="calendarEvent.end"
+              :start="asZonedDateTime(calendarEvent.start)"
+              :end="asZonedDateTime(calendarEvent.end)"
               :location="calendarEvent.location"
               :attaches="calendarEvent.attaches"
               :tag="calendarEvent.tag"
@@ -46,8 +46,8 @@
               :event-id="String(calendarEvent.id)"
               :title="calendarEvent.title"
               :description="calendarEvent.description"
-              :start="calendarEvent.start"
-              :end="calendarEvent.end"
+              :start="asZonedDateTime(calendarEvent.start)"
+              :end="asZonedDateTime(calendarEvent.end)"
               :location="calendarEvent.location"
               :attaches="calendarEvent.attaches"
               :tag="calendarEvent.tag"
@@ -83,7 +83,7 @@
               >
                 <DayCalendar
                   :key="index"
-                  style="width: 45px"
+                  style="width: 44px"
                   class="cursor-pointer q-ml-xs q-mr-xs q-pa-md rounded-borders relative-position non-selectable flex items-center justify-center"
                   :day="item"
                   :selected-day="selectedDay"
@@ -161,8 +161,8 @@ import CalendarEventCard from 'components/CalendarEventCard.vue'
 import useLangStore from 'stores/lang'
 import { formatToCalendarDate, isCurrentDate } from '../helpers/calendarHelper'
 // import { ROUTE_NAMES } from '@/router/routes'
-import { isTMA } from '../composables/detector'
-import { useWebPush } from '../composables/useWebPush'
+import { isTMA } from '@/composables/detector'
+import { useWebPush } from '@/composables/useWebPush'
 import { useCalendarSubscriptionQuery } from '../queries/calendar.queries'
 import '@schedule-x/theme-shadcn/dist/index.css'
 
@@ -177,6 +177,12 @@ const i18n = useI18n()
 const langStore = useLangStore()
 const calendarApp = shallowRef<CalendarApp>(null)
 const calendarControls = createCalendarControlsPlugin()
+
+function asZonedDateTime(
+  value: Temporal.PlainDate | Temporal.ZonedDateTime,
+): Temporal.ZonedDateTime {
+  return value as Temporal.ZonedDateTime
+}
 
 const $t = i18n.t
 const scrollAreaRef = ref<InstanceType<typeof QScrollArea> | null>(null)

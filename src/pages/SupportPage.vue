@@ -20,7 +20,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useMeta, useQuasar, QPage } from 'quasar'
 import { useRouter } from 'vue-router'
-import { isTWA } from '../composables/detector'
+import { isTWA } from '@/composables/detector'
 import { open } from '../helpers/urlHelper'
 import { GOOGLE_PLAY_URL } from '../helpers/googlePlayHelper'
 

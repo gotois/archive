@@ -4,7 +4,7 @@ import {
   retrieveLaunchParams,
   serializeInitDataQuery,
 } from '@telegram-apps/sdk'
-import { isTMA } from '../composables/detector'
+import { isTMA } from '@/composables/detector'
 
 interface Store {
   login?: string
