@@ -89,7 +89,7 @@ export default defineConfig((ctx: QuasarContext) => {
         key: 'certs/localhost-key.pem',
         cert: 'certs/localhost.pem',
       },
-      host: 'localhost',
+      host: '0.0.0.0',
       port: 8080,
       open: !process.env.TURBO_HASH, // opens browser window automatically
     } : {},
