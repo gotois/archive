@@ -89,8 +89,8 @@ export default defineConfig((ctx: QuasarContext) => {
         key: 'certs/localhost-key.pem',
         cert: 'certs/localhost.pem',
       },
-      host: process.env.APP_URL ? new URL(process.env.APP_URL).hostname : undefined,
-      port: process.env.APP_URL ? Number(new URL(process.env.APP_URL).port) : 8080,
+      host: 'localhost',
+      port: 8080,
       open: !process.env.TURBO_HASH, // opens browser window automatically
     } : {},
     // https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
