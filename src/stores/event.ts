@@ -88,7 +88,8 @@ export default defineStore('event', {
         credentials: 'include',
       })
       if (!response.ok) {
-        throw new Error('Response event failed')
+        const text = await response.text()
+        throw new Error(text)
       }
       console.log('Данные успешно добавлены')
     },

@@ -90,6 +90,7 @@ export default defineConfig((ctx: QuasarContext) => {
         cert: 'certs/localhost.pem',
       },
       host: '0.0.0.0',
+      allowedHosts: process.env.APP_URL ? [new URL(process.env.APP_URL).hostname] : [],
       port: 8080,
       open: !process.env.TURBO_HASH, // opens browser window automatically
     } : {},
