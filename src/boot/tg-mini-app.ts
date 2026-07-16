@@ -21,6 +21,7 @@ export default boot(({ router }: { router: Router }) => {
     return
   }
   init()
+  viewport.expand()
   const { payload, tgWebAppStartParam } = retrieveLaunchParams()
   const startParams =
     typeof payload === 'string'
@@ -43,6 +44,4 @@ export default boot(({ router }: { router: Router }) => {
       appendTelegramWebAppScript()
     }
   }
-
-  viewport.expand()
 })
