@@ -10,6 +10,7 @@ import usePodStore from 'stores/pod'
 import useLangStore from 'stores/lang'
 import routes, { ROUTE_NAMES } from './routes'
 import { deleteDatabases, reset } from '../services/databaseService'
+import { createBackendSession } from '../api/modules/session.api'
 
 export default route(() => {
   const Router = createRouter({
@@ -57,6 +58,7 @@ export default route(() => {
         const sessionInfo = await handleIncomingRedirect({
           restorePreviousSession: true,
         })
+        await createBackendSession()
         const response = await getDefaultSession().fetch(
           sessionInfo.webId + '/inbox',
           {
