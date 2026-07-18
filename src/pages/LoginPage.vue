@@ -237,8 +237,7 @@ import {
   popup,
   requestContact,
   hapticFeedbackNotificationOccurred,
-  retrieveLaunchParams,
-  serializeInitDataQuery,
+  retrieveRawInitData,
 } from '@telegram-apps/sdk'
 
 const $t = useI18n().t
@@ -323,7 +322,7 @@ async function onLogin(oidcIssuer: string = import.meta.env.secretary) {
   try {
     let initData: string | undefined
     if (isTMA.value) {
-      initData = serializeInitDataQuery(retrieveLaunchParams().tgWebAppData)
+      initData = retrieveRawInitData()
       if (!initData) {
         throw new Error('Telegram init data is missing')
       }

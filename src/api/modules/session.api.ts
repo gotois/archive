@@ -10,11 +10,16 @@ export interface AuthenticationRequired {
   loginUrl: string
 }
 
-export async function getBackendSession(): Promise<
-  AuthenticatedSession | AuthenticationRequired
-> {
+export async function getBackendSession(
+  initData?: string,
+): Promise<AuthenticatedSession | AuthenticationRequired> {
+  const headers = new Headers()
+  if (initData) {
+    headers.set('Authorization', `TMA ${initData}`)
+  }
   const response = await fetch(import.meta.env.server + '/session', {
     method: 'GET',
+    headers,
     credentials: 'include',
   })
 

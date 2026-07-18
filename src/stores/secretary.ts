@@ -1,9 +1,6 @@
 import { defineStore } from 'pinia'
 import { LocalStorage } from 'quasar'
-import {
-  retrieveLaunchParams,
-  serializeInitDataQuery,
-} from '@telegram-apps/sdk'
+import { retrieveRawInitData } from '@telegram-apps/sdk'
 import { isTMA } from '@/composables/detector'
 
 interface Store {
@@ -39,8 +36,7 @@ export default defineStore('secretary', {
       return 'Basic ' + btoa(store.login + ':' + store.password)
     },
     tmaAuth(): string | Error {
-      const params = retrieveLaunchParams()
-      const initDataRaw = serializeInitDataQuery(params.tgWebAppData)
+      const initDataRaw = retrieveRawInitData()
       if (!initDataRaw?.length) {
         throw new Error('Empty telegram init data')
       }

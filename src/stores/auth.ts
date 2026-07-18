@@ -1,5 +1,7 @@
 import { LocalStorage, SessionStorage } from 'quasar'
 import { defineStore } from 'pinia'
+import { retrieveRawInitData } from '@telegram-apps/sdk'
+import { isTMA } from '@/composables/detector'
 import {
   deleteBackendSession,
   getBackendSession,
@@ -30,7 +32,9 @@ export default defineStore('auth', {
       SessionStorage.remove('isLoggedIn')
     },
     async restoreSession() {
-      const session = await getBackendSession()
+      const session = await getBackendSession(
+        isTMA.value ? retrieveRawInitData() : undefined,
+      )
       this.authenticated = session.authenticated
       if (session.authenticated) {
         this.webId = session.user.webId
