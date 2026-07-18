@@ -161,6 +161,7 @@ import { createScrollControllerPlugin } from '@schedule-x/scroll-controller'
 import DayCalendar from 'components/DayCalendar.vue'
 import CalendarEventCard from 'components/CalendarEventCard.vue'
 import useLangStore from 'stores/lang'
+import useGeoStore from 'stores/geo'
 import { formatToCalendarDate, isCurrentDate } from '../helpers/calendarHelper'
 // import { ROUTE_NAMES } from '@/router/routes'
 import { isTMA } from '@/composables/detector'
@@ -176,6 +177,7 @@ const $q = useQuasar()
 const router = useRouter()
 const i18n = useI18n()
 const langStore = useLangStore()
+const geoStore = useGeoStore()
 const calendarApp = shallowRef<CalendarApp>(null)
 const calendarControls = createCalendarControlsPlugin()
 
@@ -243,6 +245,7 @@ function createCalendarView(ics: string): CalendarApp {
   return createCalendar({
     theme: 'shadcn',
     locale: langStore.language,
+    timezone: geoStore.timeZone,
     defaultView: viewDay.name,
     firstDayOfWeek: 1,
     isDark: $q.dark.isActive,
