@@ -1,17 +1,6 @@
 <template>
   <RouterView />
 </template>
-<script lang="ts">
-import useAuth from 'stores/auth'
-export default {
-  preFetch() {
-    const authStore = useAuth()
-    if (authStore.tryAuth) {
-      authStore.openIdHandleIncoming()
-    }
-  },
-}
-</script>
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
 import { RouterView } from 'vue-router'

@@ -611,6 +611,9 @@ async function logOutFromPod() {
       message: $t('database.pod.disconnected'),
       type: 'positive',
     })
+    await router.replace({
+      name: ROUTE_NAMES.LOGIN,
+    })
   } catch (error: unknown) {
     console.error(error)
     $q.notify({

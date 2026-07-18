@@ -1,7 +1,4 @@
 // todo перенести это в pod.ts
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { fetch } from '@inrupt/solid-client-authn-browser'
 import {
   SolidDataset,
   buildThing,
@@ -375,8 +372,14 @@ export default class ContractPod {
   // }
 
   static async fromSolidUrl(resourceUrl: string) {
+    const resourceOrigin = new URL(resourceUrl).origin
+    const bffOrigin = new URL(import.meta.env.server).origin
     const ds: SolidDataset = await getSolidDataset(resourceUrl, {
-      fetch,
+      fetch: (input, init) =>
+        fetch(input, {
+          ...init,
+          credentials: resourceOrigin === bffOrigin ? 'include' : 'omit',
+        }),
     })
     const dogovor = new ContractPod(resourceUrl)
     dogovor.dataset = ds

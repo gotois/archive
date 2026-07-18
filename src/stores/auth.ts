@@ -1,14 +1,16 @@
 import { LocalStorage, SessionStorage } from 'quasar'
 import { defineStore } from 'pinia'
-import { WebId } from '@inrupt/solid-client'
-import { getDefaultSession, logout } from '@inrupt/solid-client-authn-browser'
+import {
+  deleteBackendSession,
+  getBackendSession,
+  submitBackendLogin,
+} from '../api/modules/session.api'
 
 interface Store {
   pinIsLoggedIn: boolean
-  openIdSessionId: string
-  openIdExpirationDate: null | number
-  openIdIsLoggedIn: boolean
-  webId: WebId
+  webId: string | null
+  authenticated: boolean
+  loginUrl: string
   tryAuth: boolean
 }
 
@@ -16,10 +18,9 @@ export default defineStore('auth', {
   state: (): Store => ({
     tryAuth: LocalStorage.getItem('tryAuth') ?? false,
     pinIsLoggedIn: SessionStorage.getItem('isLoggedIn') ?? false,
-    openIdSessionId: '',
-    openIdExpirationDate: null,
-    openIdIsLoggedIn: false,
-    webId: getDefaultSession().info.webId,
+    webId: null,
+    authenticated: false,
+    loginUrl: import.meta.env.server + '/login',
   }),
   actions: {
     setTryAuthValue() {
@@ -28,32 +29,32 @@ export default defineStore('auth', {
     removeAuthValue() {
       SessionStorage.remove('isLoggedIn')
     },
+    async restoreSession() {
+      const session = await getBackendSession()
+      this.authenticated = session.authenticated
+      if (session.authenticated) {
+        this.webId = session.user.webId
+        this.setTryAuthValue()
+      } else if ('loginUrl' in session) {
+        this.webId = null
+        this.loginUrl = session.loginUrl
+      }
+      return session.authenticated
+    },
+    login(oidcIssuer: string, initData?: string) {
+      submitBackendLogin(oidcIssuer, initData)
+    },
     async logout() {
-      await logout()
-      this.openIdHandleIncoming()
-      LocalStorage.removeItem('oidcIssuer')
+      await deleteBackendSession()
+      this.authenticated = false
+      this.webId = null
       SessionStorage.remove('restorePreviousSession')
       SessionStorage.remove('connect')
-    },
-    openIdHandleIncoming() {
-      const { info } = getDefaultSession()
-      if (info.webId) {
-        this.openIdSessionId = info.sessionId
-        this.webId = info.webId
-        this.setTryAuthValue()
-      } else {
-        console.warn('Your WebId empty')
-      }
-      this.openIdIsLoggedIn = info.isLoggedIn
-      if (info.expirationDate) {
-        this.openIdExpirationDate = info?.expirationDate
-        this.setTryAuthValue()
-      }
     },
   },
   getters: {
     isLoggedIn(state) {
-      return state.openIdIsLoggedIn
+      return state.authenticated
     },
   },
 })

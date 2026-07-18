@@ -6,7 +6,6 @@
       :label="label"
       :behavior="$q.platform.is.ios ? 'dialog' : 'menu'"
       :options="loginOptions"
-      :prefix="prefix"
       :rules="[checkUrl]"
       :hint="$t('oidc.issuerHint')"
       :dense="$q.platform.is.desktop"
@@ -64,11 +63,12 @@ defineProps({
   },
 })
 
-const giсHostname = new URL(import.meta.env.secretary).host
-
-const loginOptions = ref([giсHostname, 'login.inrupt.com', 'login.inrupt.net'])
-const oidcIssuer = ref(giсHostname)
-const prefix = ref('https://')
+const loginOptions = ref([
+  import.meta.env.secretary,
+  'https://login.inrupt.com',
+  'https://login.inrupt.net',
+])
+const oidcIssuer = ref(import.meta.env.secretary)
 
 function onNewValueIssuer(value: string, done: (value: string) => void) {
   if (loginOptions.value.includes(value)) {
@@ -79,18 +79,14 @@ function onNewValueIssuer(value: string, done: (value: string) => void) {
 }
 
 function onComplete() {
-  const url = prefix.value + oidcIssuer.value
-  if (validUrlString(url)) {
-    emit('onComplete', url)
+  if (validUrlString(oidcIssuer.value)) {
+    emit('onComplete', oidcIssuer.value)
     return
   }
   emit('onComplete')
 }
 
 function checkUrl(value: NonNullable<string>) {
-  if (validUrlString(value)) {
-    return 'Введите валидный URL SOLID провайдера.'
-  }
-  return true
+  return validUrlString(value) || 'Введите валидный URL SOLID провайдера.'
 }
 </script>
