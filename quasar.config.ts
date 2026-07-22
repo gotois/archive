@@ -66,10 +66,7 @@ export default defineConfig((ctx: QuasarContext) => {
         google_redirect_uri: process.env.GOOGLE_REDIRECT_URI,
       },
       alias: {
-        components: ctx.appPaths.resolve.app('src/components'),
-        layouts: ctx.appPaths.resolve.app('src/layouts'),
-        pages: ctx.appPaths.resolve.app('src/pages'),
-        stores: ctx.appPaths.resolve.app('src/stores'),
+        '@': ctx.appPaths.resolve.app('src'),
       },
       target: {
         browser: 'esnext',

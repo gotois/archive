@@ -1,9 +1,9 @@
 import { boot } from 'quasar/wrappers'
 import { init, retrieveLaunchParams, viewport } from '@telegram-apps/sdk'
 import type { Router } from 'vue-router'
-import { isTMA, isWebApp } from '@/composables/detector'
-import { appendErundaScript } from '@/services/debug'
-import { appendTelegramWebAppScript } from '@/services/telegram'
+import { isTMA, isWebApp } from '@/shared/lib/detector'
+import { appendErundaScript } from '@/shared/lib/debug'
+import { appendTelegramWebAppScript } from '@/shared/lib/telegram'
 
 function getParams(params: string) {
   const { to, debug, twa } = JSON.parse(atob(params))

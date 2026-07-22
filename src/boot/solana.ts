@@ -3,9 +3,9 @@
 import { useI18n } from 'vue-i18n'
 import { useQuasar } from 'quasar'
 import { boot } from 'quasar/wrappers'
-import useWalletStore from 'stores/wallet'
-import { getSolana } from '../services/phantomWalletService'
-import { WalletType } from '../types/models'
+import useWalletStore from '@/entities/wallet'
+import { WalletType } from '@/entities/wallet'
+import { getSolana } from '@/features/wallet-connect'
 
 export default boot(() => {
   const walletStore = useWalletStore()

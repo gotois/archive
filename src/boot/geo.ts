@@ -1,5 +1,5 @@
 import { boot } from 'quasar/wrappers'
-import useGeoStore from 'stores/geo'
+import useGeoStore from '@/shared/model/geo'
 
 export default boot(async () => {
   const geoStore = useGeoStore()

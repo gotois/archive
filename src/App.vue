@@ -5,7 +5,7 @@
 import { useI18n } from 'vue-i18n'
 import { RouterView } from 'vue-router'
 import { useMeta } from 'quasar'
-import { isTWA } from '@/composables/detector'
+import { isTWA } from '@/shared/lib/detector'
 import pkg from '../package.json'
 import twaMinifest from '../twa-manifest.json'
 

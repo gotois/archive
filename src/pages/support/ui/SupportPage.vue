@@ -1,0 +1,51 @@
+<template>
+  <QPage class="full-height">
+    <iframe
+      v-if="!$q.platform.is.android"
+      :src="supportUrl"
+      width="100%"
+      height="100%"
+      class="absolute-top absolute-bottom fit"
+      frameborder="0"
+      marginheight="0"
+      marginwidth="0"
+    >
+      Loading…
+    </iframe>
+  </QPage>
+</template>
+<script lang="ts" setup>
+import { onMounted } from 'vue'
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { useMeta, useQuasar, QPage } from 'quasar'
+import { useRouter } from 'vue-router'
+import { isTWA } from '@/shared/lib/detector'
+import { open } from '@/shared/lib/urlHelper'
+import { GOOGLE_PLAY_URL } from '@/shared/lib/googlePlayHelper'
+
+const $t = useI18n().t
+const router = useRouter()
+const $q = useQuasar()
+const supportUrl = computed(() => {
+  const url = router.currentRoute.value.query.url
+  return Array.isArray(url) ? (url[0] ?? '') : (url ?? '')
+})
+
+// todo - исправить мета данные
+const metaData = {
+  'title': $t('pages.create.title'),
+  'og:title': $t('pages.create.title'),
+}
+
+onMounted(() => {
+  if (isTWA) {
+    open(GOOGLE_PLAY_URL)
+    return router.push({
+      name: 'archive',
+    })
+  }
+})
+
+useMeta(metaData)
+</script>

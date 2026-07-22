@@ -9,15 +9,11 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': sourceDirectory,
-      'components': fileURLToPath(new URL('./src/components', import.meta.url)),
-      'layouts': fileURLToPath(new URL('./src/layouts', import.meta.url)),
-      'pages': fileURLToPath(new URL('./src/pages', import.meta.url)),
-      'stores': fileURLToPath(new URL('./src/stores', import.meta.url)),
     },
   },
   test: {
     environment: 'jsdom',
-    include: ['tests/**/*.test.ts'],
+    include: ['src/**/*.test.ts'],
     clearMocks: true,
   },
 })
