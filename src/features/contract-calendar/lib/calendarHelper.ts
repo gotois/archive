@@ -1,14 +1,15 @@
 import { date } from 'quasar'
 import { Temporal } from '@js-temporal/polyfill'
 import ICalendar, { VEvent } from 'ical-browser'
+import type { Event } from 'ical-browser'
 import { formatIcal } from '@/shared/lib/dateHelper'
 import type { ContractTable } from '@/entities/contract'
 import type { CalendarEventExternal } from '../model/types'
 
-export function createCal(id: string, obj: { event: unknown }): File {
+export function createCal(id: string, obj: { event: Event }): File {
   const ev = new VEvent(obj.event)
-  const calendar = new ICalendar()
-  calendar.addEvent(id, ev)
+  const calendar = new ICalendar({ id })
+  calendar.addEvent(ev)
   return calendar.download('calendar.ics')
 }
 

@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import {
+  createCal,
   formatCalendarDateTime,
   getCalendarSubscriptionStatus,
   taskOverlapsRange,
@@ -7,6 +8,25 @@ import {
 } from './calendarHelper'
 import { formatIcal } from '@/shared/lib/dateHelper'
 import type { ContractTable } from '@/entities/contract'
+
+describe('calendar file creation', () => {
+  test('creates an ICS file using the current ical-browser API', async () => {
+    const file = createCal('-//Secretary//Calendar//EN', {
+      event: {
+        uid: 'event-1@example.com',
+        summary: 'Project meeting',
+        start: new Date('2026-07-22T10:00:00Z'),
+        end: new Date('2026-07-22T11:00:00Z'),
+      },
+    })
+
+    expect(file.name).toBe('calendar.ics')
+    expect(file.type).toBe('text/calendar')
+    await expect(file.text()).resolves.toContain(
+      'PRODID:-//Secretary//Calendar//EN',
+    )
+  })
+})
 
 function createTask(overrides: Partial<ContractTable> = {}): ContractTable {
   return {

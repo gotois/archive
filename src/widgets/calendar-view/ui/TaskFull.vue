@@ -314,6 +314,12 @@ function prettyDate(startTime: Date, endTime?: Date) {
   return formatterDate.format(startTime) + ' — ' + formatterDate.format(endTime)
 }
 
+function toCalendarAddress(agent: Agent) {
+  const uri = agent.email ?? agent.url
+
+  return uri ? { name: agent.name, uri } : undefined
+}
+
 function onSheet() {
   let actions: SheetAction[] = []
   const group1: SheetAction[] = [] // Share local
@@ -500,20 +506,25 @@ function onSheet() {
         return open(url)
       }
       case Action.CALENDAR: {
+        const organizer = toCalendarAddress(props.organizer)
+        const attendee = props.participant.flatMap((agent) => {
+          const address = toCalendarAddress(agent)
+          return address ? [address] : []
+        })
         const icalFile: File = createCal($t('organization.prodid'), {
           event: {
             uid: uid(),
-            url: props.link ? new URL(props.link) : null,
+            url: props.link ? new URL(props.link) : undefined,
             summary: props.title,
             description: props.description,
-            location: props.location,
+            location: props.location ?? undefined,
             stamp: new Date(),
             start: props.startTime,
-            end: props.endTime,
+            end: props.endTime ?? undefined,
             categories: props.tag,
             attach: props.attaches.map((attach) => attach.url),
-            organizer: props.organizer,
-            attendee: props.participant,
+            organizer,
+            attendee: attendee.length ? attendee : undefined,
             // todo поддержать поле geo
           },
         })
