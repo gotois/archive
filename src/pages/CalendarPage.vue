@@ -21,7 +21,7 @@
         @refresh="onRefresh"
       >
         <ScheduleXCalendar
-          v-if="calendarApp"
+          v-if="calendarApp && !calendarLoadError"
           :calendar-app="calendarApp"
         >
           <template #dateGridEvent="{ calendarEvent }">
@@ -105,28 +105,39 @@
           </template>
         </ScheduleXCalendar>
         <div
-          v-else-if="isPending"
-          class="absolute-full flex flex-center"
+          v-else-if="calendarLoadError"
+          class="absolute-full column flex-center q-gutter-md"
+          data-test="calendar-error"
         >
-          <QSpinner size="5em" />
-        </div>
-        <div
-          v-else
-          class="flex justify-center"
-        >
-          <h1
-            class="text-primary text-uppercase text-center text-weight-light no-padding"
-          >
-            Secretary is not available
+          <h1 class="text-negative text-center text-weight-light no-padding">
+            {{ $t('pages.calendar.loadError') }}
           </h1>
           <QBtn
             color="accent"
             square
             glossy
             push
-            label="Reload page"
-            @click="router.go(0)"
+            :label="$t('pages.calendar.retry')"
+            :loading="isFetching"
+            :disable="isFetching"
+            data-test="calendar-retry"
+            @click="retryCalendarSubscription"
           />
+        </div>
+        <div
+          v-else-if="isPending || isFetching"
+          class="absolute-full flex flex-center"
+        >
+          <QSpinner size="5em" />
+        </div>
+        <div
+          v-else
+          class="absolute-full flex flex-center"
+          data-test="calendar-empty"
+        >
+          <h1 class="text-primary text-center text-weight-light no-padding">
+            {{ $t('pages.calendar.empty') }}
+          </h1>
         </div>
       </QPullToRefresh>
     </QScrollArea>
@@ -162,7 +173,11 @@ import DayCalendar from 'components/DayCalendar.vue'
 import CalendarEventCard from 'components/CalendarEventCard.vue'
 import useLangStore from 'stores/lang'
 import useGeoStore from 'stores/geo'
-import { formatToCalendarDate, isCurrentDate } from '../helpers/calendarHelper'
+import {
+  formatToCalendarDate,
+  getCalendarSubscriptionStatus,
+  isCurrentDate,
+} from '../helpers/calendarHelper'
 // import { ROUTE_NAMES } from '@/router/routes'
 import { isTMA } from '@/composables/detector'
 import { useWebPush } from '@/composables/useWebPush'
@@ -179,6 +194,7 @@ const i18n = useI18n()
 const langStore = useLangStore()
 const geoStore = useGeoStore()
 const calendarApp = shallowRef<CalendarApp>(null)
+const calendarLoadError = shallowRef<unknown>(null)
 const calendarControls = createCalendarControlsPlugin()
 
 function asZonedDateTime(
@@ -202,28 +218,65 @@ const selectedDay = ref<string | null>(null)
 const {
   data: calendarSubscription,
   isPending,
+  isFetching,
+  error: calendarSubscriptionError,
   refetch: refetchCalendarSubscription,
 } = useCalendarSubscriptionQuery()
+
+function setCalendarError(error: unknown) {
+  console.error(error)
+  calendarApp.value = null
+  calendarLoadError.value = error
+}
+
+function applyCalendarSubscription(ics: string) {
+  calendarApp.value = null
+  calendarLoadError.value = null
+
+  try {
+    if (getCalendarSubscriptionStatus(ics) === 'ready') {
+      calendarApp.value = createCalendarView(ics)
+    }
+  } catch (error) {
+    setCalendarError(error)
+  }
+}
 
 watch(
   calendarSubscription,
   (ics) => {
     if (ics) {
-      calendarApp.value = createCalendarView(ics)
+      applyCalendarSubscription(ics)
     }
   },
   { immediate: true },
 )
 
+watch(
+  calendarSubscriptionError,
+  (error) => {
+    if (error) {
+      setCalendarError(error)
+    }
+  },
+  { immediate: true },
+)
+
+async function retryCalendarSubscription() {
+  const result = await refetchCalendarSubscription()
+  if (result.error) {
+    setCalendarError(result.error)
+    return
+  }
+  if (result.data !== undefined) {
+    applyCalendarSubscription(result.data)
+  }
+}
+
 async function onRefresh(done: () => void) {
   try {
     $q.loading.show()
-    const result = await refetchCalendarSubscription()
-    if (result.error) {
-      throw result.error
-    }
-  } catch (error) {
-    console.error(error)
+    await retryCalendarSubscription()
   } finally {
     $q.loading.hide()
     done()

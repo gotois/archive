@@ -1,14 +1,14 @@
-import { defineConfig } from '@quasar/app-vite';
-import type { QuasarConf } from '@quasar/app-vite';
-import type { QuasarContext } from '@quasar/app-vite/types/configuration/context.d.ts';
-import dotenv from 'dotenv';
-import pkg from './package.json' with { type: 'json' };
+import { defineConfig } from '@quasar/app-vite'
+import type { QuasarConf } from '@quasar/app-vite'
+import type { QuasarContext } from '@quasar/app-vite/types/configuration/context.d.ts'
+import dotenv from 'dotenv'
+import pkg from './package.json' with { type: 'json' }
 
 export default defineConfig((ctx: QuasarContext) => {
   if (ctx.dev) {
     dotenv.config({
       quiet: true,
-    });
+    })
   }
   return {
     eslint: {
@@ -48,9 +48,13 @@ export default defineConfig((ctx: QuasarContext) => {
 
     // Full list of options: https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
-      async onPublish({ arg }: Parameters<NonNullable<NonNullable<QuasarConf['build']>['onPublish']>>[0]) {
+      async onPublish({
+        arg,
+      }: Parameters<
+        NonNullable<NonNullable<QuasarConf['build']>['onPublish']>
+      >[0]) {
         if (arg !== 'netlify') {
-          throw new Error(`Unsupported publish target: ${arg}`);
+          throw new Error(`Unsupported publish target: ${arg}`)
         }
       },
       vueOptionsAPI: true,
@@ -84,16 +88,20 @@ export default defineConfig((ctx: QuasarContext) => {
       gzip: true,
     },
     // Full list of options: https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
-    devServer: ctx.dev ? {
-      https: {
-        key: 'certs/localhost-key.pem',
-        cert: 'certs/localhost.pem',
-      },
-      host: '0.0.0.0',
-      allowedHosts: process.env.APP_URL ? [new URL(process.env.APP_URL).hostname] : [],
-      port: 8080,
-      open: !process.env.TURBO_HASH, // opens browser window automatically
-    } : {},
+    devServer: ctx.dev
+      ? {
+          https: {
+            key: 'certs/localhost-key.pem',
+            cert: 'certs/localhost.pem',
+          },
+          host: '0.0.0.0',
+          allowedHosts: process.env.APP_URL
+            ? [new URL(process.env.APP_URL).hostname]
+            : [],
+          port: 8080,
+          open: !process.env.TURBO_HASH, // opens browser window automatically
+        }
+      : {},
     // https://v2.quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
     framework: {
       config: {
@@ -189,5 +197,5 @@ export default defineConfig((ctx: QuasarContext) => {
         msapplicationTileColor: '#000000',
       },
     },
-  };
-});
+  }
+})

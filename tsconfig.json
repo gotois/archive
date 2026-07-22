@@ -8,6 +8,8 @@
     "src/**/*",
     "src/*",
     "src-pwa/*",
-    "quasar.conf.js"
+    "tests/**/*",
+    "quasar.conf.js",
+    "vitest.config.ts"
   ]
 }

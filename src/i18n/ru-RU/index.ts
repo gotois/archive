@@ -41,6 +41,9 @@ export default {
     },
     calendar: {
       title: 'Календарь договоров',
+      empty: 'Нет событий',
+      loadError: 'Не удалось загрузить календарь',
+      retry: 'Повторить',
     },
     unknown: {
       seo: {

@@ -1,5 +1,6 @@
-import { is, date, LocalStorage, SessionStorage } from 'quasar'
+import { is, LocalStorage, SessionStorage } from 'quasar'
 import { defineStore } from 'pinia'
+import useGeoStore from 'stores/geo'
 // import usePodStore from 'stores/pod'
 import { db } from '../services/databaseService'
 import type {
@@ -10,6 +11,10 @@ import type {
   CalendarEventExternal,
   Attachment,
 } from '../types/models'
+import {
+  taskOverlapsRange,
+  taskToCalendarEvent,
+} from '../helpers/calendarHelper'
 
 interface Store {
   contractNames: Map<string, ContractData>
@@ -210,36 +215,13 @@ export default defineStore('contracts', {
       return await db.contracts.bulkGet(ids.map(Number))
     },
     async getCalendarContracts({ from, to }: { from: Date; to: Date }) {
+      const geoStore = useGeoStore()
       const contracts = await db.contracts
-        .filter((c) => {
-          if (date.isBetweenDates(c.startTime, from, to)) {
-            return true
-          }
-          if (date.isBetweenDates(c.endTime, from, to)) {
-            return true
-          }
-          if (c.startTime <= from) {
-            return c.endTime > to
-          }
-          return false
-        })
+        .filter((contract) => taskOverlapsRange(contract, from, to))
         .toArray()
-      return contracts.map((contract) => {
-        return {
-          id: contract.id,
-          start: date.formatDate(contract.startTime, 'YYYY-MM-DD HH:mm'),
-          end: date.formatDate(contract.endTime, 'YYYY-MM-DD HH:mm'),
-          title: contract.name,
-          calendarId: 'secretary',
-          description: contract.description,
-          attaches: contract.attachment,
-          tag: contract.tag,
-          organizer: contract.organizer,
-          participant: contract.participant,
-          location: contract.location,
-          link: contract.link,
-        }
-      }) as CalendarEventExternal[]
+      return contracts.map((contract) =>
+        taskToCalendarEvent(contract, geoStore.timeZone),
+      ) as CalendarEventExternal[]
     },
     async loadAllContracts({
       offset = 0,

@@ -7,7 +7,14 @@ import prettierPlugin from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
 import baseConfig from '../eslint.config.base.js';
 
-const APP_FILES = ['src/**/*.vue', 'src/**/*.ts', 'src/**/*.js', 'src-boot/**/*.ts'];
+const APP_FILES = [
+  'src/**/*.vue',
+  'src/**/*.ts',
+  'src/**/*.js',
+  'src-boot/**/*.ts',
+  'tests/**/*.ts',
+  '*.ts',
+];
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [

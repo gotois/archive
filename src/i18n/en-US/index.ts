@@ -40,6 +40,9 @@ export default {
     },
     calendar: {
       title: 'Calendar of contracts',
+      empty: 'No events',
+      loadError: 'Unable to load calendar',
+      retry: 'Retry',
     },
     unknown: {
       seo: {

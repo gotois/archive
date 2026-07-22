@@ -201,6 +201,9 @@ export interface CalendarEventExternal {
   title?: string
   actor?: Agent
   participant?: Agent[]
+  organizer?: Agent
+  attaches?: Attachment[]
+  tag?: string[]
   location?: string
   link?: string
   description?: string

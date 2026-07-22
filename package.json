@@ -39,7 +39,7 @@
     "fingerprint": "bubblewrap fingerprint generateAssetLinks --output=\"public/.well-known/assetlinks.json\"",
     "typecheck": "vue-tsc --noEmit",
     "pretest": "eslint . && npm run typecheck",
-    "test": "echo \"No test specified\" && exit 0"
+    "test": "vitest run"
   },
   "dependencies": {
     "@digitalbazaar/ed25519-signature-2020": "5.4.0",
@@ -87,6 +87,8 @@
     "@types/node": "25.9.3",
     "@typescript-eslint/eslint-plugin": "8.61.0",
     "@typescript-eslint/parser": "8.61.0",
+    "@vitejs/plugin-vue": "6.0.7",
+    "@vue/test-utils": "2.4.11",
     "autoprefixer": "10.5.0",
     "dotenv": "17.4.2",
     "eslint": "9.39.3",
@@ -95,8 +97,10 @@
     "eslint-plugin-prettier": "5.5.6",
     "eslint-plugin-quasar": "1.1.0",
     "eslint-plugin-vue": "9.33.0",
+    "jsdom": "29.1.1",
     "typescript": "6.0.3",
     "vite": "8.0.16",
+    "vitest": "4.1.6",
     "vue-tsc": "3.3.4",
     "workbox-build": "7.4.1",
     "workbox-cacheable-response": "7.4.1",
