@@ -1,6 +1,6 @@
 import { LocalStorage } from 'quasar'
 import { defineStore } from 'pinia'
-import { normalizeLocale } from '../../i18n'
+import { normalizeLocale } from '@/i18n'
 
 export default defineStore('lang', {
   actions: {
