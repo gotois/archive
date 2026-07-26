@@ -1,6 +1,6 @@
 <template>
   <QLayout
-    v-if="needKey"
+    v-if="needKey && !isChatGPT"
     view="lHr lpR lfr"
   >
     <QPageContainer>
@@ -31,7 +31,7 @@
     view="lHr lpR lfr"
   >
     <QHeader
-      v-if="!isTMA"
+      v-if="!isTMA && !isChatGPT"
       reveal
       :bordered="$q.platform.is.mobile"
       height-hint="98"
@@ -63,7 +63,7 @@
       </QToolbar>
     </QHeader>
     <QDrawer
-      v-if="!isTMA"
+      v-if="!isTMA && !isChatGPT"
       v-model="layoutStore.leftDrawerOpen"
       side="left"
       class="scroll-y"
@@ -360,7 +360,7 @@
       />
     </QPageContainer>
     <QPageSticky
-      v-if="!isTMA"
+      v-if="!isTMA && !isChatGPT"
       position="bottom-right"
       :offset="[18, 80]"
     >
@@ -378,7 +378,7 @@
       </QFab>
     </QPageSticky>
     <QFooter
-      v-if="!isTMA"
+      v-if="!isTMA && !isChatGPT"
       bordered
       :class="{
         'bg-white text-dark': !$q.dark.isActive,
@@ -473,13 +473,14 @@ import useTFAStore from '@/features/two-factor-auth'
 import ToolbarTitleComponent from '@/shared/ui/ToolbarTitleComponent.vue'
 import UserProfile from './UserProfile.vue'
 // import ChatDialog from './ChatDialog.vue'
-import { isTWA, isTMA } from '@/shared/lib/detector'
+import { isChatGPT, isTWA, isTMA } from '@/shared/lib/detector'
 import { keyPair } from '@/shared/lib/databaseService'
 import { open } from '@/shared/lib/urlHelper'
 import { ROUTE_NAMES } from '@/shared/config/routes'
 import { ContractPod } from '@/features/pod-sync'
 import { formatToCalendarDate } from '@/features/contract-calendar'
 import type { DIDTable } from '@/shared/model/persistence'
+import { useAppMeta } from '@/app/useAppMeta'
 
 const LocaleComponent = defineAsyncComponent(
   () => import('./LocaleComponent.vue'),
@@ -510,6 +511,7 @@ const WalletProfile = defineAsyncComponent(() =>
 )
 
 const $q = useQuasar()
+useAppMeta()
 const router = useRouter()
 const i18n = useI18n()
 const $t = i18n.t
@@ -661,20 +663,21 @@ function syncPods() {
     cancel: true,
     persistent: true,
   })
-  dialog
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    .onOk(async () => {
-      const links = await podStore.getContractsLink()
-      for (const link of links) {
-        const message = 'refreshing ' + link
-        const newDogovor = await ContractPod.fromSolidUrl(link)
-        dialog.update({ message: message })
-        console.log('WIP sync pod contract', newDogovor.presentation)
-      }
-    })
+  dialog.onOk(async () => {
+    const links = await podStore.getContractsLink()
+    for (const link of links) {
+      const message = 'refreshing ' + link
+      const newDogovor = await ContractPod.fromSolidUrl(link)
+      dialog.update({ message: message })
+      console.log('WIP sync pod contract', newDogovor.presentation)
+    }
+  })
 }
 
 onBeforeMount(() => {
+  if (isChatGPT.value) {
+    return
+  }
   setTimeout(() => {
     notificationStore.check()
   }, NOTIFICATION_TIMER)

@@ -1,238 +1,46 @@
-/* eslint-disable vue/one-component-per-file */
-import { defineComponent } from 'vue'
-import { mount, type VueWrapper } from '@vue/test-utils'
-import { createPinia, setActivePinia } from 'pinia'
-import { QueryClient, VueQueryPlugin } from '@tanstack/vue-query'
-import { afterEach, describe, expect, test, vi } from 'vitest'
+import { flushPromises, mount } from '@vue/test-utils'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
 
-const quasarMock = vi.hoisted(() => ({
-  loading: { show: vi.fn(), hide: vi.fn() },
-  notify: vi.fn(),
-  dark: { isActive: false },
-  platform: {
-    has: { webStorage: true },
-    is: { desktop: false },
-    isDesktop: false,
+const host = vi.hoisted(() => ({
+  isChatGPT: { __v_isRef: true, value: false },
+}))
+
+vi.mock('@/shared/lib/detector', () => ({
+  isChatGPT: host.isChatGPT,
+}))
+
+vi.mock('./ScheduleCalendarView.vue', () => ({
+  default: {
+    template: '<div data-test="schedule-calendar" />',
   },
 }))
 
-vi.mock('quasar', async (importOriginal) => {
-  const original = await importOriginal<typeof import('quasar')>()
-  return {
-    ...original,
-    useMeta: vi.fn(),
-    useQuasar: () => quasarMock,
-  }
-})
-
-vi.mock('vue-router', () => ({
-  useRouter: () => ({
-    currentRoute: { value: { query: {} } },
-  }),
-}))
-
-vi.mock('vue-i18n', () => ({
-  useI18n: () => ({ t: (key: string) => key }),
-}))
-
-vi.mock('@/shared/lib/databaseService', () => ({
-  db: {
-    getContractNames: vi.fn(async () => new Map()),
+vi.mock('./ChatGPTCalendarView.vue', () => ({
+  default: {
+    template: '<div data-test="chatgpt-calendar" />',
   },
 }))
 
-vi.mock('@/shared/lib/detector', async () => {
-  const { computed } = await import('vue')
-  return { isTMA: computed(() => false) }
+import CalendarView from './CalendarView.vue'
+
+beforeEach(() => {
+  host.isChatGPT.value = false
 })
 
-vi.mock('@/features/web-push', async () => {
-  const { ref } = await import('vue')
-  return {
-    default: () => ({
-      permission: ref<NotificationPermission>('denied'),
-      enable: vi.fn(),
-    }),
-  }
-})
+describe('CalendarView host presentation', () => {
+  test('renders the standard calendar for regular clients', () => {
+    const wrapper = mount(CalendarView)
 
-vi.mock('./DayCalendar.vue', () => ({
-  default: { name: 'DayCalendar', template: '<div />' },
-}))
-
-vi.mock('./CalendarEventCard.vue', () => ({
-  default: { name: 'CalendarEventCard', template: '<div />' },
-}))
-
-vi.mock('@schedule-x/vue', () => ({
-  ScheduleXCalendar: {
-    name: 'ScheduleXCalendar',
-    template: '<div data-test="calendar-ready" />',
-  },
-}))
-
-vi.mock('@schedule-x/calendar', () => ({
-  viewDay: { name: 'day' },
-  createViewDay: vi.fn(() => ({})),
-  createCalendar: vi.fn(() => ({})),
-}))
-
-vi.mock('@schedule-x/ical', () => ({
-  createIcalendarPlugin: vi.fn(() => ({ between: vi.fn() })),
-}))
-
-vi.mock('@schedule-x/current-time', () => ({
-  createCurrentTimePlugin: vi.fn(() => ({})),
-}))
-
-vi.mock('@schedule-x/calendar-controls', () => ({
-  createCalendarControlsPlugin: vi.fn(() => ({ setDate: vi.fn() })),
-}))
-
-vi.mock('@schedule-x/events-service', () => ({
-  createEventsServicePlugin: vi.fn(() => ({})),
-}))
-
-vi.mock('@schedule-x/scroll-controller', () => ({
-  createScrollControllerPlugin: vi.fn(() => ({ scrollTo: vi.fn() })),
-}))
-
-import { HttpError } from '@/shared/api/http'
-import { calendarApi } from '@/features/calendar-subscription'
-import CalendarPage from './CalendarView.vue'
-import useGeoStore from '@/shared/model/geo'
-import useSecretaryStore from '@/entities/secretary-auth'
-
-const passthroughStub = defineComponent({
-  template: '<div><slot /></div>',
-})
-const buttonStub = defineComponent({
-  props: {
-    label: { type: String, default: '' },
-    loading: Boolean,
-    disable: Boolean,
-  },
-  emits: ['click'],
-  template:
-    '<button :disabled="disable" @click="$emit(\'click\')">{{ label }}</button>',
-})
-
-const wrappers: VueWrapper[] = []
-const queryClients: QueryClient[] = []
-
-function mountCalendarPage(): VueWrapper {
-  const pinia = createPinia()
-  setActivePinia(pinia)
-  useGeoStore().timeZone = 'Europe/Moscow'
-  const secretaryStore = useSecretaryStore()
-  secretaryStore.login = 'user'
-  secretaryStore.password = 'password'
-  const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false } },
-  })
-  queryClients.push(queryClient)
-
-  const wrapper = mount(CalendarPage, {
-    global: {
-      plugins: [pinia, [VueQueryPlugin, { queryClient }]],
-      stubs: {
-        QPage: passthroughStub,
-        QScrollArea: passthroughStub,
-        QPullToRefresh: passthroughStub,
-        QVirtualScroll: passthroughStub,
-        QSpinner: passthroughStub,
-        QBtn: buttonStub,
-        DayCalendar: true,
-        CalendarEventCard: true,
-      },
-    },
-  })
-  wrappers.push(wrapper)
-  return wrapper
-}
-
-afterEach(() => {
-  wrappers.splice(0).forEach((wrapper) => wrapper.unmount())
-  queryClients.splice(0).forEach((queryClient) => queryClient.clear())
-  vi.restoreAllMocks()
-})
-
-describe('CalendarPage loading states', () => {
-  test('renders the calendar for ICS containing VEVENT', async () => {
-    vi.spyOn(calendarApi, 'getSubscription').mockResolvedValue(
-      [
-        'BEGIN:VCALENDAR',
-        'VERSION:2.0',
-        'BEGIN:VEVENT',
-        'UID:42',
-        'DTSTART:20260102T090000Z',
-        'DTEND:20260102T100000Z',
-        'END:VEVENT',
-        'END:VCALENDAR',
-      ].join('\r\n'),
-    )
-
-    const wrapper = mountCalendarPage()
-
-    await vi.waitFor(() => {
-      expect(wrapper.find('[data-test="calendar-ready"]').exists()).toBe(true)
-    })
+    expect(wrapper.find('[data-test="schedule-calendar"]').exists()).toBe(true)
+    expect(wrapper.find('[data-test="chatgpt-calendar"]').exists()).toBe(false)
   })
 
-  test('shows an empty state for valid ICS without VEVENT', async () => {
-    vi.spyOn(calendarApi, 'getSubscription').mockResolvedValue(
-      [
-        'BEGIN:VCALENDAR',
-        'VERSION:2.0',
-        'PRODID:-//Secretary//Tests//EN',
-        'END:VCALENDAR',
-      ].join('\r\n'),
-    )
+  test('renders the ChatGPT presentation inside the same widget', async () => {
+    host.isChatGPT.value = true
+    const wrapper = mount(CalendarView)
+    await flushPromises()
 
-    const wrapper = mountCalendarPage()
-
-    await vi.waitFor(() => {
-      expect(wrapper.find('[data-test="calendar-empty"]').exists()).toBe(true)
-    })
-    expect(wrapper.find('[data-test="calendar-error"]').exists()).toBe(false)
-  })
-
-  test('shows an error screen for malformed ICS', async () => {
-    vi.spyOn(calendarApi, 'getSubscription').mockResolvedValue(
-      'BEGIN:VCALENDAR\r\nVERSION:2.0',
-    )
-
-    const wrapper = mountCalendarPage()
-
-    await vi.waitFor(() => {
-      expect(wrapper.find('[data-test="calendar-error"]').exists()).toBe(true)
-    })
-  })
-
-  test('shows an error screen and retries with refetch', async () => {
-    const getSubscription = vi
-      .spyOn(calendarApi, 'getSubscription')
-      .mockRejectedValueOnce(new HttpError(503, '503 Service Unavailable'))
-      .mockResolvedValueOnce(
-        [
-          'BEGIN:VCALENDAR',
-          'VERSION:2.0',
-          'PRODID:-//Secretary//Tests//EN',
-          'END:VCALENDAR',
-        ].join('\r\n'),
-      )
-    const wrapper = mountCalendarPage()
-
-    await vi.waitFor(() => {
-      expect(wrapper.find('[data-test="calendar-error"]').exists()).toBe(true)
-    })
-
-    await wrapper.find('[data-test="calendar-retry"]').trigger('click')
-
-    await vi.waitFor(() => {
-      expect(getSubscription).toHaveBeenCalledTimes(2)
-      expect(wrapper.find('[data-test="calendar-empty"]').exists()).toBe(true)
-    })
-    expect(wrapper.find('[data-test="calendar-error"]').exists()).toBe(false)
+    expect(wrapper.find('[data-test="chatgpt-calendar"]').exists()).toBe(true)
+    expect(wrapper.find('[data-test="schedule-calendar"]').exists()).toBe(false)
   })
 })

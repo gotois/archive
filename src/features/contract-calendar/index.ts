@@ -5,7 +5,6 @@ export {
   createCal,
   formatCalendarDateTime,
   formatToCalendarDate,
-  getCalendarSubscriptionStatus,
   googleCalendarUrl,
   isCurrentDate,
   taskOverlapsRange,

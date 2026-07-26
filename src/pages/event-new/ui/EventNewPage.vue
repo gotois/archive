@@ -39,7 +39,9 @@ import { useI18n } from 'vue-i18n'
 import { mainButton, postEvent } from '@telegram-apps/sdk'
 import { useRouter } from 'vue-router'
 import { ROUTE_NAMES } from '@/shared/config/routes'
-import { isTMA } from '@/shared/lib/detector'
+import { isChatGPT, isTMA } from '@/shared/lib/detector'
+import { useEventStore } from '@/features/event-editor'
+import { useHostBridge } from '@/shared/lib/hostBridge'
 
 const CalendarEventFormComponent = defineAsyncComponent({
   loader: () => import('@/features/event-editor'),
@@ -65,7 +67,17 @@ interface EmptyTask {
 }
 
 function _now() {
-  const d = new Date()
+  if (!isChatGPT.value) {
+    const d = new Date()
+    d.setSeconds(0, 0)
+    return d.toISOString()
+  }
+  // todo зачем здесь подключается целый store для этого непонятно
+  eventStore.applyChatGPTContent()
+  const date = eventStore.chatGPTSelectedDate
+  const d = new Date(
+    `${date}T${String(new Date().getHours()).padStart(2, '0')}:00:00`,
+  )
   d.setSeconds(0, 0)
   return d.toISOString()
 }
@@ -90,6 +102,10 @@ const emptyTask: EmptyTask = {
 
 async function onSaved() {
   $q.notify({ type: 'positive', message: $t('pages.calendar.title') })
+  if (isChatGPT.value) {
+    await bridge.requestClose()
+    return
+  }
   await router.replace({ name: ROUTE_NAMES.CALENDAR })
 }
 

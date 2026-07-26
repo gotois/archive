@@ -23,7 +23,7 @@ export function formatIcal(x: Date): string {
     minutes: x.getMinutes(),
     second: x.getSeconds(),
   })
-  return date.formatDate(buildDate, 'YYYYMMDDTHHmmss') + '00Z'
+  return date.formatDate(buildDate, 'YYYYMMDDTHHmmss') + 'Z'
 }
 
 export function prettyDate(start: string, end?: string | null): string {

@@ -1,5 +1,6 @@
 import { Notify, LocalStorage } from 'quasar'
 import { register } from 'register-service-worker'
+import { isChatGPTHost } from '../src/shared/lib/chatgptHost'
 import pkg from '../package.json'
 
 const { version } = pkg

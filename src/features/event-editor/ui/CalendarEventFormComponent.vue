@@ -386,8 +386,7 @@ import {
   QMenu,
 } from 'quasar'
 import { useRouter, useRoute } from 'vue-router'
-import { isTMA } from '@/shared/lib/detector'
-import { isChatGPT } from '@/shared/lib/hostBridge'
+import { isChatGPT, isTMA } from '@/shared/lib/detector'
 import useEventStore from '../model/store'
 import { prettyDate, toDatetimeLocal } from '@/shared/lib/dateHelper'
 import { ROUTE_NAMES } from '@/shared/config/routes'

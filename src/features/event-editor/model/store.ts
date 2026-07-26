@@ -1,6 +1,12 @@
 import { defineStore } from 'pinia'
 import useSecretaryStore from '@/entities/secretary-auth'
 import useGeoStore from '@/shared/model/geo'
+import { isChatGPT } from '@/shared/lib/detector'
+import {
+  getHostBridge,
+  type ChatGPTStructuredContent,
+  type ChatGPTTask,
+} from '@/shared/lib/hostBridge'
 
 interface TelegramGroup {
   id: number
@@ -8,8 +14,109 @@ interface TelegramGroup {
   type: 'group' | 'supergroup'
 }
 
+interface EventStoreState {
+  chatGPTTasks: ChatGPTTask[]
+  chatGPTSelectedDate: string
+  chatGPTTimezone: string
+  chatGPTStale: boolean
+  chatGPTError: string | null
+}
+
+function localDateInTimeZone(timeZone: string): string {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(new Date())
+  const value = Object.fromEntries(
+    parts
+      .filter((part) => part.type !== 'literal')
+      .map((part) => [part.type, part.value]),
+  )
+  return `${value.year}-${value.month}-${value.day}`
+}
+
+function normalizeToolParams(
+  params: Record<string, unknown>,
+): Record<string, unknown> {
+  return JSON.parse(JSON.stringify(params)) as Record<string, unknown>
+}
+
+function getChatGPTContent(
+  bridge: ReturnType<typeof getHostBridge>,
+  content?: ChatGPTStructuredContent,
+): ChatGPTStructuredContent | undefined {
+  return content || bridge.widgetState?.content || bridge.toolOutput
+}
+
 export default defineStore('event', {
+  state: (): EventStoreState => {
+    const bridge = getHostBridge()
+    const timezone = bridge.timezone || 'Europe/Moscow'
+    return {
+      chatGPTTasks: [],
+      chatGPTSelectedDate: localDateInTimeZone(timezone),
+      chatGPTTimezone: timezone,
+      chatGPTStale: false,
+      chatGPTError: null,
+    }
+  },
   actions: {
+    applyChatGPTContent(content?: ChatGPTStructuredContent): boolean {
+      const bridge = getHostBridge()
+      const value = getChatGPTContent(bridge, content)
+      if (!value) {
+        return false
+      }
+      if (Array.isArray(value.tasks)) {
+        this.chatGPTTasks = value.tasks.map((task) => ({
+          ...task,
+          targetType: task.targetType || 'Person',
+        }))
+      }
+      if (value.selectedDate) {
+        this.chatGPTSelectedDate = value.selectedDate.slice(0, 10)
+      }
+      if (value.timezone) {
+        this.chatGPTTimezone = value.timezone
+        useGeoStore().timeZone = value.timezone
+      }
+      this.chatGPTStale = false
+      this.chatGPTError = null
+      bridge.setWidgetState({
+        ...bridge.widgetState,
+        content: {
+          ...value,
+          tasks: this.chatGPTTasks,
+          selectedDate: this.chatGPTSelectedDate,
+          timezone: this.chatGPTTimezone,
+        },
+      })
+      return true
+    },
+    async showChatGPTEvents(date?: string) {
+      date ||= this.chatGPTSelectedDate
+      const bridge = getHostBridge()
+      const result = await bridge.callTool('show', {
+        start_date: `${date}T00:00:00`,
+        end_date: `${date}T23:59:59`,
+      })
+      if (!this.applyChatGPTContent(result.structuredContent)) {
+        throw new Error('Show returned no structured task data')
+      }
+      return this.chatGPTTasks
+    },
+    async refreshChatGPTAfterWrite(): Promise<void> {
+      try {
+        await this.showChatGPTEvents()
+      } catch (error) {
+        console.error(error)
+        this.chatGPTStale = true
+        this.chatGPTError =
+          error instanceof Error ? error.message : 'Не удалось обновить список'
+      }
+    },
     async getTelegramGroups(query?: string) {
       const secretaryStore = useSecretaryStore()
 
@@ -38,6 +145,23 @@ export default defineStore('event', {
       return groups as TelegramGroup[]
     },
     async getEvent(taskId: number | string) {
+      if (isChatGPT.value) {
+        this.applyChatGPTContent()
+        let task = this.chatGPTTasks.find(
+          (item) => item.id_task === Number(taskId),
+        )
+        if (!task) {
+          await this.showChatGPTEvents()
+          task = this.chatGPTTasks.find(
+            (item) => item.id_task === Number(taskId),
+          )
+        }
+        if (!task) {
+          throw new Error('Task not found')
+        }
+        return task
+      }
+
       const secretaryStore = useSecretaryStore()
 
       const headers = new Headers({
@@ -65,6 +189,22 @@ export default defineStore('event', {
     // TODO: описать входную модель события и убрать `any`: деструктуризация ниже не
     // валидирует payload, поэтому UI может отправить в API произвольные поля.
     async createEvent(body: Record<string, unknown>) {
+      if (isChatGPT.value) {
+        const bridge = getHostBridge()
+        const task = { ...body }
+        delete task.target
+        delete task.remind_before
+        delete task.id_task
+        const result = await bridge.callTool(
+          'create',
+          normalizeToolParams(task),
+        )
+        if (!this.applyChatGPTContent(result.structuredContent)) {
+          throw new Error('Create returned no structured task data')
+        }
+        return this.chatGPTTasks[0]
+      }
+
       const { ...event } = body
       const secretaryStore = useSecretaryStore()
       const geoStore = useGeoStore()
@@ -94,6 +234,16 @@ export default defineStore('event', {
       console.log('Данные успешно добавлены')
     },
     async editEvent(body: Record<string, unknown>) {
+      if (isChatGPT.value) {
+        const bridge = getHostBridge()
+        const task = { ...body }
+        delete task.target
+        delete task.remind_before
+        await bridge.callTool('edit', normalizeToolParams(task))
+        await this.refreshChatGPTAfterWrite()
+        return
+      }
+
       const secretaryStore = useSecretaryStore()
       const geoStore = useGeoStore()
 
@@ -118,6 +268,16 @@ export default defineStore('event', {
       console.log('Данные успешно изменены')
     },
     async deleteEvent(body: unknown) {
+      if (isChatGPT.value) {
+        const bridge = getHostBridge()
+        await bridge.callTool(
+          'remove',
+          normalizeToolParams(body as Record<string, unknown>),
+        )
+        await this.refreshChatGPTAfterWrite()
+        return
+      }
+
       const secretaryStore = useSecretaryStore()
 
       const headers = new Headers({

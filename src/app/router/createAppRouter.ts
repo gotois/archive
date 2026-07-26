@@ -6,7 +6,13 @@ import { deleteDatabases, reset } from '@/shared/lib/databaseService'
 import { ROUTE_NAMES } from '@/shared/config/routes'
 import routes from './routes'
 
-export function createAppRouter() {
+interface AppRouterOptions {
+  sessionMode?: 'internal' | 'external'
+}
+
+export function createAppRouter({
+  sessionMode = 'internal',
+}: AppRouterOptions = {}) {
   let sessionChecked = false
   const router = createRouter({
     scrollBehavior: () => ({ left: 0, top: 0 }),
@@ -15,6 +21,10 @@ export function createAppRouter() {
   })
 
   router.beforeEach(async (to) => {
+    if (sessionMode === 'external') {
+      return true
+    }
+
     if (to.path === '/reset') {
       LocalStorage.clear()
       SessionStorage.clear()

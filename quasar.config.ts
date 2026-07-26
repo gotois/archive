@@ -32,6 +32,7 @@ export default defineConfig((ctx: QuasarContext) => {
 
     // https://v2.quasar.dev/quasar-cli/boot-files
     boot: [
+      'chatgpt',
       'i18n',
       'vue-query',
       'addressbar-color',
@@ -92,6 +93,8 @@ export default defineConfig((ctx: QuasarContext) => {
             cert: 'certs/localhost.pem',
           },
           host: '0.0.0.0',
+          cors: true,
+          origin: process.env.APP_URL,
           allowedHosts: process.env.APP_URL
             ? [new URL(process.env.APP_URL).hostname]
             : [],

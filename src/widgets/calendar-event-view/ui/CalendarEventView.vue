@@ -50,8 +50,8 @@ import { useI18n } from 'vue-i18n'
 import { mainButton, postEvent } from '@telegram-apps/sdk'
 import { ROUTE_NAMES } from '@/shared/config/routes'
 import { useEventStore } from '@/features/event-editor'
-import { isTMA } from '@/shared/lib/detector'
-import { isChatGPT, useHostBridge } from '@/shared/lib/hostBridge'
+import { isChatGPT, isTMA } from '@/shared/lib/detector'
+import { useHostBridge } from '@/shared/lib/hostBridge'
 
 const CalendarEventFormComponent = defineAsyncComponent({
   loader: () => import('@/features/event-editor'),
@@ -123,7 +123,7 @@ onMounted(async () => {
   $q.loading.show()
   try {
     if (isChatGPT.value) {
-      eventStore.hydrateChatGPT()
+      eventStore.applyChatGPTContent()
     }
     task.value = await eventStore.getEvent(props.taskId)
   } catch (error: unknown) {
