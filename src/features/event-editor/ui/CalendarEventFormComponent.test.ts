@@ -75,10 +75,14 @@ describe('CalendarEventFormComponent', () => {
       global: {
         stubs: {
           QForm: formStub,
+          QCardActions: {
+            template: '<div><slot /></div>',
+          },
         },
       },
     })
 
+    expect(wrapper.html()).toContain('label="Создать"')
     await wrapper.find('form').trigger('submit')
 
     expect(eventStoreMock.createEvent).toHaveBeenCalledOnce()

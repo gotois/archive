@@ -40,6 +40,8 @@ export default {
     },
     calendar: {
       title: 'Calendar of contracts',
+      newEvent: 'New event',
+      busy: 'Busy',
       empty: 'No events',
       loadError: 'Unable to load calendar',
       retry: 'Retry',

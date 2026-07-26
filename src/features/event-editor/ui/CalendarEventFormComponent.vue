@@ -265,6 +265,12 @@
           clearable
           emit-value
           map-options
+          :disable="isChatGPT"
+          :hint="
+            isChatGPT
+              ? 'Напоминания пока доступны только в Telegram Mini App'
+              : undefined
+          "
           :dense="$q.platform.is.desktop"
         >
           <template #prepend>
@@ -287,7 +293,7 @@
           :dense="$q.platform.is.desktop"
         />
         <QSelect
-          v-if="isTMA"
+          v-if="isTMA || isChatGPT"
           v-model="form.target"
           :options="targetOptions"
           label="Кому"
@@ -300,6 +306,12 @@
           clearable
           behavior="menu"
           :loading="targetLoading"
+          :disable="isChatGPT"
+          :hint="
+            isChatGPT
+              ? 'Получатель Telegram доступен только в Mini App'
+              : undefined
+          "
           :dense="$q.platform.is.desktop"
           @filter="filterTargets"
           @clear="form.target = [ownTarget]"
@@ -326,8 +338,9 @@
             type="submit"
             color="primary"
             icon="save"
-            label="Сохранить"
+            :label="taskId === null ? 'Создать' : 'Сохранить'"
             :loading="saving"
+            :disable="saving"
           />
           <QSpace />
           <QBtn
@@ -336,6 +349,7 @@
             color="negative"
             icon="delete"
             label="Удалить"
+            :disable="saving"
             @click="onRemove"
           />
         </QCardActions>
@@ -373,6 +387,7 @@ import {
 } from 'quasar'
 import { useRouter, useRoute } from 'vue-router'
 import { isTMA } from '@/shared/lib/detector'
+import { isChatGPT } from '@/shared/lib/hostBridge'
 import useEventStore from '../model/store'
 import { prettyDate, toDatetimeLocal } from '@/shared/lib/dateHelper'
 import { ROUTE_NAMES } from '@/shared/config/routes'
@@ -382,7 +397,7 @@ interface TaskObject {
   chatId?: number
   messageId?: number
   targetName?: string
-  targetType: 'Group' | 'Person'
+  targetType?: 'Group' | 'Person'
   name: string
   description?: string | null
   start_date: string
@@ -427,7 +442,7 @@ const ownTarget: TargetOption = {
   value: null,
 }
 const telegramTargetType =
-  props.task.targetType === 'Person' ? 'Person' : 'Group'
+  props.task.targetType === 'Group' ? 'Group' : 'Person'
 const telegramTargetName =
   props.task.targetName || `${telegramTargetType} ${props.task.chatId}`
 const telegramTarget: TargetOption | undefined =
@@ -468,6 +483,9 @@ async function filterTargets(
   value: string,
   update: (callback: () => void) => void,
 ) {
+  if (isChatGPT.value) {
+    return
+  }
   const query = value.trim()
 
   if (!query) {
@@ -618,25 +636,31 @@ defineExpose({
   submit,
 })
 
+async function removeTask(): Promise<void> {
+  try {
+    await eventStore.deleteEvent({
+      ids: [props.task.id_task],
+    })
+    emit('removed')
+  } catch (error: unknown) {
+    console.error(error)
+    $q.notify({
+      type: 'negative',
+      message: error instanceof Error ? error.message : 'Ошибка удаления',
+    })
+  }
+}
+
 function onRemove() {
+  if (isChatGPT.value) {
+    void removeTask()
+    return
+  }
   $q.dialog({
     title: 'Удалить событие?',
     message: `«${props.task.name}»`,
     ok: { label: 'Удалить', color: 'negative', flat: true },
     cancel: { label: 'Отмена', flat: true },
-  }).onOk(async () => {
-    try {
-      await eventStore.deleteEvent({
-        ids: [props.task.id_task],
-      })
-      emit('removed')
-    } catch (error: unknown) {
-      console.error(error)
-      $q.notify({
-        type: 'negative',
-        message: error instanceof Error ? error.message : 'Ошибка удаления',
-      })
-    }
-  })
+  }).onOk(removeTask)
 }
 </script>

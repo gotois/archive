@@ -51,6 +51,7 @@ import { mainButton, postEvent } from '@telegram-apps/sdk'
 import { ROUTE_NAMES } from '@/shared/config/routes'
 import { useEventStore } from '@/features/event-editor'
 import { isTMA } from '@/shared/lib/detector'
+import { isChatGPT, useHostBridge } from '@/shared/lib/hostBridge'
 
 const CalendarEventFormComponent = defineAsyncComponent({
   loader: () => import('@/features/event-editor'),
@@ -67,6 +68,7 @@ const $t = useI18n().t
 const router = useRouter()
 const route = useRoute()
 const eventStore = useEventStore()
+const bridge = useHostBridge()
 const formRef = ref<{ submit: () => Promise<void> } | null>(null)
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -77,6 +79,9 @@ const isViewMode = computed(() => route.name === ROUTE_NAMES.VIEW)
 watch(
   () => isViewMode.value,
   (viewMode) => {
+    if (!isTMA.value) {
+      return
+    }
     mainButton.setParams({
       isVisible: !viewMode,
     })
@@ -98,18 +103,28 @@ async function onRefresh(done: () => void) {
   }
 }
 
-function onSaved() {
+async function onSaved() {
   $q.notify({ type: 'positive', message: 'Сохранено' })
+  if (isChatGPT.value) {
+    await bridge.requestClose()
+  }
 }
 
 async function onRemoved() {
   $q.notify({ type: 'positive', message: 'Удалено' })
+  if (isChatGPT.value) {
+    await bridge.requestClose()
+    return
+  }
   await router.push({ path: '/', replace: true })
 }
 
 onMounted(async () => {
   $q.loading.show()
   try {
+    if (isChatGPT.value) {
+      eventStore.hydrateChatGPT()
+    }
     task.value = await eventStore.getEvent(props.taskId)
   } catch (error: unknown) {
     console.error(error)

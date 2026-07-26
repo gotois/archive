@@ -1,5 +1,6 @@
 import { describe, expect, test } from 'vitest'
 import {
+  addBusyAvailabilityEvents,
   createCal,
   formatCalendarDateTime,
   getCalendarSubscriptionStatus,
@@ -129,6 +130,53 @@ describe('task calendar mapping', () => {
 })
 
 describe('calendar subscription classification', () => {
+  test('adds a display event for a bounded busy availability', () => {
+    const source = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'BEGIN:VAVAILABILITY',
+      'UID:busy-1',
+      'BUSYTYPE:BUSY',
+      'DTSTART;TZID=Europe/Moscow:20260726T210000',
+      'DTEND;TZID=Europe/Moscow:20260726T220000',
+      'END:VAVAILABILITY',
+      'END:VCALENDAR',
+    ].join('\r\n')
+
+    const result = addBusyAvailabilityEvents(source, 'Europe/Moscow', 'Занят')
+
+    expect(result).toContain('BEGIN:VEVENT')
+    expect(result).toContain('UID:availability-busy-1')
+    expect(result).toContain('SUMMARY:Занят')
+    expect(result).toContain('DTSTART:20260726T180000Z')
+    expect(result).toContain('DTEND:20260726T190000Z')
+    expect(getCalendarSubscriptionStatus(result)).toBe('ready')
+  })
+
+  test('does not display availability containing an AVAILABLE window as busy', () => {
+    const source = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'BEGIN:VAVAILABILITY',
+      'UID:free-1',
+      'BUSYTYPE:BUSY',
+      'DTSTART;TZID=Europe/Moscow:20260726T210000',
+      'DTEND;TZID=Europe/Moscow:20260726T220000',
+      'BEGIN:AVAILABLE',
+      'UID:window-1',
+      'DTSTART;TZID=Europe/Moscow:20260726T210000',
+      'DTEND;TZID=Europe/Moscow:20260726T220000',
+      'END:AVAILABLE',
+      'END:VAVAILABILITY',
+      'END:VCALENDAR',
+    ].join('\r\n')
+
+    const result = addBusyAvailabilityEvents(source, 'Europe/Moscow', 'Занят')
+
+    expect(result).not.toContain('BEGIN:VEVENT')
+    expect(getCalendarSubscriptionStatus(result)).toBe('empty')
+  })
+
   test('recognizes a valid calendar without VEVENT as empty', () => {
     expect(
       getCalendarSubscriptionStatus(

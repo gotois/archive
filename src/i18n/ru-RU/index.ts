@@ -41,6 +41,8 @@ export default {
     },
     calendar: {
       title: 'Календарь договоров',
+      newEvent: 'Новое событие',
+      busy: 'Занят',
       empty: 'Нет событий',
       loadError: 'Не удалось загрузить календарь',
       retry: 'Повторить',
