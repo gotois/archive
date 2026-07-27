@@ -404,6 +404,7 @@ interface TaskObject {
   location?: string | null
   link_meeting?: string | null
   priority?: number
+  notification_date_time?: string | null
   remind_before?: number | null
 }
 
@@ -466,12 +467,42 @@ const priorityOptions = [
   { label: 'Средний', value: 2 },
   { label: 'Низкий', value: 3 },
 ]
-const remindOptions = [
+const defaultRemindOptions = [
   { label: 'Без напоминания', value: null },
   { label: 'За 15 мин', value: 15 },
   { label: 'За 1 час', value: 60 },
   { label: 'За 24 часа', value: 1440 },
 ]
+const taskRemindBefore =
+  typeof props.task.remind_before === 'number'
+    ? Math.floor(props.task.remind_before) / 60
+    : null
+const notificationDate = props.task.notification_date_time
+  ? new Date(props.task.notification_date_time)
+  : null
+const currentReminderOption =
+  taskRemindBefore !== null &&
+  notificationDate &&
+  !Number.isNaN(notificationDate.getTime())
+    ? {
+        label: new Intl.DateTimeFormat('ru-RU', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        }).format(notificationDate),
+        value: taskRemindBefore,
+      }
+    : null
+const remindOptions = currentReminderOption
+  ? [
+      currentReminderOption,
+      ...defaultRemindOptions.filter(
+        (option) => option.value !== currentReminderOption.value,
+      ),
+    ]
+  : defaultRemindOptions
 const isNew = props.taskId === null
 
 function priorityLabel(priority?: number): string {
@@ -526,10 +557,7 @@ const form = reactive<Omit<TaskObject, 'id_task'> & { target: TargetOption[] }>(
     link_meeting: props.task.link_meeting,
     priority: props.task.priority ?? 2,
     targetType: telegramTargetType,
-    remind_before:
-      typeof props.task.remind_before === 'number'
-        ? Math.floor(props.task.remind_before) / 60
-        : null,
+    remind_before: taskRemindBefore,
     target: [telegramTarget ?? ownTarget],
   },
 )

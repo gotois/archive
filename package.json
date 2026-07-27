@@ -47,6 +47,7 @@
     "@digitalbazaar/vc": "7.1.2",
     "@inrupt/solid-client": "2.1.2",
     "@inrupt/vocab-common-rdf": "1.0.5",
+    "@modelcontextprotocol/ext-apps": "1.7.5",
     "@quasar/extras": "1.18.0",
     "@schedule-x/calendar": "4.1.0",
     "@schedule-x/calendar-controls": "4.1.0",

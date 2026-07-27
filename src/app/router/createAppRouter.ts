@@ -1,5 +1,5 @@
 import { LocalStorage, SessionStorage } from 'quasar'
-import { createRouter, createWebHistory } from 'vue-router'
+import { createMemoryHistory, createRouter, createWebHistory } from 'vue-router'
 import useAuthStore from '@/entities/oidc-session'
 import useLangStore from '@/shared/model/lang'
 import { deleteDatabases, reset } from '@/shared/lib/databaseService'
@@ -17,7 +17,10 @@ export function createAppRouter({
   const router = createRouter({
     scrollBehavior: () => ({ left: 0, top: 0 }),
     routes,
-    history: createWebHistory(String(import.meta.env.QUASAR_VUE_ROUTER_BASE)),
+    history:
+      sessionMode === 'external'
+        ? createMemoryHistory(String(import.meta.env.QUASAR_VUE_ROUTER_BASE))
+        : createWebHistory(String(import.meta.env.QUASAR_VUE_ROUTER_BASE)),
   })
 
   router.beforeEach(async (to) => {

@@ -15,7 +15,6 @@
   </main>
   <section
     v-else
-    ref="root"
     class="chatgpt-calendar q-pa-md"
   >
     <template v-if="createDraft">
@@ -251,11 +250,9 @@ import {
   computed,
   defineAsyncComponent,
   h,
-  nextTick,
   onBeforeUnmount,
   onMounted,
   ref,
-  watch,
 } from 'vue'
 import {
   QBanner,
@@ -290,7 +287,6 @@ const CalendarEventFormComponent = defineAsyncComponent({
 const bridge = useHostBridge()
 const eventStore = useEventStore()
 const initialContent = bridge.toolOutput || bridge.widgetState?.content
-const root = ref<HTMLElement | null>(null)
 const loading = ref(false)
 const loadError = ref<string | null>(null)
 const modalError = ref<string | null>(null)
@@ -305,7 +301,6 @@ const createDraft = ref<ChatGPTTask | null>(
     : null,
 )
 const createdTask = ref<ChatGPTTask | null>(null)
-let resizeObserver: ResizeObserver | null = null
 let unsubscribe = () => {}
 
 const writing = computed(() => writingTaskId.value !== null)
@@ -470,14 +465,6 @@ function onDraftSaved(): void {
   createDraft.value = null
 }
 
-watch(
-  () => eventStore.chatGPTTasks.length,
-  async () => {
-    await nextTick()
-    bridge.notifyIntrinsicHeight(root.value?.scrollHeight)
-  },
-)
-
 onMounted(async () => {
   if (!bridge.isAvailable) {
     return
@@ -485,12 +472,6 @@ onMounted(async () => {
   const hydrated = eventStore.applyChatGPTContent(initialContent)
   if (!hydrated) {
     await loadSelectedDay()
-  }
-  resizeObserver = new ResizeObserver(() => {
-    bridge.notifyIntrinsicHeight(root.value?.scrollHeight)
-  })
-  if (root.value) {
-    resizeObserver.observe(root.value)
   }
   unsubscribe = bridge.subscribe(() => {
     const content = bridge.widgetState?.content || bridge.toolOutput
@@ -506,7 +487,6 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
-  resizeObserver?.disconnect()
   unsubscribe()
 })
 </script>

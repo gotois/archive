@@ -61,6 +61,12 @@ const formStub = defineComponent({
   },
 })
 
+const selectStub = {
+  props: ['label', 'options', 'modelValue'],
+  template:
+    '<div :data-label="label" :data-first-option-label="options[0] && options[0].label" :data-first-option-value="String(options[0] && options[0].value)" />',
+}
+
 describe('CalendarEventFormComponent', () => {
   test('creates a new event when the form is submitted', async () => {
     const wrapper = shallowMount(CalendarEventFormComponent, {
@@ -89,5 +95,45 @@ describe('CalendarEventFormComponent', () => {
     await wrapper.find('form').trigger('submit')
 
     expect(eventStoreMock.createEvent).toHaveBeenCalledOnce()
+  })
+
+  test('shows the saved reminder date instead of a raw zero value', () => {
+    const originalTimeZone = process.env.TZ
+    process.env.TZ = 'Europe/Moscow'
+    try {
+      const wrapper = shallowMount(CalendarEventFormComponent, {
+        props: {
+          task: {
+            id_task: 5002,
+            targetType: 'Person',
+            name: 'Позвонить врачу',
+            start_date: '2026-07-27T06:00:00.000Z',
+            notification_date_time: '2026-07-27T06:00:00.000Z',
+            remind_before: 0,
+          },
+          readonly: false,
+          taskId: 5002,
+        },
+        global: {
+          stubs: {
+            QForm: formStub,
+            QSelect: selectStub,
+          },
+        },
+      })
+
+      const reminderSelect = wrapper.get('[data-label="Напоминание"]')
+
+      expect(reminderSelect.attributes('data-first-option-label')).toMatch(
+        /27\.07\.2026.*09:00/,
+      )
+      expect(reminderSelect.attributes('data-first-option-value')).toBe('0')
+    } finally {
+      if (originalTimeZone) {
+        process.env.TZ = originalTimeZone
+      } else {
+        delete process.env.TZ
+      }
+    }
   })
 })

@@ -43,8 +43,10 @@ import { useRouter, RouterView } from 'vue-router'
 import ToolbarTitleComponent from '@/shared/ui/ToolbarTitleComponent.vue'
 import { isTWA, isTMA } from '@/shared/lib/detector'
 import { ROUTE_NAMES } from '@/shared/config/routes'
+import { useAppMeta } from '@/app/useAppMeta'
 
 const router = useRouter()
+useAppMeta()
 
 const AndroidBarComponent = defineAsyncComponent(
   () => import('@/shared/ui/AndroidBarComponent.vue'),

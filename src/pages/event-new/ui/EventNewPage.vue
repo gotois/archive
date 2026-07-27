@@ -52,6 +52,8 @@ const CalendarEventFormComponent = defineAsyncComponent({
 const $q = useQuasar()
 const $t = useI18n().t
 const router = useRouter()
+const eventStore = useEventStore()
+const bridge = useHostBridge()
 const formRef = ref<{ submit: () => Promise<void> } | null>(null)
 
 interface EmptyTask {
@@ -83,7 +85,8 @@ function _now() {
 }
 
 function _nowPlusHour() {
-  const d = new Date(Date.now() + 3_600_000)
+  // todo - сомнительно почему был убран const d = new Date(Date.now() + 3_600_000)
+  const d = new Date(new Date(_now()).getTime() + 3_600_000)
   d.setSeconds(0, 0)
   return d.toISOString()
 }
