@@ -1,6 +1,6 @@
 import { defineComponent, h } from 'vue'
 import { shallowMount } from '@vue/test-utils'
-import { describe, expect, test, vi } from 'vitest'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
 
 const eventStoreMock = vi.hoisted(() => ({
   createEvent: vi.fn(),
@@ -68,6 +68,10 @@ const selectStub = {
 }
 
 describe('CalendarEventFormComponent', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   test('creates a new event when the form is submitted', async () => {
     const wrapper = shallowMount(CalendarEventFormComponent, {
       props: {
@@ -95,6 +99,45 @@ describe('CalendarEventFormComponent', () => {
     await wrapper.find('form').trigger('submit')
 
     expect(eventStoreMock.createEvent).toHaveBeenCalledOnce()
+  })
+
+  test('ignores a repeated submit while creation is in progress', async () => {
+    let finishCreate!: () => void
+    eventStoreMock.createEvent.mockImplementationOnce(
+      () =>
+        new Promise<void>((resolve) => {
+          finishCreate = resolve
+        }),
+    )
+    const wrapper = shallowMount(CalendarEventFormComponent, {
+      props: {
+        task: {
+          id_task: 0,
+          targetType: 'Person',
+          name: 'Новое событие',
+          start_date: '2026-07-22T10:00:00.000Z',
+          end_date: '2026-07-22T11:00:00.000Z',
+        },
+        readonly: false,
+        taskId: null,
+      },
+      global: {
+        stubs: {
+          QForm: formStub,
+          QCardActions: {
+            template: '<div><slot /></div>',
+          },
+        },
+      },
+    })
+
+    await Promise.all([
+      wrapper.find('form').trigger('submit'),
+      wrapper.find('form').trigger('submit'),
+    ])
+
+    expect(eventStoreMock.createEvent).toHaveBeenCalledOnce()
+    finishCreate()
   })
 
   test('shows the saved reminder date instead of a raw zero value', () => {

@@ -56,6 +56,7 @@ const calendarLocale = computed(() => {
 })
 
 let contractDates: ContractDate[] = []
+let latestRequest = 0
 
 function selectDate(date: string) {
   emit('select', date)
@@ -94,22 +95,27 @@ function fillDates(dates: ContractDate[], { month, year }: NavigationDate) {
 }
 
 async function updateEvents(navigationDate: NavigationDate) {
+  const request = ++latestRequest
   const buildDate = date.buildDate(navigationDate)
   const startOfMonth = date.startOfDate(buildDate, 'month')
   const endOfMonth = date.endOfDate(buildDate, 'month')
-  contractDates = await getCalendarContracts({
-    from: startOfMonth,
-    to: endOfMonth,
-    timeZone: geoStore.timeZone,
-  }).then((contracts) =>
-    contracts
-      .filter((contract) => typeof contract.id === 'number')
-      .map((contract) => ({
-        id: contract.id as number,
-        start: contract.start,
-        end: contract.end,
-      })),
+  const loadedContractDates = (
+    await getCalendarContracts({
+      from: startOfMonth,
+      to: endOfMonth,
+      timeZone: geoStore.timeZone,
+    })
   )
+    .filter((contract) => typeof contract.id === 'number')
+    .map((contract) => ({
+      id: contract.id as number,
+      start: contract.start,
+      end: contract.end,
+    }))
+  if (request !== latestRequest) {
+    return
+  }
+  contractDates = loadedContractDates
   options.value = fillDates(contractDates, navigationDate)
   events.value = contractDates.map(({ start }) => start)
 }

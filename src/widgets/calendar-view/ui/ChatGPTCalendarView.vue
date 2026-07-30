@@ -296,7 +296,7 @@ const fallbackMode = ref<ChatGPTModalState['mode']>('view')
 const fallbackTask = ref<ChatGPTTask | null>(null)
 const writingTaskId = ref<number | null>(null)
 const createDraft = ref<ChatGPTTask | null>(
-  initialContent?.operation === 'prepare-create'
+  initialContent?.view === 'create-form'
     ? initialContent.tasks?.[0] || null
     : null,
 )
@@ -478,7 +478,7 @@ onMounted(async () => {
     eventStore.applyChatGPTContent(content)
     if (
       !createdTask.value &&
-      content?.operation === 'prepare-create' &&
+      content?.view === 'create-form' &&
       content.tasks?.[0]
     ) {
       createDraft.value = content.tasks[0]

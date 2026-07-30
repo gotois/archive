@@ -5,10 +5,10 @@ import { getHostBridge } from '@/shared/lib/hostBridge'
 
 export default boot(async () => {
   const geoStore = useGeoStore()
-  const bridge = getHostBridge()
 
   if (isChatGPT.value) {
-    geoStore.timeZone = bridge.timezone || 'Europe/Moscow'
+    const bridge = getHostBridge()
+    geoStore.timeZone = bridge.timezone || geoStore.timeZone
     return
   }
 

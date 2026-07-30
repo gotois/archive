@@ -40,7 +40,7 @@ export interface ChatGPTTask {
 }
 
 export interface ChatGPTStructuredContent {
-  operation?: 'show' | 'prepare-create' | 'create' | 'edit' | 'remove'
+  view: 'calendar' | 'create-form'
   tasks?: ChatGPTTask[]
   selectedDate?: string
   timezone?: string
@@ -123,11 +123,27 @@ function isModalInput(
   )
 }
 
+function isChatGPTStructuredContent(
+  content: unknown,
+): content is ChatGPTStructuredContent {
+  if (!content || typeof content !== 'object') {
+    return false
+  }
+  const value = content as Record<string, unknown>
+  return (
+    (value.view === 'calendar' || value.view === 'create-form') &&
+    (value.tasks === undefined || Array.isArray(value.tasks)) &&
+    (value.selectedDate === undefined ||
+      typeof value.selectedDate === 'string') &&
+    (value.timezone === undefined || typeof value.timezone === 'string')
+  )
+}
+
 function normalizeToolResult(result: ToolResult): ChatGPTToolResult {
   return {
-    structuredContent: result.structuredContent as
-      | ChatGPTStructuredContent
-      | undefined,
+    structuredContent: isChatGPTStructuredContent(result.structuredContent)
+      ? result.structuredContent
+      : undefined,
     content: result.content?.map((item) =>
       item.type === 'text'
         ? { type: item.type, text: item.text }

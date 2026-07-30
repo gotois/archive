@@ -589,12 +589,15 @@ function onGoToEdit() {
 }
 
 async function onSave(): Promise<void> {
-  const valid = await formRef.value?.validate()
-  if (!valid) {
+  if (saving.value) {
     return
   }
   saving.value = true
   try {
+    const valid = await formRef.value?.validate()
+    if (!valid) {
+      return
+    }
     await eventStore.createEvent({
       name: form.name,
       description: form.description || undefined,
