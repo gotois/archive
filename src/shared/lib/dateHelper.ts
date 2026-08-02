@@ -15,15 +15,15 @@ export function convertTemporalToDate(temporal: Temporal.ZonedDateTime): Date {
 
 // Специальный формат для календаря Google
 export function formatIcal(x: Date): string {
-  const timezone = Math.floor(x.getTimezoneOffset()) / 60
-  const buildDate = date.buildDate({
-    year: x.getFullYear(),
-    date: x.getDate(),
-    hours: x.getHours() + timezone,
-    minutes: x.getMinutes(),
-    second: x.getSeconds(),
+  const utcDate = date.buildDate({
+    year: x.getUTCFullYear(),
+    month: x.getUTCMonth() + 1,
+    date: x.getUTCDate(),
+    hours: x.getUTCHours(),
+    minutes: x.getUTCMinutes(),
+    second: x.getUTCSeconds(),
   })
-  return date.formatDate(buildDate, 'YYYYMMDDTHHmmss') + 'Z'
+  return date.formatDate(utcDate, 'YYYYMMDDTHHmmss') + 'Z'
 }
 
 export function prettyDate(start: string, end?: string | null): string {

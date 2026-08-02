@@ -9,7 +9,7 @@ class FakeMcpApp {
   readonly callServerTool = vi.fn(async () => ({
     content: [{ type: 'text' as const, text: 'ok' }],
     structuredContent: {
-      operation: 'show',
+      view: 'calendar',
       tasks: [],
       timezone: 'Europe/Moscow',
     },
@@ -59,7 +59,7 @@ describe('MCP App host bridge', () => {
     fake.emit('toolresult', {
       content: [{ type: 'text', text: 'Календарь загружен' }],
       structuredContent: {
-        operation: 'show',
+        view: 'calendar',
         tasks: [],
         timezone: 'Europe/Moscow',
       },
@@ -71,7 +71,7 @@ describe('MCP App host bridge', () => {
     expect(bridge.timezone).toBe('Europe/Moscow')
     expect(bridge.toolInput).toEqual({ start_date: '2026-07-27' })
     expect(bridge.toolOutput).toEqual({
-      operation: 'show',
+      view: 'calendar',
       tasks: [],
       timezone: 'Europe/Moscow',
     })
@@ -81,7 +81,7 @@ describe('MCP App host bridge', () => {
       bridge.callTool('show', { start_date: '2026-07-27' }),
     ).resolves.toMatchObject({
       structuredContent: {
-        operation: 'show',
+        view: 'calendar',
       },
     })
     expect(fake.callServerTool).toHaveBeenCalledWith({
@@ -100,7 +100,7 @@ describe('MCP App host bridge', () => {
       toolInput: { mode: 'edit', taskId: 42 },
       widgetState: {
         secretaryCalendar: {
-          content: { operation: 'show', tasks: [] },
+          content: { view: 'calendar', tasks: [] },
         },
       },
       requestModal,
@@ -109,7 +109,7 @@ describe('MCP App host bridge', () => {
 
     const { bridge } = initializeFakeBridge()
     expect(bridge.toolInput).toEqual({ mode: 'edit', taskId: 42 })
-    expect(bridge.widgetState?.content?.operation).toBe('show')
+    expect(bridge.widgetState?.content?.view).toBe('calendar')
 
     await expect(
       bridge.requestModal({ mode: 'edit', taskId: 42 }),
@@ -118,10 +118,10 @@ describe('MCP App host bridge', () => {
       params: { mode: 'edit', taskId: 42 },
     })
 
-    bridge.setWidgetState({ content: { operation: 'show', tasks: [] } })
+    bridge.setWidgetState({ content: { view: 'calendar', tasks: [] } })
     expect(setWidgetState).toHaveBeenCalledWith({
       secretaryCalendar: {
-        content: { operation: 'show', tasks: [] },
+        content: { view: 'calendar', tasks: [] },
       },
     })
   })
