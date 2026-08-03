@@ -8,7 +8,7 @@ export function buildShareParams(taskId: number | string): ShareParams {
       ? Number.NaN
       : Number(taskId)
 
-  if (!Number.isSafeInteger(normalizedTaskId)) {
+  if (!Number.isSafeInteger(normalizedTaskId) || normalizedTaskId <= 0) {
     throw new Error('Invalid task ID')
   }
 
