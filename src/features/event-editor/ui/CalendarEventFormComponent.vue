@@ -669,7 +669,7 @@ defineExpose({
 async function removeTask(): Promise<void> {
   try {
     await eventStore.deleteEvent({
-      ids: [props.task.id_task],
+      id_tasks: [props.task.id_task],
     })
     emit('removed')
   } catch (error: unknown) {

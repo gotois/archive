@@ -446,7 +446,7 @@ async function removeTask(task: ChatGPTTask): Promise<void> {
   writingTaskId.value = task.id_task
   loadError.value = null
   try {
-    await eventStore.deleteEvent({ ids: [task.id_task] })
+    await eventStore.deleteEvent({ id_tasks: [task.id_task] })
   } catch (error) {
     console.error(error)
     loadError.value =
