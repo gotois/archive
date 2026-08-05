@@ -52,7 +52,7 @@
 
 ### Установка из исходников
 ```bash
-git clone git@github.com:gotois/archive.git && cd archive
+git clone git@github.com:gotois/secretary-web.git && cd secretary-web
 npm i
 ```
 

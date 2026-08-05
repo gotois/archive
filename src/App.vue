@@ -22,7 +22,7 @@ const webSite = {
     ...pkg.author,
   },
   'publisher': pkg.author.name,
-  'license': 'https://github.com/gotois/archive/blob/master/LICENSE',
+  'license': 'https://github.com/gotois/secretary-web/blob/master/LICENSE',
   'potentialAction': {
     '@type': 'SearchAction',
     'target': pkg.homepage + 'search?name={query_string}',
